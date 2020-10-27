@@ -14,7 +14,6 @@ import {
 } from '../API'; // as interfaces
 import config from '../API/RequestHeaders';
 import App, { AppConfig } from '../App/App';
-import Splash from '../UI/Splash';
 import { history } from '../utils';
 import MIPContext from './MIPContext';
 
@@ -104,13 +103,6 @@ class AppContainer extends React.Component<any, State> {
   }
 
   public render(): JSX.Element {
-    const toggleTooltip = (): void => {
-      this.setState(state => ({
-        ...state,
-        showTooltip: !state.showTooltip
-      }));
-    };
-
     const toggleTutorial = (): void => {
       localStorage.setItem('seenTutorial', 'true');
       this.setState(state => ({
@@ -122,9 +114,8 @@ class AppContainer extends React.Component<any, State> {
     return (
       <MIPContext.Provider
         value={{
-          showTooltips: this.state.showTooltip,
-          toggleTooltip,
-          showTutorial: this.state.showTutorial,
+          showTutorial:
+            this.apiUser.state.authenticated && this.state.showTutorial,
           toggleTutorial
         }}
       >
@@ -148,9 +139,6 @@ class AppContainer extends React.Component<any, State> {
                 apiMining: APIMining,
                 apiUser: APIUser
               ): JSX.Element => {
-                const loading = apiUser.state.loading;
-                const authenticated = apiUser.state.authenticated;
-
                 return (
                   <>
                     <Route
@@ -166,23 +154,15 @@ class AppContainer extends React.Component<any, State> {
                         return <div />;
                       }}
                     />
-                    {!loading && !authenticated && (
-                      <Splash
-                        forbidden={this.apiUser.state.forbidden}
-                        logout={apiUser.logout}
-                      />
-                    )}
-                    {!loading && authenticated && (
-                      <App
-                        appConfig={this.state.appConfig}
-                        apiExperiment={apiExperiment}
-                        apiCore={apiCore}
-                        apiModel={apiModel}
-                        apiMining={apiMining}
-                        apiUser={apiUser}
-                        showTutorial={this.state.showTutorial}
-                      />
-                    )}
+                    <App
+                      appConfig={this.state.appConfig}
+                      apiExperiment={apiExperiment}
+                      apiCore={apiCore}
+                      apiModel={apiModel}
+                      apiMining={apiMining}
+                      apiUser={apiUser}
+                      showTutorial={this.state.showTutorial}
+                    />
                   </>
                 );
               }}

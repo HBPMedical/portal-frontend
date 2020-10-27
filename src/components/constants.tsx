@@ -18,43 +18,6 @@ export const PRIVACY_ERROR = 'NOT ENOUGH DATA';
 export const FORBIDDEN_ACCESS_MESSAGE =
   'Connection SUCCESSFUL! Despite of this, it appears that you currently don&lsquo;t have enough privileges to browse this platform. Please contact the  <a href="mailto:support@ebrains.eu?subject=Medical%20Informatics%20Platform%20Access%20Request">Support Team</a> (support@ebrains.eu) if you think you should have <a href="https://mip.ebrains.eu/access" target="_blank">access</a>.';
 
-export const TOOLTIPS = {
-  '0': {
-    badge: 'Tooltips',
-    title: '',
-    text: 'Enable or disable the tooltips'
-  },
-  '1': {
-    badge: '1',
-    title: 'Pathologies selection',
-    text:
-      'Tooltips guide you through the MIP. Select the pathology for your use case'
-  },
-  '2': {
-    badge: '2',
-    title: 'Data sets',
-    text:
-      'Here you can select the datasets available for the selected pathology'
-  },
-  '3': {
-    badge: '3',
-    title: 'Variables selection',
-    text:
-      'Variables are grouped by theme and each theme is represented by a circle .'
-  },
-  '4': {
-    badge: '4',
-    title: "Experiment's Parameters",
-    text:
-      'Add your selected variable as variables, covariables and filters by pressing the desired category button'
-  },
-  '5': {
-    badge: '5',
-    title: 'Analysis',
-    text: 'Click there when you are satisfied with your paramaters selection, '
-  }
-};
-
 export const ERRORS_OUTPUT = [
   MIME_TYPES.ERROR,
   MIME_TYPES.WARNING,

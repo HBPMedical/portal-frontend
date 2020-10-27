@@ -10,11 +10,14 @@ import Dropdown from './DropdownExperiments';
 import HelpButton from './HelpButton';
 
 interface Props {
+  isAnonymous: boolean;
+  authenticated: boolean;
+  handleLoginPress: () => void;
+  handleLogoutPress: () => void;
   name?: string;
   experiments?: ExperimentResponse[];
   handleSelect: (experiment: ExperimentResponse) => void;
   datacatalogueUrl: string | undefined;
-  logout?: () => {};
 }
 
 const NavBar = styled.nav`
@@ -122,11 +125,14 @@ const ALink = styled.a`
 `;
 
 export default ({
+  isAnonymous,
+  authenticated,
+  handleLoginPress,
+  handleLogoutPress,
   name,
   datacatalogueUrl,
   experiments,
-  handleSelect,
-  logout
+  handleSelect
 }: Props): JSX.Element => {
   const instanceName = name || 'MIP';
 
@@ -139,26 +145,30 @@ export default ({
         <Link to="/">{instanceName}</Link>
       </Brand>
       <Links>
-        <Group>
-          <GroupLink to="/explore">Variables</GroupLink>
-          <span> &gt; </span>
-          <GroupLink to="/review">Analysis</GroupLink>
-          <span> &gt; </span>
-          <GroupLink to="/experiment">Experiment</GroupLink>
-        </Group>
-        <DropdownWrapper>
-          <Dropdown
-            items={experiments}
-            /* eslint-disable-next-line */
-            style="link"
-            type={'models'}
-            title="My Experiments"
-            handleSelect={handleSelect}
-            handleCreateNewExperiment={null}
-          />
-        </DropdownWrapper>
-        <Link to="/galaxy">Workflow</Link>
-        {datacatalogueUrl && (
+        {authenticated && (
+          <Group>
+            <GroupLink to="/explore">Variables</GroupLink>
+            <span> &gt; </span>
+            <GroupLink to="/review">Analysis</GroupLink>
+            <span> &gt; </span>
+            <GroupLink to="/experiment">Experiment</GroupLink>
+          </Group>
+        )}
+        {authenticated && (
+          <DropdownWrapper>
+            <Dropdown
+              items={experiments}
+              /* eslint-disable-next-line */
+              style="link"
+              type={'models'}
+              title="My Experiments"
+              handleSelect={handleSelect}
+              handleCreateNewExperiment={null}
+            />
+          </DropdownWrapper>
+        )}
+        {authenticated && <Link to="/galaxy">Workflow</Link>}
+        {authenticated && datacatalogueUrl && (
           <ALink
             href={datacatalogueUrl}
             rel="noopener noreferrer"
@@ -169,23 +179,6 @@ export default ({
         )}
       </Links>
       <RightLinks>
-        {/* <div>
-          <MIPContext.Consumer>
-            {({ toggleTooltip }): JSX.Element =>
-              (
-                <>
-                  <Button
-                    bsStyle="danger"
-                    bsSize={'small'}
-                    onClick={toggleTooltip}
-                  >
-                    Tooltips
-                  </Button>
-                </>
-              ) || <></>
-            }
-          </MIPContext.Consumer>
-        </div> */}
         <MIPContext.Consumer>
           {({ toggleTutorial }): JSX.Element =>
             (
@@ -202,14 +195,21 @@ export default ({
           }
         </MIPContext.Consumer>
         <HelpButton showTraining={true} />
-        {logout && (
+        {!isAnonymous && !authenticated && (
+          <Button
+            onClick={handleLoginPress}
+            bsSize={'small'}
+            bsStyle={'info'}
+            type="submit"
+          >
+            Login
+          </Button>
+        )}
+        {!isAnonymous && authenticated && (
           <Button
             bsStyle={'warning'}
             bsSize={'small'}
-            onClick={(): void => {
-              logout();
-              window.location.href = '/';
-            }}
+            onClick={handleLogoutPress}
           >
             Logout
           </Button>
