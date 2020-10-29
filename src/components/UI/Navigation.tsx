@@ -186,7 +186,9 @@ export default ({
                 <Button
                   bsStyle="link"
                   bsSize={'small'}
-                  onClick={toggleTutorial}
+                  onClick={() => {
+                    toggleTutorial && toggleTutorial(true);
+                  }}
                 >
                   User Guide
                 </Button>

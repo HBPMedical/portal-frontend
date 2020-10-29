@@ -2,11 +2,13 @@ import { createContext } from 'react';
 
 interface Context {
   showTutorial: boolean;
-  toggleTutorial?: () => void;
+  forceShowTutorial: boolean;
+  toggleTutorial?: (force?: boolean) => void;
 }
 
 const MIPContext = createContext<Context>({
-  showTutorial: true
+  showTutorial: true,
+  forceShowTutorial: false
 });
 
 export default MIPContext;

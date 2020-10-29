@@ -55,7 +55,9 @@ export default React.memo(
                 <Modal.Title>MIP User Guide</Modal.Title>
                 <Button
                   bsClass="close"
-                  onClick={toggleTutorial}
+                  onClick={(): void => {
+                    toggleTutorial && toggleTutorial(true);
+                  }}
                   style={{ marginLeft: 'auto' }}
                 >
                   <span aria-hidden="true">×</span>
@@ -117,7 +119,13 @@ export default React.memo(
                 </Carousel>
               </Modal.Body>
               <Modal.Footer>
-                <Button onClick={toggleTutorial}>Close</Button>
+                <Button
+                  onClick={() => {
+                    toggleTutorial && toggleTutorial(true);
+                  }}
+                >
+                  Close
+                </Button>
               </Modal.Footer>
             </Modal.Dialog>
           )}
