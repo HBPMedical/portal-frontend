@@ -1,6 +1,6 @@
 import * as React from 'react';
-import { Panel } from 'react-bootstrap';
-import styled from 'styled-components';
+import { Panel, ProgressBar } from 'react-bootstrap';
+import styled, { keyframes } from 'styled-components';
 
 import { Result, State } from '../API/Experiment';
 import ResultsErrorBoundary from '../UI/ResultsErrorBoundary';
@@ -8,6 +8,25 @@ import RenderResult from './RenderResult';
 
 const Body = styled(Panel.Body)`
   padding: 0 16px;
+`;
+
+const indeterminateAnimation = keyframes`
+ from {
+      left: -25%;
+      width: 25%;
+    }
+    to {
+      left: 100%;
+      width: 25%;
+    }
+`;
+
+const IndederminateProgressBar = styled(ProgressBar)`
+  position: relative;
+  animation-name: ${indeterminateAnimation};
+  animation-duration: 3s;
+  animation-timing-function: linear;
+  animation-iteration-count: infinite;
 `;
 
 export default ({
@@ -36,7 +55,10 @@ export default ({
       <Body>
         {loading ? (
           <div className="loading">
-            <h3>Your experiment is currently running...</h3>
+            <h3>Your experiment is currently running</h3>
+            <div style={{ position: 'relative', overflowX: 'hidden' }}>
+              <IndederminateProgressBar striped now={100} />
+            </div>
             <p>
               Please check back in a few minutes. This page will automatically
               refresh once your experiment has finished executing.
