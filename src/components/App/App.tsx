@@ -77,7 +77,8 @@ const GlobalStyles = createGlobalStyle`
     }
   }
 
-  #feedback-form button { color: black}
+  .zammad-form
+   button { color: black}
 
 `;
 
