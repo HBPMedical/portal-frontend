@@ -65,7 +65,7 @@ export default ({ showTraining }: { showTraining?: boolean }): JSX.Element => {
             <MGlyphicon glyph="envelope" /> Email us at support@ebrains.eu
           </a>
         </li>
-        <Helpdesk />
+        <Helpdesk formId={'dropdown-help-form'} />
       </DropdownButton>
     </MainBox>
   );

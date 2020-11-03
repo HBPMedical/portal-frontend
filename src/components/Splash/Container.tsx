@@ -5,6 +5,7 @@ import { Panel } from 'react-bootstrap';
 import HBPLogo from '../../images/hbp_logo_135.png';
 import { FORBIDDEN_ACCESS_MESSAGE } from '../constants';
 import Helpdesk from '../UI/Helpdesk';
+import { Link } from 'react-router-dom';
 
 const AlertBox = styled(Alert)`
   position: absolute;
@@ -19,6 +20,7 @@ const Logo = styled.img`
   height: 135px;
   display: block;
   margin: 16px auto 32px auto;
+  float: right;
 `;
 
 const Container = styled.main`
@@ -48,35 +50,43 @@ export default ({ forbidden }: { forbidden?: boolean }): JSX.Element => {
       )}
       <Container>
         <div>
-          <Panel style={{ padding: '32px', textAlign: 'center' }}>
-            <Panel.Body>
-              <h2>Human Brain Project</h2>
-              <Logo
-                alt="HBP logo"
-                title={'Human Brain Project'}
-                src={HBPLogo}
-              />
-              <h1>THE MEDICAL INFORMATICS PLATFORM</h1>
-            </Panel.Body>
-          </Panel>
           <Panel style={{ padding: '32px' }}>
             <Panel.Body>
-              <h3>About The Medical Informatics Platform</h3>
-              <p>
-                The Medical Informatics Platform (MIP) is a privacy preserving,
-                federated data processing and analysis system
-              </p>
-              <p>
-                The MIP is designed to help clinicians, clinical scientists, and
-                clinical data scientists aiming to adopt advanced analytics for
-                diagnosis and research in clinics.
-              </p>
-              <p>
-                More information about the MIP can be found on{' '}
-                <a href="https://ebrains.eu/" target="blank">
-                  EBRAINS website
-                </a>
-              </p>
+              <div>
+                <Logo
+                  alt="HBP logo"
+                  title={'Human Brain Project'}
+                  src={HBPLogo}
+                />
+                <h1>THE MEDICAL INFORMATICS PLATFORM</h1>
+              </div>
+              <div>
+                <h3>About</h3>
+                <p>
+                  The Medical Informatics Platform (MIP) is a privacy
+                  preserving, federated data processing and analysis system
+                </p>
+                <p>
+                  The MIP is designed to help clinicians, clinical scientists,
+                  and clinical data scientists aiming to adopt advanced
+                  analytics for diagnosis and research in clinics.
+                </p>
+                <h3>Resources</h3>
+                <p>
+                  More information about the MIP can be found on{' '}
+                  <a
+                    href="https://ebrains.eu/"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                  >
+                    EBRAINS website
+                  </a>
+                </p>
+                <p>
+                  You can watch the
+                  <Link to={`/training`}> training videos</Link>
+                </p>
+              </div>
             </Panel.Body>
           </Panel>
         </div>
@@ -86,6 +96,8 @@ export default ({ forbidden }: { forbidden?: boolean }): JSX.Element => {
           </Panel.Title>
           <Panel.Body>
             <p>
+              If you are a registered user of the MIP, you can access it by
+              Login otherwise,
               <strong>
                 You need an EBRAINS user account to access the MIP.
               </strong>
@@ -94,7 +106,8 @@ export default ({ forbidden }: { forbidden?: boolean }): JSX.Element => {
               Access to the different federations will be granted on a case-by
               case basis, and is only possible after you have signed in on the
               platform and your user account is registered. Specify your request
-              in the form below
+              in the form below or by mail at{' '}
+              <a href="mailto://support@ebrains.eu">support@ebrains.eu</a>
             </p>
             <Helpdesk formId={'login-mailform'} />
           </Panel.Body>
