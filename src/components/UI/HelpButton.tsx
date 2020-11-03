@@ -32,6 +32,10 @@ const Link = styled(NavLink)`
   color: #000;
 `;
 
+const MGlyphicon = styled(Glyphicon)`
+  margin-right: 4px;
+`;
+
 export default ({ showTraining }: { showTraining?: boolean }): JSX.Element => {
   return (
     <MainBox>
@@ -47,18 +51,18 @@ export default ({ showTraining }: { showTraining?: boolean }): JSX.Element => {
             window.open('https://mip.ebrains.eu/documentation/');
           }}
         >
-          <Glyphicon glyph="book" /> MIP Documentation
+          <MGlyphicon glyph="book" /> MIP Documentation
         </MenuItem>
         {showTraining && (
           <li>
             <Link to="/training">
-              <Glyphicon glyph="film" /> MIP Training
+              <MGlyphicon glyph="film" /> MIP Training
             </Link>
           </li>
         )}
         <li>
           <a href="mailto://support@ebrains.eu">
-            <Glyphicon glyph="envelope" /> Email us at support@ebrains.eu
+            <MGlyphicon glyph="envelope" /> Email us at support@ebrains.eu
           </a>
         </li>
         <Helpdesk />
