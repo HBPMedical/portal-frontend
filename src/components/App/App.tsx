@@ -15,9 +15,9 @@ import {
   backendURL
 } from '../API';
 import { ExperimentResponse } from '../API/Experiment';
+import MIPContext from '../App/MIPContext';
 import Article from '../Article/Container';
 import ExperimentCreate from '../Create/Container';
-import Dashboard from '../Dashboard/Dashboard';
 import Explore from '../Explore/Container';
 import Help from '../Help/Help';
 import Login from '../Login/Container';
@@ -31,7 +31,6 @@ import NotFound from '../UI/NotFound';
 import TOS from '../UI/TOS';
 import User from '../User/Container';
 import { history } from '../utils';
-import MIPContext from '../App/MIPContext';
 
 export interface AppConfig {
   version?: string;
@@ -164,14 +163,6 @@ const App = ({
                 {showTutorial && <Tutorial />}
 
                 <Switch>
-                  <Route
-                    path={['/']}
-                    exact={true}
-                    // tslint:disable-next-line jsx-no-lambda
-                    render={(props): JSX.Element => (
-                      <Login forbidden={apiUser.state.forbidden} />
-                    )}
-                  />
                   <Route
                     path={['/', '/explore']}
                     exact={true}
