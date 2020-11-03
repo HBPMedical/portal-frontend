@@ -58,7 +58,7 @@ const HelpDeskForm = ({
       document.head.appendChild(script);
     }
 
-    // Load the form via jQuery and code as code.text = '...', 
+    // Load the form via jQuery and code as code.text = '...',
     // first time with window.onload to ensure jQuery is loaded
     const scriptId = `${formId}-loader`;
     const scriptElement = document.querySelector(`#${scriptId}`);

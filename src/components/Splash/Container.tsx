@@ -28,7 +28,7 @@ const Container = styled.main`
   width: 1200px;
   display: flex;
   flex-direction: row;
-  font-size: 1.8rem;
+  font-size: 1.6rem;
 `;
 
 const Sidebar = styled(Panel)`
@@ -71,7 +71,6 @@ export default ({ forbidden }: { forbidden?: boolean }): JSX.Element => {
                   and clinical data scientists aiming to adopt advanced
                   analytics for diagnosis and research in clinics.
                 </p>
-                <h3>Resources</h3>
                 <p>
                   More information about the MIP can be found on{' '}
                   <a
@@ -82,10 +81,51 @@ export default ({ forbidden }: { forbidden?: boolean }): JSX.Element => {
                     EBRAINS website
                   </a>
                 </p>
-                <p>
-                  You can watch the
-                  <Link to={`/training`}> training videos</Link>
-                </p>
+                <h3>Read more about the MIP</h3>
+                <ul>
+                  <li>
+                    Watch the <Link to={`/training`}>video tutorials</Link>
+                  </li>
+                  <li>
+                    An introduction to the MIP:{' '}
+                    <a
+                      href="https://mip.ebrains.eu/documentation/Deployment%20Pack/1"
+                      target="_blank"
+                      rel="noopener noreferrer"
+                    >
+                      Executive Summary
+                    </a>
+                  </li>
+                  <li>
+                    <a
+                      href="https://mip.ebrains.eu/documentation/Deployment%20Pack/9"
+                      target="_blank"
+                      rel="noopener noreferrer"
+                    >
+                      FAQ
+                    </a>
+                  </li>
+                  <li>
+                    Read about the included algorithms:{' '}
+                    <a
+                      href="https://mip.ebrains.eu/documentation/Technical%20Documents/11"
+                      target="_blank"
+                      rel="noopener noreferrer"
+                    >
+                      Federated Analysis Algorithms Descriptions
+                    </a>
+                  </li>
+                  <li>
+                    Technical overview:{' '}
+                    <a
+                      href="https://github.com/HBPMedical/mip-docs"
+                      target="_blank"
+                      rel="noopener noreferrer"
+                    >
+                      Federated Analysis Algorithms Descriptions
+                    </a>
+                  </li>
+                </ul>
               </div>
             </Panel.Body>
           </Panel>
@@ -97,7 +137,9 @@ export default ({ forbidden }: { forbidden?: boolean }): JSX.Element => {
           <Panel.Body>
             <p>
               If you are a registered user of the MIP, you can access it by
-              Login otherwise,
+              login on the top right button
+            </p>
+            <p>
               <strong>
                 You need an EBRAINS user account to access the MIP.
               </strong>

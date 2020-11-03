@@ -27,7 +27,7 @@ interface State {
 class AppContainer extends React.Component<any, State> {
   public state: State = {
     appConfig: {},
-    showTutorial: false,
+    showTutorial: false
   };
   private apiExperiment = new APIExperiment(config);
   private apiModel = new APIModel(config);
