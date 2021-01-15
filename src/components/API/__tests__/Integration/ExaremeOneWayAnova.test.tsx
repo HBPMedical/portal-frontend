@@ -75,16 +75,16 @@ describe('Integration Test for experiment API', () => {
     expect(experimentState.experiment.status).toStrictEqual('success');
     expect(experimentState.experiment).toBeTruthy();
 
-    // const props = { experimentState };
-    // const wrapper = mount(<Result {...props} />);
-    // expect(wrapper.find('.error')).toHaveLength(0);
-    // expect(wrapper.find('.loading')).toHaveLength(0);
-    // expect(wrapper.find('.result')).toHaveLength(1);
-    // expect(
-    //   wrapper
-    //     .find('div.result table tbody tr td')
-    //     .at(1)
-    //     .text()
-    // ).toEqual('34.196');
+    const props = { experimentState };
+    const wrapper = mount(<Result {...props} />);
+    expect(wrapper.find('.error')).toHaveLength(0);
+    expect(wrapper.find('.loading')).toHaveLength(0);
+    expect(wrapper.find('.result')).toHaveLength(3);
+    expect(
+      wrapper
+        .find('div.result table tbody tr td')
+        .at(1)
+        .text()
+    ).toEqual('3');
   });
 });
