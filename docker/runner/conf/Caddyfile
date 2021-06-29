@@ -20,10 +20,10 @@ handle /* {
 	file_server
 }
 
-redir /nativeGalaxy /nativeGalaxy/
-handle /nativeGalaxy/* {
-	#import rp {$GALAXY_URL}
-	reverse_proxy {$GALAXY_URL} {
+redir {$GALAXY_PATH} {$GALAXY_PATH}/
+handle {$GALAXY_PATH}/* {
+	#import rp {$GALAXY_HOST}
+	reverse_proxy {$GALAXY_HOST} {
 		header_up Host {host}
 		header_up X-Real-IP {remote_host}
 		header_up X-Forwarded-For {remote_host}
@@ -32,7 +32,7 @@ handle /nativeGalaxy/* {
 }
 
 redir {$KEYCLOAK_AUTH_PATH} {$KEYCLOAK_AUTH_PATH}/
-handle /auth/* {
+handle {$KEYCLOAK_AUTH_PATH}/* {
 	#import rp {$KEYCLOAK_HOST}
 	reverse_proxy {$KEYCLOAK_HOST} {
 		header_up Host {host}
