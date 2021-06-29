@@ -1,0 +1,62 @@
+{$PRIVATE_MIP_PROTOCOL:$PUBLIC_MIP_PROTOCOL}://{$PRIVATE_MIP_HOST:$PUBLIC_MIP_HOST}
+
+#(rp) {
+#	reverse_proxy {args.0} {
+#		header_up Host {host}
+#		header_up X-Real-IP {remote_host}
+#		header_up X-Forwarded-For {remote_host}
+#		header_up X-Forwarded-Proto {$PUBLIC_MIP_PROTOCOL}
+#	}
+#}
+
+encode gzip zstd
+
+log {
+	level {$ERROR_LOG_LEVEL:warn}
+}
+
+handle /* {
+	root * /usr/share/caddy/html
+	file_server
+}
+
+redir /nativeGalaxy /nativeGalaxy/
+handle /nativeGalaxy/* {
+	#import rp {$GALAXY_URL}
+	reverse_proxy {$GALAXY_URL} {
+		header_up Host {host}
+		header_up X-Real-IP {remote_host}
+		header_up X-Forwarded-For {remote_host}
+		header_up X-Forwarded-Proto {$PUBLIC_MIP_PROTOCOL}
+	}
+}
+
+redir {$KEYCLOAK_AUTH_PATH} {$KEYCLOAK_AUTH_PATH}/
+handle /auth/* {
+	#import rp {$KEYCLOAK_HOST}
+	reverse_proxy {$KEYCLOAK_HOST} {
+		header_up Host {host}
+		header_up X-Real-IP {remote_host}
+		header_up X-Forwarded-For {remote_host}
+		header_up X-Forwarded-Proto {$PUBLIC_MIP_PROTOCOL}
+	}
+}
+
+handle /services/* {
+	uri replace /services/ /{$PORTAL_BACKEND_CONTEXT:services}/
+	#import rp {$PORTAL_BACKEND_SERVER}
+	reverse_proxy {$PORTAL_BACKEND_SERVER} {
+		header_up Host {host}
+		header_up X-Real-IP {remote_host}
+		header_up X-Forwarded-For {remote_host}
+                header_up X-Forwarded-Proto {$PUBLIC_MIP_PROTOCOL}
+	}
+}
+
+# keycloak redirect on /services/ after login. In that case, redirect to /
+redir /services/ / permanent
+
+handle_errors {
+	@4xx expression `{http.error.status_code} == 401 || {http.error.status_code} = 404`
+	redir * / permanent
+}

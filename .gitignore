@@ -28,3 +28,5 @@ yarn-error.log*
 test-server/tmp
 test-server/logs
 test-server/**/datasets.db
+
+**/.fuse*
