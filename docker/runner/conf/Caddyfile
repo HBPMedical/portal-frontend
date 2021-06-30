@@ -2,10 +2,10 @@
 
 #(rp) {
 #	reverse_proxy {args.0} {
-#              header_up Host {header.X-Forwarded-Host}
-#              header_up X-Real-IP {header.X-Forwarded-For}
-#              header_up X-Forwarded-For {header.X-Forwarded-For}
-#              header_up X-Forwarded-Proto {$PUBLIC_MIP_PROTOCOL}
+#		header_up Host {header.X-Forwarded-Host}
+#		header_up X-Real-IP {header.X-Forwarded-For}
+#		header_up X-Forwarded-For {header.X-Forwarded-For}
+#		header_up X-Forwarded-Proto {$PUBLIC_MIP_PROTOCOL}
 #	}
 #}
 
@@ -74,7 +74,7 @@ handle /services/* {
 # keycloak redirect on /services/ after login. In that case, redirect to /
 redir /services/ / permanent
 
-#handle_errors {
+handle_errors {
 	@4xx expression `{http.error.status_code} == 401 || {http.error.status_code} = 404`
 	redir * / permanent
 }
