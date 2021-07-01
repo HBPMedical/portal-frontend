@@ -64,7 +64,7 @@ class UserContainer extends Container<State> {
       }
 
       // Check for json object
-      if (response.data && !response.data?.name) {
+      if (response.data && !response.data?.username) {
         return await this.setState({
           error: "Unexpected server response",
           user: undefined,
