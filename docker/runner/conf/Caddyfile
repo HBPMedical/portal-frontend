@@ -3,7 +3,7 @@
 		header_up Host {header.X-Forwarded-Host}
 		header_up X-Real-IP {header.X-Forwarded-For}
 		header_up X-Forwarded-For {header.X-Forwarded-For}
-		header_up X-Forwarded-Proto {$PUBLIC_MIP_PROTOCOL:https}
+		header_up X-Forwarded-Proto {$EXTERNAL_MIP_PROTOCOL:https}
 	}
 }
 
@@ -12,7 +12,7 @@
 		header_up Host {host}
 		header_up X-Real-IP {remote_host}
 		header_up X-Forwarded-For {remote_host}
-		header_up X-Forwarded-Proto {$PUBLIC_MIP_PROTOCOL:https}
+		header_up X-Forwarded-Proto {$EXTERNAL_MIP_PROTOCOL:https}
 	}
 }
 
