@@ -34,8 +34,9 @@
 		import rp-{$MIP_HOST:direct} {$GALAXY_HOST}
 	}
 
-	redir {$KEYCLOAK_AUTH_PATH} {$KEYCLOAK_AUTH_PATH}/
-	handle {$KEYCLOAK_AUTH_PATH}/* {
+	redir {$KEYCLOAK_AUTH_PATH:/dummyauth} {$KEYCLOAK_AUTH_PATH:/dummyauth}/
+	handle {$KEYCLOAK_AUTH_PATH:/dummyauth}/* {
+		redir /dummyauth/* /
 		import rp-{$MIP_HOST:direct} {$KEYCLOAK_HOST}
 	}
 
