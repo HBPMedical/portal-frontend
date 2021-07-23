@@ -1,13 +1,13 @@
-(rp-proxied) {
-	reverse_proxy {args.0} {
-		header_up Host {header.X-Forwarded-Host}
-		header_up X-Real-IP {header.X-Forwarded-For}
-		header_up X-Forwarded-For {header.X-Forwarded-For}
-		header_up X-Forwarded-Proto {$EXTERNAL_MIP_PROTOCOL:https}
-	}
-}
+#(rp-proxied) {
+#	reverse_proxy {args.0} {
+#		header_up Host {header.X-Forwarded-Host}
+#		header_up X-Real-IP {header.X-Forwarded-For}
+#		header_up X-Forwarded-For {header.X-Forwarded-For}
+#		header_up X-Forwarded-Proto {$EXTERNAL_MIP_PROTOCOL:https}
+#	}
+#}
 
-(rp-direct) {
+(rp) {
 	reverse_proxy {args.0} {
 		header_up Host {host}
 		header_up X-Real-IP {remote_host}
@@ -31,18 +31,18 @@
 
 	redir {$GALAXY_PATH} {$GALAXY_PATH}/
 	handle {$GALAXY_PATH}/* {
-		import rp-{$MIP_HOST:direct} {$GALAXY_HOST}
+		import rp {$GALAXY_HOST}
 	}
 
 	redir {$KEYCLOAK_AUTH_PATH:/dummyauth} {$KEYCLOAK_AUTH_PATH:/dummyauth}/
 	handle {$KEYCLOAK_AUTH_PATH:/dummyauth}/* {
 		redir /dummyauth/* /
-		import rp-{$MIP_HOST:direct} {$KEYCLOAK_HOST}
+		import rp {$KEYCLOAK_HOST}
 	}
 
 	handle /services/* {
 		uri replace /services/ /{$PORTAL_BACKEND_CONTEXT:services}/
-		import rp-{$MIP_HOST:direct} {$PORTAL_BACKEND_SERVER}
+		import rp {$PORTAL_BACKEND_SERVER}
 	}
 
 	# keycloak redirect on /services/ after login. In that case, redirect to /
