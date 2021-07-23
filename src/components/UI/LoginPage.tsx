@@ -122,7 +122,7 @@ export default (): JSX.Element => {
       </StyledJumbotron>
       <SideCard>
         <Logo alt="HBP logo" title={'Human Brain Project'} src={HBPLogo} />
-        <h3>Access the MIP</h3>
+        <h3>Get access to the MIP</h3>
         <p>
           <strong>
             You need an{' '}
