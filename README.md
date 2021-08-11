@@ -1,70 +1,96 @@
-[![CHUV](https://img.shields.io/badge/HBP-AF4C64.svg)](https://www.humanbrainproject.eu) [![License](https://img.shields.io/badge/license-AGPL--3.0-blue.svg)](https://www.gnu.org/licenses/agpl-3.0.html) [![DockerHub](https://img.shields.io/badge/docker-hbpmip%2Fportal--frontend-008bb8.svg)](https://hub.docker.com/r/hbpmip/portal-frontend/) [![Codacy Badge](https://api.codacy.com/project/badge/Grade/9143f566eca64ffbb06258c61fb64ea0)](https://www.codacy.com/app/hbp-mip/portal-frontend?utm_source=github.com&utm_medium=referral&utm_content=HBPMedical/portal-frontend&utm_campaign=Badge_Grade) [![CircleCI](https://circleci.com/gh/HBPMedical/portal-frontend/tree/master.svg?style=svg)](https://circleci.com/gh/HBPMedical/portal-frontend/tree/master)
+[![CHUV](https://img.shields.io/badge/HBP-AF4C64.svg)](https://www.humanbrainproject.eu) [![License](https://img.shields.io/badge/license-AGPL--3.0-blue.svg)](https://www.gnu.org/licenses/agpl-3.0.html) [![DockerHub](https://img.shields.io/badge/docker-hbpmip%2Fportal--frontend-008bb8.svg)](https://hub.docker.com/r/hbpmip/portal-frontend/) 
 
 # MIP portal frontend
 
 ## Summary
 
-MIP Frontend is the web portal for the [Medical Informatics Platform for the Human Brain Project](https://hbpmedical.github.io/).
+The MIP Frontend is the web component of the [Medical Informatics Platform](http://mip.humanbrainproject.eu/) for the Human Brain Project.
 
-The portal runs on [React](https://reactjs.org), a JavaScript library for building user interfaces, and embed several libraries, among them are:
+You can find more informations on the MIP on [EBRAINS](https://ebrains.eu/service/medical-informatics-platform) website.
+
+## Deployment
+
+The MIP is a collection of services and components bundled in a deployment pack. It can be either deployed localy or in a federated way. Everything you need in order to deploy is to be found in the [mip-deployment](https://github.com/HBPMedical/mip-deployment) repository.
+
+
+## Frontend development
+
+The interface runs on [React.js](https://reactjs.org), a JavaScript library for building user interfaces. This project was bootstrapped with [Create React App](https://github.com/facebookincubator/create-react-app).
+It embed several libraries, among them are:
 
 - [TypeScript](https://www.typescriptlang.org), a typed superset of JavaScript
 - [D3.js](https://d3js.org) and [Highcharts](https://www.highcharts.com), visualizations and interactive charts libraries
 - [Bootstrap](https://getbootstrap.com/), a frontend component library
 - [Unstated](https://github.com/jamiebuilds/unstated), a state library
 
-## Development
+Here is the setup to do frontend development in this project:
 
-This is a minimal setup to do frontend development in this project:
+### Backend
+- You will need to run a backend which will contains the API and the underlying logic of the analytic engine, Exareme.
+- Checkout the desired branch of the [mip-deployment](https://github.com/HBPMedical/mip-deployment) project.
+- Create a .env file in the folder filled with the following environment variables
+```
+PUBLIC_MIP_HOST=172.16.222.128
+KEYCLOAK_URL=172.16.222.128
+DATACATALOGUE_HOST=datacatalogue.mip.ebrains.eu
+DATACATALOGUE_PROTOCOL=https
+KEYCLOAK_AUTHENTICATION=0
+KEYCLOAK_CLIENT_ID=MIP
+KEYCLOAK_CLIENT_SECRET=
+KEYCLOAK_PROTOCOL=http
+KEYCLOAK_REALM=MIP
+KEYCLOAK_SSL_REQUIRED=none
+MIP_TYPE=local
+NODE_TYPE=
+PUBLIC_MIP_PROTOCOL=http
+EXTERNAL_MIP_PROTOCOL=http
+MIP_LINK=direct
 
-### Run the Backend
+EXAREME=24.1.2
+PORTALBACKEND=7.2.0
+FRONTEND=7.1.0
+GALAXY=1.3.4
+MIP=6.4.0
+```
+- You need to change the first two urls to your local IP
+- In the docker-compose.yml file, change the line `CONVERT_CSVS=FALSE`to `CONVERT_CSVS=TRUE`so the data gets processed into the analytic engine.
+- Launch the backend with docker-compose: `docker-compose up -d`
+- You can tweak the component version (EXAREME, PORTALBACKEND, GALAXY according to your needs)
 
-## Either with the MIP deployment package
 
-- Checkout the master branch of the [mip-deployment](https://github.com/HBPMedical/mip-deployment) project, and follow the setup instructions.
+### React Frontend setup
 
-## or by running the tests
+The previous backend setup comes with the current production version of the frontend. You can browse it at your local IP. In the current example http://172.16.222.128
 
-- `./run-test.sh`
+However, to be able to add features to it, let's fire a development version. I assume you cloned this repository and checked out the desired branch. You are most likely going to checkout the dev branch.
 
-### Frontend development with React
-
-This project was bootstrapped with [Create React App](https://github.com/facebookincubator/create-react-app).
-
-You can find the most recent version of the Create React App guide [here](https://github.com/facebookincubator/create-react-app/blob/master/packages/react-scripts/template/README.md).
-
-- Install [nodejs](https://nodejs.org)
-- Install [yarn](https://yarnpkg.com/en/)
+- Install the latest [nodejs](https://nodejs.org)
+- Install the latest [yarn](https://yarnpkg.com/en/)
 - Run: `yarn install`
+- Create a `.env` file in the root directory and add `REACT_APP_BACKEND_URL=http://172.16.222.128:8080` which points to the backend API. Change the IP to your machine's IP.
 - Run: `yarn watch`
-- Browse to [http://localhost:3000](http://localhost:3000)
+- Browse to your local IP. [http://172.16.222.128:3000](http://172.16.222.128:3000)
 
-## Tests
+### Tests
 
-### Local
+This will run integration tests on the backend API to ensure that the whole system is working properly. Results of the tests are showing up in the frontend. 
 
-You can generate models and experiments by running the tests:
+- `yarn test` or with a regex, `yarn test anova`
 
-- `./run-test.sh` or with a regex `./run-test.sh regex anova`
+- Tests run with Jest, see [the jest cli doc](https://jestjs.io/docs/en/cli) for more details
+- E2E tests are run with [TestProject](https://testproject.io/) on deployed versions
 
-Tests run with Jest, see [the jest cli doc](https://jestjs.io/docs/en/cli) for more details
+### Build 
+- Produces a docker container
+- Run: `./build.sh`
 
-### Turn on authentication
-
-- Change the AUTHENTICATION flag from 0 to 1 in test-docker/docker-compose.yml
-- You can administer Keycloack from this address [http://localhost:3000/auth](http://localhost:3000)
-
-## Build (produce a local docker container)
-
-Run: `./build.sh`
-
-## Publish on Docker Hub
-
-Run: `./publish.sh`
+## Publish
+- Builds and publish a release on Docker Hub
+- Run: `./publish.sh`
 
 ## License
 
-Copyright © 2016-2020 LREN CHUV
+Copyright © 2016-2021 LREN CHUV
 
 Licensed under the GNU Affero General Public License, Version 3.0 (the "License");
 you may not use this file except in compliance with the License.

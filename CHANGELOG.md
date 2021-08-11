@@ -1,5 +1,13 @@
 # Changelog
 
+## 7.1.0 - 2021/01/14
+
+- Moved web server from nginx to Caddy
+
+## 7.0.0 - 2021/01/14
+
+- Integration with new Backend API
+
 ## 6.4.12 - 2021/01/14
 
 - One-way Anova integration
