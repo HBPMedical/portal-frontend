@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { Button, Card, Accordion } from 'react-bootstrap';
+import { Button, Card } from 'react-bootstrap';
 import { RouteComponentProps } from 'react-router-dom';
 
 import { APICore, APIExperiment, APIMining, APIModel } from '../API';
@@ -12,9 +12,9 @@ import LargeDatasetSelect from '../UI/LargeDatasetSelect';
 import Model from '../UI/Model';
 import { Exareme } from '../API/Exareme';
 import Content from './Content';
-import Filter from './Filter';
 import ExperimentReviewHeader from './Header';
-
+import Sidebar from 'react-sidebar';
+import Options from './Options';
 interface Props extends RouteComponentProps {
   apiModel: APIModel;
   apiCore: APICore;
@@ -41,6 +41,7 @@ const Container = ({
   const queryfilters =
     apiModel.state.model && apiModel.state.model.query.filters;
   const [shouldReload, setShouldReload] = React.useState(true);
+  const [sidebarOpen, setSidebarOpen] = React.useState(false);
 
   React.useEffect(() => {
     const query = apiModel.state.model && apiModel.state.model.query;
@@ -204,6 +205,23 @@ const Container = ({
 
   return (
     <div className="Model Review">
+      <Sidebar
+        sidebar={
+          <Options
+            filters={filters}
+            fields={fields}
+            handleUpdateFilter={handleUpdateFilter}
+            query={query}
+            lookup={apiCore.lookup}
+          />
+        }
+        open={sidebarOpen}
+        onSetOpen={setSidebarOpen}
+        styles={{ sidebar: { background: 'white' } }}
+        pullRight
+      >
+        test
+      </Sidebar>
       <div className="header">
         <ExperimentReviewHeader
           handleGoBackToExplore={handleGoBackToExplore}
@@ -251,34 +269,9 @@ const Container = ({
             selectedDatasets={selectedDatasets}
             lookup={apiCore.lookup}
           >
-            <Accordion defaultActiveKey="0">
-              <Card className="filters">
-                <Card.Header>
-                  <Accordion.Toggle
-                    as={Button}
-                    variant="info"
-                    disabled={fields && fields.length === 0}
-                    eventKey="0"
-                    title={
-                      'Add filter variables on the previous screen in order to filter your data'
-                    }
-                  >
-                    Filters
-                  </Accordion.Toggle>
-                </Card.Header>
-                <Accordion.Collapse eventKey="0">
-                  <Card.Body>
-                    {fields && fields.length > 0 && (
-                      <Filter
-                        rules={filters}
-                        filters={fields}
-                        handleChangeFilter={handleUpdateFilter}
-                      />
-                    )}
-                  </Card.Body>
-                </Accordion.Collapse>
-              </Card>
-            </Accordion>
+            <Button variant="info" onClick={() => setSidebarOpen(true)}>
+              Options
+            </Button>
           </Content>
         </div>
       </div>

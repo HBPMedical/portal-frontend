@@ -3,6 +3,7 @@ import QueryBuilder from 'jQuery-QueryBuilder';
 import * as React from 'react';
 import { Button } from 'react-bootstrap';
 import './jquery-builder.css';
+import styled from 'styled-components';
 
 interface Props {
   rules: any;
@@ -15,6 +16,15 @@ interface State {
   rulesChanged: boolean;
 }
 
+const Wrapper = styled.div`
+  padding: 1em;
+  width: 800px;
+
+  .form-inline {
+    display: block !important;
+  }
+`;
+
 class Filter extends React.Component<Props, State> {
   state: State = { rulesChanged: false, loading: false };
   protected queryBuilder = QueryBuilder; // prevents ts-lint to complain about ununused inport
@@ -24,9 +34,9 @@ class Filter extends React.Component<Props, State> {
     const { filters, rules } = this.props;
 
     if (!rules) {
-      this.ref.queryBuilder({ filters });
+      this.ref?.queryBuilder({ filters });
     } else {
-      this.ref.queryBuilder({ filters, rules });
+      this.ref?.queryBuilder({ filters, rules });
     }
 
     this.onRulesChanged();
@@ -70,7 +80,7 @@ class Filter extends React.Component<Props, State> {
   };
 
   componentWillUnmount = (): void => {
-    this.ref.queryBuilder('destroy');
+    this.ref?.queryBuilder('destroy');
   };
 
   handleSave = (): void => {
@@ -84,18 +94,27 @@ class Filter extends React.Component<Props, State> {
 
   render = (): JSX.Element => {
     return (
-      <div>
-        <div id="query-builder" ref={this.createRef} />
-        <div className={'save-filter'}>
-          <Button
-            variant={'primary'}
-            onClick={this.handleSave}
-            disabled={!this.state.rulesChanged}
-          >
-            {this.state.loading ? 'Saving...' : 'Save'}
-          </Button>
-        </div>
-      </div>
+      <Wrapper>
+        <h4>Filters</h4>
+        <p>
+          Add filter variables on the Variables page in order to filter your
+          data
+        </p>
+        {this.props.filters && this.props.filters.length > 0 && (
+          <>
+            <div id="query-builder" ref={this.createRef} />
+            <div className={'save-filter'}>
+              <Button
+                variant={'primary'}
+                onClick={this.handleSave}
+                disabled={!this.state.rulesChanged}
+              >
+                {this.state.loading ? 'Saving...' : 'Save'}
+              </Button>
+            </div>
+          </>
+        )}
+      </Wrapper>
     );
   };
 
@@ -106,7 +125,7 @@ class Filter extends React.Component<Props, State> {
   };
 
   private onRulesChanged = (): void => {
-    this.ref.queryBuilder('on', 'rulesChanged', () => {
+    this.ref?.queryBuilder('on', 'rulesChanged', () => {
       this.setState({ rulesChanged: true });
     });
     setTimeout(() => {
