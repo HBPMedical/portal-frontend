@@ -68,7 +68,7 @@ However, to be able to add features to it, let's fire a development version. I a
 - Install the latest [yarn](https://yarnpkg.com/en/)
 - Run: `yarn install`
 - Create a `.env` file in the root directory and add `REACT_APP_BACKEND_URL=http://172.16.222.128:8080` which points to the backend API. Change the IP to your machine's IP.
-- Run: `yarn watch`
+- Run: `yarn start`
 - Browse to your local IP. [http://172.16.222.128:3000](http://172.16.222.128:3000)
 
 ### Tests
