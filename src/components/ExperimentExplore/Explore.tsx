@@ -290,7 +290,7 @@ export default (props: ExploreProps): JSX.Element => {
                     ).length === selectedNode.leaves().length
                       ? '-'
                       : '+'}{' '}
-                    As covariable
+                    As covariate
                   </Button>
                 }
                 buttonFilter={

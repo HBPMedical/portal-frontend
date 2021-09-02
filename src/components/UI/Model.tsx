@@ -30,7 +30,7 @@ class Model extends React.Component<Props> {
             {((query.coVariables && query.coVariables.length > 0) ||
               (query.groupings && query.groupings.length > 0)) && (
               <section>
-                <h4>CoVariables</h4>
+                <h4>Covariates</h4>
                 {query.coVariables &&
                   query.coVariables.length > 0 &&
                   query.coVariables.map((v: any) => (
