@@ -27,7 +27,7 @@ Here is the setup to do frontend development in this project:
 
 ### Backend
 - You will need to run a backend which will contains the API and the underlying logic of the analytic engine, Exareme.
-- Checkout the desired branch of the [mip-deployment](https://github.com/HBPMedical/mip-deployment) project.
+- Checkout the desired branch (currently you'll probably want`fix/reversproxy`) of the [mip-deployment](https://github.com/HBPMedical/mip-deployment) project.
 - Create a .env file in the folder filled with the following environment variables
 ```
 PUBLIC_MIP_HOST=172.16.222.128
