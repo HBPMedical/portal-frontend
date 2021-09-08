@@ -47,6 +47,9 @@
 
 	# keycloak redirect on /services/ after login. In that case, redirect to /
 	redir /services/ / permanent
+  
+  # hotfix for whitelabel error after login
+  redir /services/error / temporary
 
 	handle_errors {
 		@4xx expression `{http.error.status_code} == 401 || {http.error.status_code} == 404`
