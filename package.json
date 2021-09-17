@@ -3,6 +3,7 @@
   "version": "7.1.0",
   "private": true,
   "dependencies": {
+    "@apollo/client": "^3.4.11",
     "@bugsnag/js": "^6.4.0",
     "@bugsnag/plugin-react": "^6.4.0",
     "@types/d3": "^5.7.2",
@@ -34,6 +35,7 @@
     "d3": "^5.15.0",
     "dayjs": "^1.9.6",
     "dotenv": "^8.1.0",
+    "graphql": "^15.5.3",
     "highcharts": "^8.1.0",
     "highcharts-react-official": "^3.0.0",
     "history": "^4.10.1",
@@ -74,7 +76,8 @@
     "ci-test": "react-scripts test --watchAll --forceExit  --silent",
     "eject": "react-scripts eject",
     "lint:fix": "eslint './src/**/*.{ts,tsx}' --fix",
-    "lint": "eslint './src/**/*.{ts,tsx}'"
+    "lint": "eslint './src/**/*.{ts,tsx}'",
+    "codegen": "graphql-codegen --config codegen.yml"
   },
   "husky": {
     "hooks": {
