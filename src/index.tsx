@@ -1,22 +1,18 @@
-import { ApolloClient, ApolloProvider, InMemoryCache } from '@apollo/client';
+import { ApolloProvider } from '@apollo/client';
 import bugsnag from '@bugsnag/js';
 import bugsnagReact from '@bugsnag/plugin-react';
 import 'bootstrap/dist/css/bootstrap.min.css';
 import 'bootstrap/dist/js/bootstrap.bundle.min';
 import * as React from 'react';
 import * as ReactDOM from 'react-dom';
+import { apolloClient } from './components/API/Core';
 import { default as AppContainer } from './components/App/Container';
 import './index.css';
 import { unregister } from './registerServiceWorker';
 
-const client = new ApolloClient({
-  uri: 'http://127.0.0.1:8081/graphql',
-  cache: new InMemoryCache()
-});
-
 const commonApp = (): JSX.Element => {
   return (
-    <ApolloProvider client={client}>
+    <ApolloProvider client={apolloClient}>
       <AppContainer />
     </ApolloProvider>
   );

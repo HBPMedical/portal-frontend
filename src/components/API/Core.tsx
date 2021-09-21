@@ -1,10 +1,11 @@
+import { ApolloClient, InMemoryCache } from '@apollo/client';
 import request from 'request-promise-native';
 import { Container } from 'unstated';
-
 import { backendURL } from '../API';
-import { FORBIDDEN_ACCESS_MESSAGE } from '../constants';
-
 import { Exareme } from '../API/Exareme';
+import { FORBIDDEN_ACCESS_MESSAGE } from '../constants';
+import { Domain, Group } from './generated/graphql';
+import { QUERY_DOMAINS } from './GraphQL/queries';
 
 export interface Variable {
   code: string;
@@ -16,6 +17,7 @@ export interface VariableEntity extends Variable {
   enumerations?: Variable[];
   group?: Variable[];
   info?: string;
+  isCategorical?: boolean;
 }
 
 interface Pathology {
@@ -135,6 +137,11 @@ export interface State {
   pathologiesHierarchies: PathologiesHierarchies;
 }
 
+export const apolloClient = new ApolloClient({
+  uri: 'http://127.0.0.1:8081/graphql',
+  cache: new InMemoryCache()
+});
+
 class Core extends Container<State> {
   state: State = {
     pathologiesVariables: {},
@@ -185,6 +192,9 @@ class Core extends Container<State> {
   };
 
   fetchPathologies = async (): Promise<void> => {
+    const test = await apolloClient.query({ query: QUERY_DOMAINS });
+    const domains: Domain[] = test.data.domains;
+
     try {
       const data = await request.get(
         `${this.backendURL}/pathologies`,
@@ -208,9 +218,56 @@ class Core extends Container<State> {
         });
       }
 
-      const pathologiesVariables = this.pathologiesVariables(json);
-      const pathologiesDatasets = this.pathologiesDatasets(json);
+      const pathologiesVariables: PathologiesVariables = {};
+      const pathologiesDatasets: PathologiesVariables = {};
       const pathologiesHierarchies = this.pathologiesHierarchies(json);
+
+      console.log('variables', pathologiesVariables);
+      console.log('datasets', pathologiesDatasets);
+      console.log('hierachies', pathologiesHierarchies);
+
+      // Variable interface should be see as an Entity interface
+
+      domains.forEach(domain => {
+        const vars: VariableEntity[] = domain.variables.map(variable => {
+          return {
+            code: variable.id,
+            description: variable.description?.toString(),
+            isCategorical:
+              variable.enumerations && variable.enumerations.length !== 0,
+            enumerations: variable.enumerations.map(cat => {
+              return {
+                code: cat.id,
+                label: cat.label
+              };
+            })
+          };
+        });
+
+        const datasets = domain.datasets.map(
+          (dataset): Variable => {
+            return {
+              code: dataset.id,
+              label: dataset.label
+            };
+          }
+        );
+
+        const lookupGroups: { [key: string]: Group } = {};
+
+        domain.groups.forEach(group => {
+          if (!lookupGroups[group.id]) {
+            lookupGroups[group.id] = group;
+          }
+        });
+
+        //TODO hierarchies
+
+        pathologiesVariables[domain.id] = vars;
+        pathologiesDatasets[domain.id] = datasets;
+      });
+
+      console.log('new build', pathologiesVariables);
 
       return await this.setState({
         error: undefined,
