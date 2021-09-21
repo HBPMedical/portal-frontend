@@ -1,14 +1,10 @@
 import { gql } from '@apollo/client';
 import * as Apollo from '@apollo/client';
 export type Maybe<T> = T | null;
-export type Exact<T extends { [key: string]: unknown }> = {
-  [K in keyof T]: T[K];
-};
-export type MakeOptional<T, K extends keyof T> = Omit<T, K> &
-  { [SubKey in K]?: Maybe<T[SubKey]> };
-export type MakeMaybe<T, K extends keyof T> = Omit<T, K> &
-  { [SubKey in K]: Maybe<T[SubKey]> };
-const defaultOptions = {};
+export type Exact<T extends { [key: string]: unknown }> = { [K in keyof T]: T[K] };
+export type MakeOptional<T, K extends keyof T> = Omit<T, K> & { [SubKey in K]?: Maybe<T[SubKey]> };
+export type MakeMaybe<T, K extends keyof T> = Omit<T, K> & { [SubKey in K]: Maybe<T[SubKey]> };
+const defaultOptions = {}
 /** All built-in and custom scalars, mapped to their actual values */
 export type Scalars = {
   ID: string;
@@ -31,6 +27,7 @@ export type Domain = {
   groups: Array<Group>;
   id: Scalars['String'];
   label: Scalars['String'];
+  level: Scalars['Int'];
   variables: Array<Variable>;
 };
 
@@ -40,6 +37,7 @@ export type Group = {
   groups: Array<Group>;
   id: Scalars['String'];
   label: Scalars['String'];
+  level: Scalars['Int'];
   variables: Array<Variable>;
 };
 
@@ -47,6 +45,7 @@ export type Query = {
   __typename?: 'Query';
   domains: Array<Domain>;
 };
+
 
 export type QueryDomainsArgs = {
   ids?: Maybe<Array<Scalars['String']>>;
@@ -62,73 +61,47 @@ export type Variable = {
   type: Scalars['String'];
 };
 
-export type ListDomainsQueryVariables = Exact<{ [key: string]: never }>;
+export type ListDomainsQueryVariables = Exact<{ [key: string]: never; }>;
 
-export type ListDomainsQuery = {
-  __typename?: 'Query';
-  domains: Array<{
-    __typename?: 'Domain';
-    id: string;
-    label: string;
-    description?: Maybe<string>;
-    datasets: Array<{ __typename?: 'Category'; id: string; label: string }>;
-    variables: Array<{
-      __typename?: 'Variable';
-      id: string;
-      label?: Maybe<string>;
-      type: string;
-      description?: Maybe<string>;
-      enumerations: Array<{
-        __typename?: 'Category';
-        id: string;
-        label: string;
-      }>;
-    }>;
-    groups: Array<{
-      __typename?: 'Group';
-      id: string;
-      label: string;
-      description?: Maybe<string>;
-      groups: Array<{ __typename?: 'Group'; id: string }>;
-      variables: Array<{ __typename?: 'Variable'; id: string }>;
-    }>;
-  }>;
-};
+
+export type ListDomainsQuery = { __typename?: 'Query', domains: Array<{ __typename?: 'Domain', id: string, label: string, description?: Maybe<string>, datasets: Array<{ __typename?: 'Category', id: string, label: string }>, variables: Array<{ __typename?: 'Variable', id: string, label?: Maybe<string>, type: string, description?: Maybe<string>, enumerations: Array<{ __typename?: 'Category', id: string, label: string }> }>, groups: Array<{ __typename?: 'Group', id: string, label: string, level: number, description?: Maybe<string>, groups: Array<{ __typename?: 'Group', id: string }>, variables: Array<{ __typename?: 'Variable', id: string }> }> }> };
+
 
 export const ListDomainsDocument = gql`
-  query listDomains {
-    domains {
+    query listDomains {
+  domains {
+    id
+    label
+    description
+    datasets {
       id
       label
+    }
+    variables {
+      id
+      label
+      type
       description
-      datasets {
+      enumerations {
         id
         label
+      }
+    }
+    groups {
+      id
+      label
+      level
+      description
+      groups {
+        id
       }
       variables {
         id
-        label
-        type
-        description
-        enumerations {
-          id
-          label
-        }
-      }
-      groups {
-        id
-        label
-        description
-        groups {
-          id
-        }
-        variables {
-          id
-        }
       }
     }
   }
-`;
+}
+    `;
 
 /**
  * __useListDomainsQuery__
@@ -145,35 +118,14 @@ export const ListDomainsDocument = gql`
  *   },
  * });
  */
-export function useListDomainsQuery(
-  baseOptions?: Apollo.QueryHookOptions<
-    ListDomainsQuery,
-    ListDomainsQueryVariables
-  >
-) {
-  const options = { ...defaultOptions, ...baseOptions };
-  return Apollo.useQuery<ListDomainsQuery, ListDomainsQueryVariables>(
-    ListDomainsDocument,
-    options
-  );
+export function useListDomainsQuery(baseOptions?: Apollo.QueryHookOptions<ListDomainsQuery, ListDomainsQueryVariables>) {
+  const options = { ...defaultOptions, ...baseOptions }
+  return Apollo.useQuery<ListDomainsQuery, ListDomainsQueryVariables>(ListDomainsDocument, options);
 }
-export function useListDomainsLazyQuery(
-  baseOptions?: Apollo.LazyQueryHookOptions<
-    ListDomainsQuery,
-    ListDomainsQueryVariables
-  >
-) {
-  const options = { ...defaultOptions, ...baseOptions };
-  return Apollo.useLazyQuery<ListDomainsQuery, ListDomainsQueryVariables>(
-    ListDomainsDocument,
-    options
-  );
+export function useListDomainsLazyQuery(baseOptions?: Apollo.LazyQueryHookOptions<ListDomainsQuery, ListDomainsQueryVariables>) {
+  const options = { ...defaultOptions, ...baseOptions }
+  return Apollo.useLazyQuery<ListDomainsQuery, ListDomainsQueryVariables>(ListDomainsDocument, options);
 }
 export type ListDomainsQueryHookResult = ReturnType<typeof useListDomainsQuery>;
-export type ListDomainsLazyQueryHookResult = ReturnType<
-  typeof useListDomainsLazyQuery
->;
-export type ListDomainsQueryResult = Apollo.QueryResult<
-  ListDomainsQuery,
-  ListDomainsQueryVariables
->;
+export type ListDomainsLazyQueryHookResult = ReturnType<typeof useListDomainsLazyQuery>;
+export type ListDomainsQueryResult = Apollo.QueryResult<ListDomainsQuery, ListDomainsQueryVariables>;

@@ -23,6 +23,7 @@ export const QUERY_DOMAINS = gql`
       groups {
         id
         label
+        level
         description
         groups {
           id
