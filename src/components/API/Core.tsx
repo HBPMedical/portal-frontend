@@ -196,10 +196,10 @@ class Core extends Container<State> {
   };
 
   fetchPathologies = async (): Promise<void> => {
-    const query = await apolloClient.query({ query: QUERY_DOMAINS });
-    const domains: Domain[] = query.data.domains;
-
     try {
+      const query = await apolloClient.query({ query: QUERY_DOMAINS });
+      const domains: Domain[] = query.data.domains;
+
       const data = await request.get(
         `${this.backendURL}/pathologies`,
         this.options
@@ -226,14 +226,12 @@ class Core extends Container<State> {
       const pathologiesDatasets: PathologiesVariables = {};
       const pathologiesHierarchies: PathologiesHierarchies = {};
 
-      console.log('variables', pathologiesVariables);
-      console.log('datasets', pathologiesDatasets);
-      console.log('hierachies', pathologiesHierarchies);
-
-      // Variable interface should be see as an Entity interface
+      // Variable interface should be seen as an Entity interface
 
       domains.forEach(domain => {
-        const vars: VariableEntity[] = domain.variables.map(this.dataToVariable);
+        const vars: VariableEntity[] = domain.variables.map(
+          this.dataToVariable
+        );
 
         const datasets = domain.datasets.map(
           (dataset): Variable => {
@@ -252,19 +250,16 @@ class Core extends Container<State> {
           }
         });
 
-        const rootGroup = domain.groups.find(group => group.level === 1);
-        // root group cannot be null!
-
-        const groups: Hierarchy = this.dataToHierarchy(rootGroup!, vars, lookupGroups)
-
-        console.log("groups", groups);
+        const groups: Hierarchy = this.dataToHierarchy(
+          domain.rootGroup,
+          vars,
+          lookupGroups
+        );
 
         pathologiesVariables[domain.id] = vars;
         pathologiesDatasets[domain.id] = datasets;
         pathologiesHierarchies[domain.id] = groups;
       });
-
-      console.log('new build', pathologiesVariables);
 
       return await this.setState({
         error: undefined,
@@ -273,40 +268,52 @@ class Core extends Container<State> {
         pathologiesDatasets,
         pathologiesHierarchies
       });
-     } catch (error) {
-       return await this.setState({
-         pathologyError: FORBIDDEN_ACCESS_MESSAGE
-       });
-     }
+    } catch (error) {
+      return await this.setState({
+        pathologyError: FORBIDDEN_ACCESS_MESSAGE
+      });
+    }
   };
 
   private dataToVariable = (variable: VariableData): VariableEntity => {
-    const enums = variable.enumerations ? variable.enumerations.map(cat => {
-      return {
-        code: cat.id,
-        label: cat.label
-      };
-    }) : [];
-
-    if (enums.length > 0)
-      console.log("test");
+    const enums = variable.enumerations
+      ? variable.enumerations.map(cat => {
+          return {
+            code: cat.id,
+            label: cat.label
+          };
+        })
+      : [];
 
     return {
       code: variable.id,
-      description: variable.description?? "",
+      label: variable.label ?? '',
+      description: variable.description ?? '',
       isCategorical: enums.length !== 0,
       enumerations: enums
     };
-  }
+  };
 
-  private dataToHierarchy = (group: Group, lookupVars: VariableEntity[], lookupGroup: Dictionary<Group>): Hierarchy => {
+  private dataToHierarchy = (
+    group: Group,
+    lookupVars: VariableEntity[],
+    lookupGroup: Dictionary<Group>
+  ): Hierarchy => {
     return {
       code: group.id,
       label: group.label,
-      variables: group.variables ? group.variables.map(variable => lookupVars.find(item => item.code === variable.id)).filter(item => !!item) as VariableEntity[] : [], //can be optimize by doing a lookup table
-      groups: group.groups ? group.groups.map(it => this.dataToHierarchy(lookupGroup[it.id], lookupVars, lookupGroup)) : []
-    }
-  }
+      variables: group.variables
+        ? (group.variables
+            .map(variable => lookupVars.find(item => item.code === variable.id))
+            .filter(item => !!item) as VariableEntity[])
+        : [], //can be optimize by doing a lookup table
+      groups: group.groups
+        ? group.groups.map(it =>
+            this.dataToHierarchy(lookupGroup[it.id], lookupVars, lookupGroup)
+          )
+        : []
+    };
+  };
 
   algorithms = async (all = false): Promise<void> => {
     const exaremeAlgorithms = await this.fetchAlgorithms(all);

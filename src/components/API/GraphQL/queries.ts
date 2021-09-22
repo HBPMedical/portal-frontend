@@ -20,10 +20,20 @@ export const QUERY_DOMAINS = gql`
           label
         }
       }
+      rootGroup {
+        id
+        label
+        description
+        groups {
+          id
+        }
+        variables {
+          id
+        }
+      }
       groups {
         id
         label
-        level
         description
         groups {
           id
