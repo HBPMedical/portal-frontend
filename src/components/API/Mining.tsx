@@ -7,8 +7,41 @@ import { VariableDatum } from '../ExperimentExplore/d3Hierarchy';
 import { Algorithm, AlgorithmParameterRequest, VariableEntity } from './Core';
 import { IExperiment } from './Experiment';
 
+export interface NumericalData {
+  [key: string]: number;
+}
+
+export interface CategoricalData {
+  [key: string]: {
+    count: number;
+    percentage: number;
+  };
+}
 export interface MiningResponse {
-  data?: any;
+  data: {
+    single: {
+      [variable: string]: {
+        [dataset: string]: {
+          data: NumericalData | CategoricalData;
+          num_datapoints: number;
+          num_total: number;
+          num_nulls: number;
+        };
+      };
+    };
+    model: {
+      [dataset: string]: {
+        data: {
+          [variable: string]: {
+            [key: string]: number;
+          };
+        };
+        num_datapoints: number;
+        num_total: number;
+        num_nulls: number;
+      };
+    };
+  };
   type?: string;
   error?: string;
   loading?: boolean;
@@ -32,7 +65,7 @@ export interface HistogramVariable {
 export interface MiningState {
   error?: string;
   summaryStatistics?: MiningResponse[];
-  histograms?: MiningResponse;
+  histograms?: any;
   refetchAlgorithms?: number;
 }
 

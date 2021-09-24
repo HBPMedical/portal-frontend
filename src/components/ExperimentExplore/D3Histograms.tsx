@@ -15,7 +15,7 @@ import renderLifeCycle from './renderLifeCycle';
 interface Props {
   apiMining: APIMining;
   handleSelectedNode: (node: HierarchyCircularNode) => void;
-  histograms: MiningResponse;
+  histograms: any;
   selectedNode?: HierarchyCircularNode;
   independantsVariables: VariableEntity[] | undefined;
   zoom: Function;
