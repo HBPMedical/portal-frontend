@@ -11,7 +11,7 @@ import styled from 'styled-components';
 
 import { round } from '../utils';
 
-const StyledTable = styled.table`
+const DataTable = styled.table`
   margin-bottom: 32px;
   table-layout: fixed;
   white-space: nowrap;
@@ -23,6 +23,11 @@ const StyledTable = styled.table`
 
   tr {
     height: 24px;
+  }
+
+  tr:nth-child(even) {
+    background: #ebebeb;
+    padding: 8px;
   }
 
   th {
@@ -59,6 +64,18 @@ const Title = styled.h5`
   margin-bottom: 8px;
 `;
 
+export interface ITable {
+  profile: 'tabular-data-resource';
+  name: string;
+  data: (string | number)[][];
+  schema: {
+    fields: {
+      type: string;
+      name: string;
+    }[];
+  };
+}
+
 interface Props {
   summaryStatistics?: MiningResponse[];
   selectedDatasets?: Variable[];
@@ -66,7 +83,7 @@ interface Props {
   lookup: (code: string, pathologyCode: string | undefined) => VariableEntity;
 }
 
-const getRound = (value: number): string => round(value, 2);
+// const getRound = (value: number): string => round(value, 2);
 
 const Table = ({
   summaryStatistics,
@@ -74,63 +91,49 @@ const Table = ({
   query,
   lookup
 }: Props): JSX.Element => {
-  const single =
-    (summaryStatistics &&
-      summaryStatistics.length > 0 &&
-      summaryStatistics[0].data['single']) ||
-    null;
-  const singleVarKeys = single && Object.keys(single);
-
-  const tables = singleVarKeys?.map((varKey: string) => {
-    const varData = (single && single[varKey]) || {};
-    const datasetKeys = Object.keys(varData);
-    const dataKeys = Array.from(
-      new Set(
-        datasetKeys
-          .map(k => Object.keys(varData[k].data))
-          .reduce((p, c) => [...p, ...c])
-      )
-    );
-
-    return {
-      level1: [
-        varKey,
-        ...datasetKeys.map(datasetKey => varData[datasetKey].num_total)
-      ],
-      level2: [
-        [
-          'Datapoints',
-          ...datasetKeys.map(
-            datasetKey => `${varData[datasetKey].num_datapoints}`
-          )
-        ],
-        [
-          'Nulls',
-          ...datasetKeys.map(datasetKey => `${varData[datasetKey].num_nulls}`)
-        ]
-      ],
-      level3: [
-        ...dataKeys.map(key => [
-          key,
-          ...datasetKeys.map(datasetKey => {
-            if (!(varData[datasetKey]?.data as CategoricalData)[key]) {
-              return 0;
-            }
-
-            return (varData[datasetKey].data as CategoricalData)[key].count
-              ? `${(varData[datasetKey].data as CategoricalData)[key].count}`
-              : `${varData[datasetKey].data[key]}`;
-          })
-        ])
-      ]
-    };
-  });
-
   const error =
     summaryStatistics &&
     summaryStatistics.find(
       r => r.type && ERRORS_OUTPUT.includes(r.type as MIME_TYPES)
     );
+
+  const schema = {
+    fields: [
+      {
+        type: 'string',
+        name: ''
+      },
+      {
+        type: 'string',
+        name: 'DESD-synthdata'
+      },
+      {
+        type: 'string',
+        name: 'EDSD'
+      },
+      {
+        type: 'string',
+        name: 'PPMI'
+      }
+    ]
+  };
+
+  const table: ITable = {
+    profile: 'tabular-data-resource',
+    name: 'left-anterior-cingulate-gyrus',
+    data: [
+      ['Left anterior cingulate gyrus', 714, 474, 1000],
+      ['Datapoints', 714, 437, 920],
+      ['Nulls', 0, 37, 80],
+      ['std', 0.56, 0.696, 0.7897],
+      ['max', 6.71, 6.534, 6.534],
+      ['min', 3.16, 0.001, 0.001],
+      ['mean', 4.687, 4.45, 4.44]
+    ],
+    schema: schema
+  };
+
+  const tables = [table, table, table];
 
   return (
     <>
@@ -139,58 +142,35 @@ const Table = ({
         <Tabs defaultActiveKey={1} id="uncontrolled-mining-tab">
           <Tab eventKey={'1'} title="Variables">
             <p style={{ marginBottom: '8px' }}>
-              Descriptive statistics for the variables of interest. The layout
-              is mean, std, [min, max].
+              Descriptive statistics for the variables of interest.
             </p>
-            {tables?.map(data => (
-              <StyledTable>
-                <thead>
-                  <tr>
-                    {/* {header.map(value => (
-                      <th>{value}</th>
-                    ))} */}
-                  </tr>
-                </thead>
-                <tbody>
-                  <tr style={{ borderBottom: '2px grey solid ' }}>
-                    {data.level1.map((value, i) => (
-                      <td key={`level1-td-${i}`}>{value}</td>
+            <>
+              {tables.map(table => (
+                <DataTable key={`table-${table.name}`}>
+                  <thead>
+                    <tr>
+                      {table.schema.fields.map((field, i) => (
+                        <th key={`${table.name}-header-${i}`}>{field.name}</th>
+                      ))}
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {table.data.map((row, i) => (
+                      <tr key={`${table.name}-row-${i}`}>
+                        {row.map((data, j) => (
+                          <td key={`${table.name}-col-${i}-${j}`}>{data}</td>
+                        ))}
+                      </tr>
                     ))}
-                  </tr>
-                  {data.level2.map((row, i) => (
-                    <tr
-                      style={{
-                        borderBottom:
-                          i === data.level2.length - 1 ? '2px grey solid ' : '0'
-                      }}
-                      key={`level2-tr-${i}`}
-                    >
-                      {row.map((value, i) => (
-                        <td key={`level2-td-${i}`}>{value}</td>
-                      ))}
-                    </tr>
-                  ))}
-                  {data.level3.map((row, i) => (
-                    <tr
-                      style={{
-                        borderBottom:
-                          i === data.level3.length - 1 ? '2px grey solid ' : '0'
-                      }}
-                      key={`level3-tr--${i}`}
-                    >
-                      {row.map((value, i) => (
-                        <td key={`level3-td-${i}`}>{value}</td>
-                      ))}
-                    </tr>
-                  ))}
-                </tbody>
-              </StyledTable>
-            ))}
+                  </tbody>
+                </DataTable>
+              ))}
+            </>
           </Tab>
           <Tab eventKey={'2'} title="Model">
             <p style={{ marginBottom: '8px' }}>
               Intersection table for the variables of interest as it appears in
-              the experiment. The layout is mean, std, [min, max].
+              the experiment.
             </p>
             {/* <DataTable value={rows2}>{columns2}</DataTable> */}
           </Tab>
