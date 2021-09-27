@@ -71,6 +71,17 @@ However, to be able to add features to it, let's fire a development version. I a
 - Run: `yarn watch`
 - Browse to your local IP. [http://172.16.222.128:3000](http://172.16.222.128:3000)
 
+
+#### Design Components
+
+Starting with the MIP 6.5, component are designed with (Storybook)[https://storybook.js.org/],  an open source tool for building UI components and pages in isolation. 
+
+`yarn run storybook` -> http://localhost:6006/
+
+It follows the (Component Driven User Interfaces)[https://www.componentdriven.org/] process. 
+
+
+
 ### Tests
 
 This will run integration tests on the backend API to ensure that the whole system is working properly. Results of the tests are showing up in the frontend. 
