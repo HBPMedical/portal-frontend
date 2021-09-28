@@ -11,6 +11,7 @@ export interface Variable {
   code: string;
   label?: string;
 }
+
 export interface VariableEntity extends Variable {
   type?: 'nominal' | 'ordinal' | 'real' | 'integer' | 'text' | 'date';
   description?: string;
@@ -195,7 +196,7 @@ class Core extends Container<State> {
 
       const pathologies: Variable[] = domains.map(domain => ({
         code: domain.id,
-        label: domain.label
+        label: domain.label ?? ''
       }));
 
       if (pathologies && pathologies.length === 0) {
@@ -219,7 +220,7 @@ class Core extends Container<State> {
           (dataset): Variable => {
             return {
               code: dataset.id,
-              label: dataset.label
+              label: dataset.label ?? ''
             };
           }
         );
@@ -262,7 +263,7 @@ class Core extends Container<State> {
       ? variable.enumerations.map(cat => {
           return {
             code: cat.id,
-            label: cat.label
+            label: cat.label ?? ''
           };
         })
       : [];
@@ -283,7 +284,7 @@ class Core extends Container<State> {
   ): Hierarchy => {
     return {
       code: group.id,
-      label: group.label,
+      label: group.label ?? '',
       variables: group.variables
         ? (group.variables
             .map(variable => lookupVars.find(item => item.code === variable.id))

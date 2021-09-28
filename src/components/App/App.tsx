@@ -26,6 +26,7 @@ import NotFound from '../UI/NotFound';
 import TOS from '../UI/TOS';
 import Tutorial from '../UserGuide/Tutorial';
 import { Spinner } from 'react-bootstrap';
+import { useCreateTransientMutation } from '../API/generated/graphql';
 
 const Main = styled.main<MainProps>`
   margin: 0 auto;

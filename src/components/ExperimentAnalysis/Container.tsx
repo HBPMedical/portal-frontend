@@ -1,20 +1,21 @@
 import * as React from 'react';
 import { Button, Card } from 'react-bootstrap';
 import { RouteComponentProps } from 'react-router-dom';
-
+import Sidebar from 'react-sidebar';
 import { APICore, APIExperiment, APIMining, APIModel } from '../API';
 import { VariableEntity } from '../API/Core';
+import { Exareme } from '../API/Exareme';
 import { IExperiment } from '../API/Experiment';
+import { useCreateTransientMutation } from '../API/generated/graphql';
 import { MiningPayload } from '../API/Mining';
 import { IAlert } from '../UI/Alert';
 import DropdownParametersExperimentList from '../UI/DropdownParametersExperimentList';
 import LargeDatasetSelect from '../UI/LargeDatasetSelect';
 import Model from '../UI/Model';
-import { Exareme } from '../API/Exareme';
 import Content from './Content';
 import ExperimentReviewHeader from './Header';
-import Sidebar from 'react-sidebar';
 import Options from './Options';
+
 interface Props extends RouteComponentProps {
   apiModel: APIModel;
   apiCore: APICore;
@@ -43,6 +44,11 @@ const Container = ({
   const [shouldReload, setShouldReload] = React.useState(true);
   const [sidebarOpen, setSidebarOpen] = React.useState(false);
 
+  const [
+    createTransientMutation,
+    { data, loading, error }
+  ] = useCreateTransientMutation();
+
   React.useEffect(() => {
     const query = apiModel.state.model && apiModel.state.model.query;
     const datasets = query && query.trainingDatasets;
@@ -63,14 +69,28 @@ const Container = ({
         pathology: query.pathology ? query.pathology : ''
       };
 
-      apiMining.descriptiveStatistics({ payload });
+      //apiMining.descriptiveStatistics({ payload });
+
+      createTransientMutation({
+        variables: {
+          data: {
+            name: 'Descriptive analysis',
+            datasets: datasets.map(dataset => dataset.code),
+            variables: query.variables?.map(variable => variable.code) ?? [],
+            domain: query.pathology ?? '',
+            filter: query.filters,
+            algorithm: 'DESCRIPTIVE_STATS'
+          }
+        }
+      });
     }
   }, [
     apiModel.state.model,
     trainingDatasets,
     queryfilters,
     apiMining,
-    shouldReload
+    shouldReload,
+    createTransientMutation
   ]);
 
   const handleCreateExperiment = async (): Promise<void> => {
@@ -205,6 +225,7 @@ const Container = ({
 
   return (
     <div className="Model Review">
+      {console.log('test', data)}
       <Sidebar
         sidebar={
           <Options

@@ -16,12 +16,14 @@ export type Scalars = {
   Boolean: boolean;
   Int: number;
   Float: number;
+  /** A date-time string at UTC, such as 2019-12-03T09:54:33Z, compliant with the date-time format. */
+  DateTime: any;
 };
 
 export type Category = {
   __typename?: 'Category';
   id: Scalars['String'];
-  label: Scalars['String'];
+  label?: Maybe<Scalars['String']>;
 };
 
 export type Domain = {
@@ -30,9 +32,36 @@ export type Domain = {
   description?: Maybe<Scalars['String']>;
   groups: Array<Group>;
   id: Scalars['String'];
-  label: Scalars['String'];
+  label?: Maybe<Scalars['String']>;
   rootGroup: Group;
   variables: Array<Variable>;
+};
+
+export type DummyResult = {
+  __typename?: 'DummyResult';
+  data: Array<Array<Scalars['String']>>;
+  groupBy?: Maybe<Scalars['String']>;
+  listMax: Array<Scalars['String']>;
+  name: Scalars['String'];
+};
+
+export type Experiment = {
+  __typename?: 'Experiment';
+  created_at?: Maybe<Scalars['DateTime']>;
+  finished_at?: Maybe<Scalars['DateTime']>;
+  results: Array<ResultUnion>;
+  title: Scalars['String'];
+  update_at?: Maybe<Scalars['DateTime']>;
+  uuid?: Maybe<Scalars['String']>;
+};
+
+export type ExperimentCreateInput = {
+  algorithm: Scalars['String'];
+  datasets: Array<Scalars['String']>;
+  domain: Scalars['String'];
+  filter?: Maybe<Scalars['String']>;
+  name: Scalars['String'];
+  variables: Array<Scalars['String']>;
 };
 
 export type Group = {
@@ -40,8 +69,23 @@ export type Group = {
   description?: Maybe<Scalars['String']>;
   groups: Array<Group>;
   id: Scalars['String'];
-  label: Scalars['String'];
+  label?: Maybe<Scalars['String']>;
   variables: Array<Variable>;
+};
+
+export type MetaData = {
+  __typename?: 'MetaData';
+  name: Scalars['String'];
+  type: Scalars['String'];
+};
+
+export type Mutation = {
+  __typename?: 'Mutation';
+  createTransient: Experiment;
+};
+
+export type MutationCreateTransientArgs = {
+  data: ExperimentCreateInput;
 };
 
 export type Query = {
@@ -51,6 +95,16 @@ export type Query = {
 
 export type QueryDomainsArgs = {
   ids?: Maybe<Array<Scalars['String']>>;
+};
+
+export type ResultUnion = DummyResult | TableResult;
+
+export type TableResult = {
+  __typename?: 'TableResult';
+  data: Array<Array<Scalars['String']>>;
+  groupBy?: Maybe<Scalars['String']>;
+  metadatas: Array<MetaData>;
+  name: Scalars['String'];
 };
 
 export type Variable = {
@@ -70,9 +124,13 @@ export type ListDomainsQuery = {
   domains: Array<{
     __typename?: 'Domain';
     id: string;
-    label: string;
+    label?: Maybe<string>;
     description?: Maybe<string>;
-    datasets: Array<{ __typename?: 'Category'; id: string; label: string }>;
+    datasets: Array<{
+      __typename?: 'Category';
+      id: string;
+      label?: Maybe<string>;
+    }>;
     variables: Array<{
       __typename?: 'Variable';
       id: string;
@@ -82,13 +140,13 @@ export type ListDomainsQuery = {
       enumerations: Array<{
         __typename?: 'Category';
         id: string;
-        label: string;
+        label?: Maybe<string>;
       }>;
     }>;
     rootGroup: {
       __typename?: 'Group';
       id: string;
-      label: string;
+      label?: Maybe<string>;
       description?: Maybe<string>;
       groups: Array<{ __typename?: 'Group'; id: string }>;
       variables: Array<{ __typename?: 'Variable'; id: string }>;
@@ -96,12 +154,38 @@ export type ListDomainsQuery = {
     groups: Array<{
       __typename?: 'Group';
       id: string;
-      label: string;
+      label?: Maybe<string>;
       description?: Maybe<string>;
       groups: Array<{ __typename?: 'Group'; id: string }>;
       variables: Array<{ __typename?: 'Variable'; id: string }>;
     }>;
   }>;
+};
+
+export type CreateTransientMutationVariables = Exact<{
+  data: ExperimentCreateInput;
+}>;
+
+export type CreateTransientMutation = {
+  __typename?: 'Mutation';
+  createTransient: {
+    __typename?: 'Experiment';
+    title: string;
+    results: Array<
+      | { __typename?: 'DummyResult' }
+      | {
+          __typename?: 'TableResult';
+          groupBy?: Maybe<string>;
+          name: string;
+          data: Array<Array<string>>;
+          metadatas: Array<{
+            __typename?: 'MetaData';
+            name: string;
+            type: string;
+          }>;
+        }
+    >;
+  };
 };
 
 export const ListDomainsDocument = gql`
@@ -196,4 +280,66 @@ export type ListDomainsLazyQueryHookResult = ReturnType<
 export type ListDomainsQueryResult = Apollo.QueryResult<
   ListDomainsQuery,
   ListDomainsQueryVariables
+>;
+export const CreateTransientDocument = gql`
+  mutation CreateTransient($data: ExperimentCreateInput!) {
+    createTransient(data: $data) {
+      title
+      results {
+        ... on TableResult {
+          groupBy
+          name
+          data
+          metadatas {
+            name
+            type
+          }
+        }
+      }
+    }
+  }
+`;
+export type CreateTransientMutationFn = Apollo.MutationFunction<
+  CreateTransientMutation,
+  CreateTransientMutationVariables
+>;
+
+/**
+ * __useCreateTransientMutation__
+ *
+ * To run a mutation, you first call `useCreateTransientMutation` within a React component and pass it any options that fit your needs.
+ * When your component renders, `useCreateTransientMutation` returns a tuple that includes:
+ * - A mutate function that you can call at any time to execute the mutation
+ * - An object with fields that represent the current status of the mutation's execution
+ *
+ * @param baseOptions options that will be passed into the mutation, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options-2;
+ *
+ * @example
+ * const [createTransientMutation, { data, loading, error }] = useCreateTransientMutation({
+ *   variables: {
+ *      data: // value for 'data'
+ *   },
+ * });
+ */
+export function useCreateTransientMutation(
+  baseOptions?: Apollo.MutationHookOptions<
+    CreateTransientMutation,
+    CreateTransientMutationVariables
+  >
+) {
+  const options = { ...defaultOptions, ...baseOptions };
+  return Apollo.useMutation<
+    CreateTransientMutation,
+    CreateTransientMutationVariables
+  >(CreateTransientDocument, options);
+}
+export type CreateTransientMutationHookResult = ReturnType<
+  typeof useCreateTransientMutation
+>;
+export type CreateTransientMutationResult = Apollo.MutationResult<
+  CreateTransientMutation
+>;
+export type CreateTransientMutationOptions = Apollo.BaseMutationOptions<
+  CreateTransientMutation,
+  CreateTransientMutationVariables
 >;
