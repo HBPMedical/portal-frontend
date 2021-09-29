@@ -1,82 +1,73 @@
 import * as React from 'react';
-import { Button, Card } from 'react-bootstrap';
+import { Button, Card, Tab, Tabs } from 'react-bootstrap';
 import { RouteComponentProps } from 'react-router-dom';
 import Sidebar from 'react-sidebar';
-import { APICore, APIExperiment, APIMining, APIModel } from '../API';
+import { APICore, APIExperiment, APIModel } from '../API';
 import { VariableEntity } from '../API/Core';
-import { Exareme } from '../API/Exareme';
-import { IExperiment } from '../API/Experiment';
 import { useCreateTransientMutation } from '../API/generated/graphql';
-import { MiningPayload } from '../API/Mining';
-import { IAlert } from '../UI/Alert';
-import DropdownParametersExperimentList from '../UI/DropdownParametersExperimentList';
-import LargeDatasetSelect from '../UI/LargeDatasetSelect';
-import Model from '../UI/Model';
-import Content from './Content';
 import ExperimentReviewHeader from './Header';
 import Options from './Options';
+import { TableResult } from '../API/generated/graphql'
+import DataTable from '../UI/Visualization2/DataTable';
+import Loader from '../UI/Loader';
+import Error from '../UI/Error';
+import ExperimentSidebar from './ExperimentSidebar'
 
 interface Props extends RouteComponentProps {
   apiModel: APIModel;
   apiCore: APICore;
-  apiMining: APIMining;
   apiExperiment: APIExperiment;
-}
-interface State {
-  alert?: IAlert;
-  loadingSummary?: boolean;
-  summaryStatistics?: any;
 }
 
 const Container = ({
   apiModel,
   apiCore,
-  apiMining,
   apiExperiment,
   ...props
 }: Props): JSX.Element => {
-  const { history } = props;
-
-  const trainingDatasets =
-    apiModel.state.model && apiModel.state.model.query.trainingDatasets;
-  const queryfilters =
-    apiModel.state.model && apiModel.state.model.query.filters;
   const [shouldReload, setShouldReload] = React.useState(true);
   const [sidebarOpen, setSidebarOpen] = React.useState(false);
-
   const [
     createTransientMutation,
     { data, loading, error }
   ] = useCreateTransientMutation();
 
-  React.useEffect(() => {
-    const query = apiModel.state.model && apiModel.state.model.query;
-    const datasets = query && query.trainingDatasets;
+  const { history } = props;
+  const model = apiModel.state.model;
+  const trainingDatasets = model?.query.trainingDatasets;
+  const queryfilters = model?.query.filters;
+  const query = model?.query;
+  const pathology = query?.pathology || '';
+  const datasets = apiCore.state.pathologiesDatasets[pathology];
+  const selectedDatasets = query?.trainingDatasets?.map(d => ({
+    ...datasets?.find(v => v.code === d.code),
+    ...d
+  }));
+  const results = (data?.createTransient.results as TableResult[])
+  const singles = results?.filter(r => r.groupBy === 'single')
+  const models = results?.filter(r => r.groupBy === 'model')
 
+  React.useEffect(() => {
     if (!shouldReload) {
       return;
     }
 
-    apiMining.clear();
+    const query = apiModel?.state?.model?.query;
+    const datasets = query?.trainingDatasets;
 
     if (datasets && query) {
-      const payload: MiningPayload = {
-        covariables: query.coVariables ? query.coVariables : [],
-        datasets,
-        filters: query.filters ? query.filters : '',
-        grouping: query.groupings ? query.groupings : [],
-        variables: query.variables ? query.variables : [],
-        pathology: query.pathology ? query.pathology : ''
-      };
-
-      //apiMining.descriptiveStatistics({ payload });
+      const variables = [
+        ...query.variables?.map(variable => variable.code) ?? [],
+        ...query.coVariables?.map(variable => variable.code) ?? [],
+        ...query.groupings?.map(variable => variable.code) ?? []
+      ]
 
       createTransientMutation({
         variables: {
           data: {
             name: 'Descriptive analysis',
             datasets: datasets.map(dataset => dataset.code),
-            variables: query.variables?.map(variable => variable.code) ?? [],
+            variables,
             domain: query.pathology ?? '',
             filter: query.filters,
             algorithm: 'DESCRIPTIVE_STATS'
@@ -88,7 +79,6 @@ const Container = ({
     apiModel.state.model,
     trainingDatasets,
     queryfilters,
-    apiMining,
     shouldReload,
     createTransientMutation
   ]);
@@ -96,7 +86,6 @@ const Container = ({
   const handleCreateExperiment = async (): Promise<void> => {
     const model = apiModel.state.model;
     if (model) {
-      apiMining.abortMiningRequests();
       history.push(`/experiment`);
     }
   };
@@ -214,18 +203,10 @@ const Container = ({
   };
 
   const { fields, filters } = makeFilters({ apiCore, apiModel });
-  const model = apiModel.state.model;
-  const query = model?.query;
-  const pathology = query?.pathology || '';
-  const datasets = apiCore.state.pathologiesDatasets[pathology];
-  const selectedDatasets = model?.query?.trainingDatasets?.map(d => ({
-    ...datasets?.find(v => v.code === d.code),
-    ...d
-  }));
+
 
   return (
     <div className="Model Review">
-      {console.log('test', data)}
       <Sidebar
         sidebar={
           <Options
@@ -251,52 +232,62 @@ const Container = ({
       </div>
       <div className="content">
         <div className="sidebar">
-          <Card className="datasets">
+          <ExperimentSidebar apiExperiment={apiExperiment}
+            apiModel={apiModel}
+            apiCore={apiCore}
+            model={model}
+            datasets={datasets}
+          />
+        </div>
+        <div className="results">
+          <Card>
             <Card.Body>
-              <section>
-                <DropdownParametersExperimentList
-                  apiExperiment={apiExperiment}
-                  handleSelectExperiment={(experiment?: IExperiment): void => {
-                    apiExperiment.setExperiment(experiment);
-                    Exareme.handleSelectExperimentToModel(apiModel, experiment);
-                  }}
-                />
-              </section>
-              {query?.pathology && (
-                <section>
-                  <h4>Pathology</h4>
-                  <p>{query?.pathology}</p>
-                </section>
-              )}
-              {query?.trainingDatasets && (
-                <section>
-                  <LargeDatasetSelect
-                    datasets={datasets}
-                    handleSelectDataset={apiModel.selectDataset}
-                    selectedDatasets={query?.trainingDatasets || []}
-                  ></LargeDatasetSelect>
-                </section>
-              )}
-              <section>
-                <Model model={model} lookup={apiCore.lookup} />
-              </section>
+              <Button variant="info" onClick={() => setSidebarOpen(true)}>
+                Filters &amp; Formula
+              </Button>
+              <Card>
+                <Card.Body>
+                  <Tabs defaultActiveKey={1} id="uncontrolled-mining-tab">
+                    <Tab eventKey={'1'} title="Variables">
+                      <p style={{ marginBottom: '8px' }}>
+                        Descriptive statistics for the variables of interest.
+                      </p>
+                      {loading && <Loader />}
+                      {error && <Error message={error.message} />}
+                      <>
+                        {(!selectedDatasets || selectedDatasets.length === 0) && (
+                          <p>Select some data to analyse</p>
+                        )}
+                        {singles?.map((single, i) => (
+                          <DataTable
+                            key={`single-${i}`}
+                            data={single}
+                            layout="statistics"
+                          />
+                        ))}
+                      </>
+                    </Tab>
+                    <Tab eventKey={'2'} title="Model">
+                      <p style={{ marginBottom: '8px' }}>
+                        Intersection table for the variables of interest as it
+                        appears in the experiment.
+                      </p>
+                      {models?.map((model, i) => (
+                        <DataTable
+                          key={`model-${i}`}
+                          data={model}
+                          layout="statistics"
+                        />
+                      ))}
+                    </Tab>
+                  </Tabs>
+                </Card.Body>
+              </Card>
             </Card.Body>
           </Card>
         </div>
-        <div className="results">
-          <Content
-            apiMining={apiMining}
-            model={model}
-            selectedDatasets={selectedDatasets}
-            lookup={apiCore.lookup}
-          >
-            <Button variant="info" onClick={() => setSidebarOpen(true)}>
-              Options
-            </Button>
-          </Content>
-        </div>
       </div>
-    </div>
+    </div >
   );
 };
 

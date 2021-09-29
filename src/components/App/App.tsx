@@ -182,7 +182,6 @@ const App = ({
                   // tslint:disable-next-line jsx-no-lambda
                   render={(props): JSX.Element => (
                     <ExperimentReview
-                      apiMining={apiMining}
                       apiModel={apiModel}
                       apiCore={apiCore}
                       apiExperiment={apiExperiment}

@@ -1,29 +1,21 @@
 import * as React from 'react';
 import styled from 'styled-components';
+import { TableResult } from '../../API/generated/graphql'
 
-export interface ITable {
-  profile: 'tabular-data-resource';
-  name: string;
-  data: (string | number)[][];
-  schema: {
-    fields: {
-      type: string;
-      name: string;
-    }[];
-  };
-}
+
+type Layout = 'default' | 'statistics'
 
 interface TableProps {
-  table: ITable;
-  layout?: 'default' | 'statistics';
+  data: TableResult;
+  layout?: Layout;
 }
 
 interface LayoutProps {
-  layout: 'default' | 'statistics';
+  layout: Layout;
   colsCount: number;
 }
 
-const DataTable = styled.table<LayoutProps>`
+const Table = styled.table<LayoutProps>`
   font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
   margin-bottom: 32px;
   table-layout: fixed;
@@ -85,29 +77,29 @@ const DataTable = styled.table<LayoutProps>`
   }
 `;
 
-const Table = ({ table, layout = 'default' }: TableProps): JSX.Element => (
-  <DataTable
+const DataTable = ({ data, layout = 'default' }: TableProps): JSX.Element => (
+  <Table
     layout={layout}
-    colsCount={table.schema.fields.length}
-    key={`table-${table.name}`}
+    colsCount={data.metadatas.length}
+    key={`table-${data.name}`}
   >
     <thead>
       <tr>
-        {table.schema.fields.map((field, i) => (
-          <th key={`${table.name}-header-${i}`}>{field.name}</th>
+        {data.metadatas.map((m, i) => (
+          <th key={`${data.name}-header-${i}`}>{m.name}</th>
         ))}
       </tr>
     </thead>
     <tbody>
-      {table.data.map((row, i) => (
-        <tr key={`${table.name}-row-${i}`}>
-          {row.map((data, j) => (
-            <td key={`${table.name}-col-${i}-${j}`}>{data}</td>
+      {data.data.map((row, i) => (
+        <tr key={`${data.name}-row-${i}`}>
+          {row.map((value, j) => (
+            <td key={`${data.name}-col-${i}-${j}`}>{value}</td>
           ))}
         </tr>
       ))}
     </tbody>
-  </DataTable>
+  </Table>
 );
 
-export default Table;
+export default DataTable;
