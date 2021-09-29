@@ -170,7 +170,7 @@ export default ({ layout, ...props }: Props): JSX.Element => {
           ].includes(d)
       )
       .style('fill', (d: any) =>
-        d.children ? colorCallback(d.depth) : 'white'
+        d.children ? (colorCallback(d.depth) ?? 'white') : 'white'
       );
 
     if (selectedNode && selectedNode !== layout) {
@@ -246,7 +246,7 @@ export default ({ layout, ...props }: Props): JSX.Element => {
       .data(layout.descendants())
       .join('circle')
       .attr('class', 'node')
-      .attr('fill', d => (d.children ? colorCallback(d.depth) : 'white'))
+      .attr('fill', d => (d.children ? colorCallback(d.depth) ?? 'white' : 'white'))
       .on('click', d => {
         selectNodeCallback(d);
         d3.event.stopPropagation();

@@ -110,7 +110,9 @@ const AdHocVariable = ({
         >
           <option>{variableDefault}</option>
           {variables?.map(v => (
-            <option value={v.code}>{v.label}</option>
+            <option key={`ad-hoc-${v.code}`} value={v.code}>
+              {v.label}
+            </option>
           ))}
         </Form.Control>
       </Form.Group>
@@ -134,7 +136,9 @@ const AdHocVariable = ({
               ? 'nominal'
               : 'real'
           ]?.map(f => (
-            <option value={f}>{f}</option>
+            <option key={`transform-${f}`} value={f}>
+              {f}
+            </option>
           ))}
         </Form.Control>
       </Form.Group>
@@ -168,7 +172,9 @@ const AdHocVariable = ({
         >
           <option>{variableDefault}</option>
           {variables?.map(v => (
-            <option value={v.code}>{v.label}</option>
+            <option key={`interact1-${v.code}`} value={v.code}>
+              {v.label}
+            </option>
           ))}
         </Form.Control>
       </Form.Group>
@@ -187,7 +193,9 @@ const AdHocVariable = ({
         >
           <option>{variableDefault}</option>
           {variables?.map(v => (
-            <option value={v.code}>{v.label}</option>
+            <option key={`interact2-${v.code}`} value={v.code}>
+              {v.label}
+            </option>
           ))}
         </Form.Control>
       </Form.Group>
