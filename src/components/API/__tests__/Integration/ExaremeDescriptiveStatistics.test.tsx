@@ -1,84 +1,117 @@
-import { mount } from 'enzyme';
-import * as React from 'react';
+import { mount } from 'enzyme'
+import * as React from 'react'
+import { MockedProvider } from '@apollo/client/testing'
+import { Experiment, ExperimentCreateInput } from '../../generated/graphql'
+import Result2 from '../../../ExperimentResult/Result2'
 
-import Result from '../../../ExperimentResult/Result';
-import {
-  ExperimentParameter,
-  IExperimentPrototype,
-  IExperiment
-} from '../../Experiment';
-import {
-  createExperiment,
-  TEST_PATHOLOGIES,
-  waitForResult
-} from '../../UtiltyTests';
+import { TEST_PATHOLOGIES } from '../../UtiltyTests'
+
+// const [
+//   createTransientMutation,
+//   { data, loading, error }
+// ] = useCreateTransientMutation();
 
 // config
 
-const modelSlug = `statistics-${Math.round(Math.random() * 10000)}`;
-const algorithmId = 'DESCRIPTIVE_STATS';
+const modelSlug = `statistics-${Math.round(Math.random() * 10000)}`
+const algorithmId = 'DESCRIPTIVE_STATS'
 
-const parameters: ExperimentParameter[] = [
-  {
-    name: 'y', // variable
-    value:
-      'leftententorhinalarea,lefthippocampus,righthippocampus,rightpcggposteriorcingulategyrus,leftpcggposteriorcingulategyrus,rightacgganteriorcingulategyrus,leftacgganteriorcingulategyrus,rightmcggmiddlecingulategyrus,leftmcggmiddlecingulategyrus,rightphgparahippocampalgyrus,leftphgparahippocampalgyrus,rightententorhinalarea,rightthalamusproper,leftthalamusproper'
-  },
-  {
-    name: 'pathology',
-    value: TEST_PATHOLOGIES.dementia.code
-  },
-  {
-    name: 'dataset',
-    value: TEST_PATHOLOGIES.dementia.datasets
-      .filter(d => d.code !== 'fake_longitudinal')
-      .map(d => d.code)
-      .toString()
-  }
-];
+const input: ExperimentCreateInput = {
+  name: 'Descriptive analysis',
+  datasets: TEST_PATHOLOGIES.dementia.datasets
+    .filter((d) => d.code !== 'fake_longitudinal')
+    .map((d) => d.code),
+  variables: [
+    'lefthippocampus',
+    'alzheimerbroadcategory'
+  ],
+  domain: TEST_PATHOLOGIES.dementia.code,
+  filter: 'query.filters',
+  algorithm: 'DESCRIPTIVE_STATS',
+}
 
-const experiment: IExperimentPrototype = {
-  algorithm: {
-    name: algorithmId,
-    parameters,
-    type: 'string'
-  },
-  name: modelSlug
-};
+const experiment: Experiment = {
+  title: 'Descriptive analysis',
+  results: [
+    {
+      groupBy: 'single',
+      name: 'Left Hippocampus',
+      data: [
+        ['Left Hippocampus', '714', '474', '1000'],
+        ['Datapoints', '714', '437', '920'],
+        ['Nulls', '0', '37', '80'],
+        [
+          'std',
+          '0.2918412933538098',
+          '0.36386725810478093',
+          '0.3874377685743167',
+        ],
+        ['max', '4.1781', '4.4519', '4.4519'],
+        ['min', '2.37', '1.3047', '1.3047'],
+        [
+          'mean',
+          '3.2104421568627446',
+          '2.988286727688787',
+          '2.990389673913044',
+        ],
+      ],
+      metadatas: [
+        { name: 'ppmi', type: 'string', __typename: 'MetaData' },
+        { name: 'edsd', type: 'string', __typename: 'MetaData' },
+        { name: 'desd-synthdata', type: 'string', __typename: 'MetaData' },
+      ],
+      __typename: 'TableResult',
+    },
+    {
+      groupBy: 'single',
+      name: 'Alzheimer Broad Category',
+      data: [
+        ['Alzheimer Broad Category', '714', '474', '1000'],
+        ['Datapoints', '714', '368', '777'],
+        ['Nulls', '0', '106', '223'],
+        ['std', '', '', ''],
+        ['max', '', '', ''],
+        ['min', '', '', ''],
+        ['mean', '', '', ''],
+      ],
+      metadatas: [
+        { name: 'ppmi', type: 'string', __typename: 'MetaData' },
+        { name: 'edsd', type: 'string', __typename: 'MetaData' },
+        { name: 'desd-synthdata', type: 'string', __typename: 'MetaData' },
+      ],
+      __typename: 'TableResult',
+    },
+  ],
+  __typename: 'Experiment',
+}
+const loading = false
 
 // Test
 
 describe('Integration Test for experiment API', () => {
   it(`create ${algorithmId}`, async () => {
-    const { experiment: result } = await createExperiment({
-      experiment
-    });
+    //expect(loading).toBeTruthy();
 
-    expect(result).toBeTruthy();
-    expect(result.status).toStrictEqual('pending');
+    // await createTransientMutation({
+    //   variables: { data: input }
+    // });
 
-    const uuid = (result as IExperiment)?.uuid;
-    expect(uuid).toBeTruthy();
+    //expect(error).toBeFalsy();
 
-    if (!uuid) {
-      throw new Error('uuid not defined');
-    }
+    // const results = data?.createTransient.results as TableResult[];
+    // const singles = results?.filter(r => r.groupBy === 'single');
+    // const models = results?.filter(r => r.groupBy === 'model');
 
-    const experimentState = await waitForResult({ uuid });
-    expect(experimentState.experiment.status).toStrictEqual('success');
-    expect(experimentState.experiment).toBeTruthy();
+    // expect(singles).toBeTruthy();
 
-    const props = { experimentState };
-
-    const r0 = experimentState?.experiment?.result;
+    const wrapper = mount(<Result2 experiment={experiment} loading={loading} />)
+    expect(wrapper.find('.result')).toHaveLength(2);
     expect(
-      r0![0].data?.single
-        .rightphgparahippocampalgyrus.ppmi.num_datapoints
-    ).toEqual(714);
-
-    const wrapper = mount(<Result {...props} />);
-    expect(wrapper.find('.error')).toHaveLength(0);
-    expect(wrapper.find('.loading')).toHaveLength(0);
-    expect(wrapper.find('.result')).toHaveLength(1);
-  });
-});
+      wrapper
+        .find('.result table tbody tr td')
+        .at(2)
+        .text()
+    ).toEqual('474');
+    // console.log(wrapper.debug())
+  })
+})
