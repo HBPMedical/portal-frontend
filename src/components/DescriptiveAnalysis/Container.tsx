@@ -4,10 +4,12 @@ import { RouteComponentProps } from 'react-router-dom';
 import Sidebar from 'react-sidebar';
 import { APICore, APIExperiment, APIModel } from '../API';
 import { VariableEntity } from '../API/Core';
-import { useCreateTransientMutation } from '../API/generated/graphql';
+import {
+  useCreateTransientMutation,
+  TableResult
+} from '../API/generated/graphql';
 import Header from './Header';
 import Options from './Options';
-import { TableResult } from '../API/generated/graphql';
 import DataTable from '../UI/Visualization2/DataTable';
 import Loader from '../UI/Loader';
 import Error from '../UI/Error';

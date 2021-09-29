@@ -15,7 +15,7 @@ interface LayoutProps {
 }
 
 const Table = styled.table<LayoutProps>`
-  font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
+  font-family: sans-serif;
   margin-bottom: 32px;
   table-layout: fixed;
   white-space: nowrap;
