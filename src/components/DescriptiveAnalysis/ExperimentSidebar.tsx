@@ -7,7 +7,7 @@ import { Exareme } from '../API/Exareme';
 import Model from '../UI/Model';
 import { IExperiment } from '../API/Experiment';
 import { VariableEntity } from '../API/Core';
-import { ModelResponse } from '../API/Model'
+import { ModelResponse } from '../API/Model';
 
 interface Props {
   apiModel: APIModel;
@@ -23,7 +23,7 @@ const ExperimentSidebar = ({
   apiCore,
   model,
   datasets
-}: Props) =>
+}: Props) => (
   <Card className="datasets">
     <Card.Body>
       <section>
@@ -55,5 +55,6 @@ const ExperimentSidebar = ({
       </section>
     </Card.Body>
   </Card>
+);
 
-export default ExperimentSidebar
+export default ExperimentSidebar;

@@ -5,13 +5,13 @@ import Sidebar from 'react-sidebar';
 import { APICore, APIExperiment, APIModel } from '../API';
 import { VariableEntity } from '../API/Core';
 import { useCreateTransientMutation } from '../API/generated/graphql';
-import ExperimentReviewHeader from './Header';
+import Header from './Header';
 import Options from './Options';
-import { TableResult } from '../API/generated/graphql'
+import { TableResult } from '../API/generated/graphql';
 import DataTable from '../UI/Visualization2/DataTable';
 import Loader from '../UI/Loader';
 import Error from '../UI/Error';
-import ExperimentSidebar from './ExperimentSidebar'
+import ExperimentSidebar from './ExperimentSidebar';
 
 interface Props extends RouteComponentProps {
   apiModel: APIModel;
@@ -43,9 +43,9 @@ const Container = ({
     ...datasets?.find(v => v.code === d.code),
     ...d
   }));
-  const results = (data?.createTransient.results as TableResult[])
-  const singles = results?.filter(r => r.groupBy === 'single')
-  const models = results?.filter(r => r.groupBy === 'model')
+  const results = data?.createTransient.results as TableResult[];
+  const singles = results?.filter(r => r.groupBy === 'single');
+  const models = results?.filter(r => r.groupBy === 'model');
 
   React.useEffect(() => {
     if (!shouldReload) {
@@ -57,10 +57,10 @@ const Container = ({
 
     if (datasets && query) {
       const variables = [
-        ...query.variables?.map(variable => variable.code) ?? [],
-        ...query.coVariables?.map(variable => variable.code) ?? [],
-        ...query.groupings?.map(variable => variable.code) ?? []
-      ]
+        ...(query.variables?.map(variable => variable.code) ?? []),
+        ...(query.coVariables?.map(variable => variable.code) ?? []),
+        ...(query.groupings?.map(variable => variable.code) ?? [])
+      ];
 
       createTransientMutation({
         variables: {
@@ -80,7 +80,8 @@ const Container = ({
     trainingDatasets,
     queryfilters,
     shouldReload,
-    createTransientMutation
+    createTransientMutation,
+    apiModel
   ]);
 
   const handleCreateExperiment = async (): Promise<void> => {
@@ -204,7 +205,6 @@ const Container = ({
 
   const { fields, filters } = makeFilters({ apiCore, apiModel });
 
-
   return (
     <div className="Model Review">
       <Sidebar
@@ -225,14 +225,15 @@ const Container = ({
         test
       </Sidebar>
       <div className="header">
-        <ExperimentReviewHeader
+        <Header
           handleGoBackToExplore={handleGoBackToExplore}
           handleCreateExperiment={handleCreateExperiment}
         />
       </div>
       <div className="content">
         <div className="sidebar">
-          <ExperimentSidebar apiExperiment={apiExperiment}
+          <ExperimentSidebar
+            apiExperiment={apiExperiment}
             apiModel={apiModel}
             apiCore={apiCore}
             model={model}
@@ -255,7 +256,8 @@ const Container = ({
                       {loading && <Loader />}
                       {error && <Error message={error.message} />}
                       <>
-                        {(!selectedDatasets || selectedDatasets.length === 0) && (
+                        {(!selectedDatasets ||
+                          selectedDatasets.length === 0) && (
                           <p>Select some data to analyse</p>
                         )}
                         {singles?.map((single, i) => (
@@ -287,7 +289,7 @@ const Container = ({
           </Card>
         </div>
       </div>
-    </div >
+    </div>
   );
 };
 

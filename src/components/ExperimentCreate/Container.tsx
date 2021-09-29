@@ -168,7 +168,7 @@ class Container extends React.Component<Props, State> {
 
   private handleGoBackToReview = (): void => {
     const { history } = this.props;
-    history.push(`/review`);
+    history.push(`/analysis`);
   };
 
   private handleSaveAndRunExperiment = async (

@@ -10,7 +10,7 @@ import {
   backendURL
 } from '../API';
 import { ExperimentListQueryParameters, IExperiment } from '../API/Experiment';
-import ExperimentReview from '../ExperimentAnalysis/Container';
+import { DescriptiveAnalysis } from '../DescriptiveAnalysis';
 import ExperimentCreate from '../ExperimentCreate/Container';
 import Explore from '../ExperimentExplore/Container';
 import ExperimentResult from '../ExperimentResult/Container';
@@ -26,7 +26,6 @@ import NotFound from '../UI/NotFound';
 import TOS from '../UI/TOS';
 import Tutorial from '../UserGuide/Tutorial';
 import { Spinner } from 'react-bootstrap';
-import { useCreateTransientMutation } from '../API/generated/graphql';
 
 const Main = styled.main<MainProps>`
   margin: 0 auto;
@@ -178,10 +177,10 @@ const App = ({
                 />
 
                 <Route
-                  path="/review"
+                  path={['/review', '/analysis']}
                   // tslint:disable-next-line jsx-no-lambda
                   render={(props): JSX.Element => (
-                    <ExperimentReview
+                    <DescriptiveAnalysis
                       apiModel={apiModel}
                       apiCore={apiCore}
                       apiExperiment={apiExperiment}
