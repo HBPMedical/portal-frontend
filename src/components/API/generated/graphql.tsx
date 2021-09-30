@@ -73,8 +73,8 @@ export type Group = {
   variables: Array<Variable>;
 };
 
-export type MetaData = {
-  __typename?: 'MetaData';
+export type Header = {
+  __typename?: 'Header';
   name: Scalars['String'];
   type: Scalars['String'];
 };
@@ -103,7 +103,7 @@ export type TableResult = {
   __typename?: 'TableResult';
   data: Array<Array<Scalars['String']>>;
   groupBy?: Maybe<Scalars['String']>;
-  metadatas: Array<MetaData>;
+  headers: Array<Header>;
   name: Scalars['String'];
 };
 
@@ -178,8 +178,8 @@ export type CreateTransientMutation = {
           groupBy?: Maybe<string>;
           name: string;
           data: Array<Array<string>>;
-          metadatas: Array<{
-            __typename?: 'MetaData';
+          headers: Array<{
+            __typename?: 'Header';
             name: string;
             type: string;
           }>;
@@ -290,7 +290,7 @@ export const CreateTransientDocument = gql`
           groupBy
           name
           data
-          metadatas {
+          headers {
             name
             type
           }

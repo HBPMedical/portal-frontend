@@ -25,26 +25,26 @@ const data: TableResult = {
     ['mean', '11.38076218487395', '10.647539816933637', '10.685619565217392'],
     ['max', '', '14.593', '14.593']
   ],
-  metadatas: [
+  headers: [
     {
       name: '',
       type: 'string',
-      __typename: 'MetaData'
+      __typename: 'Header'
     },
     {
       name: 'ppmi',
       type: 'string',
-      __typename: 'MetaData'
+      __typename: 'Header'
     },
     {
       name: 'edsd',
       type: 'string',
-      __typename: 'MetaData'
+      __typename: 'Header'
     },
     {
       name: 'desd-synthdata',
       type: 'string',
-      __typename: 'MetaData'
+      __typename: 'Header'
     }
   ],
   __typename: 'TableResult'

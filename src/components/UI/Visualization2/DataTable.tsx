@@ -79,12 +79,12 @@ const Table = styled.table<LayoutProps>`
 const DataTable = ({ data, layout = 'default' }: TableProps): JSX.Element => (
   <Table
     layout={layout}
-    colsCount={data.metadatas.length}
+    colsCount={data.headers.length}
     key={`table-${data.name}`}
   >
     <thead>
       <tr>
-        {data.metadatas.map((m, i) => (
+        {data.headers.map((m, i) => (
           <th key={`${data.name}-header-${i}`}>{m.name}</th>
         ))}
       </tr>
