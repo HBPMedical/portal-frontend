@@ -1,19 +1,18 @@
 import { mount } from 'enzyme'
 import * as React from 'react'
-import { MockedProvider } from '@apollo/client/testing'
 import { Experiment, ExperimentCreateInput } from '../../generated/graphql'
 import Result2 from '../../../ExperimentResult/Result2'
-
+import { ApolloClient, InMemoryCache } from '@apollo/client';
 import { TEST_PATHOLOGIES } from '../../UtiltyTests'
+import { CreateTransientDocument } from '../../generated/graphql';
 
-// const [
-//   createTransientMutation,
-//   { data, loading, error }
-// ] = useCreateTransientMutation();
+const apolloClient = new ApolloClient({
+  uri: process.env.REACT_APP_GATEWAY_URL,
+  cache: new InMemoryCache()
+});
 
-// config
+console.log(process.env.REACT_APP_GATEWAY_URL)
 
-// const query = await apolloClient.query({ query: QUERY_DOMAINS });
 
 const modelSlug = `statistics-${Math.round(Math.random() * 10000)}`
 const algorithmId = 'DESCRIPTIVE_STATS'
@@ -57,10 +56,10 @@ const experiment: Experiment = {
           '2.990389673913044',
         ],
       ],
-      metadatas: [
-        { name: 'ppmi', type: 'string', __typename: 'MetaData' },
-        { name: 'edsd', type: 'string', __typename: 'MetaData' },
-        { name: 'desd-synthdata', type: 'string', __typename: 'MetaData' },
+      headers: [
+        { name: 'ppmi', type: 'string', __typename: 'Header' },
+        { name: 'edsd', type: 'string', __typename: 'Header' },
+        { name: 'desd-synthdata', type: 'string', __typename: 'Header' },
       ],
       __typename: 'TableResult',
     },
@@ -76,17 +75,17 @@ const experiment: Experiment = {
         ['min', '', '', ''],
         ['mean', '', '', ''],
       ],
-      metadatas: [
-        { name: 'ppmi', type: 'string', __typename: 'MetaData' },
-        { name: 'edsd', type: 'string', __typename: 'MetaData' },
-        { name: 'desd-synthdata', type: 'string', __typename: 'MetaData' },
+      headers: [
+        { name: 'ppmi', type: 'string', __typename: 'Header' },
+        { name: 'edsd', type: 'string', __typename: 'Header' },
+        { name: 'desd-synthdata', type: 'string', __typename: 'Header' },
       ],
       __typename: 'TableResult',
     },
   ],
   __typename: 'Experiment',
 }
-const loading = false
+const loading = true
 
 // Test
 
@@ -94,9 +93,10 @@ describe('Integration Test for experiment API', () => {
   it(`create ${algorithmId}`, async () => {
     //expect(loading).toBeTruthy();
 
-    // await createTransientMutation({
-    //   variables: { data: input }
-    // });
+    const mutation =  await apolloClient.mutate({
+      variables: input,
+      mutation: CreateTransientDocument
+    });
 
     //expect(error).toBeFalsy();
 
