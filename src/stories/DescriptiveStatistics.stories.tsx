@@ -1,57 +1,75 @@
 import React from 'react';
 import { ComponentStory, ComponentMeta } from '@storybook/react';
 
-import DataTable from '../components/UI/Visualization2/DataTable';
+import DescriptiveStatistics from '../components/UI/Visualization2/DescriptiveStatistics';
 import { TableResult } from '../components/API/generated/graphql';
+
+import 'bootstrap/dist/css/bootstrap.min.css';
+import 'bootstrap/dist/js/bootstrap.bundle.min';
 
 export default {
   title: 'Algorithms/DescriptiveStatistics',
-  component: DataTable
-} as ComponentMeta<typeof DataTable>;
+  component: DescriptiveStatistics
+} as ComponentMeta<typeof DescriptiveStatistics>;
 
-const Template: ComponentStory<typeof DataTable> = args => (
-  <DataTable {...args} />
+const Template: ComponentStory<typeof DescriptiveStatistics> = args => (
+  <DescriptiveStatistics {...args} />
 );
 
-const data: TableResult = {
-  groupBy: 'single',
-  name: 'Left inferior temporal gyrus',
-  data: [
-    ['Left inferior temporal gyrus', '714', '474', '1000'],
-    ['datapoints', '714', '437', '920'],
-    ['nulls', '0', '37', '80'],
-    ['std', '1.2048783713787277', '1.3274694970555183', '1.3479276642860987'],
-    ['min', '7.6335', '5.4301', '5.4301'],
-    ['mean', '11.38076218487395', '10.647539816933637', '10.685619565217392'],
-    ['max', '', '14.593', '14.593']
-  ],
-  metadatas: [
-    {
-      name: '',
-      type: 'string',
-      __typename: 'MetaData'
-    },
-    {
-      name: 'ppmi',
-      type: 'string',
-      __typename: 'MetaData'
-    },
-    {
-      name: 'edsd',
-      type: 'string',
-      __typename: 'MetaData'
-    },
-    {
-      name: 'desd-synthdata',
-      type: 'string',
-      __typename: 'MetaData'
-    }
-  ],
-  __typename: 'TableResult'
-};
+const results: TableResult[] = [
+  {
+    groupBy: 'single',
+    name: 'lefthippocampus',
+    data: [
+      ['lefthippocampus', ''],
+      ['Datapoints', '292'],
+      ['Nulls', ''],
+      ['std', '0.3625820873508056'],
+      ['min', '2.0491'],
+      ['max', '4.4519'],
+      ['lower_confidence', '2.6112668852519345'],
+      ['mean', '2.97384897260274'],
+      ['upper_confidence', '3.3364310599535454']
+    ],
+    headers: [
+      {
+        name: '',
+        type: 'string',
+        __typename: 'Header'
+      },
+      {
+        name: 'edsd',
+        type: 'string',
+        __typename: 'Header'
+      }
+    ],
+    __typename: 'TableResult'
+  },
+  {
+    groupBy: 'single',
+    name: 'alzheimerbroadcategory',
+    data: [
+      ['alzheimerbroadcategory', ''],
+      ['Datapoints', '292'],
+      ['Nulls', ''],
+      ['AD', '141'],
+      ['CN', '151']
+    ],
+    headers: [
+      {
+        name: '',
+        type: 'string',
+        __typename: 'Header'
+      },
+      {
+        name: 'edsd',
+        type: 'string',
+        __typename: 'Header'
+      }
+    ],
+    __typename: 'TableResult'
+  }
+];
 
 export const Default = Template.bind({});
-Default.args = { data, layout: 'default' };
-
-export const Statistics = Template.bind({});
-Statistics.args = { data, layout: 'statistics' };
+Default.args = { results, loading: false, error: undefined };

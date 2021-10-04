@@ -1,5 +1,4 @@
 import * as React from 'react';
-import { Button, Card, Tab, Tabs } from 'react-bootstrap';
 import { RouteComponentProps } from 'react-router-dom';
 import Sidebar from 'react-sidebar';
 import { APICore, APIExperiment, APIModel } from '../API';
@@ -12,6 +11,7 @@ import Header from './Header';
 import Options from './Options';
 import ExperimentSidebar from './ExperimentSidebar';
 import DescriptiveStatistics from '../UI/Visualization2/DescriptiveStatistics';
+import { Button, Card } from 'react-bootstrap';
 
 interface Props extends RouteComponentProps {
   apiModel: APIModel;
@@ -204,49 +204,62 @@ const Container = ({
   const { fields, filters } = makeFilters({ apiCore, apiModel });
 
   return (
-    <div className="Model Review">
-      <Sidebar
-        sidebar={
-          <Options
-            filters={filters}
-            fields={fields}
-            handleUpdateFilter={handleUpdateFilter}
-            query={query}
-            lookup={apiCore.lookup}
-          />
-        }
-        open={sidebarOpen}
-        onSetOpen={setSidebarOpen}
-        styles={{ sidebar: { background: 'white' } }}
-        pullRight
-      >
-        test
-      </Sidebar>
-      <div className="header">
-        <Header
-          handleGoBackToExplore={handleGoBackToExplore}
-          handleCreateExperiment={handleCreateExperiment}
-        />
+    <>
+      <div>
+        <Sidebar
+          sidebar={
+            <Options
+              filters={filters}
+              fields={fields}
+              handleUpdateFilter={handleUpdateFilter}
+              query={query}
+              lookup={apiCore.lookup}
+            />
+          }
+          open={sidebarOpen}
+          onSetOpen={setSidebarOpen}
+          styles={{ sidebar: { background: 'white' } }}
+          pullRight
+        >
+          test
+        </Sidebar>
       </div>
-      <div className="content">
-        <div className="sidebar">
-          <ExperimentSidebar
-            apiExperiment={apiExperiment}
-            apiModel={apiModel}
-            apiCore={apiCore}
-            model={model}
-            datasets={datasets}
+      <div className="Model Review">
+        <div className="header">
+          <Header
+            handleGoBackToExplore={handleGoBackToExplore}
+            handleCreateExperiment={handleCreateExperiment}
           />
         </div>
-        <div className="results">
-          <DescriptiveStatistics
-            results={results}
-            error={error}
-            loading={loading}
-          />
+        <div className="content">
+          <div className="sidebar">
+            <ExperimentSidebar
+              apiExperiment={apiExperiment}
+              apiModel={apiModel}
+              apiCore={apiCore}
+              model={model}
+              datasets={datasets}
+            />
+          </div>
+          <div className="results">
+            <Card>
+              <Card.Header>
+                <Button variant="info" onClick={() => setSidebarOpen(true)}>
+                  Filters &amp; Formula
+                </Button>
+              </Card.Header>
+              <Card.Body>
+                <DescriptiveStatistics
+                  results={results}
+                  error={error}
+                  loading={loading}
+                />
+              </Card.Body>
+            </Card>
+          </div>
         </div>
       </div>
-    </div>
+    </>
   );
 };
 

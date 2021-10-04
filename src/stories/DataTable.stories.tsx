@@ -5,7 +5,7 @@ import DataTable from '../components/UI/Visualization2/DataTable';
 import { TableResult } from '../components/API/generated/graphql';
 
 export default {
-  title: 'Components/DataTable',
+  title: 'Charts/DataTable',
   component: DataTable
 } as ComponentMeta<typeof DataTable>;
 
