@@ -13,6 +13,8 @@ import { TEST_PATHOLOGIES } from '../../UtiltyTests'
 
 // config
 
+// const query = await apolloClient.query({ query: QUERY_DOMAINS });
+
 const modelSlug = `statistics-${Math.round(Math.random() * 10000)}`
 const algorithmId = 'DESCRIPTIVE_STATS'
 

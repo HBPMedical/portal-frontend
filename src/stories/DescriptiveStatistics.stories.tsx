@@ -5,7 +5,7 @@ import DataTable from '../components/UI/Visualization2/DataTable';
 import { TableResult } from '../components/API/generated/graphql';
 
 export default {
-  title: 'Components/DataTable',
+  title: 'Algorithms/DescriptiveStatistics',
   component: DataTable
 } as ComponentMeta<typeof DataTable>;
 
@@ -25,26 +25,26 @@ const data: TableResult = {
     ['mean', '11.38076218487395', '10.647539816933637', '10.685619565217392'],
     ['max', '', '14.593', '14.593']
   ],
-  headers: [
+  metadatas: [
     {
       name: '',
       type: 'string',
-      __typename: 'Header'
+      __typename: 'MetaData'
     },
     {
       name: 'ppmi',
       type: 'string',
-      __typename: 'Header'
+      __typename: 'MetaData'
     },
     {
       name: 'edsd',
       type: 'string',
-      __typename: 'Header'
+      __typename: 'MetaData'
     },
     {
       name: 'desd-synthdata',
       type: 'string',
-      __typename: 'Header'
+      __typename: 'MetaData'
     }
   ],
   __typename: 'TableResult'

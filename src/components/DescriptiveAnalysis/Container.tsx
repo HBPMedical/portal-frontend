@@ -10,10 +10,8 @@ import {
 } from '../API/generated/graphql';
 import Header from './Header';
 import Options from './Options';
-import DataTable from '../UI/Visualization2/DataTable';
-import Loader from '../UI/Loader';
-import Error from '../UI/Error';
 import ExperimentSidebar from './ExperimentSidebar';
+import DescriptiveStatistics from '../UI/Visualization2/DescriptiveStatistics';
 
 interface Props extends RouteComponentProps {
   apiModel: APIModel;
@@ -46,8 +44,6 @@ const Container = ({
     ...d
   }));
   const results = data?.createTransient.results as TableResult[];
-  const singles = results?.filter(r => r.groupBy === 'single');
-  const models = results?.filter(r => r.groupBy === 'model');
 
   React.useEffect(() => {
     if (!shouldReload) {
@@ -243,52 +239,11 @@ const Container = ({
           />
         </div>
         <div className="results">
-          <Card>
-            <Card.Body>
-              <Button variant="info" onClick={() => setSidebarOpen(true)}>
-                Filters &amp; Formula
-              </Button>
-              <Card>
-                <Card.Body>
-                  <Tabs defaultActiveKey={1} id="uncontrolled-mining-tab">
-                    <Tab eventKey={'1'} title="Variables">
-                      <p style={{ marginBottom: '8px' }}>
-                        Descriptive statistics for the variables of interest.
-                      </p>
-                      {loading && <Loader />}
-                      {error && <Error message={error.message} />}
-                      <>
-                        {(!selectedDatasets ||
-                          selectedDatasets.length === 0) && (
-                          <p>Select some data to analyse</p>
-                        )}
-                        {singles?.map((single, i) => (
-                          <DataTable
-                            key={`single-${i}`}
-                            data={single}
-                            layout="statistics"
-                          />
-                        ))}
-                      </>
-                    </Tab>
-                    <Tab eventKey={'2'} title="Model">
-                      <p style={{ marginBottom: '8px' }}>
-                        Intersection table for the variables of interest as it
-                        appears in the experiment.
-                      </p>
-                      {models?.map((model, i) => (
-                        <DataTable
-                          key={`model-${i}`}
-                          data={model}
-                          layout="statistics"
-                        />
-                      ))}
-                    </Tab>
-                  </Tabs>
-                </Card.Body>
-              </Card>
-            </Card.Body>
-          </Card>
+          <DescriptiveStatistics
+            results={results}
+            error={error}
+            loading={loading}
+          />
         </div>
       </div>
     </div>
