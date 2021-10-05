@@ -27,86 +27,23 @@ const input: ExperimentCreateInput = {
     'alzheimerbroadcategory'
   ],
   domain: TEST_PATHOLOGIES.dementia.code,
-  filter: 'query.filters',
+  filter: '',
   algorithm: 'DESCRIPTIVE_STATS',
 }
-
-const experiment: Experiment = {
-  title: 'Descriptive analysis',
-  results: [
-    {
-      groupBy: 'single',
-      name: 'Left Hippocampus',
-      data: [
-        ['Left Hippocampus', '714', '474', '1000'],
-        ['Datapoints', '714', '437', '920'],
-        ['Nulls', '0', '37', '80'],
-        [
-          'std',
-          '0.2918412933538098',
-          '0.36386725810478093',
-          '0.3874377685743167',
-        ],
-        ['max', '4.1781', '4.4519', '4.4519'],
-        ['min', '2.37', '1.3047', '1.3047'],
-        [
-          'mean',
-          '3.2104421568627446',
-          '2.988286727688787',
-          '2.990389673913044',
-        ],
-      ],
-      headers: [
-        { name: 'ppmi', type: 'string', __typename: 'Header' },
-        { name: 'edsd', type: 'string', __typename: 'Header' },
-        { name: 'desd-synthdata', type: 'string', __typename: 'Header' },
-      ],
-      __typename: 'TableResult',
-    },
-    {
-      groupBy: 'single',
-      name: 'Alzheimer Broad Category',
-      data: [
-        ['Alzheimer Broad Category', '714', '474', '1000'],
-        ['Datapoints', '714', '368', '777'],
-        ['Nulls', '0', '106', '223'],
-        ['std', '', '', ''],
-        ['max', '', '', ''],
-        ['min', '', '', ''],
-        ['mean', '', '', ''],
-      ],
-      headers: [
-        { name: 'ppmi', type: 'string', __typename: 'Header' },
-        { name: 'edsd', type: 'string', __typename: 'Header' },
-        { name: 'desd-synthdata', type: 'string', __typename: 'Header' },
-      ],
-      __typename: 'TableResult',
-    },
-  ],
-  __typename: 'Experiment',
-}
-const loading = true
 
 // Test
 
 describe('Integration Test for experiment API', () => {
   it(`create ${algorithmId}`, async () => {
-    //expect(loading).toBeTruthy();
 
-    const mutation =  await apolloClient.mutate({
-      variables: input,
+    const { data: { createTransient: experiment } } = await apolloClient.mutate({
+      variables: { data: { ...input } },
       mutation: CreateTransientDocument
     });
 
-    //expect(error).toBeFalsy();
+    expect(experiment).toBeTruthy();
 
-    // const results = data?.createTransient.results as TableResult[];
-    // const singles = results?.filter(r => r.groupBy === 'single');
-    // const models = results?.filter(r => r.groupBy === 'model');
-
-    // expect(singles).toBeTruthy();
-
-    const wrapper = mount(<Result2 experiment={experiment} loading={loading} />)
+    const wrapper = mount(<Result2 experiment={experiment} loading={false} />)
     expect(wrapper.find('.result')).toHaveLength(2);
     expect(
       wrapper

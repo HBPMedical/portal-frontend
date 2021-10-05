@@ -20,7 +20,7 @@ const DescriptiveStatistics = ({
   const models = results?.filter(r => r.groupBy === 'model');
 
   return (
-    <Card>
+    <Card className="result">
       <Card.Body>
         <Tabs defaultActiveKey={1} id="uncontrolled-mining-tab">
           <Tab eventKey={'1'} title="Variables">

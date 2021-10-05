@@ -1,11 +1,10 @@
 import * as React from 'react';
 import { Card, ProgressBar } from 'react-bootstrap';
 import styled, { keyframes } from 'styled-components';
-
 import ResultsErrorBoundary from '../UI/ResultsErrorBoundary';
-import RenderResult2 from './RenderResult2';
-import { Experiment } from '../API/generated/graphql';
+import { Experiment, TableResult } from '../API/generated/graphql';
 import { ApolloError } from '@apollo/client';
+import DescriptiveStatistics from '../UI/Visualization2/DescriptiveStatistics';
 
 const Body = styled(Card.Body)`
   min-height: 20vh;
@@ -73,7 +72,11 @@ export default ({
           </div>
         ) : null}
         <ResultsErrorBoundary>
-          <RenderResult2 results={experiment?.results} />
+          <DescriptiveStatistics
+            results={experiment?.results as TableResult[]}
+            error={error}
+            loading={loading}
+          />
         </ResultsErrorBoundary>
       </Body>
     </Card>
