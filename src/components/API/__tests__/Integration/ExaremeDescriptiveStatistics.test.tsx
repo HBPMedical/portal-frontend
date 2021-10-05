@@ -11,14 +11,11 @@ const apolloClient = new ApolloClient({
   cache: new InMemoryCache()
 });
 
-console.log(process.env.REACT_APP_GATEWAY_URL)
-
-
 const modelSlug = `statistics-${Math.round(Math.random() * 10000)}`
 const algorithmId = 'DESCRIPTIVE_STATS'
 
 const input: ExperimentCreateInput = {
-  name: 'Descriptive analysis',
+  name: 'Descriptive Statistics',
   datasets: TEST_PATHOLOGIES.dementia.datasets
     .filter((d) => d.code !== 'fake_longitudinal')
     .map((d) => d.code),
@@ -28,7 +25,7 @@ const input: ExperimentCreateInput = {
   ],
   domain: TEST_PATHOLOGIES.dementia.code,
   filter: '',
-  algorithm: 'DESCRIPTIVE_STATS',
+  algorithm: algorithmId,
 }
 
 // Test

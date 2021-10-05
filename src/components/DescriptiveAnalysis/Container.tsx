@@ -253,7 +253,7 @@ const Container = ({
                 </Button>
               </Card.Header>
               <Card.Body>
-                <DescriptiveStatistics
+                <GroupTable
                   results={results}
                   error={error}
                   loading={loading}
