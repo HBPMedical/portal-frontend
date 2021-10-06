@@ -1,9 +1,9 @@
+import { ApolloError } from '@apollo/client';
 import * as React from 'react';
 import { Card, ProgressBar } from 'react-bootstrap';
 import styled, { keyframes } from 'styled-components';
+import { Experiment, GroupsResult } from '../API/generated/graphql';
 import ResultsErrorBoundary from '../UI/ResultsErrorBoundary';
-import { Experiment, TableResult } from '../API/generated/graphql';
-import { ApolloError } from '@apollo/client';
 import DescriptiveStatistics from '../UI/Visualization2/DescriptiveStatistics';
 
 const Body = styled(Card.Body)`
@@ -57,7 +57,7 @@ export default ({
     <Card>
       <Body>
         <h4>
-          <strong>{experiment?.title}</strong>
+          <strong>{experiment?.name}</strong>
         </h4>
         {loading ? (
           <div className="loading">
@@ -73,7 +73,7 @@ export default ({
         ) : null}
         <ResultsErrorBoundary>
           <DescriptiveStatistics
-            results={experiment?.results as TableResult[]}
+            results={experiment?.results as GroupsResult[]}
             error={error}
             loading={loading}
           />

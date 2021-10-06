@@ -14,7 +14,6 @@ const Template: ComponentStory<typeof DataTable> = args => (
 );
 
 const data: TableResult = {
-  groupBy: 'single',
   name: 'Left inferior temporal gyrus',
   data: [
     ['Left inferior temporal gyrus', '714', '474', '1000'],

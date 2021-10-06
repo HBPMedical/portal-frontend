@@ -1,17 +1,17 @@
 import * as React from 'react';
+import { Button, Card } from 'react-bootstrap';
 import { RouteComponentProps } from 'react-router-dom';
 import Sidebar from 'react-sidebar';
 import { APICore, APIExperiment, APIModel } from '../API';
 import { VariableEntity } from '../API/Core';
 import {
-  useCreateTransientMutation,
-  TableResult
+  GroupsResult,
+  useCreateTransientMutation
 } from '../API/generated/graphql';
+import DescriptiveStatistics from '../UI/Visualization2/DescriptiveStatistics';
+import ExperimentSidebar from './ExperimentSidebar';
 import Header from './Header';
 import Options from './Options';
-import ExperimentSidebar from './ExperimentSidebar';
-import DescriptiveStatistics from '../UI/Visualization2/DescriptiveStatistics';
-import { Button, Card } from 'react-bootstrap';
 
 interface Props extends RouteComponentProps {
   apiModel: APIModel;
@@ -43,7 +43,8 @@ const Container = ({
     ...datasets?.find(v => v.code === d.code),
     ...d
   }));
-  const results = data?.createTransient.results as TableResult[];
+  console.log(data, loading, error);
+  const results = data?.createExperiment.results as GroupsResult[];
 
   React.useEffect(() => {
     if (!shouldReload) {
@@ -68,7 +69,10 @@ const Container = ({
             variables,
             domain: query.pathology ?? '',
             filter: query.filters,
-            algorithm: 'DESCRIPTIVE_STATS'
+            algorithm: {
+              name: 'DESCRIPTIVE_STATS',
+              type: 'string'
+            }
           }
         }
       });

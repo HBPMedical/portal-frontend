@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/camelcase */
 import { gql } from '@apollo/client';
 import * as Apollo from '@apollo/client';
 export type Maybe<T> = T | null;
@@ -16,8 +17,32 @@ export type Scalars = {
   Boolean: boolean;
   Int: number;
   Float: number;
-  /** A date-time string at UTC, such as 2019-12-03T09:54:33Z, compliant with the date-time format. */
-  DateTime: any;
+  /** The `JSONObject` scalar type represents JSON objects as specified by [ECMA-404](http://www.ecma-international.org/publications/files/ECMA-ST/ECMA-404.pdf). */
+  JSONObject: any;
+};
+
+export type Algorithm = {
+  __typename?: 'Algorithm';
+  name: Scalars['String'];
+  parameters?: Maybe<Array<AlgorithmParameter>>;
+  type: Scalars['String'];
+};
+
+export type AlgorithmInput = {
+  name: Scalars['String'];
+  parameters?: Maybe<Array<AlgorithmParamInput>>;
+  type: Scalars['String'];
+};
+
+export type AlgorithmParamInput = {
+  name: Scalars['String'];
+  value: Array<Scalars['String']>;
+};
+
+export type AlgorithmParameter = {
+  __typename?: 'AlgorithmParameter';
+  name: Scalars['String'];
+  value: Array<Scalars['String']>;
 };
 
 export type Category = {
@@ -37,31 +62,37 @@ export type Domain = {
   variables: Array<Variable>;
 };
 
-export type DummyResult = {
-  __typename?: 'DummyResult';
-  data: Array<Array<Scalars['String']>>;
-  groupBy?: Maybe<Scalars['String']>;
-  listMax: Array<Scalars['String']>;
-  name: Scalars['String'];
-};
-
 export type Experiment = {
   __typename?: 'Experiment';
-  created_at?: Maybe<Scalars['DateTime']>;
-  finished_at?: Maybe<Scalars['DateTime']>;
-  results: Array<ResultUnion>;
-  title: Scalars['String'];
-  update_at?: Maybe<Scalars['DateTime']>;
+  algorithm: Algorithm;
+  author?: Maybe<Scalars['String']>;
+  createdAt?: Maybe<Scalars['Float']>;
+  datasets: Array<Scalars['String']>;
+  domain: Scalars['String'];
+  filter?: Maybe<Scalars['String']>;
+  finishedAt?: Maybe<Scalars['Float']>;
+  name: Scalars['String'];
+  results?: Maybe<Array<ResultUnion>>;
+  shared: Scalars['Boolean'];
+  status?: Maybe<Scalars['String']>;
+  updateAt?: Maybe<Scalars['Float']>;
   uuid?: Maybe<Scalars['String']>;
+  variables: Array<Scalars['String']>;
+  viewed?: Maybe<Scalars['Boolean']>;
 };
 
 export type ExperimentCreateInput = {
-  algorithm: Scalars['String'];
+  algorithm: AlgorithmInput;
   datasets: Array<Scalars['String']>;
   domain: Scalars['String'];
   filter?: Maybe<Scalars['String']>;
   name: Scalars['String'];
   variables: Array<Scalars['String']>;
+};
+
+export type ExperimentEditInput = {
+  name?: Maybe<Scalars['String']>;
+  viewed?: Maybe<Scalars['Boolean']>;
 };
 
 export type Group = {
@@ -73,36 +104,102 @@ export type Group = {
   variables: Array<Variable>;
 };
 
+export type GroupResult = {
+  __typename?: 'GroupResult';
+  name: Scalars['String'];
+  results: Array<ResultUnion>;
+};
+
+export type GroupsResult = {
+  __typename?: 'GroupsResult';
+  groups: Array<GroupResult>;
+};
+
 export type Header = {
   __typename?: 'Header';
   name: Scalars['String'];
   type: Scalars['String'];
 };
 
-export type Mutation = {
-  __typename?: 'Mutation';
-  createTransient: Experiment;
+export type ListExperiments = {
+  __typename?: 'ListExperiments';
+  currentPage?: Maybe<Scalars['Float']>;
+  experiments: Array<Experiment>;
+  totalExperiments?: Maybe<Scalars['Float']>;
+  totalPages?: Maybe<Scalars['Float']>;
 };
 
-export type MutationCreateTransientArgs = {
+export type Mutation = {
+  __typename?: 'Mutation';
+  createExperiment: Experiment;
+  editExperiment: Experiment;
+  removeExperiment: PartialExperiment;
+};
+
+export type MutationCreateExperimentArgs = {
   data: ExperimentCreateInput;
+  isTransient?: Maybe<Scalars['Boolean']>;
+};
+
+export type MutationEditExperimentArgs = {
+  data: ExperimentEditInput;
+  uuid: Scalars['String'];
+};
+
+export type MutationRemoveExperimentArgs = {
+  uuid: Scalars['String'];
+};
+
+export type PartialExperiment = {
+  __typename?: 'PartialExperiment';
+  algorithm?: Maybe<Algorithm>;
+  author?: Maybe<Scalars['String']>;
+  createdAt?: Maybe<Scalars['Float']>;
+  datasets?: Maybe<Array<Scalars['String']>>;
+  domain?: Maybe<Scalars['String']>;
+  filter?: Maybe<Scalars['String']>;
+  finishedAt?: Maybe<Scalars['Float']>;
+  name?: Maybe<Scalars['String']>;
+  results?: Maybe<Array<ResultUnion>>;
+  shared?: Maybe<Scalars['Boolean']>;
+  status?: Maybe<Scalars['String']>;
+  updateAt?: Maybe<Scalars['Float']>;
+  uuid?: Maybe<Scalars['String']>;
+  variables?: Maybe<Array<Scalars['String']>>;
+  viewed?: Maybe<Scalars['Boolean']>;
 };
 
 export type Query = {
   __typename?: 'Query';
   domains: Array<Domain>;
+  experiments: ListExperiments;
+  expriment: Experiment;
 };
 
 export type QueryDomainsArgs = {
   ids?: Maybe<Array<Scalars['String']>>;
 };
 
-export type ResultUnion = DummyResult | TableResult;
+export type QueryExperimentsArgs = {
+  name?: Maybe<Scalars['String']>;
+  page?: Maybe<Scalars['Float']>;
+};
+
+export type QueryExprimentArgs = {
+  uuid: Scalars['String'];
+};
+
+export type RawResult = {
+  __typename?: 'RawResult';
+  data: Scalars['JSONObject'];
+  listMax: Array<Scalars['String']>;
+};
+
+export type ResultUnion = GroupsResult | RawResult | TableResult;
 
 export type TableResult = {
   __typename?: 'TableResult';
   data: Array<Array<Scalars['String']>>;
-  groupBy?: Maybe<Scalars['String']>;
   headers: Array<Header>;
   name: Scalars['String'];
 };
@@ -115,6 +212,15 @@ export type Variable = {
   id: Scalars['String'];
   label?: Maybe<Scalars['String']>;
   type: Scalars['String'];
+};
+
+export type CoreGroupInfoFragment = {
+  __typename?: 'Group';
+  id: string;
+  label?: Maybe<string>;
+  description?: Maybe<string>;
+  groups: Array<{ __typename?: 'Group'; id: string }>;
+  variables: Array<{ __typename?: 'Variable'; id: string }>;
 };
 
 export type ListDomainsQueryVariables = Exact<{ [key: string]: never }>;
@@ -162,32 +268,86 @@ export type ListDomainsQuery = {
   }>;
 };
 
+type CoreInfoResult_GroupsResult_Fragment = { __typename?: 'GroupsResult' };
+
+type CoreInfoResult_RawResult_Fragment = { __typename?: 'RawResult' };
+
+type CoreInfoResult_TableResult_Fragment = {
+  __typename?: 'TableResult';
+  name: string;
+  data: Array<Array<string>>;
+  headers: Array<{ __typename?: 'Header'; name: string; type: string }>;
+};
+
+export type CoreInfoResultFragment =
+  | CoreInfoResult_GroupsResult_Fragment
+  | CoreInfoResult_RawResult_Fragment
+  | CoreInfoResult_TableResult_Fragment;
+
 export type CreateTransientMutationVariables = Exact<{
   data: ExperimentCreateInput;
 }>;
 
 export type CreateTransientMutation = {
   __typename?: 'Mutation';
-  createTransient: {
+  createExperiment: {
     __typename?: 'Experiment';
-    title: string;
-    results: Array<
-      | { __typename?: 'DummyResult' }
-      | {
-          __typename?: 'TableResult';
-          groupBy?: Maybe<string>;
-          name: string;
-          data: Array<Array<string>>;
-          headers: Array<{
-            __typename?: 'Header';
-            name: string;
-            type: string;
-          }>;
-        }
+    name: string;
+    results?: Maybe<
+      Array<
+        | {
+            __typename?: 'GroupsResult';
+            groups: Array<{
+              __typename?: 'GroupResult';
+              name: string;
+              results: Array<
+                | { __typename?: 'GroupsResult' }
+                | { __typename?: 'RawResult' }
+                | {
+                    __typename?: 'TableResult';
+                    name: string;
+                    data: Array<Array<string>>;
+                    headers: Array<{
+                      __typename?: 'Header';
+                      name: string;
+                      type: string;
+                    }>;
+                  }
+              >;
+            }>;
+          }
+        | { __typename?: 'RawResult' }
+        | { __typename?: 'TableResult' }
+      >
     >;
   };
 };
 
+export const CoreGroupInfoFragmentDoc = gql`
+  fragment coreGroupInfo on Group {
+    id
+    label
+    description
+    groups {
+      id
+    }
+    variables {
+      id
+    }
+  }
+`;
+export const CoreInfoResultFragmentDoc = gql`
+  fragment coreInfoResult on ResultUnion {
+    ... on TableResult {
+      name
+      data
+      headers {
+        name
+        type
+      }
+    }
+  }
+`;
 export const ListDomainsDocument = gql`
   query listDomains {
     domains {
@@ -209,29 +369,14 @@ export const ListDomainsDocument = gql`
         }
       }
       rootGroup {
-        id
-        label
-        description
-        groups {
-          id
-        }
-        variables {
-          id
-        }
+        ...coreGroupInfo
       }
       groups {
-        id
-        label
-        description
-        groups {
-          id
-        }
-        variables {
-          id
-        }
+        ...coreGroupInfo
       }
     }
   }
+  ${CoreGroupInfoFragmentDoc}
 `;
 
 /**
@@ -283,21 +428,22 @@ export type ListDomainsQueryResult = Apollo.QueryResult<
 >;
 export const CreateTransientDocument = gql`
   mutation CreateTransient($data: ExperimentCreateInput!) {
-    createTransient(data: $data) {
-      title
+    createExperiment(data: $data, isTransient: true) {
+      name
       results {
-        ... on TableResult {
-          groupBy
-          name
-          data
-          headers {
+        ... on GroupsResult {
+          groups {
             name
-            type
+            results {
+              ...coreInfoResult
+            }
           }
+          ...coreInfoResult
         }
       }
     }
   }
+  ${CoreInfoResultFragmentDoc}
 `;
 export type CreateTransientMutationFn = Apollo.MutationFunction<
   CreateTransientMutation,

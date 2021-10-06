@@ -1,11 +1,9 @@
-import React from 'react';
-import { ComponentStory, ComponentMeta } from '@storybook/react';
-
-import DescriptiveStatistics from '../components/UI/Visualization2/DescriptiveStatistics';
-import { TableResult } from '../components/API/generated/graphql';
-
+import { ComponentMeta, ComponentStory } from '@storybook/react';
 import 'bootstrap/dist/css/bootstrap.min.css';
 import 'bootstrap/dist/js/bootstrap.bundle.min';
+import React from 'react';
+import { GroupsResult, TableResult } from '../components/API/generated/graphql';
+import DescriptiveStatistics from '../components/UI/Visualization2/DescriptiveStatistics';
 
 export default {
   title: 'Algorithms/DescriptiveStatistics',
@@ -16,9 +14,8 @@ const Template: ComponentStory<typeof DescriptiveStatistics> = args => (
   <DescriptiveStatistics {...args} />
 );
 
-const results: TableResult[] = [
+const tabs: TableResult[] = [
   {
-    groupBy: 'single',
     name: 'lefthippocampus',
     data: [
       ['lefthippocampus', ''],
@@ -46,7 +43,6 @@ const results: TableResult[] = [
     __typename: 'TableResult'
   },
   {
-    groupBy: 'single',
     name: 'alzheimerbroadcategory',
     data: [
       ['alzheimerbroadcategory', ''],
@@ -70,6 +66,13 @@ const results: TableResult[] = [
     __typename: 'TableResult'
   }
 ];
+
+const results: GroupsResult[] = [{ groups: [] }];
+
+results[0].groups.push({
+  name: 'Single',
+  results: tabs
+});
 
 export const Default = Template.bind({});
 Default.args = { results, loading: false, error: undefined };

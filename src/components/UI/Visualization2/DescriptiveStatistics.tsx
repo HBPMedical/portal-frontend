@@ -1,12 +1,12 @@
 import * as React from 'react';
 import { Card, Tab, Tabs } from 'react-bootstrap';
-import { TableResult } from '../../API/generated/graphql';
+import { GroupsResult, TableResult } from '../../API/generated/graphql';
 import DataTable from '../Visualization2/DataTable';
 import Loader from '../Loader';
 import Error from '../Error';
 
 interface Props {
-  results: TableResult[];
+  results: GroupsResult[];
   loading: boolean;
   error?: Error;
 }
@@ -16,8 +16,17 @@ const DescriptiveStatistics = ({
   loading,
   error
 }: Props): JSX.Element => {
-  const singles = results?.filter(r => r.groupBy === 'single');
-  const models = results?.filter(r => r.groupBy === 'model');
+  console.log(results);
+  const singles = results
+    ? results[0].groups
+        .filter(g => g.name === 'Single')
+        .flatMap(g => g.results as TableResult[])
+    : [];
+  const models = results
+    ? results[0].groups
+        .filter(g => g.name === 'Model')
+        .flatMap(g => g.results as TableResult[])
+    : [];
 
   return (
     <Card className="result">

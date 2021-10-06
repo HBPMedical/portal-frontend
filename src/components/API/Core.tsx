@@ -12,8 +12,16 @@ export interface Variable {
   label?: string;
 }
 
+export type types =
+  | 'nominal'
+  | 'ordinal'
+  | 'real'
+  | 'integer'
+  | 'text'
+  | 'date';
+
 export interface VariableEntity extends Variable {
-  type?: 'nominal' | 'ordinal' | 'real' | 'integer' | 'text' | 'date';
+  type?: types;
   description?: string;
   enumerations?: Variable[];
   group?: Variable[];
@@ -273,7 +281,8 @@ class Core extends Container<State> {
       label: variable.label ?? '',
       description: variable.description ?? '',
       isCategorical: enums.length !== 0,
-      enumerations: enums
+      enumerations: enums,
+      type: (variable.type as types) ?? undefined
     };
   };
 
