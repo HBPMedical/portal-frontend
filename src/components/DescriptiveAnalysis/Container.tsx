@@ -253,11 +253,7 @@ const Container = ({
                 </Button>
               </Card.Header>
               <Card.Body>
-                <GroupTable
-                  results={results}
-                  error={error}
-                  loading={loading}
-                />
+                <GroupTable results={results} error={error} loading={loading} />
               </Card.Body>
             </Card>
           </div>
