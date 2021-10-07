@@ -88,13 +88,18 @@
     }
   },
   "devDependencies": {
+    "@graphql-codegen/cli": "2.2.0",
+    "@graphql-codegen/near-operation-file-preset": "^2.1.4",
+    "@graphql-codegen/typescript": "^2.2.2",
+    "@graphql-codegen/typescript-operations": "2.1.4",
+    "@graphql-codegen/typescript-react-apollo": "3.1.4",
     "@storybook/addon-actions": "^6.3.8",
     "@storybook/addon-essentials": "^6.3.8",
     "@storybook/addon-links": "^6.3.8",
     "@storybook/node-logger": "^6.3.8",
     "@storybook/preset-create-react-app": "^3.2.0",
     "@storybook/react": "^6.3.8",
-    "babel-eslint": "10.x",
+    "change-case": "^4.1.2",
     "enzyme": "^3.10.0",
     "enzyme-adapter-react-16": "^1.14.0",
     "eslint": "6.x",
@@ -112,6 +117,11 @@
     "prettier": "^1.18.2",
     "react-test-renderer": "^16.9.0",
     "source-map-explorer": "^2.0.1"
+  },
+  "resolutions": {
+    "babel-loader": "8.0.6",
+    "babel-eslint": "10.0.3",
+    "webpack": "4.41.0"
   },
   "jest": {},
   "browserslist": {
