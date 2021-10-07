@@ -2,7 +2,7 @@ import { ApolloError } from '@apollo/client';
 import * as React from 'react';
 import { Card, ProgressBar } from 'react-bootstrap';
 import styled, { keyframes } from 'styled-components';
-import { Experiment, GroupsResult } from '../API/generated/graphql';
+import { Experiment, GroupsResult } from '../API/GraphQL/types.generated';
 import ResultsErrorBoundary from '../UI/ResultsErrorBoundary';
 import DescriptiveStatistics from '../UI/Visualization2/DescriptiveStatistics';
 

@@ -1,6 +1,6 @@
 import * as React from 'react';
 import styled from 'styled-components';
-import { TableResult } from '../../API/generated/graphql';
+import { TableResult } from '../../API/GraphQL/types.generated';
 
 type Layout = 'default' | 'statistics';
 

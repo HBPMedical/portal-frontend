@@ -4,10 +4,8 @@ import { RouteComponentProps } from 'react-router-dom';
 import Sidebar from 'react-sidebar';
 import { APICore, APIExperiment, APIModel } from '../API';
 import { VariableEntity } from '../API/Core';
-import {
-  GroupsResult,
-  useCreateTransientMutation
-} from '../API/generated/graphql';
+import { useCreateTransientMutation } from '../API/GraphQL/queries.generated';
+import { GroupsResult } from '../API/GraphQL/types.generated';
 import DescriptiveStatistics from '../UI/Visualization2/DescriptiveStatistics';
 import ExperimentSidebar from './ExperimentSidebar';
 import Header from './Header';

@@ -1,6 +1,18 @@
 import { gql } from '@apollo/client';
 
 export const QUERY_DOMAINS = gql`
+  fragment coreGroupInfo on Group {
+    id
+    label
+    description
+    groups {
+      id
+    }
+    variables {
+      id
+    }
+  }
+
   query listDomains {
     domains {
       id
@@ -21,25 +33,39 @@ export const QUERY_DOMAINS = gql`
         }
       }
       rootGroup {
-        id
-        label
-        description
-        groups {
-          id
-        }
-        variables {
-          id
-        }
+        ...coreGroupInfo
       }
       groups {
-        id
-        label
-        description
-        groups {
-          id
-        }
-        variables {
-          id
+        ...coreGroupInfo
+      }
+    }
+  }
+`;
+
+const ADD_TRANSIENT = gql`
+  fragment coreInfoResult on ResultUnion {
+    ... on TableResult {
+      name
+      data
+      headers {
+        name
+        type
+      }
+    }
+  }
+
+  mutation CreateTransient($data: ExperimentCreateInput!) {
+    createExperiment(data: $data, isTransient: true) {
+      name
+      results {
+        ... on GroupsResult {
+          groups {
+            name
+            results {
+              ...coreInfoResult
+            }
+          }
+          ...coreInfoResult
         }
       }
     }

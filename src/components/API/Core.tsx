@@ -4,7 +4,11 @@ import { Container } from 'unstated';
 import { backendURL } from '../API';
 import { Exareme } from '../API/Exareme';
 import { FORBIDDEN_ACCESS_MESSAGE } from '../constants';
-import { Domain, Group, Variable as VariableData } from './generated/graphql';
+import {
+  Domain,
+  Group,
+  Variable as VariableData
+} from './GraphQL/types.generated';
 import { QUERY_DOMAINS } from './GraphQL/queries';
 
 export interface Variable {

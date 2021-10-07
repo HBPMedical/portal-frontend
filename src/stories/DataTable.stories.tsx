@@ -2,7 +2,7 @@ import React from 'react';
 import { ComponentStory, ComponentMeta } from '@storybook/react';
 
 import DataTable from '../components/UI/Visualization2/DataTable';
-import { TableResult } from '../components/API/generated/graphql';
+import { TableResult } from '../components/API/GraphQL/types.generated';
 
 export default {
   title: 'Charts/DataTable',

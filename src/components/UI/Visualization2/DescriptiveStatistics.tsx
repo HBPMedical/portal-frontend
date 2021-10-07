@@ -1,9 +1,9 @@
 import * as React from 'react';
 import { Card, Tab, Tabs } from 'react-bootstrap';
-import { GroupsResult, TableResult } from '../../API/generated/graphql';
 import DataTable from '../Visualization2/DataTable';
 import Loader from '../Loader';
 import Error from '../Error';
+import { GroupsResult, TableResult } from '../../API/GraphQL/types.generated';
 
 interface Props {
   results: GroupsResult[];
