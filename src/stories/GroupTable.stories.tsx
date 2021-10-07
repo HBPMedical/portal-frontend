@@ -6,15 +6,14 @@ import {
   GroupsResult,
   TableResult
 } from '../components/API/GraphQL/types.generated';
-import DescriptiveStatistics from '../components/UI/Visualization2/DescriptiveStatistics';
-
+import GroupTable from '../components/UI/Visualization2/GroupTable';
 export default {
-  title: 'Algorithms/DescriptiveStatistics',
-  component: DescriptiveStatistics
-} as ComponentMeta<typeof DescriptiveStatistics>;
+  title: 'Charts/GroupTable',
+  component: GroupTable
+} as ComponentMeta<typeof GroupTable>;
 
-const Template: ComponentStory<typeof DescriptiveStatistics> = args => (
-  <DescriptiveStatistics {...args} />
+const Template: ComponentStory<typeof GroupTable> = args => (
+  <GroupTable {...args} />
 );
 
 const tabs: TableResult[] = [

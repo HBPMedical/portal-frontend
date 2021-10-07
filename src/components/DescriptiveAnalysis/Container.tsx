@@ -6,7 +6,7 @@ import { APICore, APIExperiment, APIModel } from '../API';
 import { VariableEntity } from '../API/Core';
 import { useCreateTransientMutation } from '../API/GraphQL/queries.generated';
 import { GroupsResult } from '../API/GraphQL/types.generated';
-import DescriptiveStatistics from '../UI/Visualization2/DescriptiveStatistics';
+import GroupTable from '../UI/Visualization2/GroupTable';
 import ExperimentSidebar from './ExperimentSidebar';
 import Header from './Header';
 import Options from './Options';
@@ -251,11 +251,7 @@ const Container = ({
                 </Button>
               </Card.Header>
               <Card.Body>
-                <DescriptiveStatistics
-                  results={results}
-                  error={error}
-                  loading={loading}
-                />
+                <GroupTable results={results} error={error} loading={loading} />
               </Card.Body>
             </Card>
           </div>

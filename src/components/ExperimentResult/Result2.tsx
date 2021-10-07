@@ -4,7 +4,7 @@ import { Card, ProgressBar } from 'react-bootstrap';
 import styled, { keyframes } from 'styled-components';
 import { Experiment, GroupsResult } from '../API/GraphQL/types.generated';
 import ResultsErrorBoundary from '../UI/ResultsErrorBoundary';
-import DescriptiveStatistics from '../UI/Visualization2/DescriptiveStatistics';
+import GroupTable from '../UI/Visualization2/GroupTable';
 
 const Body = styled(Card.Body)`
   min-height: 20vh;
@@ -72,7 +72,7 @@ export default ({
           </div>
         ) : null}
         <ResultsErrorBoundary>
-          <DescriptiveStatistics
+          <GroupTable
             results={experiment?.results as GroupsResult[]}
             error={error}
             loading={loading}
