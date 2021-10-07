@@ -8,7 +8,7 @@ import {
   GroupsResult,
   useCreateTransientMutation
 } from '../API/generated/graphql';
-import DescriptiveStatistics from '../UI/Visualization2/DescriptiveStatistics';
+import GroupTable from '../UI/Visualization2/GroupTable';
 import ExperimentSidebar from './ExperimentSidebar';
 import Header from './Header';
 import Options from './Options';

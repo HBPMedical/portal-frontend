@@ -4,8 +4,6 @@ import { Card, ProgressBar } from 'react-bootstrap';
 import styled, { keyframes } from 'styled-components';
 import { Experiment, GroupsResult } from '../API/generated/graphql';
 import ResultsErrorBoundary from '../UI/ResultsErrorBoundary';
-import { Experiment, TableResult } from '../API/generated/graphql';
-import { ApolloError } from '@apollo/client';
 import GroupTable from '../UI/Visualization2/GroupTable';
 
 const Body = styled(Card.Body)`
@@ -74,7 +72,7 @@ export default ({
           </div>
         ) : null}
         <ResultsErrorBoundary>
-          <DescriptiveStatistics
+          <GroupTable
             results={experiment?.results as GroupsResult[]}
             error={error}
             loading={loading}

@@ -3,7 +3,7 @@ import 'bootstrap/dist/css/bootstrap.min.css';
 import 'bootstrap/dist/js/bootstrap.bundle.min';
 import React from 'react';
 import { GroupsResult, TableResult } from '../components/API/generated/graphql';
-import DescriptiveStatistics from '../components/UI/Visualization2/DescriptiveStatistics';
+import GroupTable from '../components/UI/Visualization2/GroupTable';
 
 export default {
   title: 'Charts/GroupTable',
