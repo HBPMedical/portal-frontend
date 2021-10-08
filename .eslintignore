@@ -1,3 +1,4 @@
 src/setupTests.ts
 src/registerServiceWorker.ts
 src/**/__tests__/**
+src/**/GraphQL/*.generated.*

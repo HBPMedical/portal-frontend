@@ -42,7 +42,7 @@ const NavBar = styled.nav`
 
   @media (max-width: 992px) {
     .logo-title,
-    .links {
+    .right-nav {
       display: none;
     }
   }
@@ -178,7 +178,7 @@ export default ({
           </div>
         </Links>
       )}
-      <RightLinks className="experiment-nav">
+      <RightLinks className="experiment-nav right-nav">
         <MIPContext.Consumer>
           {({ toggleTutorial }): JSX.Element =>
             (

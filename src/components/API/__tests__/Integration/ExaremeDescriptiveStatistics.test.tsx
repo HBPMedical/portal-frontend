@@ -1,84 +1,53 @@
-import { mount } from 'enzyme';
-import * as React from 'react';
+import { mount } from 'enzyme'
+import * as React from 'react'
+import { Experiment, ExperimentCreateInput } from '../../generated/graphql'
+import Result2 from '../../../ExperimentResult/Result2'
+import { ApolloClient, InMemoryCache } from '@apollo/client';
+import { TEST_PATHOLOGIES } from '../../UtiltyTests'
+import { CreateTransientDocument } from '../../generated/graphql';
 
-import Result from '../../../ExperimentResult/Result';
-import {
-  ExperimentParameter,
-  IExperimentPrototype,
-  IExperiment
-} from '../../Experiment';
-import {
-  createExperiment,
-  TEST_PATHOLOGIES,
-  waitForResult
-} from '../../UtiltyTests';
+const apolloClient = new ApolloClient({
+  uri: process.env.REACT_APP_GATEWAY_URL,
+  cache: new InMemoryCache()
+});
 
-// config
+const modelSlug = `statistics-${Math.round(Math.random() * 10000)}`
+const algorithmId = 'DESCRIPTIVE_STATS'
 
-const modelSlug = `statistics-${Math.round(Math.random() * 10000)}`;
-const algorithmId = 'DESCRIPTIVE_STATS';
-
-const parameters: ExperimentParameter[] = [
-  {
-    name: 'y', // variable
-    value:
-      'leftententorhinalarea,lefthippocampus,righthippocampus,rightpcggposteriorcingulategyrus,leftpcggposteriorcingulategyrus,rightacgganteriorcingulategyrus,leftacgganteriorcingulategyrus,rightmcggmiddlecingulategyrus,leftmcggmiddlecingulategyrus,rightphgparahippocampalgyrus,leftphgparahippocampalgyrus,rightententorhinalarea,rightthalamusproper,leftthalamusproper'
-  },
-  {
-    name: 'pathology',
-    value: TEST_PATHOLOGIES.dementia.code
-  },
-  {
-    name: 'dataset',
-    value: TEST_PATHOLOGIES.dementia.datasets
-      .filter(d => d.code !== 'fake_longitudinal')
-      .map(d => d.code)
-      .toString()
-  }
-];
-
-const experiment: IExperimentPrototype = {
-  algorithm: {
-    name: algorithmId,
-    parameters,
-    type: 'string'
-  },
-  name: modelSlug
-};
+const input: ExperimentCreateInput = {
+  name: 'Descriptive Statistics',
+  datasets: TEST_PATHOLOGIES.dementia.datasets
+    .filter((d) => d.code !== 'fake_longitudinal')
+    .map((d) => d.code),
+  variables: [
+    'lefthippocampus',
+    'alzheimerbroadcategory'
+  ],
+  domain: TEST_PATHOLOGIES.dementia.code,
+  filter: '',
+  algorithm: algorithmId,
+}
 
 // Test
 
 describe('Integration Test for experiment API', () => {
   it(`create ${algorithmId}`, async () => {
-    const { experiment: result } = await createExperiment({
-      experiment
+
+    const { data: { createTransient: experiment } } = await apolloClient.mutate({
+      variables: { data: { ...input } },
+      mutation: CreateTransientDocument
     });
 
-    expect(result).toBeTruthy();
-    expect(result.status).toStrictEqual('pending');
+    expect(experiment).toBeTruthy();
 
-    const uuid = (result as IExperiment)?.uuid;
-    expect(uuid).toBeTruthy();
-
-    if (!uuid) {
-      throw new Error('uuid not defined');
-    }
-
-    const experimentState = await waitForResult({ uuid });
-    expect(experimentState.experiment.status).toStrictEqual('success');
-    expect(experimentState.experiment).toBeTruthy();
-
-    const props = { experimentState };
-
-    const r0 = experimentState?.experiment?.result;
+    const wrapper = mount(<Result2 experiment={experiment} loading={false} />)
+    expect(wrapper.find('.result')).toHaveLength(2);
     expect(
-      r0![0].data?.single
-        .rightphgparahippocampalgyrus.ppmi.num_datapoints
-    ).toEqual(714);
-
-    const wrapper = mount(<Result {...props} />);
-    expect(wrapper.find('.error')).toHaveLength(0);
-    expect(wrapper.find('.loading')).toHaveLength(0);
-    expect(wrapper.find('.result')).toHaveLength(1);
-  });
-});
+      wrapper
+        .find('.result table tbody tr td')
+        .at(2)
+        .text()
+    ).toEqual('474');
+    // console.log(wrapper.debug())
+  })
+})

@@ -308,7 +308,7 @@ export default ({
   };
 
   const handleGoToAnalysis = async (): Promise<void> => {
-    history.push(`/review`);
+    history.push(`/analysis`);
   };
 
   const nextProps = {

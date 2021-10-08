@@ -1,0 +1,14 @@
+overwrite: true
+schema: "http://127.0.0.1:8081/graphql"
+documents: "src/components/API/GraphQL/queries.ts"
+generates:
+  src/components/API/GraphQL/types.generated.ts:
+    - typescript
+  src/components/API/GraphQL/:
+    preset: near-operation-file
+    presetConfig:
+      extension: .generated.tsx
+      baseTypesPath: types.generated.ts
+    plugins:
+      - "typescript-operations"
+      - "typescript-react-apollo"

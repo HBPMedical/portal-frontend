@@ -30,8 +30,8 @@ Here is the setup to do frontend development in this project:
 - Checkout the desired branch of the [mip-deployment](https://github.com/HBPMedical/mip-deployment) project.
 - Create a .env file in the folder filled with the following environment variables
 ```
-PUBLIC_MIP_HOST=172.16.222.128
-KEYCLOAK_URL=172.16.222.128
+PUBLIC_MIP_HOST=[MY IP]
+KEYCLOAK_URL=${PUBLIC_MIP_HOST}
 DATACATALOGUE_HOST=datacatalogue.mip.ebrains.eu
 DATACATALOGUE_PROTOCOL=https
 KEYCLOAK_AUTHENTICATION=0
@@ -52,24 +52,52 @@ FRONTEND=7.1.0
 GALAXY=1.3.4
 MIP=6.4.0
 ```
-- You need to change the first two urls to your local IP
-- In the docker-compose.yml file, change the line `CONVERT_CSVS=FALSE`to `CONVERT_CSVS=TRUE`so the data gets processed into the analytic engine.
+- You need to change PUBLIC_MIP_HOST to your local IP
+- In docker-compose.yml file, change the line `CONVERT_CSVS=FALSE`to `CONVERT_CSVS=TRUE`so the data gets processed into the analytic engine.
 - Launch the backend with docker-compose: `docker-compose up -d`
 - You can tweak the component version (EXAREME, PORTALBACKEND, GALAXY according to your needs)
 
+### Middleware
+
+The next version of the Frontend comes with a Middleware which is in charge of normalizing input from various engine and allow the Frontend to be completely agnostic from external services. 
+
+See https://github.com/HBPMedical/gateway
+
+You need to install the middleware to your stack in order to communicate with the backend. 
+
+- `git clone https://github.com/HBPMedical/gateway.git` 
+- `cd gateway/api`
+- `git checkout develop`
+- `npm install`
+- `npm run start:dev`
 
 ### React Frontend setup
 
-The previous backend setup comes with the current production version of the frontend. You can browse it at your local IP. In the current example http://172.16.222.128
-
-However, to be able to add features to it, let's fire a development version. I assume you cloned this repository and checked out the desired branch. You are most likely going to checkout the dev branch.
+Let's fire a development frontend. I assume you cloned this repository and checked out the desired branch. You are most likely going to checkout the dev branch.
 
 - Install the latest [nodejs](https://nodejs.org)
 - Install the latest [yarn](https://yarnpkg.com/en/)
 - Run: `yarn install`
-- Create a `.env` file in the root directory and add `REACT_APP_BACKEND_URL=http://172.16.222.128:8080` which points to the backend API. Change the IP to your machine's IP.
-- Run: `yarn start`
-- Browse to your local IP. [http://172.16.222.128:3000](http://172.16.222.128:3000)
+- Create a `.env.development` file in the root directory and add 
+```
+REACT_APP_BACKEND_URL=http://[MY IP]:8081
+REACT_APP_GATEWAY_URL=$REACT_APP_BACKEND_URL/graphql
+``` 
+which points to the backend API.
+
+- Run: `yarn watch`
+- Browse to your local IP. http://[MY IP]:3000
+
+
+#### Design Components
+
+Starting with the MIP 6.5, component are designed with [Storybook](https://storybook.js.org/),  an open source tool for building UI components and pages in isolation. 
+
+`yarn run storybook` -> http://localhost:6006/
+
+It follows the [Component Driven User Interfaces](https://www.componentdriven.org/) process. 
+
+
 
 ### Tests
 

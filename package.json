@@ -3,6 +3,7 @@
   "version": "7.1.0",
   "private": true,
   "dependencies": {
+    "@apollo/client": "^3.4.11",
     "@bugsnag/js": "^6.4.0",
     "@bugsnag/plugin-react": "^6.4.0",
     "@types/d3": "^5.7.2",
@@ -35,6 +36,7 @@
     "d3": "^5.15.0",
     "dayjs": "^1.9.6",
     "dotenv": "^8.1.0",
+    "graphql": "^15.5.3",
     "highcharts": "^8.1.0",
     "highcharts-react-official": "^3.0.0",
     "history": "^4.10.1",
@@ -43,8 +45,6 @@
     "numbro": "^2.1.2",
     "plotly.js": "^1.49.4",
     "popper.js": "^1.16.1",
-    "primeicons": "^2.0.0",
-    "primereact": "^3.1.9",
     "query-string": "^6.8.3",
     "react": "^16.12.0",
     "react-bootstrap": "^1.3.0",
@@ -76,7 +76,10 @@
     "ci-test": "react-scripts test --watchAll --forceExit  --silent",
     "eject": "react-scripts eject",
     "lint:fix": "eslint './src/**/*.{ts,tsx}' --fix",
-    "lint": "eslint './src/**/*.{ts,tsx}'"
+    "lint": "eslint './src/**/*.{ts,tsx}'",
+    "codegen": "graphql-codegen --config codegen.yml",
+    "storybook": "start-storybook -p 6006 -s public",
+    "build-storybook": "build-storybook -s public"
   },
   "husky": {
     "hooks": {
@@ -85,7 +88,18 @@
     }
   },
   "devDependencies": {
-    "babel-eslint": "10.x",
+    "@graphql-codegen/cli": "2.2.0",
+    "@graphql-codegen/near-operation-file-preset": "^2.1.4",
+    "@graphql-codegen/typescript": "^2.2.2",
+    "@graphql-codegen/typescript-operations": "2.1.4",
+    "@graphql-codegen/typescript-react-apollo": "3.1.4",
+    "@storybook/addon-actions": "^6.3.8",
+    "@storybook/addon-essentials": "^6.3.8",
+    "@storybook/addon-links": "^6.3.8",
+    "@storybook/node-logger": "^6.3.8",
+    "@storybook/preset-create-react-app": "^3.2.0",
+    "@storybook/react": "^6.3.8",
+    "change-case": "^4.1.2",
     "enzyme": "^3.10.0",
     "enzyme-adapter-react-16": "^1.14.0",
     "eslint": "6.x",
@@ -104,6 +118,11 @@
     "react-test-renderer": "^16.9.0",
     "source-map-explorer": "^2.0.1"
   },
+  "resolutions": {
+    "babel-loader": "8.0.6",
+    "babel-eslint": "10.0.3",
+    "webpack": "4.41.0"
+  },
   "jest": {},
   "browserslist": {
     "production": [
@@ -115,6 +134,18 @@
       "last 1 chrome version",
       "last 1 firefox version",
       "last 1 safari version"
+    ]
+  },
+  "eslintConfig": {
+    "overrides": [
+      {
+        "files": [
+          "**/*.stories.*"
+        ],
+        "rules": {
+          "import/no-anonymous-default-export": "off"
+        }
+      }
     ]
   }
 }

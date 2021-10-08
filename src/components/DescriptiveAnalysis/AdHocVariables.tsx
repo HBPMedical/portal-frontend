@@ -13,7 +13,6 @@ const transformations = {
   nominal: ['dummy', 'poly', 'contrast', 'additive']
 };
 
-
 interface IAdHocVariables {
   [key: string]: string; // variable code as key, transform as value
 }
@@ -68,16 +67,15 @@ const AdHocVariable = ({
 
   // Adhoc Variables functions [{ code: transform }]
   const handleSaveAdhocVariable = (): void => {
-    const code = adhocVariable[0]
-    const value = adhocVariable[1]
+    const code = adhocVariable[0];
+    const value = adhocVariable[1];
     if (code && value) {
       setAdhocVariables({
-
         [code]: value,
-        ...adhocVariables,
+        ...adhocVariables
       });
     }
-    setAdhocVariable([])
+    setAdhocVariable([]);
   };
 
   const handleDeleteAdhocVariable = (code?: string) => {
@@ -89,16 +87,15 @@ const AdHocVariable = ({
 
   // Interactions functions [{ code: transform }]
   const handleSaveInteraction = (): void => {
-    const code = interaction[0]
-    const value = interaction[1]
+    const code = interaction[0];
+    const value = interaction[1];
     if (code && value) {
       setInteractions({
-
         [code]: value,
-        ...interactions,
+        ...interactions
       });
     }
-    setInteraction([])
+    setInteraction([]);
   };
 
   const handleDeleteInteraction = (var1?: string) => {
@@ -109,8 +106,8 @@ const AdHocVariable = ({
   };
 
   const AdHocRow = ({ code }: { code?: string }) => {
-    const key = code || adhocVariable[0]
-    const value = (code && adhocVariables[code]) || adhocVariable[1]
+    const key = code || adhocVariable[0];
+    const value = (code && adhocVariables[code]) || adhocVariable[1];
 
     return (
       <Form.Row>
@@ -128,7 +125,9 @@ const AdHocVariable = ({
           >
             <option>{variableDefault}</option>
             {variables?.map(v => (
-              <option value={v.code}>{v.label}</option>
+              <option key={`adhoc-${v.code}`} value={v.code}>
+                {v.label}
+              </option>
             ))}
           </Form.Control>
         </Form.Group>
@@ -142,11 +141,10 @@ const AdHocVariable = ({
               event.preventDefault();
               const t = (event.target as HTMLInputElement).value;
               if (code) {
-                handleSaveAdhocVariable()
+                handleSaveAdhocVariable();
               } else {
                 setAdhocVariable([key, t]);
               }
-
             }}
           >
             <option>{transformationDefault}</option>
@@ -155,17 +153,16 @@ const AdHocVariable = ({
                 ? 'nominal'
                 : 'real'
             ]?.map(f => (
-              <option value={f}>{f}</option>
+              <option key={`tranform-${f}`} value={f}>
+                {f}
+              </option>
             ))}
           </Form.Control>
         </Form.Group>
 
         <Form.Group as={Col}>
           {!code && (
-            <Button
-              variant="info"
-              onClick={() => handleSaveAdhocVariable()}
-            >
+            <Button variant="info" onClick={() => handleSaveAdhocVariable()}>
               +
             </Button>
           )}
@@ -179,74 +176,76 @@ const AdHocVariable = ({
           )}
         </Form.Group>
       </Form.Row>
-    )
-  }
-
+    );
+  };
 
   const InteractionRow = ({ var1 }: { var1?: string }) => {
-    const key = var1 || interaction[0]
-    const value = (var1 && interactions[var1]) || interaction[1]
+    const key = var1 || interaction[0];
+    const value = (var1 && interactions[var1]) || interaction[1];
 
-    return <Form.Row>
-      <Form.Group as={Col} controlId="formInteractionVar1">
-        <Form.Label style={{ display: 'none' }}>Variables</Form.Label>
-        <Form.Control
-          as="select"
-          disabled={var1 !== undefined}
-          value={key}
-          onChange={(event: React.FormEvent<any>): void => {
-            event.preventDefault();
-            const nextCode = (event.target as HTMLInputElement).value;
-            setInteraction([nextCode, value]);
-          }}
-        >
-          <option>{variableDefault}</option>
-          {variables?.map(v => (
-            <option value={v.code}>{v.label}</option>
-          ))}
-        </Form.Control>
-      </Form.Group>
-      <Form.Group as={Col} controlId="formInteractionVar2">
-        <Form.Label style={{ display: 'none' }}>Variables</Form.Label>
-        <Form.Control
-          as="select"
-          disabled={var1 !== undefined}
-          value={value}
-          onChange={(event: React.FormEvent<any>): void => {
-            event.preventDefault();
-            const var2 = (event.target as HTMLInputElement).value;
-            if (var1) {
-              handleSaveInteraction()
-            } else {
-              setInteraction([key, var2]);
-            }
-          }}
-        >
-          <option>{variableDefault}</option>
-          {variables?.map(v => (
-            <option value={v.code}>{v.label}</option>
-          ))}
-        </Form.Control>
-      </Form.Group>
-      <Form.Group as={Col}>
-        {!var1 && (
-          <Button
-            variant="info"
-            onClick={() => handleSaveInteraction()}
+    return (
+      <Form.Row>
+        <Form.Group as={Col} controlId="formInteractionVar1">
+          <Form.Label style={{ display: 'none' }}>Variables</Form.Label>
+          <Form.Control
+            as="select"
+            disabled={var1 !== undefined}
+            value={key}
+            onChange={(event: React.FormEvent<any>): void => {
+              event.preventDefault();
+              const nextCode = (event.target as HTMLInputElement).value;
+              setInteraction([nextCode, value]);
+            }}
           >
-            +
-          </Button>
-        )}
-        {var1 && (
-          <Button
-            variant="danger"
-            onClick={() => handleDeleteInteraction(var1)}
+            <option>{variableDefault}</option>
+            {variables?.map(v => (
+              <option key={`interact-${v.code}`} value={v.code}>
+                {v.label}
+              </option>
+            ))}
+          </Form.Control>
+        </Form.Group>
+        <Form.Group as={Col} controlId="formInteractionVar2">
+          <Form.Label style={{ display: 'none' }}>Variables</Form.Label>
+          <Form.Control
+            as="select"
+            disabled={var1 !== undefined}
+            value={value}
+            onChange={(event: React.FormEvent<any>): void => {
+              event.preventDefault();
+              const var2 = (event.target as HTMLInputElement).value;
+              if (var1) {
+                handleSaveInteraction();
+              } else {
+                setInteraction([key, var2]);
+              }
+            }}
           >
-            -
-          </Button>
-        )}
-      </Form.Group>
-    </Form.Row>
+            <option>{variableDefault}</option>
+            {variables?.map(v => (
+              <option key={`interact2-${v.code}`} value={v.code}>
+                {v.label}
+              </option>
+            ))}
+          </Form.Control>
+        </Form.Group>
+        <Form.Group as={Col}>
+          {!var1 && (
+            <Button variant="info" onClick={() => handleSaveInteraction()}>
+              +
+            </Button>
+          )}
+          {var1 && (
+            <Button
+              variant="danger"
+              onClick={() => handleDeleteInteraction(var1)}
+            >
+              -
+            </Button>
+          )}
+        </Form.Group>
+      </Form.Row>
+    );
   };
 
   const adHocVariablesKeys = Object.keys(adhocVariables);
@@ -291,9 +290,7 @@ const AdHocVariable = ({
         ))}
         <Form.Row>
           <Form.Group>
-            <Button variant="info">
-              Save
-            </Button>
+            <Button variant="info">Save</Button>
           </Form.Group>
         </Form.Row>
       </Form>
