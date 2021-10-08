@@ -85,7 +85,7 @@ REACT_APP_GATEWAY_URL=$REACT_APP_BACKEND_URL/graphql
 ``` 
 which points to the backend API.
 
-- Run: `yarn watch`
+- Run: `yarn start`
 - Browse to your local IP. http://[MY IP]:3000
 
 
