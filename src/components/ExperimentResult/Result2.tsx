@@ -2,9 +2,11 @@ import { ApolloError } from '@apollo/client';
 import * as React from 'react';
 import { Card, ProgressBar } from 'react-bootstrap';
 import styled, { keyframes } from 'styled-components';
-import { Experiment, GroupsResult } from '../API/GraphQL/types.generated';
+import { Experiment, ResultUnion } from '../API/GraphQL/types.generated';
+import Error from '../UI/Error';
+import Loader from '../UI/Loader';
 import ResultsErrorBoundary from '../UI/ResultsErrorBoundary';
-import GroupTable from '../UI/Visualization2/GroupTable';
+import ResultDispatcher from './ResultDispatcher';
 
 const Body = styled(Card.Body)`
   min-height: 20vh;
@@ -71,13 +73,15 @@ export default ({
             </p>
           </div>
         ) : null}
-        <ResultsErrorBoundary>
-          <GroupTable
-            results={experiment?.results as GroupsResult[]}
-            error={error}
-            loading={loading}
-          />
-        </ResultsErrorBoundary>
+        <h1>test</h1>
+        {experiment?.results?.map((res: ResultUnion, i: number) => {
+          return (
+            <ResultsErrorBoundary key={i}>
+              <ResultDispatcher result={res} />
+            </ResultsErrorBoundary>
+          );
+        })}
+        <div>test</div>
       </Body>
     </Card>
   );

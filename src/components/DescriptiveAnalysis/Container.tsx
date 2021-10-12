@@ -5,8 +5,10 @@ import Sidebar from 'react-sidebar';
 import { APICore, APIExperiment, APIModel } from '../API';
 import { VariableEntity } from '../API/Core';
 import { useCreateTransientMutation } from '../API/GraphQL/queries.generated';
-import { GroupsResult } from '../API/GraphQL/types.generated';
-import GroupTable from '../UI/Visualization2/GroupTable';
+import { ResultUnion } from '../API/GraphQL/types.generated';
+import ResultDispatcher from '../ExperimentResult/ResultDispatcher';
+import Error from '../UI/Error';
+import Loader from '../UI/Loader';
 import ExperimentSidebar from './ExperimentSidebar';
 import Header from './Header';
 import Options from './Options';
@@ -42,7 +44,7 @@ const Container = ({
     ...d
   }));
   console.log(data, loading, error);
-  const results = data?.createExperiment.results as GroupsResult[];
+  const results = data?.createExperiment.results as ResultUnion[];
 
   React.useEffect(() => {
     if (!shouldReload) {
@@ -251,7 +253,11 @@ const Container = ({
                 </Button>
               </Card.Header>
               <Card.Body>
-                <GroupTable results={results} error={error} loading={loading} />
+                {loading && <Loader />}
+                {error && <Error message={error.message} />}
+                {results?.map((res: ResultUnion, i: number) => {
+                  return <ResultDispatcher result={res} key={i} />;
+                })}
               </Card.Body>
             </Card>
           </div>
