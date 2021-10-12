@@ -200,7 +200,6 @@ export type QueryExprimentArgs = {
 export type RawResult = {
   __typename?: 'RawResult';
   rawdata: Scalars['JSON'];
-  test: Scalars['String'];
 };
 
 export type ResultUnion = GroupsResult | RawResult | TableResult;
