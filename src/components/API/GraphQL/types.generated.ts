@@ -16,9 +16,10 @@ export type Scalars = {
 export type Algorithm = {
   __typename?: 'Algorithm';
   description?: Maybe<Scalars['String']>;
+  label?: Maybe<Scalars['String']>;
   name: Scalars['String'];
   parameters?: Maybe<Array<AlgorithmParameter>>;
-  type: Scalars['String'];
+  type?: Maybe<Scalars['String']>;
 };
 
 export type AlgorithmInput = {
@@ -38,11 +39,12 @@ export type AlgorithmParameter = {
   description?: Maybe<Scalars['String']>;
   isMultiple?: Maybe<Scalars['Boolean']>;
   isRequired?: Maybe<Scalars['Boolean']>;
+  label?: Maybe<Scalars['String']>;
   max?: Maybe<Scalars['String']>;
   min?: Maybe<Scalars['String']>;
   name: Scalars['String'];
   type?: Maybe<Scalars['String']>;
-  value: Array<Scalars['String']>;
+  value?: Maybe<Array<Scalars['String']>>;
 };
 
 export type Category = {
