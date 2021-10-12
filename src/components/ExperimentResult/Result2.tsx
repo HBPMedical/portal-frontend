@@ -81,7 +81,6 @@ export default ({
             </ResultsErrorBoundary>
           );
         })}
-        <div>test</div>
       </Body>
     </Card>
   );
