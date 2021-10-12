@@ -9,12 +9,13 @@ export type Scalars = {
   Boolean: boolean;
   Int: number;
   Float: number;
-  /** The `JSONObject` scalar type represents JSON objects as specified by [ECMA-404](http://www.ecma-international.org/publications/files/ECMA-ST/ECMA-404.pdf). */
-  JSONObject: any;
+  /** The `JSON` scalar type represents JSON values as specified by [ECMA-404](http://www.ecma-international.org/publications/files/ECMA-ST/ECMA-404.pdf). */
+  JSON: any;
 };
 
 export type Algorithm = {
   __typename?: 'Algorithm';
+  description?: Maybe<Scalars['String']>;
   name: Scalars['String'];
   parameters?: Maybe<Array<AlgorithmParameter>>;
   type: Scalars['String'];
@@ -33,7 +34,14 @@ export type AlgorithmParamInput = {
 
 export type AlgorithmParameter = {
   __typename?: 'AlgorithmParameter';
+  defaultValue?: Maybe<Scalars['String']>;
+  description?: Maybe<Scalars['String']>;
+  isMultiple?: Maybe<Scalars['Boolean']>;
+  isRequired?: Maybe<Scalars['Boolean']>;
+  max?: Maybe<Scalars['String']>;
+  min?: Maybe<Scalars['String']>;
   name: Scalars['String'];
+  type?: Maybe<Scalars['String']>;
   value: Array<Scalars['String']>;
 };
 
@@ -98,6 +106,7 @@ export type Group = {
 
 export type GroupResult = {
   __typename?: 'GroupResult';
+  description?: Maybe<Scalars['String']>;
   name: Scalars['String'];
   results: Array<ResultUnion>;
 };
@@ -166,6 +175,7 @@ export type PartialExperiment = {
 
 export type Query = {
   __typename?: 'Query';
+  algorithms: Array<Algorithm>;
   domains: Array<Domain>;
   experiments: ListExperiments;
   expriment: Experiment;
@@ -189,8 +199,8 @@ export type QueryExprimentArgs = {
 
 export type RawResult = {
   __typename?: 'RawResult';
-  data: Scalars['JSONObject'];
-  listMax: Array<Scalars['String']>;
+  rawdata: Scalars['JSON'];
+  test: Scalars['String'];
 };
 
 export type ResultUnion = GroupsResult | RawResult | TableResult;

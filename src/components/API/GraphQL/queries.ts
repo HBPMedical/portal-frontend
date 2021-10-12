@@ -52,6 +52,9 @@ const ADD_TRANSIENT = gql`
         type
       }
     }
+    ... on RawResult {
+      rawdata
+    }
   }
 
   mutation CreateTransient($data: ExperimentCreateInput!) {
@@ -61,12 +64,13 @@ const ADD_TRANSIENT = gql`
         ... on GroupsResult {
           groups {
             name
+            description
             results {
               ...coreInfoResult
             }
           }
-          ...coreInfoResult
         }
+        ...coreInfoResult
       }
     }
   }
