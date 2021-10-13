@@ -103,7 +103,7 @@ export type Group = {
   groups: Array<Group>;
   id: Scalars['String'];
   label?: Maybe<Scalars['String']>;
-  variables: Array<Variable>;
+  variables: Array<Scalars['String']>;
 };
 
 export type GroupResult = {
@@ -216,8 +216,8 @@ export type TableResult = {
 export type Variable = {
   __typename?: 'Variable';
   description?: Maybe<Scalars['String']>;
-  enumerations: Array<Category>;
-  groups: Array<Group>;
+  enumerations?: Maybe<Array<Category>>;
+  groups?: Maybe<Array<Group>>;
   id: Scalars['String'];
   label?: Maybe<Scalars['String']>;
   type: Scalars['String'];

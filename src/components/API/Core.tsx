@@ -300,7 +300,7 @@ class Core extends Container<State> {
       label: group.label ?? '',
       variables: group.variables
         ? (group.variables
-            .map(variable => lookupVars.find(item => item.code === variable.id))
+            .map(variable => lookupVars.find(item => item.code === variable))
             .filter(item => !!item) as VariableEntity[])
         : [], //can be optimize (time complexity over memory complexity) by doing a lookup table
       groups: group.groups
