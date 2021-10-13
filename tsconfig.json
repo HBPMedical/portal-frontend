@@ -21,6 +21,8 @@
     "noFallthroughCasesInSwitch": true
   },
   "include": [
-    "src"
+    "src",
+    "./**/*.ts",
+    "./bokehjs.d.ts"
   ]
 }
