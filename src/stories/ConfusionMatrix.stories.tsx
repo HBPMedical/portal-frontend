@@ -1,6 +1,6 @@
 import React from 'react';
 import { ComponentStory, ComponentMeta } from '@storybook/react';
-import ConfusionMatrix from '../../components/UI/Visualization2/ConfusionMatrix';
+import ConfusionMatrix from '../components/UI/Visualization2/ConfusionMatrix';
 
 export default {
   title: 'Charts/ConfusionMatrix',

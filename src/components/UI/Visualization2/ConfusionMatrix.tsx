@@ -1,6 +1,6 @@
 import React from 'react';
 // import Bokeh from '/static/js/bokeh.esm.js';
-import '/static/js/bokeh-api.esm.js';
+// import '/static/js/bokeh-api.esm.js';
 
 declare let window: any;
 
