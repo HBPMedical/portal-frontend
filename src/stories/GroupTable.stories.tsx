@@ -6,7 +6,7 @@ import {
   GroupsResult,
   TableResult
 } from '../components/API/GraphQL/types.generated';
-import GroupTable from '../components/UI/Visualization2/GroupTable';
+import GroupTable from '../components/UI/Visualization2/GroupResult';
 export default {
   title: 'Charts/GroupTable',
   component: GroupTable
@@ -69,12 +69,19 @@ const tabs: TableResult[] = [
   }
 ];
 
-const results: GroupsResult[] = [{ groups: [] }];
+const groups: GroupsResult = { groups: [] };
 
-results[0].groups.push({
-  name: 'Single',
+groups.groups.push({
+  name: 'Variables',
+  description: 'Optional description of variables',
+  results: tabs
+});
+
+groups.groups.push({
+  name: 'Models',
+  description: 'Optional description of models',
   results: tabs
 });
 
 export const Default = Template.bind({});
-Default.args = { results, loading: false, error: undefined };
+Default.args = { result: groups, loading: false, error: undefined };

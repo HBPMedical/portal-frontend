@@ -1,10 +1,10 @@
 import { mount } from 'enzyme'
 import * as React from 'react'
-import { Experiment, ExperimentCreateInput } from '../../generated/graphql'
 import Result2 from '../../../ExperimentResult/Result2'
 import { ApolloClient, InMemoryCache } from '@apollo/client';
 import { TEST_PATHOLOGIES } from '../../UtiltyTests'
-import { CreateTransientDocument } from '../../generated/graphql';
+import { CreateTransientDocument } from '../../GraphQL/queries.generated';
+import { ExperimentCreateInput } from '../../GraphQL/types.generated';
 
 const apolloClient = new ApolloClient({
   uri: process.env.REACT_APP_GATEWAY_URL,
@@ -25,7 +25,10 @@ const input: ExperimentCreateInput = {
   ],
   domain: TEST_PATHOLOGIES.dementia.code,
   filter: '',
-  algorithm: algorithmId,
+  algorithm: {
+    name: algorithmId,
+    type: 'string'
+  },
 }
 
 // Test
@@ -33,7 +36,7 @@ const input: ExperimentCreateInput = {
 describe('Integration Test for experiment API', () => {
   it(`create ${algorithmId}`, async () => {
 
-    const { data: { createTransient: experiment } } = await apolloClient.mutate({
+    const { data: { createExperiment: experiment } } = await apolloClient.mutate({
       variables: { data: { ...input } },
       mutation: CreateTransientDocument
     });

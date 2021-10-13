@@ -12,7 +12,7 @@ export type ListDomainsQuery = { __typename?: 'Query', domains: Array<{ __typena
 
 export type CoreInfoResult_GroupsResult_Fragment = { __typename?: 'GroupsResult' };
 
-export type CoreInfoResult_RawResult_Fragment = { __typename?: 'RawResult' };
+export type CoreInfoResult_RawResult_Fragment = { __typename?: 'RawResult', rawdata: any };
 
 export type CoreInfoResult_TableResult_Fragment = { __typename?: 'TableResult', name: string, data: Array<Array<string>>, headers: Array<{ __typename?: 'Header', name: string, type: string }> };
 
@@ -23,7 +23,7 @@ export type CreateTransientMutationVariables = Types.Exact<{
 }>;
 
 
-export type CreateTransientMutation = { __typename?: 'Mutation', createExperiment: { __typename?: 'Experiment', name: string, results?: Types.Maybe<Array<{ __typename?: 'GroupsResult', groups: Array<{ __typename?: 'GroupResult', name: string, results: Array<{ __typename?: 'GroupsResult' } | { __typename?: 'RawResult' } | { __typename?: 'TableResult', name: string, data: Array<Array<string>>, headers: Array<{ __typename?: 'Header', name: string, type: string }> }> }> } | { __typename?: 'RawResult' } | { __typename?: 'TableResult' }>> } };
+export type CreateTransientMutation = { __typename?: 'Mutation', createExperiment: { __typename?: 'Experiment', name: string, results?: Types.Maybe<Array<{ __typename?: 'GroupsResult', groups: Array<{ __typename?: 'GroupResult', name: string, description?: Types.Maybe<string>, results: Array<{ __typename?: 'GroupsResult' } | { __typename?: 'RawResult', rawdata: any } | { __typename?: 'TableResult', name: string, data: Array<Array<string>>, headers: Array<{ __typename?: 'Header', name: string, type: string }> }> }> } | { __typename?: 'RawResult', rawdata: any } | { __typename?: 'TableResult', name: string, data: Array<Array<string>>, headers: Array<{ __typename?: 'Header', name: string, type: string }> }>> } };
 
 export const CoreGroupInfoFragmentDoc = gql`
     fragment coreGroupInfo on Group {
@@ -47,6 +47,9 @@ export const CoreInfoResultFragmentDoc = gql`
       name
       type
     }
+  }
+  ... on RawResult {
+    rawdata
   }
 }
     `;
@@ -114,12 +117,13 @@ export const CreateTransientDocument = gql`
       ... on GroupsResult {
         groups {
           name
+          description
           results {
             ...coreInfoResult
           }
         }
-        ...coreInfoResult
       }
+      ...coreInfoResult
     }
   }
 }
