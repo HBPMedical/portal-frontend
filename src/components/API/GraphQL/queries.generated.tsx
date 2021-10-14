@@ -3,12 +3,12 @@ import * as Types from './types.generated';
 import { gql } from '@apollo/client';
 import * as Apollo from '@apollo/client';
 const defaultOptions =  {}
-export type CoreGroupInfoFragment = { __typename?: 'Group', id: string, label?: Types.Maybe<string>, description?: Types.Maybe<string>, variables: Array<string>, groups: Array<{ __typename?: 'Group', id: string }> };
+export type CoreGroupInfoFragment = { __typename?: 'Group', id: string, label?: Types.Maybe<string>, description?: Types.Maybe<string>, variables?: Types.Maybe<Array<string>>, groups?: Types.Maybe<Array<{ __typename?: 'Group', id: string }>> };
 
 export type ListDomainsQueryVariables = Types.Exact<{ [key: string]: never; }>;
 
 
-export type ListDomainsQuery = { __typename?: 'Query', domains: Array<{ __typename?: 'Domain', id: string, label?: Types.Maybe<string>, description?: Types.Maybe<string>, datasets: Array<{ __typename?: 'Category', id: string, label?: Types.Maybe<string> }>, variables: Array<{ __typename?: 'Variable', id: string, label?: Types.Maybe<string>, type: string, description?: Types.Maybe<string>, enumerations?: Types.Maybe<Array<{ __typename?: 'Category', id: string, label?: Types.Maybe<string> }>> }>, rootGroup: { __typename?: 'Group', id: string, label?: Types.Maybe<string>, description?: Types.Maybe<string>, variables: Array<string>, groups: Array<{ __typename?: 'Group', id: string }> }, groups: Array<{ __typename?: 'Group', id: string, label?: Types.Maybe<string>, description?: Types.Maybe<string>, variables: Array<string>, groups: Array<{ __typename?: 'Group', id: string }> }> }> };
+export type ListDomainsQuery = { __typename?: 'Query', domains: Array<{ __typename?: 'Domain', id: string, label?: Types.Maybe<string>, description?: Types.Maybe<string>, datasets: Array<{ __typename?: 'Category', id: string, label?: Types.Maybe<string> }>, variables: Array<{ __typename?: 'Variable', id: string, label?: Types.Maybe<string>, type: string, description?: Types.Maybe<string>, enumerations?: Types.Maybe<Array<{ __typename?: 'Category', id: string, label?: Types.Maybe<string> }>> }>, rootGroup: { __typename?: 'Group', id: string, label?: Types.Maybe<string>, description?: Types.Maybe<string>, variables?: Types.Maybe<Array<string>>, groups?: Types.Maybe<Array<{ __typename?: 'Group', id: string }>> }, groups: Array<{ __typename?: 'Group', id: string, label?: Types.Maybe<string>, description?: Types.Maybe<string>, variables?: Types.Maybe<Array<string>>, groups?: Types.Maybe<Array<{ __typename?: 'Group', id: string }>> }> }> };
 
 export type CoreInfoResult_GroupsResult_Fragment = { __typename?: 'GroupsResult' };
 
