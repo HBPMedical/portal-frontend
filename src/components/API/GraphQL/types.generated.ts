@@ -100,10 +100,11 @@ export type ExperimentEditInput = {
 export type Group = {
   __typename?: 'Group';
   description?: Maybe<Scalars['String']>;
-  groups: Array<Group>;
+  groups?: Maybe<Array<Group>>;
   id: Scalars['String'];
   label?: Maybe<Scalars['String']>;
-  variables: Array<Variable>;
+  /** List of variable's ids */
+  variables?: Maybe<Array<Scalars['String']>>;
 };
 
 export type GroupResult = {
@@ -216,8 +217,8 @@ export type TableResult = {
 export type Variable = {
   __typename?: 'Variable';
   description?: Maybe<Scalars['String']>;
-  enumerations: Array<Category>;
-  groups: Array<Group>;
+  enumerations?: Maybe<Array<Category>>;
+  groups?: Maybe<Array<Group>>;
   id: Scalars['String'];
   label?: Maybe<Scalars['String']>;
   type: Scalars['String'];

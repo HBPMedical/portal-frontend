@@ -8,9 +8,7 @@ export const QUERY_DOMAINS = gql`
     groups {
       id
     }
-    variables {
-      id
-    }
+    variables
   }
 
   query listDomains {
