@@ -5,9 +5,7 @@ export const QUERY_DOMAINS = gql`
     id
     label
     description
-    groups {
-      id
-    }
+    groups
     variables
   }
 

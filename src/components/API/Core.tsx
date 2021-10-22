@@ -305,7 +305,7 @@ class Core extends Container<State> {
         : [], //can be optimize (time complexity over memory complexity) by doing a lookup table
       groups: group.groups
         ? group.groups.map(it =>
-            this.dataToHierarchy(lookupGroup[it.id], lookupVars, lookupGroup)
+            this.dataToHierarchy(lookupGroup[it], lookupVars, lookupGroup)
           )
         : []
     };
