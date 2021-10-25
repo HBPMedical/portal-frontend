@@ -88,13 +88,20 @@ export type ExperimentCreateInput = {
   datasets: Array<Scalars['String']>;
   domain: Scalars['String'];
   filter?: Maybe<Scalars['String']>;
+  interactions?: Maybe<Array<Array<Scalars['String']>>>;
   name: Scalars['String'];
+  transformations?: Maybe<Array<FormulaTransformation>>;
   variables: Array<Scalars['String']>;
 };
 
 export type ExperimentEditInput = {
   name?: Maybe<Scalars['String']>;
   viewed?: Maybe<Scalars['Boolean']>;
+};
+
+export type FormulaTransformation = {
+  name: Scalars['String'];
+  operation: Scalars['String'];
 };
 
 export type Group = {
