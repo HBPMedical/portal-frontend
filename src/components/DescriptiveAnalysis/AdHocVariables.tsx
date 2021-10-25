@@ -1,6 +1,7 @@
 import React, { useCallback, useEffect, useState } from 'react';
 import { Form, Col, Button } from 'react-bootstrap';
 import { VariableEntity } from '../API/Core';
+import { IFormula } from './Container';
 
 import styled from 'styled-components';
 import { Query } from '../API/Model';
@@ -34,9 +35,11 @@ const Wrapper = styled.div`
 
 const AdHocVariable = ({
   query,
+  setFormula,
   lookup
 }: {
   query?: Query;
+  setFormula: React.Dispatch<React.SetStateAction<IFormula>>;
   lookup: (code: string, pathologyCode: string | undefined) => VariableEntity;
 }) => {
   const [variables, setVariables] = useState<VariableEntity[]>();
@@ -49,12 +52,20 @@ const AdHocVariable = ({
   // Debug
   useEffect(() => {
     console.log(adhocVariables);
-  }, [adhocVariables]);
+    console.log(interactions);
+
+    setFormula({
+      transformations: Object.keys(adhocVariables).map(k => ({
+        name: k,
+        operation: adhocVariables[k]
+      })),
+      interactions: Object.keys(interactions).map(k => [k, interactions[k]])
+    });
+  }, [adhocVariables, interactions, setFormula]);
 
   // Get all variables
   useEffect(() => {
     const variables: VariableEntity[] | undefined = query && [
-      ...(query.groupings || []),
       ...(query.coVariables || []),
       ...(query.variables || [])
     ];
@@ -259,8 +270,7 @@ const AdHocVariable = ({
         <p>
           Transformation to be applied to a single variable. Examples of
           transformations are mathematical functions (log, exp, center,
-          standardize) for numerical variables and coding strategies (dummy,
-          poly, Helmert, contrast, ...) for categorical variables.{' '}
+          standardize) for numerical variables.
         </p>
         {adHocVariablesKeys.length < (variables?.length || 0) && (
           <>
