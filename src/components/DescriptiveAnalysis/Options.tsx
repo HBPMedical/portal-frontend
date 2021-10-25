@@ -4,6 +4,7 @@ import Filter from './Filter';
 import AdHocVariables from './AdHocVariables';
 import { Query } from '../API/Model';
 import { VariableEntity } from '../API/Core';
+import { IFormula } from './Container';
 
 interface IFilters {
   fields: any;
@@ -13,6 +14,7 @@ interface IFilters {
 
 interface IOptions {
   query?: Query;
+  setFormula: React.Dispatch<React.SetStateAction<IFormula>>;
   lookup: (code: string, pathologyCode: string | undefined) => VariableEntity;
 }
 
@@ -28,6 +30,7 @@ const Options = ({
   fields,
   filters,
   handleUpdateFilter,
+  setFormula,
   query,
   lookup
 }: IFilters & IOptions) => (
@@ -38,7 +41,7 @@ const Options = ({
       filters={fields}
       handleChangeFilter={handleUpdateFilter}
     />
-    <AdHocVariables query={query} lookup={lookup} />
+    <AdHocVariables query={query} lookup={lookup} setFormula={setFormula} />
   </>
 );
 

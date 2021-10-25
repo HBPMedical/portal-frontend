@@ -1,10 +1,11 @@
-import * as React from 'react';
+import React, { useState } from 'react';
 import { Button, Card } from 'react-bootstrap';
 import { RouteComponentProps } from 'react-router-dom';
 import Sidebar from 'react-sidebar';
 import { APICore, APIExperiment, APIModel } from '../API';
 import { VariableEntity } from '../API/Core';
 import { useCreateTransientMutation } from '../API/GraphQL/queries.generated';
+import { ExperimentCreateInput } from '../API/GraphQL/types.generated';
 import { ResultUnion } from '../API/GraphQL/types.generated';
 import ResultDispatcher from '../ExperimentResult/ResultDispatcher';
 import Error from '../UI/Error';
@@ -19,14 +20,20 @@ interface Props extends RouteComponentProps {
   apiExperiment: APIExperiment;
 }
 
+export type IFormula = Pick<
+  ExperimentCreateInput,
+  'interactions' | 'transformations'
+>;
+
 const Container = ({
   apiModel,
   apiCore,
   apiExperiment,
   ...props
 }: Props): JSX.Element => {
-  const [shouldReload, setShouldReload] = React.useState(true);
-  const [sidebarOpen, setSidebarOpen] = React.useState(false);
+  const [shouldReload, setShouldReload] = useState(true);
+  const [sidebarOpen, setSidebarOpen] = useState(false);
+  const [formula, setFormula] = useState<IFormula>({});
   const [
     createTransientMutation,
     { data, loading, error }
@@ -39,11 +46,8 @@ const Container = ({
   const query = model?.query;
   const pathology = query?.pathology || '';
   const datasets = apiCore.state.pathologiesDatasets[pathology];
-  const selectedDatasets = query?.trainingDatasets?.map(d => ({
-    ...datasets?.find(v => v.code === d.code),
-    ...d
-  }));
-  console.log(data, loading, error);
+
+  // console.log(data, loading, error);
   const results = data?.createExperiment.results as ResultUnion[];
 
   React.useEffect(() => {
@@ -72,7 +76,9 @@ const Container = ({
             algorithm: {
               name: 'DESCRIPTIVE_STATS',
               type: 'string'
-            }
+            },
+            transformations: formula?.transformations,
+            interactions: formula?.interactions
           }
         }
       });
@@ -82,6 +88,7 @@ const Container = ({
     trainingDatasets,
     queryfilters,
     shouldReload,
+    formula,
     createTransientMutation,
     apiModel
   ]);
@@ -216,6 +223,7 @@ const Container = ({
               filters={filters}
               fields={fields}
               handleUpdateFilter={handleUpdateFilter}
+              setFormula={setFormula}
               query={query}
               lookup={apiCore.lookup}
             />
