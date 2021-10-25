@@ -1,6 +1,6 @@
 import React from 'react';
 import { ComponentStory, ComponentMeta } from '@storybook/react';
-import LineGraph from '../../components/UI/Visualization2/LineGraph';
+import LineGraph from '../components/UI/Visualization2/LineGraph';
 
 export default {
   title: 'Charts/LineGraph',
