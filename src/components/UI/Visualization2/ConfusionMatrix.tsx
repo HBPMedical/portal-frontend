@@ -1,13 +1,10 @@
 import React from 'react';
-// import Bokeh from '/static/js/bokeh.esm.js';
-// import '/static/js/bokeh-api.esm.js';
 
 declare let window: any;
 
 const ConfusionMatrix = () => {
   const Bokeh = window.Bokeh;
   const plot = Bokeh.Plotting;
-  // const plot = Bokeh.Plotting;
 
   const x = ['Benign', 'Malignant'];
   const y = ['Benign', 'Malignant'];
