@@ -229,13 +229,18 @@ const ROCCurve = () => {
     }
   };
 
-  // Create custom HoverTool -- we'll name each ROC curve 'ROC' so we only see info on hover there
-  const hover_ = new Bokeh.HoverTool({ names: ['ROC'] });
-  // tooltips: [('TPR', 'y_tpr'), ('FPR', 'x_fpr'), ('Threshold', 'thresh')]
-  // {'names': ['ROC'], 'tooltips': [('TPR', '@y_tpr'), ('FPR', '@x_fpr'), ('Threshold', '@thresh')]}
+  const source_ROC = new Bokeh.ColumnDataSource({
+    data: {
+      x_fpr: source_ROC_raw.data.x_fpr,
+      y_tpr: source_ROC_raw.data.y_tpr,
+      thresh: source_ROC_raw.data.thresh,
+      legend_: source_ROC_raw.data.auc_legend
+    }
+  });
+
   // Create your toolbox
   const p_tools = [
-    hover_,
+    'hover',
     'crosshair',
     'zoom_in',
     'zoom_out',
@@ -250,15 +255,6 @@ const ROCCurve = () => {
   const p = plot.figure({ title: `${clf_name} ROC curve`, tools: p_tools });
   p.xaxis.axis_label = 'False Positive Rate';
   p.yaxis.axis_label = 'True Positive Rate';
-
-  const source_ROC = new Bokeh.ColumnDataSource({
-    data: {
-      x_fpr: source_ROC_raw.data.x_fpr,
-      y_tpr: source_ROC_raw.data.y_tpr,
-      thresh: source_ROC_raw.data.thresh,
-      legend_: source_ROC_raw.data.auc_legend
-    }
-  });
 
   const df_half = {
     TPR: [0.962162, 0.962162],
@@ -282,6 +278,7 @@ const ROCCurve = () => {
     color: 'blue',
     source: source_ROC
   });
+
   p.circle({
     x: { field: 'x_fpr' },
     y: { field: 'y_tpr' },
@@ -316,6 +313,18 @@ const ROCCurve = () => {
     color: 'black',
     name: 'Chance'
   });
+
+  const hover = p.toolbar.select_one(Bokeh.HoverTool);
+  hover!.tooltips = (source: any, info: any) => {
+    const ds = source_ROC;
+    const div = document.createElement('div');
+    div.style.width = '100px';
+    div.style.height = '60px';
+    div.innerHTML = ` FPR: ${info.data_x},</br> TPR: ${
+      info.data_y
+    }, </br> Threshold: ${ds.data.thresh[info.index]}`;
+    return div;
+  };
 
   // Finishing touches
   p.legend.location = 'bottom_right';
