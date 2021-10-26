@@ -53,6 +53,12 @@ export type Category = {
   label?: Maybe<Scalars['String']>;
 };
 
+export type ChartAxis = {
+  __typename?: 'ChartAxis';
+  categories?: Maybe<Array<Scalars['String']>>;
+  label?: Maybe<Scalars['String']>;
+};
+
 export type Domain = {
   __typename?: 'Domain';
   datasets: Array<Category>;
@@ -97,6 +103,12 @@ export type ExperimentEditInput = {
   viewed?: Maybe<Scalars['Boolean']>;
 };
 
+export type ExtraLineInfo = {
+  __typename?: 'ExtraLineInfo';
+  label: Scalars['String'];
+  values: Array<Scalars['String']>;
+};
+
 export type Group = {
   __typename?: 'Group';
   description?: Maybe<Scalars['String']>;
@@ -124,6 +136,36 @@ export type Header = {
   name: Scalars['String'];
   type: Scalars['String'];
 };
+
+export type HeatMapResult = {
+  __typename?: 'HeatMapResult';
+  matrix: Array<Array<Scalars['Float']>>;
+  name: Scalars['String'];
+  xAxis: ChartAxis;
+  yAxis: ChartAxis;
+};
+
+export type LineChartResult = {
+  __typename?: 'LineChartResult';
+  lines: Array<LineResult>;
+  name: Scalars['String'];
+  xAxis?: Maybe<ChartAxis>;
+  yAxis?: Maybe<ChartAxis>;
+};
+
+export type LineResult = {
+  __typename?: 'LineResult';
+  extraLineInfos?: Maybe<Array<ExtraLineInfo>>;
+  label: Scalars['String'];
+  type?: Maybe<LineType>;
+  x: Array<Scalars['Float']>;
+  y: Array<Scalars['Float']>;
+};
+
+export enum LineType {
+  Dashed = 'DASHED',
+  Normal = 'NORMAL'
+}
 
 export type ListExperiments = {
   __typename?: 'ListExperiments';
@@ -205,7 +247,7 @@ export type RawResult = {
   rawdata: Scalars['JSON'];
 };
 
-export type ResultUnion = GroupsResult | RawResult | TableResult;
+export type ResultUnion = GroupsResult | HeatMapResult | LineChartResult | RawResult | TableResult;
 
 export type TableResult = {
   __typename?: 'TableResult';

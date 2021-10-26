@@ -12,18 +12,22 @@ export type ListDomainsQuery = { __typename?: 'Query', domains: Array<{ __typena
 
 export type CoreInfoResult_GroupsResult_Fragment = { __typename?: 'GroupsResult' };
 
+export type CoreInfoResult_HeatMapResult_Fragment = { __typename?: 'HeatMapResult' };
+
+export type CoreInfoResult_LineChartResult_Fragment = { __typename?: 'LineChartResult' };
+
 export type CoreInfoResult_RawResult_Fragment = { __typename?: 'RawResult', rawdata: any };
 
 export type CoreInfoResult_TableResult_Fragment = { __typename?: 'TableResult', name: string, data: Array<Array<string>>, headers: Array<{ __typename?: 'Header', name: string, type: string }> };
 
-export type CoreInfoResultFragment = CoreInfoResult_GroupsResult_Fragment | CoreInfoResult_RawResult_Fragment | CoreInfoResult_TableResult_Fragment;
+export type CoreInfoResultFragment = CoreInfoResult_GroupsResult_Fragment | CoreInfoResult_HeatMapResult_Fragment | CoreInfoResult_LineChartResult_Fragment | CoreInfoResult_RawResult_Fragment | CoreInfoResult_TableResult_Fragment;
 
 export type CreateTransientMutationVariables = Types.Exact<{
   data: Types.ExperimentCreateInput;
 }>;
 
 
-export type CreateTransientMutation = { __typename?: 'Mutation', createExperiment: { __typename?: 'Experiment', name: string, results?: Types.Maybe<Array<{ __typename?: 'GroupsResult', groups: Array<{ __typename?: 'GroupResult', name: string, description?: Types.Maybe<string>, results: Array<{ __typename?: 'GroupsResult' } | { __typename?: 'RawResult', rawdata: any } | { __typename?: 'TableResult', name: string, data: Array<Array<string>>, headers: Array<{ __typename?: 'Header', name: string, type: string }> }> }> } | { __typename?: 'RawResult', rawdata: any } | { __typename?: 'TableResult', name: string, data: Array<Array<string>>, headers: Array<{ __typename?: 'Header', name: string, type: string }> }>> } };
+export type CreateTransientMutation = { __typename?: 'Mutation', createExperiment: { __typename?: 'Experiment', name: string, results?: Types.Maybe<Array<{ __typename?: 'GroupsResult', groups: Array<{ __typename?: 'GroupResult', name: string, description?: Types.Maybe<string>, results: Array<{ __typename?: 'GroupsResult' } | { __typename?: 'HeatMapResult' } | { __typename?: 'LineChartResult' } | { __typename?: 'RawResult', rawdata: any } | { __typename?: 'TableResult', name: string, data: Array<Array<string>>, headers: Array<{ __typename?: 'Header', name: string, type: string }> }> }> } | { __typename?: 'HeatMapResult' } | { __typename?: 'LineChartResult' } | { __typename?: 'RawResult', rawdata: any } | { __typename?: 'TableResult', name: string, data: Array<Array<string>>, headers: Array<{ __typename?: 'Header', name: string, type: string }> }>> } };
 
 export const CoreGroupInfoFragmentDoc = gql`
     fragment coreGroupInfo on Group {
