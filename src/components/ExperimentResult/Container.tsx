@@ -20,7 +20,7 @@ interface Props extends RouteComponentProps<RouteParams> {
   apiCore: APICore;
 }
 
-class Experiment extends React.Component<Props> {
+class ExperimentContainer extends React.Component<Props> {
   private intervalId: any;
 
   async componentDidMount(): Promise<void> {
@@ -188,4 +188,4 @@ class Experiment extends React.Component<Props> {
   };
 }
 
-export default withRouter(Experiment);
+export default withRouter(ExperimentContainer);
