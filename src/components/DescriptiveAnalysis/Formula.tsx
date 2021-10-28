@@ -14,7 +14,7 @@ type SelectedTransformation = Modify<
     operation: string | undefined;
   }
 >;
-type SelectedInteraction = string[][];
+type SelectedInteraction = string[];
 
 const variableDefault = 'Variable...';
 const operationDefault = 'Operation...';
@@ -52,6 +52,7 @@ const Formula = ({
 
   useEffect(() => {
     handleUpdateFormula(formula);
+    console.log('hey');
   }, [formula, handleUpdateFormula]);
 
   useEffect(() => {
@@ -76,41 +77,51 @@ const Formula = ({
   const handleSetTransform = (): void => {
     const transformations = formula?.transformations || null;
     if (selectedTransform?.name && selectedTransform?.operation) {
-      setFormula({
+      setFormula(previousFormula => ({
+        ...previousFormula,
         transformations: [
           ...(transformations ? transformations : []),
           selectedTransform as FormulaTransformation
         ]
-      });
+      }));
     }
     setSelectedTransform(null);
   };
 
-  const handleUnsetTransform = (code?: string) => {
+  const handleUnsetTransform = (transformation?: FormulaTransformation) => {
     const previousTransformations = formula?.transformations;
     const transformations = previousTransformations?.filter(
-      t => t.name !== code
+      t => t.name !== transformation?.name
     );
-    setFormula({ transformations });
+    setFormula(previousFormula => ({
+      ...previousFormula,
+      transformations
+    }));
   };
 
-  const handleSaveInteraction = (): void => {
-    // const code = selectedInteraction[0];
-    // const value = selectedInteraction[1];
-    // if (code && value) {
-    //   setInteractions({
-    //     [code]: value,
-    //     ...interactions
-    //   });
-    // }
-    // setSelectedInteraction([]);
+  const handleSetInteraction = (): void => {
+    const interactions = formula?.interactions;
+    if (selectedInteraction[0] && selectedInteraction[1]) {
+      setFormula(previousFormula => ({
+        ...previousFormula,
+        interactions: [
+          ...(interactions ? interactions : []),
+          [selectedInteraction[0], selectedInteraction[1]]
+        ]
+      }));
+      setSelectedInteraction([]);
+    }
   };
 
-  const handleDeleteInteraction = (var1?: string) => {
-    // if (!var1) return;
-    // const newInteractions = { ...interactions };
-    // delete newInteractions[var1];
-    // setInteractions(newInteractions);
+  const handleUnsetInteraction = (interaction: string[]) => {
+    const previousInteractions = formula?.interactions;
+    const interactions = previousInteractions?.filter(
+      i => !(i[0] === interaction[0] && i[1] === interaction[1])
+    );
+    setFormula(previousFormula => ({
+      ...previousFormula,
+      interactions
+    }));
   };
 
   const TransformRow = ({
@@ -189,7 +200,10 @@ const Formula = ({
               </Button>
             )}
           {transformation && (
-            <Button variant="danger" onClick={() => handleUnsetTransform(name)}>
+            <Button
+              variant="danger"
+              onClick={() => handleUnsetTransform(transformation)}
+            >
               x
             </Button>
           )}
@@ -198,27 +212,31 @@ const Formula = ({
     );
   };
 
-  const InteractionRow = ({ var1 }: { var1?: string }) => {
-    const key = var1 || selectedInteraction[0];
-    const value = selectedInteraction[1];
-
+  const InteractionRow = ({ interaction }: { interaction?: string[] }) => {
+    // Fixed to 2 interactions for now
+    const var1 = (interaction && interaction[0]) || selectedInteraction[0];
+    const var2 = (interaction && interaction[1]) || selectedInteraction[1];
     return (
       <Form.Row>
         <Form.Group as={Col} controlId="formInteractionVar1">
           <Form.Label style={{ display: 'none' }}>Variables</Form.Label>
           <Form.Control
             as="select"
-            disabled={var1 !== undefined}
-            value={key}
+            disabled={interaction !== undefined}
+            value={var1}
             onChange={(event: React.FormEvent<any>): void => {
               event.preventDefault();
               const nextCode = (event.target as HTMLInputElement).value;
-              // setSelectedInteraction([nextCode, value]);
+              setSelectedInteraction([nextCode, selectedInteraction[1]]);
             }}
           >
             <option>{variableDefault}</option>
             {variables?.map(v => (
-              <option key={`interact-${v.code}`} value={v.code}>
+              <option
+                key={`interact-${v.code}`}
+                value={v.code}
+                disabled={v.code === selectedInteraction[1]}
+              >
                 {v.label}
               </option>
             ))}
@@ -228,38 +246,40 @@ const Formula = ({
           <Form.Label style={{ display: 'none' }}>Variables</Form.Label>
           <Form.Control
             as="select"
-            disabled={var1 !== undefined}
-            value={value}
+            disabled={interaction !== undefined}
+            value={var2}
             onChange={(event: React.FormEvent<any>): void => {
               event.preventDefault();
-              const var2 = (event.target as HTMLInputElement).value;
-              if (var1) {
-                handleSaveInteraction();
-              } else {
-                // setSelectedInteraction([key, var2]);
-              }
+              const nextvar2 = (event.target as HTMLInputElement).value;
+              setSelectedInteraction([selectedInteraction[0], nextvar2]);
             }}
           >
             <option>{variableDefault}</option>
             {variables?.map(v => (
-              <option key={`interact2-${v.code}`} value={v.code}>
+              <option
+                key={`interact2-${v.code}`}
+                value={v.code}
+                disabled={v.code === selectedInteraction[0]}
+              >
                 {v.label}
               </option>
             ))}
           </Form.Control>
         </Form.Group>
         <Form.Group as={Col}>
-          {!var1 && (
-            <Button variant="info" onClick={() => handleSaveInteraction()}>
-              +
-            </Button>
-          )}
-          {var1 && (
+          {interaction === undefined &&
+            selectedInteraction[0] &&
+            selectedInteraction[1] && (
+              <Button variant="info" onClick={() => handleSetInteraction()}>
+                +
+              </Button>
+            )}
+          {interaction && (
             <Button
               variant="danger"
-              onClick={() => handleDeleteInteraction(var1)}
+              onClick={() => handleUnsetInteraction(interaction)}
             >
-              -
+              x
             </Button>
           )}
         </Form.Group>
@@ -301,18 +321,20 @@ const Formula = ({
           <>
             <h5>Interaction terms</h5>
             <p>Pairwise interactions between variables.</p>
+            <p>
+              <strong>Add Interaction</strong>
+            </p>
             {interactionVariables.length <
               Math.floor((variables?.length || 0) / 2) && (
-              <>
-                <p>
-                  <strong>Add Interaction</strong>
-                </p>
-                <InteractionRow key={'interactionrow-edit'} />
-              </>
+              <InteractionRow key={'interaction-row-edit'} />
             )}
-            {/* {interactionVariables.map(interaction => (
-            <InteractionRow var1={code} key={`interactionrow-${code}`} />
-          ))} */}
+            {interactionVariables.map(interaction => (
+              <InteractionRow
+                interaction={interaction}
+                // eslint-disable-next-line
+                key={`interaction-row-${interaction.join('-')}`}
+              />
+            ))}
           </>
         )}
       </Form>

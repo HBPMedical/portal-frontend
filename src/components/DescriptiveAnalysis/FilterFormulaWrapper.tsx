@@ -33,33 +33,35 @@ const Options = ({
   handleUpdateFormula,
   query,
   lookup
-}: IFilters & IOptions) => (
-  <>
-    <NavBar />
-    <Card>
-      <Card.Body>
-        <Filter
-          rules={filters}
-          filters={fields}
-          handleChangeFilter={handleUpdateFilter}
-        />
-      </Card.Body>
-    </Card>
-    <Card>
-      <Card.Body>
-        {React.useMemo(
-          () => (
-            <Formula
-              query={query}
-              lookup={lookup}
-              handleUpdateFormula={handleUpdateFormula}
-            />
-          ),
-          [query, lookup, handleUpdateFormula]
-        )}
-      </Card.Body>
-    </Card>
-  </>
-);
+}: IFilters & IOptions) => {
+  const handleUpdateFormulaCallback = React.useCallback(
+    handleUpdateFormula,
+    []
+  );
+  const memoizedQuery = React.useMemo(() => query, [query]);
+  return (
+    <>
+      <NavBar />
+      <Card>
+        <Card.Body>
+          <Filter
+            rules={filters}
+            filters={fields}
+            handleChangeFilter={handleUpdateFilter}
+          />
+        </Card.Body>
+      </Card>
+      <Card>
+        <Card.Body>
+          <Formula
+            query={memoizedQuery}
+            lookup={lookup}
+            handleUpdateFormula={handleUpdateFormulaCallback}
+          />
+        </Card.Body>
+      </Card>
+    </>
+  );
+};
 
 export default Options;
