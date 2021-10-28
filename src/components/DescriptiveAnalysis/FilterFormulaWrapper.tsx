@@ -38,7 +38,6 @@ const Options = ({
     handleUpdateFormula,
     []
   );
-  const memoizedQuery = React.useMemo(() => query, [query]);
   return (
     <>
       <NavBar />
@@ -54,7 +53,7 @@ const Options = ({
       <Card>
         <Card.Body>
           <Formula
-            query={memoizedQuery}
+            query={query}
             lookup={lookup}
             handleUpdateFormula={handleUpdateFormulaCallback}
           />

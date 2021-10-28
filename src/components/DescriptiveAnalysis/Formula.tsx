@@ -52,7 +52,6 @@ const Formula = ({
 
   useEffect(() => {
     handleUpdateFormula(formula);
-    console.log('hey');
   }, [formula, handleUpdateFormula]);
 
   useEffect(() => {
@@ -324,10 +323,6 @@ const Formula = ({
             <p>
               <strong>Add Interaction</strong>
             </p>
-            {interactionVariables.length <
-              Math.floor((variables?.length || 0) / 2) && (
-              <InteractionRow key={'interaction-row-edit'} />
-            )}
             {interactionVariables.map(interaction => (
               <InteractionRow
                 interaction={interaction}
@@ -335,6 +330,10 @@ const Formula = ({
                 key={`interaction-row-${interaction.join('-')}`}
               />
             ))}
+            {interactionVariables.length <
+              Math.floor((variables?.length || 0) / 2) && (
+              <InteractionRow key={'interaction-row-edit'} />
+            )}
           </>
         )}
       </Form>
