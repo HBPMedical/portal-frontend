@@ -1,7 +1,7 @@
 import * as React from 'react';
 
 import { VariableEntity } from '../API/Core';
-import { ModelResponse } from '../API/Model';
+import { IFormula, ModelResponse } from '../API/Model';
 
 interface Props {
   model?: ModelResponse;
@@ -11,7 +11,6 @@ interface Props {
 class Model extends React.Component<Props> {
   render(): JSX.Element {
     const { model, lookup } = this.props;
-
     const query = model && model.query;
 
     return (
@@ -47,7 +46,14 @@ class Model extends React.Component<Props> {
             {query.filters && (
               <section>
                 <h4>Filters</h4>
-                {query.filters && this.formatFilter(query.filters)}
+                {this.formatFilter(query.filters)}
+              </section>
+            )}
+
+            {query.formula && (
+              <section>
+                <h4>Formula</h4>
+                {this.formatFormula(query.formula)}
               </section>
             )}
           </>
@@ -123,6 +129,38 @@ class Model extends React.Component<Props> {
         </div>
       );
     });
+  };
+
+  private formatFormula = (formula: IFormula): JSX.Element => {
+    const { lookup, model } = this.props;
+    const pathologyCode = model?.query?.pathology;
+    const transformations = formula.transformations;
+    const interactions = formula.interactions;
+
+    const T = () => (
+      <>
+        {transformations?.map(t => (
+          <div key={t.operation}>{`${t.operation}(${
+            lookup(t.name, pathologyCode).label
+          })`}</div>
+        )) || <></>}
+      </>
+    );
+    const I = () => (
+      <>
+        {(interactions?.length || 0) > 0 && <h6>Interactions</h6>}
+        {interactions?.map((i, j) => (
+          <div key={`${j}`}>{i.join('-')}</div>
+        ))}
+      </>
+    );
+
+    return (
+      <div>
+        <T />
+        <I />
+      </div>
+    );
   };
 }
 
