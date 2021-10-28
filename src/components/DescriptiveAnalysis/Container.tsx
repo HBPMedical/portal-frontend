@@ -12,7 +12,7 @@ import Loader from '../UI/Loader';
 import ExperimentSidebar from './ExperimentSidebar';
 import Header from './Header';
 import Wrapper from './FilterFormulaWrapper';
-import { IFormula } from '../API/Model'
+import { IFormula } from '../API/Model';
 
 interface Props extends RouteComponentProps {
   apiModel: APIModel;
@@ -45,15 +45,15 @@ const Container = ({
   const results = data?.createExperiment.results as ResultUnion[];
 
   React.useEffect(() => {
-    if (!shouldReload) {
-      return;
-    }
+    // if (!shouldReload) {
+    //   return;
+    // }
 
     const query = apiModel?.state?.model?.query;
     const datasets = query?.trainingDatasets;
 
     if (datasets && query) {
-      const formula = query?.formula
+      const formula = query?.formula;
 
       const variables = [
         ...(query.variables?.map(variable => variable.code) ?? []),
