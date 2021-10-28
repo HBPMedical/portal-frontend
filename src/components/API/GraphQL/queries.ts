@@ -1,4 +1,5 @@
 import { gql } from '@apollo/client';
+import { resultsFragment } from './fragments';
 
 export const QUERY_DOMAINS = gql`
   fragment coreGroupInfo on Group {
@@ -39,19 +40,7 @@ export const QUERY_DOMAINS = gql`
 `;
 
 const ADD_TRANSIENT = gql`
-  fragment coreInfoResult on ResultUnion {
-    ... on TableResult {
-      name
-      data
-      headers {
-        name
-        type
-      }
-    }
-    ... on RawResult {
-      rawdata
-    }
-  }
+  ${resultsFragment}
 
   mutation CreateTransient($data: ExperimentCreateInput!) {
     createExperiment(data: $data, isTransient: true) {
@@ -66,6 +55,36 @@ const ADD_TRANSIENT = gql`
             }
           }
         }
+        ...coreInfoResult
+      }
+    }
+  }
+`;
+
+export const QUERY_EXPERIMENT = gql`
+  ${resultsFragment}
+
+  query getExperiment($uuid: String!) {
+    expriment(uuid: $uuid) {
+      name
+      uuid
+      author
+      createdAt
+      finishedAt
+      viewed
+      shared
+      algorithm {
+        name
+        description
+        label
+        type
+        parameters {
+          name
+          label
+          value
+        }
+      }
+      results {
         ...coreInfoResult
       }
     }
