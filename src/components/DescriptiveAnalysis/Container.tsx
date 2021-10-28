@@ -5,25 +5,20 @@ import Sidebar from 'react-sidebar';
 import { APICore, APIExperiment, APIModel } from '../API';
 import { VariableEntity } from '../API/Core';
 import { useCreateTransientMutation } from '../API/GraphQL/queries.generated';
-import { ExperimentCreateInput } from '../API/GraphQL/types.generated';
 import { ResultUnion } from '../API/GraphQL/types.generated';
 import ResultDispatcher from '../ExperimentResult/ResultDispatcher';
 import Error from '../UI/Error';
 import Loader from '../UI/Loader';
 import ExperimentSidebar from './ExperimentSidebar';
 import Header from './Header';
-import Options from './Options';
+import Wrapper from './FilterFormulaWrapper';
+import { IFormula } from '../API/Model'
 
 interface Props extends RouteComponentProps {
   apiModel: APIModel;
   apiCore: APICore;
   apiExperiment: APIExperiment;
 }
-
-export type IFormula = Pick<
-  ExperimentCreateInput,
-  'interactions' | 'transformations'
->;
 
 const Container = ({
   apiModel,
@@ -33,7 +28,6 @@ const Container = ({
 }: Props): JSX.Element => {
   const [shouldReload, setShouldReload] = useState(true);
   const [sidebarOpen, setSidebarOpen] = useState(false);
-  const [formula, setFormula] = useState<IFormula>({});
   const [
     createTransientMutation,
     { data, loading, error }
@@ -59,6 +53,8 @@ const Container = ({
     const datasets = query?.trainingDatasets;
 
     if (datasets && query) {
+      const formula = query?.formula
+
       const variables = [
         ...(query.variables?.map(variable => variable.code) ?? []),
         ...(query.coVariables?.map(variable => variable.code) ?? []),
@@ -82,13 +78,14 @@ const Container = ({
           }
         }
       });
+
+      setShouldReload(false);
     }
   }, [
     apiModel.state.model,
     trainingDatasets,
     queryfilters,
     shouldReload,
-    formula,
     createTransientMutation,
     apiModel
   ]);
@@ -108,6 +105,15 @@ const Container = ({
     const model = apiModel.state.model;
     if (model) {
       model.query.filters = (filters && JSON.stringify(filters)) || '';
+      setShouldReload(true);
+      await apiModel.setModel(model);
+    }
+  };
+
+  const handleUpdateFormula = async (formula?: IFormula): Promise<void> => {
+    const model = apiModel.state.model;
+    if (model) {
+      model.query.formula = formula;
       setShouldReload(true);
       await apiModel.setModel(model);
     }
@@ -219,11 +225,11 @@ const Container = ({
       <div>
         <Sidebar
           sidebar={
-            <Options
+            <Wrapper
               filters={filters}
               fields={fields}
               handleUpdateFilter={handleUpdateFilter}
-              setFormula={setFormula}
+              handleUpdateFormula={handleUpdateFormula}
               query={query}
               lookup={apiCore.lookup}
             />
@@ -233,7 +239,7 @@ const Container = ({
           styles={{ sidebar: { background: 'white' } }}
           pullRight
         >
-          test
+          sidebar
         </Sidebar>
       </div>
       <div className="Model Review">

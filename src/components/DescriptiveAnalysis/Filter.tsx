@@ -56,7 +56,7 @@ class Filter extends React.Component<Props, State> {
         nextFilters.map((n: any) => n.id)
       )
     ) {
-      console.log('Filters changed');
+      // console.log('Filters changed');
       this.ref.queryBuilder('destroy');
 
       const changed = this.compareKeys(
@@ -66,7 +66,7 @@ class Filter extends React.Component<Props, State> {
           nextRules.rules.map((n: any) => n.id)
       );
 
-      if (changed) {
+      if (changed && filters && rules) {
         this.ref.queryBuilder({ filters, rules });
         this.onRulesChanged();
 
