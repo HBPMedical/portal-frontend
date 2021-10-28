@@ -148,8 +148,8 @@ export type HeatMapResult = {
   __typename?: 'HeatMapResult';
   matrix: Array<Array<Scalars['Float']>>;
   name: Scalars['String'];
-  xAxis: ChartAxis;
-  yAxis: ChartAxis;
+  xAxis?: Maybe<ChartAxis>;
+  yAxis?: Maybe<ChartAxis>;
 };
 
 export type LineChartResult = {

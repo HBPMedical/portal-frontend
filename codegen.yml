@@ -1,6 +1,6 @@
 overwrite: true
 schema: "http://127.0.0.1:8081/graphql"
-documents: "src/components/API/GraphQL/queries.ts"
+documents: ["src/components/API/GraphQL/queries.ts", "src/components/API/GraphQL/fragments.ts"]
 generates:
   src/components/API/GraphQL/types.generated.ts:
     - typescript
