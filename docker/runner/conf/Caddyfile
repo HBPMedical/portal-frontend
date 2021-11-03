@@ -40,9 +40,13 @@
 		import rp-{$MIP_LINK:direct} {$KEYCLOAK_HOST}
 	}
 
-	handle /services/* {
+	handle /services/sso/* {
 		uri replace /services/ /{$PORTAL_BACKEND_CONTEXT:services}/
 		import rp-{$MIP_LINK:direct} {$PORTAL_BACKEND_SERVER}
+	}
+
+	handle_path /services/* {
+		import rp-{$MIP_LINK:direct} {$GATEWAY_SERVER}
 	}
 
 	# keycloak redirect on /services/ after login. In that case, redirect to /
