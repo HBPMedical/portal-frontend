@@ -5,9 +5,10 @@ import { ApolloClient, InMemoryCache } from '@apollo/client';
 import { TEST_PATHOLOGIES } from '../../UtiltyTests'
 import { CreateTransientDocument } from '../../GraphQL/queries.generated';
 import { ExperimentCreateInput } from '../../GraphQL/types.generated';
+import { graphQLURL } from '../../RequestURLS';
 
 const apolloClient = new ApolloClient({
-  uri: process.env.REACT_APP_GATEWAY_URL,
+  uri: graphQLURL,
   cache: new InMemoryCache()
 });
 

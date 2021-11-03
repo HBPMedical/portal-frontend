@@ -10,6 +10,8 @@ import {
   Variable as VariableData
 } from './GraphQL/types.generated';
 import { QUERY_DOMAINS } from './GraphQL/queries';
+import { graphQLURL } from './RequestURLS';
+import config from './RequestHeaders';
 
 export interface Variable {
   code: string;
@@ -148,8 +150,12 @@ export interface State {
 }
 
 export const apolloClient = new ApolloClient({
-  uri: process.env.REACT_APP_GATEWAY_URL,
-  cache: new InMemoryCache()
+  uri: graphQLURL,
+  cache: new InMemoryCache(),
+  headers: {
+    ...config.options?.headers,
+    accept: 'application/json, text/plain, */*'
+  }
 });
 
 class Core extends Container<State> {
