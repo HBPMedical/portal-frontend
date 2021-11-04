@@ -35,13 +35,11 @@ const Container = ({
 
   const { history } = props;
   const model = apiModel.state.model;
-  const trainingDatasets = model?.query.trainingDatasets;
-  const queryfilters = model?.query.filters;
   const query = model?.query;
+  const trainingDatasets = query?.trainingDatasets;
+  const queryfilters = query?.filters;
   const pathology = query?.pathology || '';
   const datasets = apiCore.state.pathologiesDatasets[pathology];
-
-  // console.log(data, loading, error);
   const results = data?.createExperiment.results as ResultUnion[];
 
   React.useEffect(() => {

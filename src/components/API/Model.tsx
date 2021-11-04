@@ -168,6 +168,7 @@ class Model extends Container<ModelState> {
         (d3Model.filters &&
           d3Model.filters.map(v => ({ code: v.data.code }))) ||
         [],
+      formula: model?.query.formula || undefined,
       groupings:
         (d3Model.covariables &&
           d3Model.covariables
