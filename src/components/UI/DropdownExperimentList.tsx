@@ -287,7 +287,7 @@ const ExperimentRow = ({
   }): JSX.Element => (
     <td colSpan={3}>
       <InlineDialog ref={node}>
-        <p className="danger">Really delete this experiment?</p>
+        <span className="danger">Really delete this experiment?</span>
         <div>
           <Button
             size={'sm'}
