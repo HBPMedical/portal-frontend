@@ -9,7 +9,7 @@ import { MIME_TYPES, ERRORS_OUTPUT, UI_HIDDEN_PARAMETERS } from '../constants';
 import { AlgorithmParameter, Algorithm } from '../API/Core';
 import { VariableEntity } from './Core';
 import { APIModel } from './';
-import { ModelResponse } from './Model';
+import { IFormula, ModelResponse } from './Model';
 
 type fieldType = 'p-value' | 'p' | 'prvalue' | 'p_value';
 // TODO: in Visualisation JSONDAta
@@ -348,7 +348,8 @@ const handleSelectExperimentToModel = (
         trainingDatasets: oldModel?.query.trainingDatasets,
         variables: undefined,
         coVariables: undefined,
-        filters: undefined
+        filters: undefined,
+        formula: undefined
       }
     };
 
@@ -382,6 +383,20 @@ const handleSelectExperimentToModel = (
     return parameter;
   };
 
+  const formulaString =
+    (parameters.find(p => p[paramName] === 'formula')?.value as string) ||
+    undefined;
+  const formulaJSON = (formulaString && JSON.parse(formulaString)) || undefined;
+
+  const formula: IFormula = formulaJSON && {
+    transformations: formulaJSON.single?.map((s: any) => ({
+      /* eslint-disable-next-line @typescript-eslint/camelcase */
+      name: s.var_name,
+      /* eslint-disable-next-line @typescript-eslint/camelcase */
+      operation: s.unary_operation
+    })),
+    interactions: formulaJSON.interactions?.map((i: any) => [i.var1, i.var2])
+  };
   const newModel: ModelResponse = {
     query: {
       pathology: parameters.find(p => p[paramName] === 'pathology')
@@ -394,7 +409,8 @@ const handleSelectExperimentToModel = (
         .map(m => ({ code: m, label: m })),
       variables: extract('y'),
       coVariables: extract('x'),
-      filters: parameters.find(p => p[paramName] === 'filter')?.value as string
+      filters: parameters.find(p => p[paramName] === 'filter')?.value as string,
+      formula
     }
   };
 
