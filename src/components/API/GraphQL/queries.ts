@@ -1,5 +1,5 @@
 import { gql } from '@apollo/client';
-import { resultsFragment } from './fragments';
+import { fragmentResults } from './fragments';
 
 export const QUERY_DOMAINS = gql`
   fragment coreGroupInfo on Group {
@@ -40,9 +40,9 @@ export const QUERY_DOMAINS = gql`
 `;
 
 const ADD_TRANSIENT = gql`
-  ${resultsFragment}
+  ${fragmentResults}
 
-  mutation CreateTransient($data: ExperimentCreateInput!) {
+  mutation createTransient($data: ExperimentCreateInput!) {
     createExperiment(data: $data, isTransient: true) {
       name
       results {
@@ -61,10 +61,10 @@ const ADD_TRANSIENT = gql`
   }
 `;
 
-export const QUERY_EXPERIMENT = gql`
-  ${resultsFragment}
+const QUERY_EXPERIMENT = gql`
+  ${fragmentResults}
 
-  query getExperiment($uuid: String!) {
+  query experiment($uuid: String!) {
     expriment(uuid: $uuid) {
       name
       uuid
@@ -87,6 +87,15 @@ export const QUERY_EXPERIMENT = gql`
       results {
         ...coreInfoResult
       }
+    }
+  }
+`;
+
+const MUTATE_EXPERIMEMT = gql`
+  mutation experiment($uuid: String!, $data: ExperimentEditInput!) {
+    editExperiment(uuid: $uuid, data: $data) {
+      uuid
+      name
     }
   }
 `;
