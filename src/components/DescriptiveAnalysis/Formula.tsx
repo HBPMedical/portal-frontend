@@ -51,10 +51,6 @@ const Formula = ({
   const lookupCallback = useCallback(lookup, []);
 
   useEffect(() => {
-    handleUpdateFormula(formula);
-  }, [formula, handleUpdateFormula]);
-
-  useEffect(() => {
     const variables: VariableEntity[] | undefined = query && [
       ...(query.coVariables || []),
       ...(query.variables || []),
@@ -83,8 +79,10 @@ const Formula = ({
           selectedTransform as FormulaTransformation
         ]
       }));
+      
     }
     setSelectedTransform(null);
+    handleUpdateFormula(formula);
   };
 
   const handleUnsetTransform = (transformation?: FormulaTransformation) => {
@@ -96,6 +94,7 @@ const Formula = ({
       ...previousFormula,
       transformations
     }));
+    handleUpdateFormula(formula);
   };
 
   const handleSetInteraction = (): void => {
@@ -110,6 +109,7 @@ const Formula = ({
       }));
       setSelectedInteraction([]);
     }
+    handleUpdateFormula(formula);
   };
 
   const handleUnsetInteraction = (interaction: string[]) => {
@@ -121,6 +121,7 @@ const Formula = ({
       ...previousFormula,
       interactions
     }));
+    handleUpdateFormula(formula);
   };
 
   const TransformRow = ({
