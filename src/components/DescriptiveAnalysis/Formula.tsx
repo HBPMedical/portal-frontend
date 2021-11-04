@@ -79,7 +79,6 @@ const Formula = ({
           selectedTransform as FormulaTransformation
         ]
       }));
-      
     }
     setSelectedTransform(null);
     handleUpdateFormula(formula);
