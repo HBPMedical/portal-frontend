@@ -26,6 +26,7 @@ export type ParameterName =
   | 'dataset'
   | 'pathology'
   | 'filter'
+  | 'formula'
   | 'bins'
   | 'referencevalues'
   | 'encodingparameter'
@@ -478,6 +479,26 @@ class Experiment extends Container<State> {
 
         if (p.label === 'filter') {
           value = (query.filters && query.filters) || '';
+        }
+
+        const data = query?.formula;
+        const formula =
+          (data &&
+            (data.transformations || data.interactions) && {
+              single: data?.transformations?.map(t => ({
+                // eslint-disable-next-line @typescript-eslint/camelcase
+                var_name: t.name,
+                // eslint-disable-next-line @typescript-eslint/camelcase
+                unary_operation: t.operation
+              })),
+              interactions: data?.interactions?.map(v =>
+                v.reduce((a, e, i) => ({ ...a, [`var${i + 1}`]: e }), {})
+              )
+            }) ||
+          null;
+
+        if (p.label === 'formula') {
+          value = JSON.stringify(formula);
         }
       }
 
