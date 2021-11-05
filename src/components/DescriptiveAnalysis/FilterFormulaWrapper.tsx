@@ -5,6 +5,7 @@ import Formula from './Formula';
 import { Query } from '../API/Model';
 import { VariableEntity } from '../API/Core';
 import { IFormula } from '../API/Model';
+import { APICore } from '../API';
 
 interface IFilters {
   fields: any;
@@ -16,6 +17,7 @@ interface IOptions {
   query?: Query;
   handleUpdateFormula: (formula?: IFormula) => void;
   lookup: (code: string, pathologyCode: string | undefined) => VariableEntity;
+  apiCore: APICore;
 }
 
 const NavBar = () => (
@@ -32,7 +34,8 @@ const Options = ({
   handleUpdateFilter,
   handleUpdateFormula,
   query,
-  lookup
+  lookup,
+  apiCore
 }: IFilters & IOptions) => {
   const handleUpdateFormulaCallback = React.useCallback(
     handleUpdateFormula,
@@ -56,6 +59,9 @@ const Options = ({
             query={query}
             lookup={lookup}
             handleUpdateFormula={handleUpdateFormulaCallback}
+            availableAlgorithms={apiCore.state.algorithms?.filter(a =>
+              a.parameters.find((p: any) => p.type === 'formula_description')
+            )}
           />
         </Card.Body>
       </Card>

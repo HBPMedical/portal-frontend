@@ -37,20 +37,20 @@ class Model extends React.Component<Props> {
 
             {((query.coVariables && query.coVariables.length > 0) ||
               (query.groupings && query.groupings.length > 0)) && (
-                <section>
-                  <h4>Covariates</h4>
-                  {query.coVariables &&
-                    query.coVariables.length > 0 &&
-                    query.coVariables.map((v: any) => (
-                      <p key={v.code}>{lookup(v.code, query.pathology).info}</p>
-                    ))}
-                  {query.groupings &&
-                    query.groupings.length > 0 &&
-                    query.groupings.map((v: any) => (
-                      <p key={v.code}>{lookup(v.code, query.pathology).info}</p>
-                    ))}
-                </section>
-              )}
+              <section>
+                <h4>Covariates</h4>
+                {query.coVariables &&
+                  query.coVariables.length > 0 &&
+                  query.coVariables.map((v: any) => (
+                    <p key={v.code}>{lookup(v.code, query.pathology).info}</p>
+                  ))}
+                {query.groupings &&
+                  query.groupings.length > 0 &&
+                  query.groupings.map((v: any) => (
+                    <p key={v.code}>{lookup(v.code, query.pathology).info}</p>
+                  ))}
+              </section>
+            )}
 
             {query.filters && (
               <section>
@@ -59,7 +59,8 @@ class Model extends React.Component<Props> {
               </section>
             )}
 
-            {(query.formula?.interactions || query.formula?.transformations) && (
+            {(query.formula?.interactions ||
+              query.formula?.transformations) && (
               <section>
                 <h4>Formula</h4>
                 {this.formatFormula(query.formula)}
@@ -115,8 +116,9 @@ class Model extends React.Component<Props> {
           }
 
           humanRules.push({
-            data: `${lookup(rule.field, pathologyCode).label
-              } ${this.ruleOperator(rule.operator)} ${rule.value}`,
+            data: `${
+              lookup(rule.field, pathologyCode).label
+            } ${this.ruleOperator(rule.operator)} ${rule.value}`,
             level
           });
 
@@ -147,7 +149,10 @@ class Model extends React.Component<Props> {
       <>
         {(transformations?.length || 0) > 0 && <h6>Transformations</h6>}
         {transformations?.map(t => (
-          <p key={t.operation}><em>{t.operation}: </em>{t.name}</p>
+          <p key={t.operation}>
+            <em>{t.operation}: </em>
+            {t.name}
+          </p>
         )) || <></>}
       </>
     );
@@ -164,7 +169,8 @@ class Model extends React.Component<Props> {
       <FormulaStyle>
         <div>
           <Transformation />
-        </div><div>
+        </div>
+        <div>
           <Interaction />
         </div>
       </FormulaStyle>

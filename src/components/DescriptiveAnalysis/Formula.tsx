@@ -5,6 +5,7 @@ import { IFormula } from '../API/Model';
 import styled from 'styled-components';
 import { Query } from '../API/Model';
 import { FormulaTransformation } from '../API/GraphQL/types.generated';
+import { Algorithm } from '../API/Core';
 
 type Modify<T, R> = Omit<T, keyof R> & R;
 type SelectedTransformation = Modify<
@@ -33,11 +34,13 @@ const Wrapper = styled.div`
 const Formula = ({
   query,
   handleUpdateFormula,
-  lookup
+  lookup,
+  availableAlgorithms
 }: {
   query?: Query;
   handleUpdateFormula: (formula?: IFormula) => void;
   lookup: (code: string, pathologyCode: string | undefined) => VariableEntity;
+  availableAlgorithms?: Algorithm[];
 }) => {
   const [variables, setVariables] = useState<VariableEntity[]>();
   const [formula, setFormula] = useState<IFormula>();
@@ -292,31 +295,34 @@ const Formula = ({
   return (
     <Wrapper>
       <h4>Formula</h4>
-      <Form>
-        <h5>Transformations</h5>
-        <p>
-          Transformation to be applied to a single variable. Examples of
-          transformations are mathematical functions (log, exp, center,
-          standardize) for numerical variables.
-        </p>
+      <p>
+        The formula is available for the following algorithms:{' '}
+        {availableAlgorithms?.map(a => a.label).toString()}
+      </p>
+      {(variables?.length || 0) > 1 ?? (
+        <Form>
+          <h5>Transformations</h5>
+          <p>
+            Transformation to be applied to a single variable. Examples of
+            transformations are mathematical functions (log, exp, center,
+            standardize) for numerical variables.
+          </p>
+          <p>
+            <strong>Add Transformation</strong>
+          </p>
 
-        <p>
-          <strong>Add Transformation</strong>
-        </p>
+          {transformationVariables.map(transformation => (
+            <TransformRow
+              transformation={transformation}
+              // eslint-disable-next-line
+              key={`transformations-row-${transformation.name}`}
+            />
+          ))}
 
-        {transformationVariables.map(transformation => (
-          <TransformRow
-            transformation={transformation}
-            // eslint-disable-next-line
-            key={`transformations-row-${transformation.name}`}
-          />
-        ))}
+          {transformationVariables.length < (variables?.length || 0) && (
+            <TransformRow key={'transformations-row-edit'} />
+          )}
 
-        {transformationVariables.length < (variables?.length || 0) && (
-          <TransformRow key={'transformations-row-edit'} />
-        )}
-
-        {(variables?.length || 0) > 1 && (
           <>
             <h5>Interaction terms</h5>
             <p>Pairwise interactions between variables.</p>
@@ -335,8 +341,8 @@ const Formula = ({
               <InteractionRow key={'interaction-row-edit'} />
             )}
           </>
-        )}
-      </Form>
+        </Form>
+      )}
     </Wrapper>
   );
 };

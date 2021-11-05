@@ -230,6 +230,7 @@ const Container = ({
               handleUpdateFormula={handleUpdateFormula}
               query={query}
               lookup={apiCore.lookup}
+              apiCore={apiCore}
             />
           }
           open={sidebarOpen}
