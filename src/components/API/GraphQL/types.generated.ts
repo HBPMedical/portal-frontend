@@ -94,7 +94,9 @@ export type ExperimentCreateInput = {
   datasets: Array<Scalars['String']>;
   domain: Scalars['String'];
   filter?: Maybe<Scalars['String']>;
+  interactions?: Maybe<Array<Array<Scalars['String']>>>;
   name: Scalars['String'];
+  transformations?: Maybe<Array<FormulaTransformation>>;
   variables: Array<Scalars['String']>;
 };
 
@@ -107,6 +109,11 @@ export type ExtraLineInfo = {
   __typename?: 'ExtraLineInfo';
   label: Scalars['String'];
   values: Array<Scalars['String']>;
+};
+
+export type FormulaTransformation = {
+  name: Scalars['String'];
+  operation: Scalars['String'];
 };
 
 export type Group = {

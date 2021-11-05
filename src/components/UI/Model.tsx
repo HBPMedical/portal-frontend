@@ -1,17 +1,25 @@
 import * as React from 'react';
-
 import { VariableEntity } from '../API/Core';
-import { ModelResponse } from '../API/Model';
+import { IFormula, ModelResponse } from '../API/Model';
+import styled from 'styled-components';
 
 interface Props {
   model?: ModelResponse;
   lookup: (code: string, pathologyCode: string | undefined) => VariableEntity;
 }
 
+const FormulaStyle = styled.div`
+  h6 {
+    margin-bottom: 0.2em;
+  }
+
+  div {
+    margin-bottom: 0.5em;
+  }
+`;
 class Model extends React.Component<Props> {
   render(): JSX.Element {
     const { model, lookup } = this.props;
-
     const query = model && model.query;
 
     return (
@@ -47,7 +55,15 @@ class Model extends React.Component<Props> {
             {query.filters && (
               <section>
                 <h4>Filters</h4>
-                {query.filters && this.formatFilter(query.filters)}
+                {this.formatFilter(query.filters)}
+              </section>
+            )}
+
+            {(query.formula?.interactions ||
+              query.formula?.transformations) && (
+              <section>
+                <h4>Formula</h4>
+                {this.formatFormula(query.formula)}
               </section>
             )}
           </>
@@ -118,11 +134,47 @@ class Model extends React.Component<Props> {
 
     return humanRules.map((box: any, index: number) => {
       return (
-        <div key={index} className={`level-${box.level}`}>
+        <p key={index} className={`level-${box.level}`}>
           {box.data}
-        </div>
+        </p>
       );
     });
+  };
+
+  private formatFormula = (formula: IFormula): JSX.Element => {
+    const transformations = formula.transformations;
+    const interactions = formula.interactions;
+
+    const Transformation = () => (
+      <>
+        {(transformations?.length || 0) > 0 && <h6>Transformations</h6>}
+        {transformations?.map(t => (
+          <p key={t.operation}>
+            <em>{t.operation}: </em>
+            {t.name}
+          </p>
+        )) || <></>}
+      </>
+    );
+    const Interaction = () => (
+      <>
+        {(interactions?.length || 0) > 0 && <h6>Interactions</h6>}
+        {interactions?.map((i, j) => (
+          <p key={`${j}`}>{i.join('-')}</p>
+        ))}
+      </>
+    );
+
+    return (
+      <FormulaStyle>
+        <div>
+          <Transformation />
+        </div>
+        <div>
+          <Interaction />
+        </div>
+      </FormulaStyle>
+    );
   };
 }
 

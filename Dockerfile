@@ -61,3 +61,4 @@ LABEL org.label-schema.build-date=$BUILD_DATE \
     org.label-schema.docker.dockerfile="Dockerfile" \
     org.label-schema.memory-hint="10" \
     org.label-schema.schema-version="1.0"
+

@@ -30,6 +30,12 @@ const input: ExperimentCreateInput = {
     name: algorithmId,
     type: 'string'
   },
+  transformations: [
+    {
+      "name": "lefthippocampus",
+      "operation": "standardize"
+    }
+  ]
 }
 
 // Test

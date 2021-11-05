@@ -287,7 +287,7 @@ const ExperimentRow = ({
   }): JSX.Element => (
     <td colSpan={3}>
       <InlineDialog ref={node}>
-        <p className="danger">Really delete this experiment?</p>
+        <span className="danger">Really delete this experiment?</span>
         <div>
           <Button
             size={'sm'}
@@ -334,14 +334,18 @@ const ExperimentRow = ({
         ) : (
           <>
             <td className="align-middle">
-              <Link
-                className="experiment-name"
-                to={`/experiment/${experiment.uuid}`}
-                title={`See experiment ${experiment.name}`}
-                onClick={(): void => props.handleOnClick(experiment)}
-              >
-                {experiment.name}
-              </Link>
+              {isOwner || experiment.shared ? (
+                <Link
+                  className="experiment-name"
+                  to={`/experiment/${experiment.uuid}`}
+                  title={`See experiment ${experiment.name}`}
+                  onClick={(): void => props.handleOnClick(experiment)}
+                >
+                  {experiment.name}
+                </Link>
+              ) : (
+                <span>{experiment.name}</span>
+              )}
             </td>
 
             {confirmDelete ? (

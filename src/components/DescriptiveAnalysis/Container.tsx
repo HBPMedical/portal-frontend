@@ -1,4 +1,4 @@
-import * as React from 'react';
+import React, { useState } from 'react';
 import { Button, Card } from 'react-bootstrap';
 import { RouteComponentProps } from 'react-router-dom';
 import Sidebar from 'react-sidebar';
@@ -11,7 +11,8 @@ import Error from '../UI/Error';
 import Loader from '../UI/Loader';
 import ExperimentSidebar from './ExperimentSidebar';
 import Header from './Header';
-import Options from './Options';
+import Wrapper from './FilterFormulaWrapper';
+import { IFormula } from '../API/Model';
 
 interface Props extends RouteComponentProps {
   apiModel: APIModel;
@@ -25,8 +26,8 @@ const Container = ({
   apiExperiment,
   ...props
 }: Props): JSX.Element => {
-  const [shouldReload, setShouldReload] = React.useState(true);
-  const [sidebarOpen, setSidebarOpen] = React.useState(false);
+  const [shouldReload, setShouldReload] = useState(true);
+  const [sidebarOpen, setSidebarOpen] = useState(false);
   const [
     createTransientMutation,
     { data, loading, error }
@@ -34,27 +35,24 @@ const Container = ({
 
   const { history } = props;
   const model = apiModel.state.model;
-  const trainingDatasets = model?.query.trainingDatasets;
-  const queryfilters = model?.query.filters;
   const query = model?.query;
+  const trainingDatasets = query?.trainingDatasets;
+  const queryfilters = query?.filters;
   const pathology = query?.pathology || '';
   const datasets = apiCore.state.pathologiesDatasets[pathology];
-  const selectedDatasets = query?.trainingDatasets?.map(d => ({
-    ...datasets?.find(v => v.code === d.code),
-    ...d
-  }));
-  console.log(data, loading, error);
   const results = data?.createExperiment.results as ResultUnion[];
 
   React.useEffect(() => {
-    if (!shouldReload) {
-      return;
-    }
+    // if (!shouldReload) {
+    //   return;
+    // }
 
     const query = apiModel?.state?.model?.query;
     const datasets = query?.trainingDatasets;
 
     if (datasets && query) {
+      const formula = query?.formula;
+
       const variables = [
         ...(query.variables?.map(variable => variable.code) ?? []),
         ...(query.coVariables?.map(variable => variable.code) ?? []),
@@ -72,10 +70,14 @@ const Container = ({
             algorithm: {
               name: 'DESCRIPTIVE_STATS',
               type: 'string'
-            }
+            },
+            transformations: formula?.transformations,
+            interactions: formula?.interactions
           }
         }
       });
+
+      setShouldReload(false);
     }
   }, [
     apiModel.state.model,
@@ -101,6 +103,15 @@ const Container = ({
     const model = apiModel.state.model;
     if (model) {
       model.query.filters = (filters && JSON.stringify(filters)) || '';
+      setShouldReload(true);
+      await apiModel.setModel(model);
+    }
+  };
+
+  const handleUpdateFormula = async (formula?: IFormula): Promise<void> => {
+    const model = apiModel.state.model;
+    if (model) {
+      model.query.formula = formula;
       setShouldReload(true);
       await apiModel.setModel(model);
     }
@@ -212,12 +223,14 @@ const Container = ({
       <div>
         <Sidebar
           sidebar={
-            <Options
+            <Wrapper
               filters={filters}
               fields={fields}
               handleUpdateFilter={handleUpdateFilter}
+              handleUpdateFormula={handleUpdateFormula}
               query={query}
               lookup={apiCore.lookup}
+              apiCore={apiCore}
             />
           }
           open={sidebarOpen}
@@ -225,7 +238,7 @@ const Container = ({
           styles={{ sidebar: { background: 'white' } }}
           pullRight
         >
-          test
+          sidebar
         </Sidebar>
       </div>
       <div className="Model Review">

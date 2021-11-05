@@ -5,6 +5,7 @@ import { backendURL } from '../API';
 import { LONGITUDINAL_DATASET_TYPE } from '../constants';
 import { VariableEntity } from './Core';
 import { VariableDatum } from '../ExperimentExplore/d3Hierarchy';
+import { ExperimentCreateInput } from './GraphQL/types.generated';
 
 export type HierarchyCircularNode = d3.HierarchyCircularNode<VariableDatum>;
 
@@ -41,6 +42,12 @@ export interface IUser {
   username: string;
   votedApps?: string[];
 }
+
+export type IFormula = Pick<
+  ExperimentCreateInput,
+  'interactions' | 'transformations'
+>;
+
 export interface Query {
   filters?: string;
   pathology?: string;
@@ -52,7 +59,7 @@ export interface Query {
   testingDatasets?: VariableEntity[];
   validationDatasets?: VariableEntity[];
   [key: string]: any;
-  formulaString?: string;
+  formula?: IFormula;
 }
 
 const initialD3Model = {
@@ -161,6 +168,7 @@ class Model extends Container<ModelState> {
         (d3Model.filters &&
           d3Model.filters.map(v => ({ code: v.data.code }))) ||
         [],
+      formula: model?.query.formula || undefined,
       groupings:
         (d3Model.covariables &&
           d3Model.covariables
