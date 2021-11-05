@@ -1,13 +1,22 @@
 import * as React from 'react';
-
 import { VariableEntity } from '../API/Core';
 import { IFormula, ModelResponse } from '../API/Model';
+import styled from 'styled-components';
 
 interface Props {
   model?: ModelResponse;
   lookup: (code: string, pathologyCode: string | undefined) => VariableEntity;
 }
 
+const FormulaStyle = styled.div`
+  h6 {
+    margin-bottom: 0.2em;
+  }
+
+  div {
+    margin-bottom: 0.5em;
+  }
+`;
 class Model extends React.Component<Props> {
   render(): JSX.Element {
     const { model, lookup } = this.props;
@@ -28,20 +37,20 @@ class Model extends React.Component<Props> {
 
             {((query.coVariables && query.coVariables.length > 0) ||
               (query.groupings && query.groupings.length > 0)) && (
-              <section>
-                <h4>Covariates</h4>
-                {query.coVariables &&
-                  query.coVariables.length > 0 &&
-                  query.coVariables.map((v: any) => (
-                    <p key={v.code}>{lookup(v.code, query.pathology).info}</p>
-                  ))}
-                {query.groupings &&
-                  query.groupings.length > 0 &&
-                  query.groupings.map((v: any) => (
-                    <p key={v.code}>{lookup(v.code, query.pathology).info}</p>
-                  ))}
-              </section>
-            )}
+                <section>
+                  <h4>Covariates</h4>
+                  {query.coVariables &&
+                    query.coVariables.length > 0 &&
+                    query.coVariables.map((v: any) => (
+                      <p key={v.code}>{lookup(v.code, query.pathology).info}</p>
+                    ))}
+                  {query.groupings &&
+                    query.groupings.length > 0 &&
+                    query.groupings.map((v: any) => (
+                      <p key={v.code}>{lookup(v.code, query.pathology).info}</p>
+                    ))}
+                </section>
+              )}
 
             {query.filters && (
               <section>
@@ -50,7 +59,7 @@ class Model extends React.Component<Props> {
               </section>
             )}
 
-            {query.formula && (
+            {(query.formula?.interactions || query.formula?.transformations) && (
               <section>
                 <h4>Formula</h4>
                 {this.formatFormula(query.formula)}
@@ -106,9 +115,8 @@ class Model extends React.Component<Props> {
           }
 
           humanRules.push({
-            data: `${
-              lookup(rule.field, pathologyCode).label
-            } ${this.ruleOperator(rule.operator)} ${rule.value}`,
+            data: `${lookup(rule.field, pathologyCode).label
+              } ${this.ruleOperator(rule.operator)} ${rule.value}`,
             level
           });
 
@@ -124,42 +132,42 @@ class Model extends React.Component<Props> {
 
     return humanRules.map((box: any, index: number) => {
       return (
-        <div key={index} className={`level-${box.level}`}>
+        <p key={index} className={`level-${box.level}`}>
           {box.data}
-        </div>
+        </p>
       );
     });
   };
 
   private formatFormula = (formula: IFormula): JSX.Element => {
-    const { lookup, model } = this.props;
-    const pathologyCode = model?.query?.pathology;
     const transformations = formula.transformations;
     const interactions = formula.interactions;
 
-    const T = () => (
+    const Transformation = () => (
       <>
+        {(transformations?.length || 0) > 0 && <h6>Transformations</h6>}
         {transformations?.map(t => (
-          <div key={t.operation}>{`${t.operation}(${
-            lookup(t.name, pathologyCode).label
-          })`}</div>
+          <p key={t.operation}><em>{t.operation}: </em>{t.name}</p>
         )) || <></>}
       </>
     );
-    const I = () => (
+    const Interaction = () => (
       <>
         {(interactions?.length || 0) > 0 && <h6>Interactions</h6>}
         {interactions?.map((i, j) => (
-          <div key={`${j}`}>{i.join('-')}</div>
+          <p key={`${j}`}>{i.join('-')}</p>
         ))}
       </>
     );
 
     return (
-      <div>
-        <T />
-        <I />
-      </div>
+      <FormulaStyle>
+        <div>
+          <Transformation />
+        </div><div>
+          <Interaction />
+        </div>
+      </FormulaStyle>
     );
   };
 }
