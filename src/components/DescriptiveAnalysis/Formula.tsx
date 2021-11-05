@@ -323,24 +323,25 @@ const Formula = ({
             <TransformRow key={'transformations-row-edit'} />
           )}
 
-          <>
-            <h5>Interaction terms</h5>
-            <p>Pairwise interactions between variables.</p>
-            <p>
-              <strong>Add Interaction</strong>
-            </p>
-            {interactionVariables.map(interaction => (
-              <InteractionRow
-                interaction={interaction}
-                // eslint-disable-next-line
-                key={`interaction-row-${interaction.join('-')}`}
-              />
-            ))}
-            {interactionVariables.length <
-              Math.floor((variables?.length || 0) / 2) && (
-              <InteractionRow key={'interaction-row-edit'} />
-            )}
-          </>
+          {variables && variables.length > 1 && (
+            <>
+              <h5>Interaction terms</h5>
+              <p>Pairwise interactions between variables.</p>
+              <p>
+                <strong>Add Interaction</strong>
+              </p>
+              {interactionVariables.map(interaction => (
+                <InteractionRow
+                  interaction={interaction}
+                  // eslint-disable-next-line
+                  key={`interaction-row-${interaction.join('-')}`}
+                />
+              ))}
+              {interactionVariables.length <
+                Math.floor((variables?.length || 0) / 2) && (
+                  <InteractionRow key={'interaction-row-edit'} />
+                )}
+            </>)}
         </Form>
       )}
     </Wrapper>
