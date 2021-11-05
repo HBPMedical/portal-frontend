@@ -8,6 +8,10 @@ import Model from '../UI/Model';
 import { Exareme } from '../API/Exareme';
 import { ExperimentResult, ExperimentResultHeader } from './';
 import Algorithm from './Algorithms';
+import {
+  useExperimentLazyQuery,
+  useExperimentQuery
+} from '../API/GraphQL/queries.generated';
 
 interface RouteParams {
   uuid: string;
@@ -38,7 +42,7 @@ class ExperimentContainer extends React.Component<Props> {
 
     const e = apiExperiment.isExperiment(apiExperiment.state.experiment);
     if (e) {
-      Exareme.handleSelectExperimentToModel(apiModel, e);
+      Exareme.handleSelectExperimentToModel(apiModel, e); // can be removed
 
       if (!e.viewed) {
         apiExperiment.markAsViewed({ uuid });
@@ -188,4 +192,17 @@ class ExperimentContainer extends React.Component<Props> {
   };
 }
 
-export default withRouter(ExperimentContainer);
+const Container = ({ ...props }: Props): JSX.Element => {
+  //const [getDog, { loading, error, data }] = useExperimentLazyQuery();
+  const uuid = props.match.params.uuid;
+
+  const { loading, error, data } = useExperimentQuery({
+    variables: { uuid: uuid }
+  });
+
+  console.log(loading, data, props, error);
+
+  return <></>;
+};
+
+export default withRouter(Container);
