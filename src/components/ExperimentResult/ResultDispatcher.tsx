@@ -1,8 +1,8 @@
 import React from 'react';
 import {
+  ResultUnion,
   GroupsResult,
   RawResult,
-  ResultUnion,
   TableResult
 } from '../API/GraphQL/types.generated';
 import DataTable from '../UI/Visualization2/DataTable';
@@ -34,7 +34,7 @@ class ResultDispatcher extends React.Component<Props> {
               <DataTable data={result as TableResult} layout="statistics" />
             ),
             rawresult: <RawData result={result as RawResult} />,
-            error: <div> error occured </div>
+            error: <div> An error occured </div>
           } as Switcher)[type]
         }
       </>

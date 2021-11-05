@@ -64,7 +64,7 @@ const ADD_TRANSIENT = gql`
 const QUERY_EXPERIMENT = gql`
   ${fragmentResults}
 
-  query experiment($uuid: String!) {
+  query getExperiment($uuid: String!) {
     expriment(uuid: $uuid) {
       name
       uuid
@@ -85,6 +85,15 @@ const QUERY_EXPERIMENT = gql`
         }
       }
       results {
+        ... on GroupsResult {
+          groups {
+            name
+            description
+            results {
+              ...coreInfoResult
+            }
+          }
+        }
         ...coreInfoResult
       }
     }
@@ -92,7 +101,7 @@ const QUERY_EXPERIMENT = gql`
 `;
 
 const MUTATE_EXPERIMEMT = gql`
-  mutation experiment($uuid: String!, $data: ExperimentEditInput!) {
+  mutation editExperiment($uuid: String!, $data: ExperimentEditInput!) {
     editExperiment(uuid: $uuid, data: $data) {
       uuid
       name
