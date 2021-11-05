@@ -299,7 +299,7 @@ const Formula = ({
         The formula is available for the following algorithms:{' '}
         {availableAlgorithms?.map(a => a.label).toString()}
       </p>
-      {(variables?.length || 0) > 1 ?? (
+      {variables && variables.length > 0 && (
         <Form>
           <h5>Transformations</h5>
           <p>
