@@ -334,14 +334,18 @@ const ExperimentRow = ({
         ) : (
           <>
             <td className="align-middle">
-              <Link
-                className="experiment-name"
-                to={`/experiment/${experiment.uuid}`}
-                title={`See experiment ${experiment.name}`}
-                onClick={(): void => props.handleOnClick(experiment)}
-              >
-                {experiment.name}
-              </Link>
+              {isOwner || experiment.shared ? (
+                <Link
+                  className="experiment-name"
+                  to={`/experiment/${experiment.uuid}`}
+                  title={`See experiment ${experiment.name}`}
+                  onClick={(): void => props.handleOnClick(experiment)}
+                >
+                  {experiment.name}
+                </Link>
+              ) : (
+                <span>{experiment.name}</span>
+              )}
             </td>
 
             {confirmDelete ? (
