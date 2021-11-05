@@ -8,6 +8,7 @@ type Props = {
 class RawData extends React.Component<Props> {
   render(): JSX.Element {
     const { result } = this.props;
+    console.log('rawdata:', result?.rawdata);
     return <p> {result.rawdata} </p>;
   }
 }

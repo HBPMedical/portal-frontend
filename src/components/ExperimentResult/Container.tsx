@@ -1,17 +1,15 @@
 import * as React from 'react';
 import { Card } from 'react-bootstrap';
 import { RouteComponentProps, withRouter } from 'react-router-dom';
-
 import { APICore, APIExperiment, APIModel } from '../API';
+import { Exareme } from '../API/Exareme';
+import { useGetExperimentQuery } from '../API/GraphQL/queries.generated';
+import { ResultUnion } from '../API/GraphQL/types.generated';
 import Datasets from '../UI/Datasets';
 import Model from '../UI/Model';
-import { Exareme } from '../API/Exareme';
 import { ExperimentResult, ExperimentResultHeader } from './';
 import Algorithm from './Algorithms';
-import {
-  useExperimentLazyQuery,
-  useExperimentQuery
-} from '../API/GraphQL/queries.generated';
+import ResultDispatcher from './ResultDispatcher';
 
 interface RouteParams {
   uuid: string;
@@ -196,13 +194,24 @@ const Container = ({ ...props }: Props): JSX.Element => {
   //const [getDog, { loading, error, data }] = useExperimentLazyQuery();
   const uuid = props.match.params.uuid;
 
-  const { loading, error, data } = useExperimentQuery({
+  const { loading, error, data } = useGetExperimentQuery({
     variables: { uuid: uuid }
   });
 
-  console.log(loading, data, props, error);
+  //const results: Maybe<Array<ResultUnion>> = data?.expriment.results;
 
-  return <></>;
+  return (
+    <>
+      {loading && <p> Loading ...</p>}
+      {data &&
+        data.expriment &&
+        data.expriment.results
+          ?.filter(res => res)
+          .map((result, i) => (
+            <ResultDispatcher key={i} result={result}></ResultDispatcher>
+          ))}
+    </>
+  );
 };
 
 export default withRouter(Container);
