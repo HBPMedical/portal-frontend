@@ -1,4 +1,4 @@
-FROM node:latest as builder
+FROM node:16 as builder
 LABEL maintainer = "manuel.spuhler@chuv.ch"
 
 WORKDIR /frontend
@@ -61,3 +61,4 @@ LABEL org.label-schema.build-date=$BUILD_DATE \
     org.label-schema.docker.dockerfile="Dockerfile" \
     org.label-schema.memory-hint="10" \
     org.label-schema.schema-version="1.0"
+
