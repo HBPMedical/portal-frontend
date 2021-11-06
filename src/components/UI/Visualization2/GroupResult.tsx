@@ -28,7 +28,7 @@ const DescriptiveStatistics = ({
         <Tabs defaultActiveKey={0} id="uncontrolled-mining-tab">
           {result.groups?.map((group: GroupResult, i: number) => {
             return (
-              <Tab key={i} eventKey={i} title={group.name}>
+              <Tab key={i} eventKey={`${i}`} title={group.name}>
                 {group.description && <p>{group.description}</p>}
                 {group.results?.map((res: ResultUnion, j: number) => {
                   return <ResultDispatcher result={res} key={j} />;
