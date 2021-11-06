@@ -150,12 +150,23 @@ export interface State {
 }
 
 export const apolloClient = new ApolloClient({
-  uri: graphQLURL,
-  cache: new InMemoryCache(),
+  uri: process.env.REACT_APP_GATEWAY_URL,
   headers: {
     ...config.options?.headers,
     accept: 'application/json, text/plain, */*'
-  }
+  },
+  cache: new InMemoryCache({
+    possibleTypes: {
+      // https://github.com/apollographql/apollo-client/issues/7050
+      ResultUnion: [
+        'RawResult',
+        'GroupsResult',
+        'TableResult',
+        'HeatMapResult',
+        'LineChartResult'
+      ]
+    }
+  })
 });
 
 class Core extends Container<State> {
