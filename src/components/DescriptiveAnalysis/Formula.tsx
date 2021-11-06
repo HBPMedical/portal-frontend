@@ -43,7 +43,6 @@ const Formula = ({
   availableAlgorithms?: Algorithm[];
 }) => {
   const [variables, setVariables] = useState<VariableEntity[]>();
-  const [formula, setFormula] = useState<IFormula>();
   const [
     selectedTransform,
     setSelectedTransform
@@ -66,64 +65,64 @@ const Formula = ({
       .filter(v => !v.isCategorical);
 
     setVariables(lookedUpVariables);
-
-    if (query?.formula) {
-      setFormula(query.formula);
-    }
-  }, [query, setVariables, lookupCallback, setFormula]);
+  }, [query, setVariables, lookupCallback]);
 
   const handleSetTransform = (): void => {
+    const formula = query?.formula;
     const transformations = formula?.transformations || null;
     if (selectedTransform?.name && selectedTransform?.operation) {
-      setFormula(previousFormula => ({
-        ...previousFormula,
+      const nextFormula = {
+        ...formula,
         transformations: [
           ...(transformations ? transformations : []),
           selectedTransform as FormulaTransformation
         ]
-      }));
+      };
+      handleUpdateFormula(nextFormula);
     }
     setSelectedTransform(null);
-    handleUpdateFormula(formula);
   };
 
   const handleUnsetTransform = (transformation?: FormulaTransformation) => {
+    const formula = query?.formula;
     const previousTransformations = formula?.transformations;
     const transformations = previousTransformations?.filter(
       t => t.name !== transformation?.name
     );
-    setFormula(previousFormula => ({
-      ...previousFormula,
+    const nextFormula = {
+      ...formula,
       transformations
-    }));
-    handleUpdateFormula(formula);
+    };
+    handleUpdateFormula(nextFormula);
   };
 
   const handleSetInteraction = (): void => {
+    const formula = query?.formula;
     const interactions = formula?.interactions;
     if (selectedInteraction[0] && selectedInteraction[1]) {
-      setFormula(previousFormula => ({
-        ...previousFormula,
+      const nextFormula = {
+        ...formula,
         interactions: [
           ...(interactions ? interactions : []),
           [selectedInteraction[0], selectedInteraction[1]]
         ]
-      }));
-      setSelectedInteraction([]);
+      };
+      handleUpdateFormula(nextFormula);
     }
-    handleUpdateFormula(formula);
+    setSelectedInteraction([]);
   };
 
   const handleUnsetInteraction = (interaction: string[]) => {
+    const formula = query?.formula;
     const previousInteractions = formula?.interactions;
     const interactions = previousInteractions?.filter(
       i => !(i[0] === interaction[0] && i[1] === interaction[1])
     );
-    setFormula(previousFormula => ({
-      ...previousFormula,
+    const nextFormula = {
+      ...formula,
       interactions
-    }));
-    handleUpdateFormula(formula);
+    };
+    handleUpdateFormula(nextFormula);
   };
 
   const TransformRow = ({
@@ -289,6 +288,7 @@ const Formula = ({
     );
   };
 
+  const formula = query?.formula;
   const transformationVariables = formula?.transformations || [];
   const interactionVariables = formula?.interactions || [];
 
@@ -339,9 +339,10 @@ const Formula = ({
               ))}
               {interactionVariables.length <
                 Math.floor((variables?.length || 0) / 2) && (
-                  <InteractionRow key={'interaction-row-edit'} />
-                )}
-            </>)}
+                <InteractionRow key={'interaction-row-edit'} />
+              )}
+            </>
+          )}
         </Form>
       )}
     </Wrapper>
