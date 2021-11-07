@@ -1,6 +1,6 @@
 import { gql } from '@apollo/client';
 
-export const fragmentResults = gql`
+export const coreInfoResult = gql`
   fragment coreInfoResult on ResultUnion {
     ... on RawResult {
       rawdata

@@ -1,5 +1,43 @@
 import { gql } from '@apollo/client';
-import { fragmentResults } from './fragments';
+import { coreInfoResult } from './fragments';
+
+export const QUERY_EXPERIMENT = gql`
+  ${coreInfoResult}
+
+  query getExperiment($uuid: String!) {
+    expriment(uuid: $uuid) {
+      ...testing
+      author
+      createdAt
+      finishedAt
+      viewed
+      shared
+      algorithm {
+        name
+        description
+        label
+        type
+        parameters {
+          name
+          label
+          value
+        }
+      }
+      results {
+        ... on GroupsResult {
+          groups {
+            name
+            description
+            results {
+              ...coreInfoResult
+            }
+          }
+        }
+        ...coreInfoResult
+      }
+    }
+  }
+`;
 
 export const QUERY_DOMAINS = gql`
   fragment coreGroupInfo on Group {
@@ -39,8 +77,8 @@ export const QUERY_DOMAINS = gql`
   }
 `;
 
-const ADD_TRANSIENT = gql`
-  ${fragmentResults}
+export const ADD_TRANSIENT = gql`
+  ${coreInfoResult}
 
   mutation createTransient($data: ExperimentCreateInput!) {
     createExperiment(data: $data, isTransient: true) {
@@ -61,46 +99,7 @@ const ADD_TRANSIENT = gql`
   }
 `;
 
-const QUERY_EXPERIMENT = gql`
-  ${fragmentResults}
-
-  query getExperiment($uuid: String!) {
-    expriment(uuid: $uuid) {
-      name
-      uuid
-      author
-      createdAt
-      finishedAt
-      viewed
-      shared
-      algorithm {
-        name
-        description
-        label
-        type
-        parameters {
-          name
-          label
-          value
-        }
-      }
-      results {
-        ... on GroupsResult {
-          groups {
-            name
-            description
-            results {
-              ...coreInfoResult
-            }
-          }
-        }
-        ...coreInfoResult
-      }
-    }
-  }
-`;
-
-const MUTATE_EXPERIMEMT = gql`
+export const MUTATE_EXPERIMEMT = gql`
   mutation editExperiment($uuid: String!, $data: ExperimentEditInput!) {
     editExperiment(uuid: $uuid, data: $data) {
       uuid
