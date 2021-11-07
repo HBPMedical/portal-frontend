@@ -3,13 +3,15 @@ import { Card } from 'react-bootstrap';
 import { RouteComponentProps, withRouter } from 'react-router-dom';
 import { APICore, APIExperiment, APIModel } from '../API';
 import { Exareme } from '../API/Exareme';
+import { Result } from '../API/Experiment';
 import { useGetExperimentQuery } from '../API/GraphQL/queries.generated';
-import { ResultUnion } from '../API/GraphQL/types.generated';
+import { RawResult } from '../API/GraphQL/types.generated';
 import Datasets from '../UI/Datasets';
 import Model from '../UI/Model';
+import ResultsErrorBoundary from '../UI/ResultsErrorBoundary';
 import { ExperimentResult, ExperimentResultHeader } from './';
 import Algorithm from './Algorithms';
-import ResultDispatcher from './ResultDispatcher';
+import RenderResult from './RenderResult';
 
 interface RouteParams {
   uuid: string;
@@ -198,18 +200,19 @@ const Container = ({ ...props }: Props): JSX.Element => {
     variables: { uuid: uuid }
   });
 
-  //const results: Maybe<Array<ResultUnion>> = data?.expriment.results;
+  const results =
+    data?.expriment.results
+      ?.filter(res => res.__typename === 'RawResult')
+      .map(res => (res as RawResult).rawdata) ?? [];
 
   return (
     <>
       {loading && <p> Loading ...</p>}
-      {data &&
-        data.expriment &&
-        data.expriment.results
-          ?.filter(res => res)
-          .map((result, i) => (
-            <ResultDispatcher key={i} result={result}></ResultDispatcher>
-          ))}
+      {data && data.expriment && (
+        <ResultsErrorBoundary>
+          <RenderResult results={results as Result[]} />
+        </ResultsErrorBoundary>
+      )}
     </>
   );
 };
