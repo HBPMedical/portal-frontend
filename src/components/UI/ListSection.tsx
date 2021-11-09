@@ -5,23 +5,21 @@ interface Props {
   list?: string[];
 }
 
-class ListSection extends React.Component<Props> {
-  render(): JSX.Element {
-    const { title, list } = this.props;
+const ListSection = ({ ...props }: Props): JSX.Element => {
+  const { title, list } = props;
 
-    return (
-      <>
-        {title && list && (
-          <>
-            <h4>{title}</h4>
-            {list.map((item, i) => (
-              <p key={i}>{item}</p>
-            ))}
-          </>
-        )}
-      </>
-    );
-  }
-}
+  return (
+    <section>
+      {title && list && (
+        <>
+          <h4>{title}</h4>
+          {list.map((item, i) => (
+            <p key={i}>{item}</p>
+          ))}
+        </>
+      )}
+    </section>
+  );
+};
 
 export default ListSection;
