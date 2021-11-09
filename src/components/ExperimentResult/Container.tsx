@@ -3,15 +3,12 @@ import { Card } from 'react-bootstrap';
 import { RouteComponentProps, withRouter } from 'react-router-dom';
 import { APICore, APIExperiment, APIModel } from '../API';
 import { Exareme } from '../API/Exareme';
-import { Result } from '../API/Experiment';
 import { useGetExperimentQuery } from '../API/GraphQL/queries.generated';
-import { RawResult } from '../API/GraphQL/types.generated';
 import Datasets from '../UI/Datasets';
+import ListSection from '../UI/ListSection';
 import Model from '../UI/Model';
-import ResultsErrorBoundary from '../UI/ResultsErrorBoundary';
 import { ExperimentResult, ExperimentResultHeader } from './';
 import Algorithm from './Algorithms';
-import RenderResult from './RenderResult';
 
 interface RouteParams {
   uuid: string;
@@ -117,9 +114,9 @@ class ExperimentContainer extends React.Component<Props> {
                   <Datasets model={model} />
                 </section>
                 <section>
-                  <Algorithm
+                  {/*<Algorithm
                     experiment={apiExperiment.isExperiment(experiment)}
-                  />
+                  />*/}
                 </section>
                 <section>
                   <Model model={model} lookup={apiCore.lookup} />
@@ -196,24 +193,47 @@ const Container = ({ ...props }: Props): JSX.Element => {
   //const [getDog, { loading, error, data }] = useExperimentLazyQuery();
   const uuid = props.match.params.uuid;
 
-  const { loading, error, data } = useGetExperimentQuery({
-    variables: { uuid: uuid }
+  const { loading, error, data, stopPolling } = useGetExperimentQuery({
+    variables: { uuid: uuid },
+    //pollInterval: 500,
+    onCompleted: data => {
+      console.log('polled');
+      if (data && data.expriment.status === 'pending') stopPolling();
+    }
   });
 
-  const results =
-    data?.expriment.results
-      ?.filter(res => res.__typename === 'RawResult')
-      .map(res => (res as RawResult).rawdata) ?? [];
+  //useEffect(() => stopPolling, [stopPolling]);
 
   return (
-    <>
-      {loading && <p> Loading ...</p>}
-      {data && data.expriment && (
-        <ResultsErrorBoundary>
-          <RenderResult results={results as Result[]} />
-        </ResultsErrorBoundary>
-      )}
-    </>
+    <div className="Experiment Result">
+      <div className="header"></div>
+      <div className="content">
+        <div className="sidebar">
+          <Card>
+            <Card.Body>
+              <ListSection
+                title="Domain"
+                list={[data?.expriment.domain ?? '']}
+              />
+              <section>
+                <ListSection title="Datasets" list={data?.expriment.datasets} />
+              </section>
+              <section>
+                {data?.expriment && (
+                  <Algorithm algorithm={data.expriment.algorithm} />
+                )}
+              </section>
+              <section>
+                {/*<Model model={model} lookup={apiCore.lookup} />*/}
+              </section>
+            </Card.Body>
+          </Card>
+        </div>
+        <div className="results">
+          {/*<ExperimentResult experimentState={apiExperiment.state} />*/}
+        </div>
+      </div>
+    </div>
   );
 };
 

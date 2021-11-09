@@ -1,8 +1,6 @@
 import * as React from 'react';
 import styled from 'styled-components';
-
-import { IExperiment, ExperimentParameter } from '../API/Experiment';
-import { UI_HIDDEN_PARAMETERS } from '../constants';
+import { Algorithm } from '../API/GraphQL/types.generated';
 
 const Param = styled.p`
   overflow: wrap;
@@ -12,35 +10,19 @@ const Param = styled.p`
 `;
 
 const Algorithms = ({
-  experiment
+  algorithm
 }: {
-  experiment?: IExperiment;
+  algorithm?: Algorithm;
 }): JSX.Element | null => {
-  const algorithm = experiment?.algorithm;
-  const isWorkflow = algorithm?.type === 'workflow';
-  const paramName = isWorkflow ? 'label' : 'name';
-
-  const parameters =
-    (algorithm?.parameters &&
-      algorithm.parameters.length > 0 &&
-      algorithm.parameters.filter(p => {
-        const param = p[paramName];
-        if (param) {
-          return !UI_HIDDEN_PARAMETERS.includes(param);
-        }
-        return false;
-      })) ||
-    [];
-
   return (
     <>
       <h4>Algorithm</h4>
       {algorithm && (
         <>
-          <Param>{algorithm.label || algorithm.name}</Param>
-          {parameters.map((p: ExperimentParameter, i: number) => (
-            <Param key={`parameters-${algorithm.name}-${i}`}>
-              {p.label || p.name}: {p.value}
+          <Param>{algorithm.label || algorithm.id}</Param>
+          {algorithm?.parameters?.map((param, i) => (
+            <Param key={param.id}>
+              {param.label || param.id}: {param.value}
             </Param>
           ))}
         </>

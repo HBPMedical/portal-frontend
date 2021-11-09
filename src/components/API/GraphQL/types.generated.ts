@@ -16,20 +16,20 @@ export type Scalars = {
 export type Algorithm = {
   __typename?: 'Algorithm';
   description?: Maybe<Scalars['String']>;
+  id: Scalars['String'];
   label?: Maybe<Scalars['String']>;
-  name: Scalars['String'];
   parameters?: Maybe<Array<AlgorithmParameter>>;
   type?: Maybe<Scalars['String']>;
 };
 
 export type AlgorithmInput = {
-  name: Scalars['String'];
+  id: Scalars['String'];
   parameters?: Maybe<Array<AlgorithmParamInput>>;
   type: Scalars['String'];
 };
 
 export type AlgorithmParamInput = {
-  name: Scalars['String'];
+  id: Scalars['String'];
   value: Array<Scalars['String']>;
 };
 
@@ -37,12 +37,12 @@ export type AlgorithmParameter = {
   __typename?: 'AlgorithmParameter';
   defaultValue?: Maybe<Scalars['String']>;
   description?: Maybe<Scalars['String']>;
+  id: Scalars['String'];
   isMultiple?: Maybe<Scalars['Boolean']>;
   isRequired?: Maybe<Scalars['Boolean']>;
   label?: Maybe<Scalars['String']>;
   max?: Maybe<Scalars['String']>;
   min?: Maybe<Scalars['String']>;
-  name: Scalars['String'];
   type?: Maybe<Scalars['String']>;
   value?: Maybe<Array<Scalars['String']>>;
 };
@@ -74,6 +74,7 @@ export type Experiment = {
   __typename?: 'Experiment';
   algorithm: Algorithm;
   author?: Maybe<Scalars['String']>;
+  coVariables?: Maybe<Array<Scalars['String']>>;
   createdAt?: Maybe<Scalars['Float']>;
   datasets: Array<Scalars['String']>;
   domain: Scalars['String'];
@@ -91,6 +92,7 @@ export type Experiment = {
 
 export type ExperimentCreateInput = {
   algorithm: AlgorithmInput;
+  coVariables?: Maybe<Array<Scalars['String']>>;
   datasets: Array<Scalars['String']>;
   domain: Scalars['String'];
   filter?: Maybe<Scalars['String']>;
@@ -102,6 +104,7 @@ export type ExperimentCreateInput = {
 
 export type ExperimentEditInput = {
   name?: Maybe<Scalars['String']>;
+  shared?: Maybe<Scalars['Boolean']>;
   viewed?: Maybe<Scalars['Boolean']>;
 };
 
@@ -210,6 +213,7 @@ export type PartialExperiment = {
   __typename?: 'PartialExperiment';
   algorithm?: Maybe<Algorithm>;
   author?: Maybe<Scalars['String']>;
+  coVariables?: Maybe<Array<Scalars['String']>>;
   createdAt?: Maybe<Scalars['Float']>;
   datasets?: Maybe<Array<Scalars['String']>>;
   domain?: Maybe<Scalars['String']>;

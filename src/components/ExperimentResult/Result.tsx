@@ -52,6 +52,7 @@ export default ({
   const experiment = experimentState.experiment as IExperiment;
   const result = experiment?.result;
   const loading = experiment.status === 'pending';
+
   return (
     <Card>
       <Body>
