@@ -4,11 +4,13 @@ import { RouteComponentProps, withRouter } from 'react-router-dom';
 import { APICore, APIExperiment, APIModel } from '../API';
 import { Exareme } from '../API/Exareme';
 import { useGetExperimentQuery } from '../API/GraphQL/queries.generated';
+import { ResultUnion } from '../API/GraphQL/types.generated';
 import Datasets from '../UI/Datasets';
 import ListSection from '../UI/ListSection';
 import Model from '../UI/Model';
 import { ExperimentResult, ExperimentResultHeader } from './';
 import Algorithm from './Algorithms';
+import ResultDispatcher from './ResultDispatcher';
 
 interface RouteParams {
   uuid: string;
@@ -125,7 +127,7 @@ class ExperimentContainer extends React.Component<Props> {
             </Card>
           </div>
           <div className="results">
-            <ExperimentResult experimentState={apiExperiment.state} />
+            {/*<ExperimentResult experimentState={apiExperiment.state} />*/}
           </div>
         </div>
       </div>
@@ -197,12 +199,9 @@ const Container = ({ ...props }: Props): JSX.Element => {
     variables: { uuid: uuid },
     //pollInterval: 500,
     onCompleted: data => {
-      console.log('polled');
-      if (data && data.expriment.status === 'pending') stopPolling();
+      if (data && data.experiment.status === 'pending') stopPolling();
     }
   });
-
-  //useEffect(() => stopPolling, [stopPolling]);
 
   return (
     <div className="Experiment Result">
@@ -213,14 +212,17 @@ const Container = ({ ...props }: Props): JSX.Element => {
             <Card.Body>
               <ListSection
                 title="Domain"
-                list={[data?.expriment.domain ?? '']}
+                list={[data?.experiment.domain ?? '']}
               />
               <section>
-                <ListSection title="Datasets" list={data?.expriment.datasets} />
+                <ListSection
+                  title="Datasets"
+                  list={data?.experiment.datasets}
+                />
               </section>
               <section>
-                {data?.expriment && (
-                  <Algorithm algorithm={data.expriment.algorithm} />
+                {data?.experiment && (
+                  <Algorithm algorithm={data.experiment.algorithm} />
                 )}
               </section>
               <section>
@@ -230,7 +232,11 @@ const Container = ({ ...props }: Props): JSX.Element => {
           </Card>
         </div>
         <div className="results">
-          {/*<ExperimentResult experimentState={apiExperiment.state} />*/}
+          {data &&
+            data.experiment &&
+            data.experiment.results?.map((result, i) => (
+              <ResultDispatcher key={i} result={result as ResultUnion} />
+            ))}
         </div>
       </div>
     </div>

@@ -226,8 +226,8 @@ export type Query = {
   __typename?: 'Query';
   algorithms: Array<Algorithm>;
   domains: Array<Domain>;
+  experiment: Experiment;
   experiments: ListExperiments;
-  expriment: Experiment;
 };
 
 
@@ -236,14 +236,14 @@ export type QueryDomainsArgs = {
 };
 
 
-export type QueryExperimentsArgs = {
-  name?: Maybe<Scalars['String']>;
-  page?: Maybe<Scalars['Float']>;
+export type QueryExperimentArgs = {
+  uuid: Scalars['String'];
 };
 
 
-export type QueryExprimentArgs = {
-  uuid: Scalars['String'];
+export type QueryExperimentsArgs = {
+  name?: Maybe<Scalars['String']>;
+  page?: Maybe<Scalars['Float']>;
 };
 
 export type RawResult = {
