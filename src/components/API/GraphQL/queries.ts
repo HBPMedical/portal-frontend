@@ -5,7 +5,7 @@ export const QUERY_EXPERIMENT = gql`
   ${coreInfoResult}
 
   query getExperiment($uuid: String!) {
-    expriment(uuid: $uuid) {
+    experiment(uuid: $uuid) {
       name
       uuid
       domain
