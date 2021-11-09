@@ -26,7 +26,7 @@ class ResultsErrorBoundary extends Component<Props> {
       return (
         <div className="error">
           <h3>An error has occured</h3>
-          <p>test</p>
+          <p>{this.state.error}</p>
         </div>
       );
     }

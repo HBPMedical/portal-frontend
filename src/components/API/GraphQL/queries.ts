@@ -6,19 +6,25 @@ export const QUERY_EXPERIMENT = gql`
 
   query getExperiment($uuid: String!) {
     expriment(uuid: $uuid) {
-      ...testing
+      name
+      uuid
+      domain
+      datasets
       author
       createdAt
       finishedAt
       viewed
+      variables
+      coVariables
       shared
+      status
       algorithm {
-        name
+        id
         description
         label
         type
         parameters {
-          name
+          id
           label
           value
         }
