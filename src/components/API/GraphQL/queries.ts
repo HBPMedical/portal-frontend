@@ -11,6 +11,7 @@ export const QUERY_EXPERIMENT = gql`
       domain
       datasets
       author
+      filter
       createdAt
       finishedAt
       viewed
@@ -110,6 +111,19 @@ export const MUTATE_EXPERIMEMT = gql`
     editExperiment(uuid: $uuid, data: $data) {
       uuid
       name
+      viewed
+      shared
+      status
+      updateAt
+    }
+  }
+`;
+
+export const DELETE_EXPERIMEMT = gql`
+  mutation deleteExperiment($uuid: String!) {
+    removeExperiment(uuid: $uuid) {
+      uuid
+      status
     }
   }
 `;

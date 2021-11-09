@@ -3,8 +3,11 @@ import relativeTime from 'dayjs/plugin/relativeTime';
 import * as React from 'react';
 import { Button, Card } from 'react-bootstrap';
 import styled from 'styled-components';
-import { IExperiment } from '../API/Experiment';
 import { GoCheck } from 'react-icons/go';
+import { Experiment } from '../API/GraphQL/types.generated';
+import { useHistory } from 'react-router-dom';
+import { useDeleteExperimentMutation } from '../API/GraphQL/queries.generated';
+
 dayjs.extend(relativeTime);
 dayjs().format();
 
@@ -15,21 +18,35 @@ const InlineDialog = styled.div`
 `;
 
 interface Props {
-  experiment?: IExperiment;
-  handleDeleteExperiment: (uuid: string) => void;
-  handleShareExperiment: any;
-  handleCreateNewExperiment: any;
+  experiment?: Experiment;
 }
 
-export default ({
-  experiment,
-  handleDeleteExperiment,
-  handleShareExperiment,
-  handleCreateNewExperiment
-}: Props): JSX.Element => {
+const ExperimentResultHeader = ({ experiment }: Props): JSX.Element => {
   const [confirmDelete, setConfirmDelete] = React.useState<
     string | undefined
   >();
+
+  const [
+    deleteExperimentMutation,
+    { data, loading, error }
+  ] = useDeleteExperimentMutation();
+
+  //deleteExperimentMutation({ variables: uuid });
+
+  const history = useHistory();
+
+  const handleCreateNewExperiment = (): void => {
+    history.push('/analysis');
+  };
+
+  const handleDeleteExperiment = (uuid: string): void => {
+    //TODO delete
+    history.push('/experiment');
+  };
+
+  const handleShareExperiment = (): void => {
+    //TODO : share experiment
+  };
 
   return (
     <Card>
@@ -39,8 +56,8 @@ export default ({
             Results of experiment <strong>{experiment?.name}</strong>
           </h3>
           <p className="item">
-            Created {experiment && dayjs().to(dayjs(experiment.created))} by{' '}
-            {experiment?.createdBy}
+            Created {experiment && dayjs().to(dayjs(experiment?.createdAt))} by{' '}
+            {experiment?.author}
           </p>
         </div>
 
@@ -77,7 +94,7 @@ export default ({
         ) : (
           experiment && (
             <Button
-              onClick={(): void => setConfirmDelete(experiment.uuid)}
+              onClick={(): void => setConfirmDelete(experiment?.uuid ?? '')}
               style={{ marginRight: '8px' }}
               variant="outline-dark"
               type="submit"
@@ -108,3 +125,5 @@ export default ({
     </Card>
   );
 };
+
+export default ExperimentResultHeader;
