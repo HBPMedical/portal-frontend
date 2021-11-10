@@ -5,11 +5,11 @@ import { CoreInfoResultFragmentDoc } from './fragments.generated';
 import * as Apollo from '@apollo/client';
 const defaultOptions =  {}
 export type GetExperimentQueryVariables = Types.Exact<{
-  uuid: Types.Scalars['String'];
+  id: Types.Scalars['String'];
 }>;
 
 
-export type GetExperimentQuery = { __typename?: 'Query', experiment: { __typename?: 'Experiment', name: string, uuid?: Types.Maybe<string>, domain: string, datasets: Array<string>, author?: Types.Maybe<string>, filter?: Types.Maybe<string>, createdAt?: Types.Maybe<number>, finishedAt?: Types.Maybe<number>, viewed?: Types.Maybe<boolean>, variables: Array<string>, coVariables?: Types.Maybe<Array<string>>, shared: boolean, status?: Types.Maybe<string>, algorithm: { __typename?: 'Algorithm', id: string, description?: Types.Maybe<string>, label?: Types.Maybe<string>, type?: Types.Maybe<string>, parameters?: Types.Maybe<Array<{ __typename?: 'AlgorithmParameter', id: string, label?: Types.Maybe<string>, value?: Types.Maybe<Array<string>> }>> }, results?: Types.Maybe<Array<{ __typename?: 'GroupsResult', groups: Array<{ __typename?: 'GroupResult', name: string, description?: Types.Maybe<string>, results: Array<{ __typename?: 'GroupsResult' } | { __typename?: 'HeatMapResult', name: string, matrix: Array<Array<number>>, xAxis?: Types.Maybe<{ __typename?: 'ChartAxis', label?: Types.Maybe<string>, categories?: Types.Maybe<Array<string>> }>, yAxis?: Types.Maybe<{ __typename?: 'ChartAxis', label?: Types.Maybe<string>, categories?: Types.Maybe<Array<string>> }> } | { __typename?: 'LineChartResult', name: string, xAxis?: Types.Maybe<{ __typename?: 'ChartAxis', label?: Types.Maybe<string> }>, yAxis?: Types.Maybe<{ __typename?: 'ChartAxis', label?: Types.Maybe<string> }>, lines: Array<{ __typename?: 'LineResult', label: string, x: Array<number>, y: Array<number>, type?: Types.Maybe<Types.LineType>, extraLineInfos?: Types.Maybe<Array<{ __typename?: 'ExtraLineInfo', label: string, values: Array<string> }>> }> } | { __typename?: 'RawResult', rawdata: any } | { __typename?: 'TableResult', name: string, data: Array<Array<string>>, headers: Array<{ __typename?: 'Header', name: string, type: string }> }> }> } | { __typename?: 'HeatMapResult', name: string, matrix: Array<Array<number>>, xAxis?: Types.Maybe<{ __typename?: 'ChartAxis', label?: Types.Maybe<string>, categories?: Types.Maybe<Array<string>> }>, yAxis?: Types.Maybe<{ __typename?: 'ChartAxis', label?: Types.Maybe<string>, categories?: Types.Maybe<Array<string>> }> } | { __typename?: 'LineChartResult', name: string, xAxis?: Types.Maybe<{ __typename?: 'ChartAxis', label?: Types.Maybe<string> }>, yAxis?: Types.Maybe<{ __typename?: 'ChartAxis', label?: Types.Maybe<string> }>, lines: Array<{ __typename?: 'LineResult', label: string, x: Array<number>, y: Array<number>, type?: Types.Maybe<Types.LineType>, extraLineInfos?: Types.Maybe<Array<{ __typename?: 'ExtraLineInfo', label: string, values: Array<string> }>> }> } | { __typename?: 'RawResult', rawdata: any } | { __typename?: 'TableResult', name: string, data: Array<Array<string>>, headers: Array<{ __typename?: 'Header', name: string, type: string }> }>> } };
+export type GetExperimentQuery = { __typename?: 'Query', experiment: { __typename?: 'Experiment', name: string, id?: Types.Maybe<string>, domain: string, datasets: Array<string>, author?: Types.Maybe<string>, filter?: Types.Maybe<string>, createdAt?: Types.Maybe<number>, finishedAt?: Types.Maybe<number>, viewed?: Types.Maybe<boolean>, variables: Array<string>, coVariables?: Types.Maybe<Array<string>>, shared: boolean, status?: Types.Maybe<string>, algorithm: { __typename?: 'Algorithm', id: string, description?: Types.Maybe<string>, label?: Types.Maybe<string>, type?: Types.Maybe<string>, parameters?: Types.Maybe<Array<{ __typename?: 'AlgorithmParameter', id: string, label?: Types.Maybe<string>, value?: Types.Maybe<Array<string>> }>> }, results?: Types.Maybe<Array<{ __typename?: 'GroupsResult', groups: Array<{ __typename?: 'GroupResult', name: string, description?: Types.Maybe<string>, results: Array<{ __typename?: 'GroupsResult' } | { __typename?: 'HeatMapResult', name: string, matrix: Array<Array<number>>, xAxis?: Types.Maybe<{ __typename?: 'ChartAxis', label?: Types.Maybe<string>, categories?: Types.Maybe<Array<string>> }>, yAxis?: Types.Maybe<{ __typename?: 'ChartAxis', label?: Types.Maybe<string>, categories?: Types.Maybe<Array<string>> }> } | { __typename?: 'LineChartResult', name: string, xAxis?: Types.Maybe<{ __typename?: 'ChartAxis', label?: Types.Maybe<string> }>, yAxis?: Types.Maybe<{ __typename?: 'ChartAxis', label?: Types.Maybe<string> }>, lines: Array<{ __typename?: 'LineResult', label: string, x: Array<number>, y: Array<number>, type?: Types.Maybe<Types.LineType>, extraLineInfos?: Types.Maybe<Array<{ __typename?: 'ExtraLineInfo', label: string, values: Array<string> }>> }> } | { __typename?: 'RawResult', rawdata: any } | { __typename?: 'TableResult', name: string, data: Array<Array<string>>, headers: Array<{ __typename?: 'Header', name: string, type: string }> }> }> } | { __typename?: 'HeatMapResult', name: string, matrix: Array<Array<number>>, xAxis?: Types.Maybe<{ __typename?: 'ChartAxis', label?: Types.Maybe<string>, categories?: Types.Maybe<Array<string>> }>, yAxis?: Types.Maybe<{ __typename?: 'ChartAxis', label?: Types.Maybe<string>, categories?: Types.Maybe<Array<string>> }> } | { __typename?: 'LineChartResult', name: string, xAxis?: Types.Maybe<{ __typename?: 'ChartAxis', label?: Types.Maybe<string> }>, yAxis?: Types.Maybe<{ __typename?: 'ChartAxis', label?: Types.Maybe<string> }>, lines: Array<{ __typename?: 'LineResult', label: string, x: Array<number>, y: Array<number>, type?: Types.Maybe<Types.LineType>, extraLineInfos?: Types.Maybe<Array<{ __typename?: 'ExtraLineInfo', label: string, values: Array<string> }>> }> } | { __typename?: 'RawResult', rawdata: any } | { __typename?: 'TableResult', name: string, data: Array<Array<string>>, headers: Array<{ __typename?: 'Header', name: string, type: string }> }>> } };
 
 export type CoreGroupInfoFragment = { __typename?: 'Group', id: string, label?: Types.Maybe<string>, description?: Types.Maybe<string>, groups?: Types.Maybe<Array<string>>, variables?: Types.Maybe<Array<string>> };
 
@@ -26,19 +26,19 @@ export type CreateTransientMutationVariables = Types.Exact<{
 export type CreateTransientMutation = { __typename?: 'Mutation', createExperiment: { __typename?: 'Experiment', name: string, results?: Types.Maybe<Array<{ __typename?: 'GroupsResult', groups: Array<{ __typename?: 'GroupResult', name: string, description?: Types.Maybe<string>, results: Array<{ __typename?: 'GroupsResult' } | { __typename?: 'HeatMapResult', name: string, matrix: Array<Array<number>>, xAxis?: Types.Maybe<{ __typename?: 'ChartAxis', label?: Types.Maybe<string>, categories?: Types.Maybe<Array<string>> }>, yAxis?: Types.Maybe<{ __typename?: 'ChartAxis', label?: Types.Maybe<string>, categories?: Types.Maybe<Array<string>> }> } | { __typename?: 'LineChartResult', name: string, xAxis?: Types.Maybe<{ __typename?: 'ChartAxis', label?: Types.Maybe<string> }>, yAxis?: Types.Maybe<{ __typename?: 'ChartAxis', label?: Types.Maybe<string> }>, lines: Array<{ __typename?: 'LineResult', label: string, x: Array<number>, y: Array<number>, type?: Types.Maybe<Types.LineType>, extraLineInfos?: Types.Maybe<Array<{ __typename?: 'ExtraLineInfo', label: string, values: Array<string> }>> }> } | { __typename?: 'RawResult', rawdata: any } | { __typename?: 'TableResult', name: string, data: Array<Array<string>>, headers: Array<{ __typename?: 'Header', name: string, type: string }> }> }> } | { __typename?: 'HeatMapResult', name: string, matrix: Array<Array<number>>, xAxis?: Types.Maybe<{ __typename?: 'ChartAxis', label?: Types.Maybe<string>, categories?: Types.Maybe<Array<string>> }>, yAxis?: Types.Maybe<{ __typename?: 'ChartAxis', label?: Types.Maybe<string>, categories?: Types.Maybe<Array<string>> }> } | { __typename?: 'LineChartResult', name: string, xAxis?: Types.Maybe<{ __typename?: 'ChartAxis', label?: Types.Maybe<string> }>, yAxis?: Types.Maybe<{ __typename?: 'ChartAxis', label?: Types.Maybe<string> }>, lines: Array<{ __typename?: 'LineResult', label: string, x: Array<number>, y: Array<number>, type?: Types.Maybe<Types.LineType>, extraLineInfos?: Types.Maybe<Array<{ __typename?: 'ExtraLineInfo', label: string, values: Array<string> }>> }> } | { __typename?: 'RawResult', rawdata: any } | { __typename?: 'TableResult', name: string, data: Array<Array<string>>, headers: Array<{ __typename?: 'Header', name: string, type: string }> }>> } };
 
 export type EditExperimentMutationVariables = Types.Exact<{
-  uuid: Types.Scalars['String'];
+  id: Types.Scalars['String'];
   data: Types.ExperimentEditInput;
 }>;
 
 
-export type EditExperimentMutation = { __typename?: 'Mutation', editExperiment: { __typename?: 'Experiment', uuid?: Types.Maybe<string>, name: string, viewed?: Types.Maybe<boolean>, shared: boolean, status?: Types.Maybe<string>, updateAt?: Types.Maybe<number> } };
+export type EditExperimentMutation = { __typename?: 'Mutation', editExperiment: { __typename?: 'Experiment', id?: Types.Maybe<string>, name: string, viewed?: Types.Maybe<boolean>, shared: boolean, status?: Types.Maybe<string>, updateAt?: Types.Maybe<number> } };
 
 export type DeleteExperimentMutationVariables = Types.Exact<{
-  uuid: Types.Scalars['String'];
+  id: Types.Scalars['String'];
 }>;
 
 
-export type DeleteExperimentMutation = { __typename?: 'Mutation', removeExperiment: { __typename?: 'PartialExperiment', uuid?: Types.Maybe<string>, status?: Types.Maybe<string> } };
+export type DeleteExperimentMutation = { __typename?: 'Mutation', removeExperiment: { __typename?: 'PartialExperiment', id?: Types.Maybe<string>, status?: Types.Maybe<string> } };
 
 export const CoreGroupInfoFragmentDoc = gql`
     fragment coreGroupInfo on Group {
@@ -50,10 +50,10 @@ export const CoreGroupInfoFragmentDoc = gql`
 }
     `;
 export const GetExperimentDocument = gql`
-    query getExperiment($uuid: String!) {
-  experiment(uuid: $uuid) {
+    query getExperiment($id: String!) {
+  experiment(id: $id) {
     name
-    uuid
+    id
     domain
     datasets
     author
@@ -104,7 +104,7 @@ export const GetExperimentDocument = gql`
  * @example
  * const { data, loading, error } = useGetExperimentQuery({
  *   variables: {
- *      uuid: // value for 'uuid'
+ *      id: // value for 'id'
  *   },
  * });
  */
@@ -221,9 +221,9 @@ export type CreateTransientMutationHookResult = ReturnType<typeof useCreateTrans
 export type CreateTransientMutationResult = Apollo.MutationResult<CreateTransientMutation>;
 export type CreateTransientMutationOptions = Apollo.BaseMutationOptions<CreateTransientMutation, CreateTransientMutationVariables>;
 export const EditExperimentDocument = gql`
-    mutation editExperiment($uuid: String!, $data: ExperimentEditInput!) {
-  editExperiment(uuid: $uuid, data: $data) {
-    uuid
+    mutation editExperiment($id: String!, $data: ExperimentEditInput!) {
+  editExperiment(id: $id, data: $data) {
+    id
     name
     viewed
     shared
@@ -247,7 +247,7 @@ export type EditExperimentMutationFn = Apollo.MutationFunction<EditExperimentMut
  * @example
  * const [editExperimentMutation, { data, loading, error }] = useEditExperimentMutation({
  *   variables: {
- *      uuid: // value for 'uuid'
+ *      id: // value for 'id'
  *      data: // value for 'data'
  *   },
  * });
@@ -260,9 +260,9 @@ export type EditExperimentMutationHookResult = ReturnType<typeof useEditExperime
 export type EditExperimentMutationResult = Apollo.MutationResult<EditExperimentMutation>;
 export type EditExperimentMutationOptions = Apollo.BaseMutationOptions<EditExperimentMutation, EditExperimentMutationVariables>;
 export const DeleteExperimentDocument = gql`
-    mutation deleteExperiment($uuid: String!) {
-  removeExperiment(uuid: $uuid) {
-    uuid
+    mutation deleteExperiment($id: String!) {
+  removeExperiment(id: $id) {
+    id
     status
   }
 }
@@ -282,7 +282,7 @@ export type DeleteExperimentMutationFn = Apollo.MutationFunction<DeleteExperimen
  * @example
  * const [deleteExperimentMutation, { data, loading, error }] = useDeleteExperimentMutation({
  *   variables: {
- *      uuid: // value for 'uuid'
+ *      id: // value for 'id'
  *   },
  * });
  */
@@ -293,3 +293,17 @@ export function useDeleteExperimentMutation(baseOptions?: Apollo.MutationHookOpt
 export type DeleteExperimentMutationHookResult = ReturnType<typeof useDeleteExperimentMutation>;
 export type DeleteExperimentMutationResult = Apollo.MutationResult<DeleteExperimentMutation>;
 export type DeleteExperimentMutationOptions = Apollo.BaseMutationOptions<DeleteExperimentMutation, DeleteExperimentMutationVariables>;
+export const namedOperations = {
+  Query: {
+    getExperiment: 'getExperiment',
+    listDomains: 'listDomains'
+  },
+  Mutation: {
+    createTransient: 'createTransient',
+    editExperiment: 'editExperiment',
+    deleteExperiment: 'deleteExperiment'
+  },
+  Fragment: {
+    coreGroupInfo: 'coreGroupInfo'
+  }
+}
