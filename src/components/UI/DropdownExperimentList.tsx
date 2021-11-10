@@ -272,7 +272,7 @@ const ExperimentRow = ({
   const [deleted, setDeleted] = useState<null | string>(null);
 
   const { experiment, username } = props;
-  const isOwner = username === experiment.createdBy;
+  const isOwner = username === experiment.createdBy?.username;
 
   const handleClickOutside = (event: Event): void => {
     setConfirmDelete(null);
@@ -356,7 +356,7 @@ const ExperimentRow = ({
                   {dayjs().to(dayjs(experiment.created))}
                 </td>
                 <td className="centered align-middle">
-                  {experiment.createdBy}
+                  {experiment.createdBy?.fullname}
                 </td>
                 <td className="centered align-middle">
                   <Button

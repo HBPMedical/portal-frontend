@@ -99,7 +99,10 @@ export interface IExperimentPrototype {
 
 export interface IExperiment extends IExperimentPrototype, IExperimentError {
   uuid: string;
-  createdBy: string;
+  createdBy: {
+    username: string;
+    fullname: string;
+  };
   created: string;
   finisehd: string;
   shared?: boolean;
