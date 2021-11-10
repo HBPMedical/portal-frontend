@@ -4,10 +4,10 @@ import { coreInfoResult } from './fragments';
 export const QUERY_EXPERIMENT = gql`
   ${coreInfoResult}
 
-  query getExperiment($uuid: String!) {
-    experiment(uuid: $uuid) {
+  query getExperiment($id: String!) {
+    experiment(id: $id) {
       name
-      uuid
+      id
       domain
       datasets
       author
@@ -107,9 +107,9 @@ export const ADD_TRANSIENT = gql`
 `;
 
 export const MUTATE_EXPERIMEMT = gql`
-  mutation editExperiment($uuid: String!, $data: ExperimentEditInput!) {
-    editExperiment(uuid: $uuid, data: $data) {
-      uuid
+  mutation editExperiment($id: String!, $data: ExperimentEditInput!) {
+    editExperiment(id: $id, data: $data) {
+      id
       name
       viewed
       shared
@@ -120,9 +120,9 @@ export const MUTATE_EXPERIMEMT = gql`
 `;
 
 export const DELETE_EXPERIMEMT = gql`
-  mutation deleteExperiment($uuid: String!) {
-    removeExperiment(uuid: $uuid) {
-      uuid
+  mutation deleteExperiment($id: String!) {
+    removeExperiment(id: $id) {
+      id
       status
     }
   }

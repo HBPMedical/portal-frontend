@@ -59,3 +59,8 @@ export const CoreInfoResultFragmentDoc = gql`
   }
 }
     `;
+export const namedOperations = {
+  Fragment: {
+    coreInfoResult: 'coreInfoResult'
+  }
+}

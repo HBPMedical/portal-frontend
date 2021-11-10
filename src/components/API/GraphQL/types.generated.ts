@@ -80,12 +80,12 @@ export type Experiment = {
   domain: Scalars['String'];
   filter?: Maybe<Scalars['String']>;
   finishedAt?: Maybe<Scalars['Float']>;
+  id?: Maybe<Scalars['String']>;
   name: Scalars['String'];
   results?: Maybe<Array<ResultUnion>>;
   shared: Scalars['Boolean'];
   status?: Maybe<Scalars['String']>;
   updateAt?: Maybe<Scalars['Float']>;
-  uuid?: Maybe<Scalars['String']>;
   variables: Array<Scalars['String']>;
   viewed?: Maybe<Scalars['Boolean']>;
 };
@@ -201,12 +201,12 @@ export type MutationCreateExperimentArgs = {
 
 export type MutationEditExperimentArgs = {
   data: ExperimentEditInput;
-  uuid: Scalars['String'];
+  id: Scalars['String'];
 };
 
 
 export type MutationRemoveExperimentArgs = {
-  uuid: Scalars['String'];
+  id: Scalars['String'];
 };
 
 export type PartialExperiment = {
@@ -219,12 +219,12 @@ export type PartialExperiment = {
   domain?: Maybe<Scalars['String']>;
   filter?: Maybe<Scalars['String']>;
   finishedAt?: Maybe<Scalars['Float']>;
+  id?: Maybe<Scalars['String']>;
   name?: Maybe<Scalars['String']>;
   results?: Maybe<Array<ResultUnion>>;
   shared?: Maybe<Scalars['Boolean']>;
   status?: Maybe<Scalars['String']>;
   updateAt?: Maybe<Scalars['Float']>;
-  uuid?: Maybe<Scalars['String']>;
   variables?: Maybe<Array<Scalars['String']>>;
   viewed?: Maybe<Scalars['Boolean']>;
 };
@@ -244,7 +244,7 @@ export type QueryDomainsArgs = {
 
 
 export type QueryExperimentArgs = {
-  uuid: Scalars['String'];
+  id: Scalars['String'];
 };
 
 
