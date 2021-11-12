@@ -7,7 +7,7 @@ export type CoreInfoResult_HeatMapResult_Fragment = { __typename?: 'HeatMapResul
 
 export type CoreInfoResult_LineChartResult_Fragment = { __typename?: 'LineChartResult', name: string, xAxis?: Types.Maybe<{ __typename?: 'ChartAxis', label?: Types.Maybe<string> }>, yAxis?: Types.Maybe<{ __typename?: 'ChartAxis', label?: Types.Maybe<string> }>, lines: Array<{ __typename?: 'LineResult', label: string, x: Array<number>, y: Array<number>, type?: Types.Maybe<Types.LineType>, extraLineInfos?: Types.Maybe<Array<{ __typename?: 'ExtraLineInfo', label: string, values: Array<string> }>> }> };
 
-export type CoreInfoResult_RawResult_Fragment = { __typename?: 'RawResult', rawdata: any };
+export type CoreInfoResult_RawResult_Fragment = { __typename?: 'RawResult', rawdata?: Types.Maybe<any> };
 
 export type CoreInfoResult_TableResult_Fragment = { __typename?: 'TableResult', name: string, data: Array<Array<string>>, headers: Array<{ __typename?: 'Header', name: string, type: string }> };
 

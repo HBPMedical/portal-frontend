@@ -38,7 +38,7 @@ class ResultDispatcher extends React.Component<Props> {
             rawresult: (
               <ResultsErrorBoundary>
                 <RenderResult
-                  results={[(result as RawResult).rawdata] as Result[]}
+                  results={[(result as RawResult)?.rawdata] as Result[]}
                 />
               </ResultsErrorBoundary>
             ),
