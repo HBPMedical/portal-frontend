@@ -10,7 +10,10 @@ export const QUERY_EXPERIMENT = gql`
       id
       domain
       datasets
-      author
+      author {
+        username
+        fullname
+      }
       filter
       createdAt
       finishedAt

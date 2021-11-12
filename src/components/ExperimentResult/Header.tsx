@@ -72,7 +72,7 @@ const ExperimentResultHeader = ({ experiment }: Props): JSX.Element => {
           </h3>
           <p className="item">
             Created {experiment && dayjs().to(dayjs(experiment?.createdAt))} by{' '}
-            {experiment?.author}
+            {experiment?.author?.fullname ?? experiment?.author?.username}
           </p>
         </div>
 

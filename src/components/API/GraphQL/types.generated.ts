@@ -47,6 +47,12 @@ export type AlgorithmParameter = {
   value?: Maybe<Array<Scalars['String']>>;
 };
 
+export type Author = {
+  __typename?: 'Author';
+  fullname?: Maybe<Scalars['String']>;
+  username?: Maybe<Scalars['String']>;
+};
+
 export type Category = {
   __typename?: 'Category';
   id: Scalars['String'];
@@ -73,7 +79,7 @@ export type Domain = {
 export type Experiment = {
   __typename?: 'Experiment';
   algorithm: Algorithm;
-  author?: Maybe<Scalars['String']>;
+  author?: Maybe<Author>;
   coVariables?: Maybe<Array<Scalars['String']>>;
   createdAt?: Maybe<Scalars['Float']>;
   datasets: Array<Scalars['String']>;
@@ -205,7 +211,7 @@ export type MutationRemoveExperimentArgs = {
 export type PartialExperiment = {
   __typename?: 'PartialExperiment';
   algorithm?: Maybe<Algorithm>;
-  author?: Maybe<Scalars['String']>;
+  author?: Maybe<Author>;
   coVariables?: Maybe<Array<Scalars['String']>>;
   createdAt?: Maybe<Scalars['Float']>;
   datasets?: Maybe<Array<Scalars['String']>>;
