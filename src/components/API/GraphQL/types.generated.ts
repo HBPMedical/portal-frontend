@@ -261,7 +261,7 @@ export type QueryExperimentsArgs = {
 
 export type RawResult = {
   __typename?: 'RawResult';
-  rawdata: Scalars['JSON'];
+  rawdata?: Maybe<Scalars['JSON']>;
 };
 
 export type ResultUnion = GroupsResult | HeatMapResult | LineChartResult | RawResult | TableResult;
