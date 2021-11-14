@@ -1,15 +1,16 @@
-import { ApolloClient, InMemoryCache } from '@apollo/client';
+import { ApolloClient, InMemoryCache, makeVar } from '@apollo/client';
 import request from 'request-promise-native';
 import { Container } from 'unstated';
 import { backendURL } from '../API';
 import { Exareme } from '../API/Exareme';
 import { FORBIDDEN_ACCESS_MESSAGE } from '../constants';
+import { QUERY_DOMAINS } from './GraphQL/queries';
 import {
   Domain,
+  Experiment,
   Group,
   Variable as VariableData
 } from './GraphQL/types.generated';
-import { QUERY_DOMAINS } from './GraphQL/queries';
 import { graphQLURL } from './RequestURLS';
 import config from './RequestHeaders';
 
@@ -150,7 +151,7 @@ export interface State {
 }
 
 export const apolloClient = new ApolloClient({
-  uri: process.env.REACT_APP_GATEWAY_URL,
+  uri: graphQLURL,
   headers: {
     ...config.options?.headers,
     accept: 'application/json, text/plain, */*'
@@ -168,6 +169,8 @@ export const apolloClient = new ApolloClient({
     }
   })
 });
+
+export const selectedExperiment = makeVar<Experiment | undefined>(undefined);
 
 class Core extends Container<State> {
   state: State = {
