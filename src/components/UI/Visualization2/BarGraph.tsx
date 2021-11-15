@@ -30,11 +30,11 @@ const BarGraph = () => {
       counts: counts
     }
   });
-  
-  let data: LineChartResult = {
+
+  const data: LineChartResult = {
     xAxis: fruits,
     yAxis: counts
-  }
+  };
 
   const p = plot.figure({
     width: 900,
