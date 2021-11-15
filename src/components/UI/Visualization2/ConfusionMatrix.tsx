@@ -1,4 +1,5 @@
 import React from 'react';
+import { ChartAxis, HeatMapResult } from '../../API/GraphQL/types.generated';
 
 declare let window: any;
 
@@ -6,15 +7,56 @@ const ConfusionMatrix = () => {
   const Bokeh = window.Bokeh;
   const plot = Bokeh.Plotting;
 
-  const x = ['Benign', 'Malignant'];
-  const y = ['Benign', 'Malignant'];
+  // const x = ['Benign', 'Malignant'];
+  // const y = ['Benign', 'Malignant'];
+
+  const chartXAxis: ChartAxis = {
+    categories: ['Positive', 'Negative'],
+    label: 'Predicted label'
+  };
+
+  const chartYAxis: ChartAxis = {
+    categories: ['Positive', 'Negative'],
+    label: 'True label'
+  };
+
+  const ds: HeatMapResult = {
+    matrix: [
+      [80, 60],
+      [3, 20]
+    ],
+    name: 'Heat Map',
+    xAxis: chartXAxis,
+    yAxis: chartYAxis
+  };
+
+  const populateXAxis = ds.matrix
+    .map(item => {
+      const arr = item.map(item2 => {
+        return chartXAxis.categories![item.indexOf(item2)];
+      });
+      return arr;
+    })
+    .flat();
+
+  const populateYAxis = ds.matrix
+    .map(item => {
+      const arr = item.map(item2 => {
+        return chartYAxis.categories![ds.matrix.indexOf(item)];
+      });
+      return arr;
+    })
+    .flat();
+
+  const matrixValues = ds.matrix.flat();
+  const indices = matrixValues.map(item => matrixValues.indexOf(item));
 
   const source = new Bokeh.ColumnDataSource({
     data: {
-      index: [0, 1, 2, 3],
-      Treatment: ['Benign', 'Benign', 'Malignant', 'Malignant'],
-      Prediction: ['Benign', 'Malignant', 'Benign', 'Malignant'],
-      value: [3, 30, 60, 80]
+      index: indices,
+      xAxisLabels: populateXAxis,
+      yAxisLabels: populateYAxis,
+      value: matrixValues
     }
   });
 
@@ -39,8 +81,8 @@ const ConfusionMatrix = () => {
     tools: '',
     // tools: "hover",
     toolbar_location: null,
-    x_range: x,
-    y_range: y
+    x_range: chartXAxis.categories,
+    y_range: chartYAxis.categories
   });
 
   const mapper = new Bokeh.LinearColorMapper({
@@ -56,8 +98,8 @@ const ConfusionMatrix = () => {
   });
 
   p.rect({
-    x: { field: 'Treatment' },
-    y: { field: 'Prediction' },
+    x: { field: 'xAxisLabels' },
+    y: { field: 'yAxisLabels' },
     source: source,
     width: 1,
     height: 1,
@@ -66,8 +108,8 @@ const ConfusionMatrix = () => {
   });
 
   const labels = new Bokeh.LabelSet({
-    x: { field: 'Treatment' },
-    y: { field: 'Prediction' },
+    x: { field: 'xAxisLabels' },
+    y: { field: 'yAxisLabels' },
     text: { field: 'value' },
     text_color: 'white',
     text_font_size: '1.5em',
