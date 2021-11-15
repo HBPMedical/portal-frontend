@@ -1,4 +1,5 @@
 import React from 'react';
+import ROCCurveModel from '../../../models/ROCCurveModel';
 
 declare let window: any;
 
@@ -229,12 +230,38 @@ const ROCCurve = () => {
     }
   };
 
-  const source_ROC = new Bokeh.ColumnDataSource({
+  const df_half = {
+    TPR: [0.962162, 0.962162],
+    FPR: [0.09, 0.11],
+    Thresholds: [0.51, 0.48]
+  };
+
+  const res: ROCCurveModel = {
+    graphTitle: '',
+    xLabel: '',
+    yLabel: '',
+    xFpr: source_ROC_raw.data.x_fpr,
+    yTpr: source_ROC_raw.data.y_tpr,
+    threshold: source_ROC_raw.data.thresh,
+    xFprHalf: df_half.FPR,
+    yTprHalf: df_half.TPR,
+    thresholdHalf: df_half.Thresholds
+  };
+
+  const sourceROC = new Bokeh.ColumnDataSource({
     data: {
-      x_fpr: source_ROC_raw.data.x_fpr,
-      y_tpr: source_ROC_raw.data.y_tpr,
-      thresh: source_ROC_raw.data.thresh,
+      x_fpr: res.xFpr,
+      y_tpr: res.yTpr,
+      thresh: res.threshold,
       legend_: source_ROC_raw.data.auc_legend
+    }
+  });
+
+  const sourceHalf = new Bokeh.ColumnDataSource({
+    data: {
+      x_fpr: res.xFprHalf,
+      y_tpr: res.yTprHalf,
+      thresh: res.thresholdHalf
     }
   });
 
@@ -256,19 +283,18 @@ const ROCCurve = () => {
   p.xaxis.axis_label = 'False Positive Rate';
   p.yaxis.axis_label = 'True Positive Rate';
 
-  const df_half = {
-    TPR: [0.962162, 0.962162],
-    FPR: [0.09, 0.11],
-    Thresholds: [0.51, 0.48]
+  // Tooltip
+  const hover = p.toolbar.select_one(Bokeh.HoverTool);
+  hover!.tooltips = (source: any, info: any) => {
+    const ds = sourceROC;
+    const div = document.createElement('div');
+    div.style.width = '100px';
+    div.style.height = '60px';
+    div.innerHTML = ` FPR: ${info.data_x},</br> TPR: ${
+      info.data_y
+    }, </br> Threshold: ${ds.data.thresh[info.index]}`;
+    return div;
   };
-
-  const source_half = new Bokeh.ColumnDataSource({
-    data: {
-      x_fpr: df_half.FPR,
-      y_tpr: df_half.TPR,
-      thresh: df_half.Thresholds
-    }
-  });
 
   //""" PLOT ROC """
   p.line({
@@ -276,17 +302,17 @@ const ROCCurve = () => {
     y: { field: 'y_tpr' },
     line_width: 1,
     color: 'blue',
-    source: source_ROC
+    source: sourceROC
   });
-
   p.circle({
     x: { field: 'x_fpr' },
     y: { field: 'y_tpr' },
     size: 3,
     color: 'orange',
     legend: 'auc_legend',
-    source: source_ROC,
-    name: 'ROC'
+    source: sourceROC,
+    name: 'ROC',
+    tools: p_tools
   });
 
   //""" Plot Threshold==0.5 """
@@ -298,7 +324,7 @@ const ROCCurve = () => {
     y: { field: 'y_tpr' },
     size: 5,
     color: 'blue',
-    source: source_half,
+    source: sourceHalf,
     legend: 'legend_',
     name: 'ROC'
   });
@@ -313,18 +339,6 @@ const ROCCurve = () => {
     color: 'black',
     name: 'Chance'
   });
-
-  const hover = p.toolbar.select_one(Bokeh.HoverTool);
-  hover!.tooltips = (source: any, info: any) => {
-    const ds = source_ROC;
-    const div = document.createElement('div');
-    div.style.width = '100px';
-    div.style.height = '60px';
-    div.innerHTML = ` FPR: ${info.data_x},</br> TPR: ${
-      info.data_y
-    }, </br> Threshold: ${ds.data.thresh[info.index]}`;
-    return div;
-  };
 
   // Finishing touches
   p.legend.location = 'bottom_right';

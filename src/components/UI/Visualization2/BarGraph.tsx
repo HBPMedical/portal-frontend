@@ -1,4 +1,5 @@
 import React from 'react';
+import { LineChartResult } from '../../API/GraphQL/types.generated';
 
 declare let window: any;
 
@@ -29,12 +30,17 @@ const BarGraph = () => {
       counts: counts
     }
   });
+  
+  let data: LineChartResult = {
+    xAxis: fruits,
+    yAxis: counts
+  }
 
   const p = plot.figure({
     width: 900,
     height: 500,
     x_range: fruits,
-    title: 'Fruit counts',
+    title: `${data.name} Fruit counts`,
     toolbar_location: null,
     tools: ''
   });
