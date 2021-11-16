@@ -8,7 +8,7 @@ interface ROCCurveModel {
   xFprHalf: Array<number>;
   yTprHalf: Array<number>;
   thresholdHalf: Array<number>;
-  labels: Object;
+  labels?: Object;
 }
 
 export default ROCCurveModel;

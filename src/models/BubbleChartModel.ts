@@ -4,7 +4,7 @@ interface BubbleChartModel {
   yLabel: string;
   values: Array<number>;
   categories: Array<string>;
-  labels: Object;
+  labels?: Object;
 }
 
 export default BubbleChartModel;

@@ -8,7 +8,7 @@ interface HeatMapModel {
   categories: Array<string>;
   index: Array<number>;
   value: Array<number>;
-  labels: Object;
+  labels?: Object;
 }
 
 export default HeatMapModel;

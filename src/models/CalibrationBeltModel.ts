@@ -5,7 +5,7 @@ interface CalibrationBelt {
   base: Array<number>;
   lower: Array<number>;
   upper: Array<number>;
-  labels: Object;
+  labels?: Object;
 }
 
 export default CalibrationBelt;

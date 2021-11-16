@@ -4,7 +4,7 @@ interface BarChartModel {
   yAxisLabel: string;
   xAxisValues: Array<string>;
   yAxisValues: Array<number>;
-  labels: Object;
+  labels?: Object;
 }
 
 export default BarChartModel;
