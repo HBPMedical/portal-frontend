@@ -2,11 +2,13 @@ import React from 'react';
 import { Result } from '../API/Experiment';
 import {
   GroupsResult,
+  HeatMapResult,
   RawResult,
   ResultUnion,
   TableResult
 } from '../API/GraphQL/types.generated';
 import ResultsErrorBoundary from '../UI/ResultsErrorBoundary';
+import ConfusionMatrix from '../UI/Visualization2/ConfusionMatrix';
 import DataTable from '../UI/Visualization2/DataTable';
 import GroupTable from '../UI/Visualization2/GroupResult';
 import RenderResult from './RenderResult';
@@ -42,6 +44,7 @@ class ResultDispatcher extends React.Component<Props> {
                 />
               </ResultsErrorBoundary>
             ),
+            heatmapresult: <ConfusionMatrix data={result as HeatMapResult} />,
             error: <div> An error occured </div>
           } as Switcher)[type]
         }
