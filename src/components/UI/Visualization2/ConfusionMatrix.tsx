@@ -1,4 +1,5 @@
-import React from 'react';
+import React, { useEffect } from 'react';
+import { Card } from 'react-bootstrap';
 import { HeatMapResult } from '../../API/GraphQL/types.generated';
 
 declare let window: any;
@@ -61,8 +62,8 @@ const ConfusionMatrix = (props: Props) => {
 
   const mapper = new Bokeh.LinearColorMapper({
     palette: colors,
-    low: 2,
-    high: 88
+    low: Math.min(...matrixValues),
+    high: Math.max(...matrixValues)
   });
 
   const color_bar = new Bokeh.ColorBar({
@@ -97,9 +98,18 @@ const ConfusionMatrix = (props: Props) => {
   p.add_layout(labels);
   p.add_layout(color_bar, 'right');
 
-  plot.show(p);
 
-  return <> </>;
+  useEffect(() => {
+    plot.show(p, '#confusionMatrix');
+  }, [plot]);
+
+  return (
+    <>
+      <Card>
+        <div id="confusionMatrix"></div>
+      </Card>
+    </>
+  );
 };
 
 export default ConfusionMatrix;
