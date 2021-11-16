@@ -1,61 +1,35 @@
 import React from 'react';
-import { ChartAxis, HeatMapResult } from '../../API/GraphQL/types.generated';
+import { HeatMapResult } from '../../API/GraphQL/types.generated';
 
 declare let window: any;
 
-const ConfusionMatrix = () => {
+interface Props {
+  data: HeatMapResult;
+}
+
+const ConfusionMatrix = (props: Props) => {
   const Bokeh = window.Bokeh;
   const plot = Bokeh.Plotting;
 
-  // const x = ['Benign', 'Malignant'];
-  // const y = ['Benign', 'Malignant'];
+  const data: HeatMapResult = JSON.parse(JSON.stringify(props.data)); // copy data for manipulations
 
-  const chartXAxis: ChartAxis = {
-    categories: ['Positive', 'Negative'],
-    label: 'Predicted label'
-  };
-
-  const chartYAxis: ChartAxis = {
-    categories: ['Positive', 'Negative'],
-    label: 'True label'
-  };
-
-  const ds: HeatMapResult = {
-    matrix: [
-      [80, 60],
-      [3, 20]
-    ],
-    name: 'Heat Map',
-    xAxis: chartXAxis,
-    yAxis: chartYAxis
-  };
-
-  const populateXAxis = ds.matrix
-    .map(item => {
-      const arr = item.map(item2 => {
-        return chartXAxis.categories![item.indexOf(item2)];
-      });
-      return arr;
-    })
+  const xValues = data.matrix
+    .map(row => row.map((_, x) => (data.xAxis?.categories || [])[x] ?? `${x}`))
     .flat();
 
-  const populateYAxis = ds.matrix
-    .map(item => {
-      const arr = item.map(item2 => {
-        return chartYAxis.categories![ds.matrix.indexOf(item)];
-      });
-      return arr;
-    })
+  const yValues = data.matrix
+    .reverse() // reverse matrix order to fit chart referential
+    .map((row, y) => row.map(_ => (data.yAxis?.categories || [])[y] ?? `${y}`))
     .flat();
 
-  const matrixValues = ds.matrix.flat();
+  const matrixValues = data.matrix.flat();
   const indices = matrixValues.map(item => matrixValues.indexOf(item));
 
   const source = new Bokeh.ColumnDataSource({
     data: {
       index: indices,
-      xAxisLabels: populateXAxis,
-      yAxisLabels: populateYAxis,
+      xAxisLabels: xValues,
+      yAxisLabels: yValues,
       value: matrixValues
     }
   });
@@ -81,8 +55,8 @@ const ConfusionMatrix = () => {
     tools: '',
     // tools: "hover",
     toolbar_location: null,
-    x_range: chartXAxis.categories,
-    y_range: chartYAxis.categories
+    x_range: data.xAxis?.categories,
+    y_range: data.yAxis?.categories
   });
 
   const mapper = new Bokeh.LinearColorMapper({
