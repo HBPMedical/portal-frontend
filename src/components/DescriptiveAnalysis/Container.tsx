@@ -70,7 +70,7 @@ const Container = ({
             domain: query.pathology ?? '',
             filter: query.filters,
             algorithm: {
-              name: 'DESCRIPTIVE_STATS',
+              id: 'DESCRIPTIVE_STATS',
               type: 'string'
             }
           }

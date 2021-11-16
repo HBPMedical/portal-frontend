@@ -28,19 +28,22 @@ export default ({
 }: {
   options: Highcharts.Options | any;
   constraint?: boolean;
-}): JSX.Element => (
-  <>
-    {constraint && (
-      <StyledMyChart>
-        <HighchartsReact
-          containerProps={{ style: { height: '600px', width: '600px' } }}
-          highcharts={Highcharts}
-          options={options}
-        />
-      </StyledMyChart>
-    )}
-    {!constraint && (
-      <HighchartsReact highcharts={Highcharts} options={options} />
-    )}
-  </>
-);
+}): JSX.Element => {
+  const copyOpts = JSON.parse(JSON.stringify(options));
+  return (
+    <>
+      {constraint && (
+        <StyledMyChart>
+          <HighchartsReact
+            containerProps={{ style: { height: '600px', width: '600px' } }}
+            highcharts={Highcharts}
+            options={copyOpts}
+          />
+        </StyledMyChart>
+      )}
+      {!constraint && (
+        <HighchartsReact highcharts={Highcharts} options={copyOpts} />
+      )}
+    </>
+  );
+};

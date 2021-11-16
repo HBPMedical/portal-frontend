@@ -1,13 +1,15 @@
 import React from 'react';
+import { Result } from '../API/Experiment';
 import {
   GroupsResult,
   RawResult,
   ResultUnion,
   TableResult
 } from '../API/GraphQL/types.generated';
+import ResultsErrorBoundary from '../UI/ResultsErrorBoundary';
 import DataTable from '../UI/Visualization2/DataTable';
 import GroupTable from '../UI/Visualization2/GroupResult';
-import RawData from '../UI/Visualization2/RawData';
+import RenderResult from './RenderResult';
 
 type Props = {
   result: ResultUnion;
@@ -33,8 +35,14 @@ class ResultDispatcher extends React.Component<Props> {
             tableresult: (
               <DataTable data={result as TableResult} layout="statistics" />
             ),
-            rawresult: <RawData result={result as RawResult} />,
-            error: <div> error occured </div>
+            rawresult: (
+              <ResultsErrorBoundary>
+                <RenderResult
+                  results={[(result as RawResult)?.rawdata] as Result[]}
+                />
+              </ResultsErrorBoundary>
+            ),
+            error: <div> An error occured </div>
           } as Switcher)[type]
         }
       </>
