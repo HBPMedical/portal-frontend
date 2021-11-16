@@ -1,3 +1,5 @@
+import { SeriesOrganizationDataLabelsOptionsObject } from "highcharts";
+
 interface HeatMapModel {
   // currently it only serves the purpose of a confusion matrix
   graphTitle: string;
@@ -6,6 +8,7 @@ interface HeatMapModel {
   categories: Array<string>;
   index: Array<number>;
   value: Array<number>;
+  labels: Object;
 }
 
 export default HeatMapModel;

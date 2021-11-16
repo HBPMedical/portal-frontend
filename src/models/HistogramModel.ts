@@ -3,6 +3,7 @@ interface HistogramModel {
   hist: Array<number>;
   edgesLeft: Array<number>;
   edgesRight: Array<number>;
+  labels: Object;
 }
 
 export default HistogramModel;

@@ -8,6 +8,7 @@ interface MeansPlotModel {
   categories: Array<string>;
   minPerCategory: Record<string, any>;
   maxPerCategory: Record<string, any>;
+  labels: Object;
 }
 
 export default MeansPlotModel;
