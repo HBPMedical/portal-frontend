@@ -4,13 +4,15 @@ import { Alert } from 'react-bootstrap';
 import { RouteComponentProps } from 'react-router-dom';
 import styled from 'styled-components';
 import { APICore, APIExperiment, APIMining, APIModel, APIUser } from '../API';
-import { VariableEntity } from '../API/Core';
+import { selectedExperimentVar, VariableEntity } from '../API/Core';
 import { D3Model, HierarchyCircularNode, ModelResponse } from '../API/Model';
 import { AppConfig } from '../App/App';
 import { LONGITUDINAL_DATASET_TYPE } from '../constants';
 import Modal from '../UI/Modal';
 import CirclePack from './D3CirclePackLayer';
 import { d3Hierarchy, VariableDatum } from './d3Hierarchy';
+import { useReactiveVar } from '@apollo/client';
+import { Experiment } from '../API/GraphQL/types.generated';
 
 const diameter = 800;
 const padding = 1.5;
@@ -50,6 +52,8 @@ export default ({
     HierarchyCircularNode | undefined
   >();
 
+  const selectedExperiment = useReactiveVar(selectedExperimentVar);
+
   // D3Model is used to expose D3 data and interact with the D3 Layout.
   const [d3Layout, setD3Layout] = useState<HierarchyCircularNode>();
   const [, setFormulaString] = useState<string>('');
@@ -61,11 +65,9 @@ export default ({
 
   // Utility to convert variables to D3 model
   const convertModelToD3Model = (
-    model: ModelResponse,
+    model: Experiment,
     d3Layout: HierarchyCircularNode
   ): D3Model => {
-    const query = model && model.query;
-
     const filterVariables: string[] = [];
     const extractVariablesFromFilter = (filter: any) =>
       filter.rules.forEach((r: any) => {
@@ -77,29 +79,16 @@ export default ({
         }
       });
 
-    if (query && query.filters) {
-      extractVariablesFromFilter(JSON.parse(query.filters));
-    } else {
-      query.filterVariables?.forEach(v => {
-        filterVariables.push(v.code);
-      });
+    if (model && model.filter) {
+      extractVariablesFromFilter(JSON.parse(model.filter));
     }
 
     const nextModel = {
       covariables: [
-        ...((query.coVariables &&
+        ...((model.coVariables &&
           d3Layout
             .descendants()
-            .filter(l =>
-              query.coVariables!.map(c => c.code).includes(l.data.code)
-            )) ||
-          []),
-        ...((query.groupings &&
-          d3Layout
-            .descendants()
-            .filter(l =>
-              query.groupings!.map(c => c.code).includes(l.data.code)
-            )) ||
+            .filter(l => model.coVariables?.includes(l.data.code))) ||
           [])
       ],
       filters: [
@@ -111,13 +100,11 @@ export default ({
       ],
       groupings: undefined,
       variables:
-        (query.variables !== undefined &&
-          query.variables.length > 0 &&
+        (model.variables !== undefined &&
+          model.variables.length > 0 &&
           d3Layout
             .descendants()
-            .filter(l =>
-              query.variables!.map(c => c.code).includes(l.data.code)
-            )) ||
+            .filter(l => model.variables?.includes(l.data.code))) ||
         []
     };
 
@@ -180,11 +167,10 @@ export default ({
 
   // Sync selected variables and D3 Model
   useEffect(() => {
-    const model = apiModel.state.model;
-    if (model && d3Layout) {
-      apiModel.setD3Model(convertModelToD3Model(model, d3Layout));
+    if (selectedExperiment && d3Layout) {
+      apiModel.setD3Model(convertModelToD3Model(selectedExperiment, d3Layout));
     }
-  }, [apiModel, d3Layout]);
+  }, [apiModel, d3Layout, selectedExperiment]);
 
   // Load Histograms for selected variable
   const trainingDatasets =

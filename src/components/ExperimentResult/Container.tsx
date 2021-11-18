@@ -2,7 +2,7 @@ import * as React from 'react';
 import { Card } from 'react-bootstrap';
 import { RouteComponentProps, withRouter } from 'react-router-dom';
 import { APICore, APIExperiment, APIModel } from '../API';
-import { selectedExperiment, VariableEntity } from '../API/Core';
+import { selectedExperimentVar, VariableEntity } from '../API/Core';
 import {
   useEditExperimentMutation,
   useGetExperimentQuery
@@ -35,7 +35,7 @@ const Container = ({ ...props }: Props): JSX.Element => {
   const { loading, data, stopPolling, startPolling } = useGetExperimentQuery({
     variables: { id: uuid },
     onCompleted: data => {
-      selectedExperiment(data.experiment as Experiment);
+      selectedExperimentVar(data.experiment as Experiment);
       if (data && data.experiment.status !== 'pending') {
         stopPolling();
         if (!data.experiment.viewed)
@@ -52,7 +52,7 @@ const Container = ({ ...props }: Props): JSX.Element => {
       }
     },
     onError: data => {
-      console.log(data);
+      console.log('error', data);
     }
   });
 
