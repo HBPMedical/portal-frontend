@@ -39,11 +39,6 @@ const Container = ({
   const query = model?.query;
   const pathology = query?.pathology || '';
   const datasets = apiCore.state.pathologiesDatasets[pathology];
-  const selectedDatasets = query?.trainingDatasets?.map(d => ({
-    ...datasets?.find(v => v.code === d.code),
-    ...d
-  }));
-  console.log(data, loading, error);
   const results = data?.createExperiment.results as ResultUnion[];
 
   React.useEffect(() => {
