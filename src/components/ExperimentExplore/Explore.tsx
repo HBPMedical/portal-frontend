@@ -4,7 +4,7 @@ import { BsFillCaretRightFill } from 'react-icons/bs';
 import styled from 'styled-components';
 
 import { APICore, APIExperiment, APIMining, APIModel } from '../API';
-import { VariableEntity } from '../API/Core';
+import { selectedExperimentVar, VariableEntity } from '../API/Core';
 import { IExperiment } from '../API/Experiment';
 import { D3Model, HierarchyCircularNode, ModelResponse } from '../API/Model';
 import { ONTOLOGY_URL } from '../constants';
@@ -16,6 +16,8 @@ import { ModelType } from './Container';
 import Histograms from './D3Histograms';
 import ModelView from './D3Model';
 import Search from './D3Search';
+import { useGetExperimentLazyQuery } from '../API/GraphQL/queries.generated';
+import { Experiment } from '../API/GraphQL/types.generated';
 
 const DataSelectionBox = styled(Card.Title)`
   display: flex;
@@ -142,6 +144,12 @@ export default (props: ExploreProps): JSX.Element => {
     // setFormulaString
   } = props;
 
+  const [getExperiment] = useGetExperimentLazyQuery({
+    onCompleted: data => {
+      selectedExperimentVar(data.experiment as Experiment);
+    }
+  });
+
   const model = apiModel.state.model;
   const selectedDatasets = model?.query?.trainingDatasets || [];
   const selectedPathology = model?.query?.pathology || '';
@@ -223,6 +231,9 @@ export default (props: ExploreProps): JSX.Element => {
                     handleSelectExperiment={(
                       experiment?: IExperiment
                     ): void => {
+                      getExperiment({
+                        variables: { id: experiment?.uuid ?? '' }
+                      });
                       apiExperiment.setExperiment(experiment);
                       Exareme.handleSelectExperimentToModel(
                         apiModel,

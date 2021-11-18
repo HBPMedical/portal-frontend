@@ -1,9 +1,11 @@
+import { useReactiveVar } from '@apollo/client';
 import dayjs from 'dayjs';
 import relativeTime from 'dayjs/plugin/relativeTime';
 import React, { useEffect, useRef, useState } from 'react';
 import { Button, Form } from 'react-bootstrap';
 import styled from 'styled-components';
 import { APIExperiment } from '../API';
+import { selectedExperimentVar } from '../API/Core';
 import {
   ExperimentListQueryParameters,
   IExperiment,
@@ -195,7 +197,7 @@ const Dropdown = ({ ...props }: Props): JSX.Element => {
   const { state, getListForExperimentParameters } = apiExperiment;
   const { experimentListForParamters } = state;
 
-  const experiment = apiExperiment.isExperiment(apiExperiment.state.experiment);
+  const experiment = useReactiveVar(selectedExperimentVar);
 
   const [isOpen, setIsOpen] = useState(false);
   const node = useRef(null);

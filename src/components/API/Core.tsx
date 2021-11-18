@@ -164,7 +164,7 @@ export const apolloClient = new ApolloClient({
   })
 });
 
-export const selectedExperiment = makeVar<Experiment | undefined>(undefined);
+export const selectedExperimentVar = makeVar<Experiment | undefined>(undefined);
 
 class Core extends Container<State> {
   state: State = {
