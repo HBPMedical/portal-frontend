@@ -87,13 +87,18 @@ export const QUERY_DOMAINS = gql`
   }
 `;
 
-export const ADD_TRANSIENT = gql`
+export const CREATE_EXPERIMENT = gql`
   ${coreInfoResult}
 
-  mutation createTransient($data: ExperimentCreateInput!) {
-    createExperiment(data: $data, isTransient: true) {
+  mutation createExperiment(
+    $data: ExperimentCreateInput!
+    $isTransient: Boolean = true
+  ) {
+    createExperiment(data: $data, isTransient: $isTransient) {
+      id @skip(if: $isTransient)
       name
-      results {
+      status
+      results @include(if: $isTransient) {
         ... on GroupsResult {
           groups {
             name
