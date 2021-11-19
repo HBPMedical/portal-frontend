@@ -18,12 +18,13 @@ export type ListDomainsQueryVariables = Types.Exact<{ [key: string]: never; }>;
 
 export type ListDomainsQuery = { __typename?: 'Query', domains: Array<{ __typename?: 'Domain', id: string, label?: Types.Maybe<string>, description?: Types.Maybe<string>, datasets: Array<{ __typename?: 'Category', id: string, label?: Types.Maybe<string> }>, variables: Array<{ __typename?: 'Variable', id: string, label?: Types.Maybe<string>, type?: Types.Maybe<string>, description?: Types.Maybe<string>, enumerations?: Types.Maybe<Array<{ __typename?: 'Category', id: string, label?: Types.Maybe<string> }>> }>, rootGroup: { __typename?: 'Group', id: string, label?: Types.Maybe<string>, description?: Types.Maybe<string>, groups?: Types.Maybe<Array<string>>, variables?: Types.Maybe<Array<string>> }, groups: Array<{ __typename?: 'Group', id: string, label?: Types.Maybe<string>, description?: Types.Maybe<string>, groups?: Types.Maybe<Array<string>>, variables?: Types.Maybe<Array<string>> }> }> };
 
-export type CreateTransientMutationVariables = Types.Exact<{
+export type CreateExperimentMutationVariables = Types.Exact<{
   data: Types.ExperimentCreateInput;
+  isTransient?: Types.Maybe<Types.Scalars['Boolean']>;
 }>;
 
 
-export type CreateTransientMutation = { __typename?: 'Mutation', createExperiment: { __typename?: 'Experiment', name: string, results?: Types.Maybe<Array<{ __typename?: 'GroupsResult', groups: Array<{ __typename?: 'GroupResult', name: string, description?: Types.Maybe<string>, results: Array<{ __typename?: 'GroupsResult' } | { __typename?: 'HeatMapResult', name: string, matrix: Array<Array<number>>, xAxis?: Types.Maybe<{ __typename?: 'ChartAxis', label?: Types.Maybe<string>, categories?: Types.Maybe<Array<string>> }>, yAxis?: Types.Maybe<{ __typename?: 'ChartAxis', label?: Types.Maybe<string>, categories?: Types.Maybe<Array<string>> }> } | { __typename?: 'LineChartResult', name: string, xAxis?: Types.Maybe<{ __typename?: 'ChartAxis', label?: Types.Maybe<string> }>, yAxis?: Types.Maybe<{ __typename?: 'ChartAxis', label?: Types.Maybe<string> }>, lines: Array<{ __typename?: 'LineResult', label: string, x: Array<number>, y: Array<number>, type?: Types.Maybe<Types.LineType>, extraLineInfos?: Types.Maybe<Array<{ __typename?: 'ExtraLineInfo', label: string, values: Array<string> }>> }> } | { __typename?: 'RawResult', rawdata?: Types.Maybe<any> } | { __typename?: 'TableResult', name: string, data: Array<Array<string>>, headers: Array<{ __typename?: 'Header', name: string, type: string }> }> }> } | { __typename?: 'HeatMapResult', name: string, matrix: Array<Array<number>>, xAxis?: Types.Maybe<{ __typename?: 'ChartAxis', label?: Types.Maybe<string>, categories?: Types.Maybe<Array<string>> }>, yAxis?: Types.Maybe<{ __typename?: 'ChartAxis', label?: Types.Maybe<string>, categories?: Types.Maybe<Array<string>> }> } | { __typename?: 'LineChartResult', name: string, xAxis?: Types.Maybe<{ __typename?: 'ChartAxis', label?: Types.Maybe<string> }>, yAxis?: Types.Maybe<{ __typename?: 'ChartAxis', label?: Types.Maybe<string> }>, lines: Array<{ __typename?: 'LineResult', label: string, x: Array<number>, y: Array<number>, type?: Types.Maybe<Types.LineType>, extraLineInfos?: Types.Maybe<Array<{ __typename?: 'ExtraLineInfo', label: string, values: Array<string> }>> }> } | { __typename?: 'RawResult', rawdata?: Types.Maybe<any> } | { __typename?: 'TableResult', name: string, data: Array<Array<string>>, headers: Array<{ __typename?: 'Header', name: string, type: string }> }>> } };
+export type CreateExperimentMutation = { __typename?: 'Mutation', createExperiment: { __typename?: 'Experiment', id?: Types.Maybe<string>, name: string, status?: Types.Maybe<string>, results?: Types.Maybe<Array<{ __typename?: 'GroupsResult', groups: Array<{ __typename?: 'GroupResult', name: string, description?: Types.Maybe<string>, results: Array<{ __typename?: 'GroupsResult' } | { __typename?: 'HeatMapResult', name: string, matrix: Array<Array<number>>, xAxis?: Types.Maybe<{ __typename?: 'ChartAxis', label?: Types.Maybe<string>, categories?: Types.Maybe<Array<string>> }>, yAxis?: Types.Maybe<{ __typename?: 'ChartAxis', label?: Types.Maybe<string>, categories?: Types.Maybe<Array<string>> }> } | { __typename?: 'LineChartResult', name: string, xAxis?: Types.Maybe<{ __typename?: 'ChartAxis', label?: Types.Maybe<string> }>, yAxis?: Types.Maybe<{ __typename?: 'ChartAxis', label?: Types.Maybe<string> }>, lines: Array<{ __typename?: 'LineResult', label: string, x: Array<number>, y: Array<number>, type?: Types.Maybe<Types.LineType>, extraLineInfos?: Types.Maybe<Array<{ __typename?: 'ExtraLineInfo', label: string, values: Array<string> }>> }> } | { __typename?: 'RawResult', rawdata?: Types.Maybe<any> } | { __typename?: 'TableResult', name: string, data: Array<Array<string>>, headers: Array<{ __typename?: 'Header', name: string, type: string }> }> }> } | { __typename?: 'HeatMapResult', name: string, matrix: Array<Array<number>>, xAxis?: Types.Maybe<{ __typename?: 'ChartAxis', label?: Types.Maybe<string>, categories?: Types.Maybe<Array<string>> }>, yAxis?: Types.Maybe<{ __typename?: 'ChartAxis', label?: Types.Maybe<string>, categories?: Types.Maybe<Array<string>> }> } | { __typename?: 'LineChartResult', name: string, xAxis?: Types.Maybe<{ __typename?: 'ChartAxis', label?: Types.Maybe<string> }>, yAxis?: Types.Maybe<{ __typename?: 'ChartAxis', label?: Types.Maybe<string> }>, lines: Array<{ __typename?: 'LineResult', label: string, x: Array<number>, y: Array<number>, type?: Types.Maybe<Types.LineType>, extraLineInfos?: Types.Maybe<Array<{ __typename?: 'ExtraLineInfo', label: string, values: Array<string> }>> }> } | { __typename?: 'RawResult', rawdata?: Types.Maybe<any> } | { __typename?: 'TableResult', name: string, data: Array<Array<string>>, headers: Array<{ __typename?: 'Header', name: string, type: string }> }>> } };
 
 export type EditExperimentMutationVariables = Types.Exact<{
   id: Types.Scalars['String'];
@@ -178,11 +179,13 @@ export function useListDomainsLazyQuery(baseOptions?: Apollo.LazyQueryHookOption
 export type ListDomainsQueryHookResult = ReturnType<typeof useListDomainsQuery>;
 export type ListDomainsLazyQueryHookResult = ReturnType<typeof useListDomainsLazyQuery>;
 export type ListDomainsQueryResult = Apollo.QueryResult<ListDomainsQuery, ListDomainsQueryVariables>;
-export const CreateTransientDocument = gql`
-    mutation createTransient($data: ExperimentCreateInput!) {
-  createExperiment(data: $data, isTransient: true) {
+export const CreateExperimentDocument = gql`
+    mutation createExperiment($data: ExperimentCreateInput!, $isTransient: Boolean = true) {
+  createExperiment(data: $data, isTransient: $isTransient) {
+    id @skip(if: $isTransient)
     name
-    results {
+    status
+    results @include(if: $isTransient) {
       ... on GroupsResult {
         groups {
           name
@@ -197,32 +200,33 @@ export const CreateTransientDocument = gql`
   }
 }
     ${CoreInfoResultFragmentDoc}`;
-export type CreateTransientMutationFn = Apollo.MutationFunction<CreateTransientMutation, CreateTransientMutationVariables>;
+export type CreateExperimentMutationFn = Apollo.MutationFunction<CreateExperimentMutation, CreateExperimentMutationVariables>;
 
 /**
- * __useCreateTransientMutation__
+ * __useCreateExperimentMutation__
  *
- * To run a mutation, you first call `useCreateTransientMutation` within a React component and pass it any options that fit your needs.
- * When your component renders, `useCreateTransientMutation` returns a tuple that includes:
+ * To run a mutation, you first call `useCreateExperimentMutation` within a React component and pass it any options that fit your needs.
+ * When your component renders, `useCreateExperimentMutation` returns a tuple that includes:
  * - A mutate function that you can call at any time to execute the mutation
  * - An object with fields that represent the current status of the mutation's execution
  *
  * @param baseOptions options that will be passed into the mutation, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options-2;
  *
  * @example
- * const [createTransientMutation, { data, loading, error }] = useCreateTransientMutation({
+ * const [createExperimentMutation, { data, loading, error }] = useCreateExperimentMutation({
  *   variables: {
  *      data: // value for 'data'
+ *      isTransient: // value for 'isTransient'
  *   },
  * });
  */
-export function useCreateTransientMutation(baseOptions?: Apollo.MutationHookOptions<CreateTransientMutation, CreateTransientMutationVariables>) {
+export function useCreateExperimentMutation(baseOptions?: Apollo.MutationHookOptions<CreateExperimentMutation, CreateExperimentMutationVariables>) {
         const options = {...defaultOptions, ...baseOptions}
-        return Apollo.useMutation<CreateTransientMutation, CreateTransientMutationVariables>(CreateTransientDocument, options);
+        return Apollo.useMutation<CreateExperimentMutation, CreateExperimentMutationVariables>(CreateExperimentDocument, options);
       }
-export type CreateTransientMutationHookResult = ReturnType<typeof useCreateTransientMutation>;
-export type CreateTransientMutationResult = Apollo.MutationResult<CreateTransientMutation>;
-export type CreateTransientMutationOptions = Apollo.BaseMutationOptions<CreateTransientMutation, CreateTransientMutationVariables>;
+export type CreateExperimentMutationHookResult = ReturnType<typeof useCreateExperimentMutation>;
+export type CreateExperimentMutationResult = Apollo.MutationResult<CreateExperimentMutation>;
+export type CreateExperimentMutationOptions = Apollo.BaseMutationOptions<CreateExperimentMutation, CreateExperimentMutationVariables>;
 export const EditExperimentDocument = gql`
     mutation editExperiment($id: String!, $data: ExperimentEditInput!) {
   editExperiment(id: $id, data: $data) {
@@ -302,7 +306,7 @@ export const namedOperations = {
     listDomains: 'listDomains'
   },
   Mutation: {
-    createTransient: 'createTransient',
+    createExperiment: 'createExperiment',
     editExperiment: 'editExperiment',
     deleteExperiment: 'deleteExperiment'
   },
