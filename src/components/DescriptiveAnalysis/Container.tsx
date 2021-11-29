@@ -4,7 +4,7 @@ import { RouteComponentProps } from 'react-router-dom';
 import Sidebar from 'react-sidebar';
 import { APICore, APIExperiment, APIModel } from '../API';
 import { VariableEntity } from '../API/Core';
-import { useCreateTransientMutation } from '../API/GraphQL/queries.generated';
+import { useCreateExperimentMutation } from '../API/GraphQL/queries.generated';
 import { ResultUnion } from '../API/GraphQL/types.generated';
 import ResultDispatcher from '../ExperimentResult/ResultDispatcher';
 import Error from '../UI/Error';
@@ -31,7 +31,7 @@ const Container = ({
   const [
     createTransientMutation,
     { data, loading, error }
-  ] = useCreateTransientMutation();
+  ] = useCreateExperimentMutation();
 
   const { history } = props;
   const model = apiModel.state.model;
