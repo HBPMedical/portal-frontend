@@ -1,11 +1,10 @@
-import * as React from 'react';
-import { Navbar, Container, Card } from 'react-bootstrap';
+import React, { useMemo } from 'react';
+import { Card, Container, Navbar } from 'react-bootstrap';
+import { APICore } from '../API';
+import { VariableEntity } from '../API/Core';
+import { IFormula, Query } from '../API/Model';
 import Filter from './Filter';
 import Formula from './Formula';
-import { Query } from '../API/Model';
-import { VariableEntity } from '../API/Core';
-import { IFormula } from '../API/Model';
-import { APICore } from '../API';
 
 interface IFilters {
   fields: any;
@@ -37,10 +36,19 @@ const Options = ({
   lookup,
   apiCore
 }: IFilters & IOptions) => {
-  const handleUpdateFormulaCallback = React.useCallback(
-    handleUpdateFormula,
-    []
+  const handleUpdateFormulaCallback = React.useCallback(handleUpdateFormula, [
+    query?.formula // hacky way to force re-render on formula changes
+  ]);
+
+  // Avoid re-rendering of formula and losing focus on select input
+  const memoizedAlgorithms = useMemo(
+    () =>
+      apiCore.state.algorithms?.filter(a =>
+        a.parameters.find((p: any) => p.type === 'formula_description')
+      ),
+    [apiCore.state.algorithms]
   );
+
   return (
     <>
       <NavBar />
@@ -59,9 +67,7 @@ const Options = ({
             query={query}
             lookup={lookup}
             handleUpdateFormula={handleUpdateFormulaCallback}
-            availableAlgorithms={apiCore.state.algorithms?.filter(a =>
-              a.parameters.find((p: any) => p.type === 'formula_description')
-            )}
+            availableAlgorithms={memoizedAlgorithms}
           />
         </Card.Body>
       </Card>
