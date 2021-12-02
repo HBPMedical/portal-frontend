@@ -1,11 +1,9 @@
 import React, { useCallback, useEffect, useState } from 'react';
-import { Form, Col, Button } from 'react-bootstrap';
-import { VariableEntity } from '../API/Core';
-import { IFormula } from '../API/Model';
+import { Button, Col, Form } from 'react-bootstrap';
 import styled from 'styled-components';
-import { Query } from '../API/Model';
+import { Algorithm, VariableEntity } from '../API/Core';
 import { FormulaTransformation } from '../API/GraphQL/types.generated';
-import { Algorithm } from '../API/Core';
+import { IFormula, Query } from '../API/Model';
 
 type Modify<T, R> = Omit<T, keyof R> & R;
 type SelectedTransformation = Modify<
@@ -52,6 +50,11 @@ const Formula = React.memo(
       SelectedInteraction
     >([]);
     const lookupCallback = useCallback(lookup, []);
+    const handleUpdateFormulaCallback = useCallback(handleUpdateFormula, []);
+
+    useEffect(() => {
+      handleUpdateFormulaCallback(undefined); // set initial state to nothing
+    }, [handleUpdateFormulaCallback]);
 
     useEffect(() => {
       const variables: VariableEntity[] | undefined = query && [
@@ -317,7 +320,7 @@ const Formula = React.memo(
               <TransformRow
                 transformation={transformation}
                 // eslint-disable-next-line
-              key={`transformations-row-${transformation.name}`}
+                key={`transformations-row-${transformation.name}`}
               />
             ))}
 
@@ -336,7 +339,7 @@ const Formula = React.memo(
                   <InteractionRow
                     interaction={interaction}
                     // eslint-disable-next-line
-                  key={`interaction-row-${interaction.join('-')}`}
+                    key={`interaction-row-${interaction.join('-')}`}
                   />
                 ))}
                 {interactionVariables.length <
