@@ -501,7 +501,7 @@ class Experiment extends Container<State> {
           null;
 
         if (p.label === 'formula') {
-          value = JSON.stringify(formula);
+          value = formula ? JSON.stringify(formula) : '';
         }
       }
 
