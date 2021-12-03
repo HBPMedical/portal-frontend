@@ -1,13 +1,13 @@
-import { ApolloClient, InMemoryCache, makeVar } from '@apollo/client';
+import { ApolloClient } from '@apollo/client';
 import request from 'request-promise-native';
 import { Container } from 'unstated';
 import { backendURL } from '../API';
 import { Exareme } from '../API/Exareme';
 import { FORBIDDEN_ACCESS_MESSAGE } from '../constants';
+import { cache } from './GraphQL/cache';
 import { QUERY_DOMAINS } from './GraphQL/queries';
 import {
   Domain,
-  Experiment,
   Group,
   Variable as VariableData
 } from './GraphQL/types.generated';
@@ -156,21 +156,8 @@ export const apolloClient = new ApolloClient({
     ...config.options?.headers,
     accept: 'application/json, text/plain, */*'
   },
-  cache: new InMemoryCache({
-    possibleTypes: {
-      // https://github.com/apollographql/apollo-client/issues/7050
-      ResultUnion: [
-        'RawResult',
-        'GroupsResult',
-        'TableResult',
-        'HeatMapResult',
-        'LineChartResult'
-      ]
-    }
-  })
+  cache: cache
 });
-
-export const selectedExperimentVar = makeVar<Experiment | undefined>(undefined);
 
 class Core extends Container<State> {
   state: State = {

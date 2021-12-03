@@ -5,12 +5,12 @@ import React, { useEffect, useRef, useState } from 'react';
 import { Button, Form } from 'react-bootstrap';
 import styled from 'styled-components';
 import { APIExperiment } from '../API';
-import { selectedExperimentVar } from '../API/Core';
 import {
   ExperimentListQueryParameters,
   IExperiment,
   IExperimentList
 } from '../API/Experiment';
+import { selectedExperimentVar } from '../API/GraphQL/cache';
 import { MIN_SEARCH_CHARACTER_NUMBER } from '../constants';
 import Pagination from '../UI/Pagination';
 import { useOnClickOutside } from '../utils';

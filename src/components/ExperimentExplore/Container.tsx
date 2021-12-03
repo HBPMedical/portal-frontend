@@ -4,7 +4,7 @@ import { Alert } from 'react-bootstrap';
 import { RouteComponentProps } from 'react-router-dom';
 import styled from 'styled-components';
 import { APICore, APIExperiment, APIMining, APIModel, APIUser } from '../API';
-import { selectedExperimentVar, VariableEntity } from '../API/Core';
+import { VariableEntity } from '../API/Core';
 import { D3Model, HierarchyCircularNode, ModelResponse } from '../API/Model';
 import { AppConfig } from '../App/App';
 import { LONGITUDINAL_DATASET_TYPE } from '../constants';
@@ -13,6 +13,7 @@ import CirclePack from './D3CirclePackLayer';
 import { d3Hierarchy, VariableDatum } from './d3Hierarchy';
 import { useReactiveVar } from '@apollo/client';
 import { Experiment } from '../API/GraphQL/types.generated';
+import { selectedExperimentVar } from '../API/GraphQL/cache';
 
 const diameter = 800;
 const padding = 1.5;

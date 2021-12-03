@@ -2,11 +2,8 @@ import * as React from 'react';
 import { Card } from 'react-bootstrap';
 import { RouteComponentProps, withRouter } from 'react-router-dom';
 import { APICore, APIExperiment, APIModel } from '../API';
-import { selectedExperimentVar, VariableEntity } from '../API/Core';
-import {
-  useEditExperimentMutation,
-  useGetExperimentQuery
-} from '../API/GraphQL/queries.generated';
+import { VariableEntity } from '../API/Core';
+import { experimentQueries } from '../API/GraphQL/operations/queries';
 import { Experiment } from '../API/GraphQL/types.generated';
 import FilterDisplay from '../UI/FilterDisplay';
 import ListSection from '../UI/ListSection';
@@ -30,31 +27,7 @@ const Container = ({ ...props }: Props): JSX.Element => {
   //const [getDog, { loading, error, data }] = useExperimentLazyQuery();
   const uuid = props.match.params.uuid;
 
-  const [editExperimentMutation] = useEditExperimentMutation();
-
-  const { loading, data, stopPolling, startPolling } = useGetExperimentQuery({
-    variables: { id: uuid },
-    onCompleted: data => {
-      selectedExperimentVar(data.experiment as Experiment);
-      if (data && data.experiment.status !== 'pending') {
-        stopPolling();
-        if (!data.experiment.viewed)
-          editExperimentMutation({
-            variables: {
-              id: data.experiment.id ?? '',
-              data: {
-                viewed: true
-              }
-            }
-          });
-      } else {
-        startPolling(500);
-      }
-    },
-    onError: data => {
-      console.log('error', data);
-    }
-  });
+  const { loading, data } = experimentQueries.getExperiment(uuid);
 
   const lookup = (id: string): VariableEntity => {
     return props.apiCore.lookup(id, data?.experiment.domain);
