@@ -24,10 +24,9 @@ interface Props extends RouteComponentProps<RouteParams> {
 }
 
 const Container = ({ ...props }: Props): JSX.Element => {
-  //const [getDog, { loading, error, data }] = useExperimentLazyQuery();
   const uuid = props.match.params.uuid;
 
-  const { loading, data } = experimentQueries.getExperiment(uuid);
+  const { loading, data } = experimentQueries.getExperiment(uuid, true, true);
 
   const lookup = (id: string): VariableEntity => {
     return props.apiCore.lookup(id, data?.experiment.domain);
