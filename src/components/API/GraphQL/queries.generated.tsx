@@ -4,12 +4,20 @@ import { gql } from '@apollo/client';
 import { CoreInfoResultFragmentDoc } from './fragments.generated';
 import * as Apollo from '@apollo/client';
 const defaultOptions =  {}
+export type GetExperimentListQueryVariables = Types.Exact<{
+  name?: Types.Maybe<Types.Scalars['String']>;
+  page?: Types.Maybe<Types.Scalars['Float']>;
+}>;
+
+
+export type GetExperimentListQuery = { __typename?: 'Query', experimentList: { __typename?: 'ListExperiments', totalPages?: Types.Maybe<number>, currentPage?: Types.Maybe<number>, totalExperiments?: Types.Maybe<number>, experiments: Array<{ __typename?: 'Experiment', id: string, name: string, createdAt?: Types.Maybe<number>, viewed?: Types.Maybe<boolean>, shared: boolean, status?: Types.Maybe<string>, author?: Types.Maybe<{ __typename?: 'Author', username?: Types.Maybe<string>, fullname?: Types.Maybe<string> }> }> } };
+
 export type GetExperimentQueryVariables = Types.Exact<{
   id: Types.Scalars['String'];
 }>;
 
 
-export type GetExperimentQuery = { __typename?: 'Query', experiment: { __typename?: 'Experiment', name: string, id?: Types.Maybe<string>, domain: string, datasets: Array<string>, filter?: Types.Maybe<string>, createdAt?: Types.Maybe<number>, finishedAt?: Types.Maybe<number>, viewed?: Types.Maybe<boolean>, variables: Array<string>, coVariables?: Types.Maybe<Array<string>>, shared: boolean, status?: Types.Maybe<string>, author?: Types.Maybe<{ __typename?: 'Author', username?: Types.Maybe<string>, fullname?: Types.Maybe<string> }>, algorithm: { __typename?: 'Algorithm', id: string, description?: Types.Maybe<string>, label?: Types.Maybe<string>, type?: Types.Maybe<string>, parameters?: Types.Maybe<Array<{ __typename?: 'AlgorithmParameter', id: string, label?: Types.Maybe<string>, value?: Types.Maybe<Array<string>> }>> }, results?: Types.Maybe<Array<{ __typename?: 'GroupsResult', groups: Array<{ __typename?: 'GroupResult', name: string, description?: Types.Maybe<string>, results: Array<{ __typename?: 'GroupsResult' } | { __typename?: 'HeatMapResult', name: string, matrix: Array<Array<number>>, xAxis?: Types.Maybe<{ __typename?: 'ChartAxis', label?: Types.Maybe<string>, categories?: Types.Maybe<Array<string>> }>, yAxis?: Types.Maybe<{ __typename?: 'ChartAxis', label?: Types.Maybe<string>, categories?: Types.Maybe<Array<string>> }> } | { __typename?: 'LineChartResult', name: string, xAxis?: Types.Maybe<{ __typename?: 'ChartAxis', label?: Types.Maybe<string> }>, yAxis?: Types.Maybe<{ __typename?: 'ChartAxis', label?: Types.Maybe<string> }>, lines: Array<{ __typename?: 'LineResult', label: string, x: Array<number>, y: Array<number>, type?: Types.Maybe<Types.LineType>, extraLineInfos?: Types.Maybe<Array<{ __typename?: 'ExtraLineInfo', label: string, values: Array<string> }>> }> } | { __typename?: 'RawResult', rawdata?: Types.Maybe<any> } | { __typename?: 'TableResult', name: string, data: Array<Array<string>>, headers: Array<{ __typename?: 'Header', name: string, type: string }> }> }> } | { __typename?: 'HeatMapResult', name: string, matrix: Array<Array<number>>, xAxis?: Types.Maybe<{ __typename?: 'ChartAxis', label?: Types.Maybe<string>, categories?: Types.Maybe<Array<string>> }>, yAxis?: Types.Maybe<{ __typename?: 'ChartAxis', label?: Types.Maybe<string>, categories?: Types.Maybe<Array<string>> }> } | { __typename?: 'LineChartResult', name: string, xAxis?: Types.Maybe<{ __typename?: 'ChartAxis', label?: Types.Maybe<string> }>, yAxis?: Types.Maybe<{ __typename?: 'ChartAxis', label?: Types.Maybe<string> }>, lines: Array<{ __typename?: 'LineResult', label: string, x: Array<number>, y: Array<number>, type?: Types.Maybe<Types.LineType>, extraLineInfos?: Types.Maybe<Array<{ __typename?: 'ExtraLineInfo', label: string, values: Array<string> }>> }> } | { __typename?: 'RawResult', rawdata?: Types.Maybe<any> } | { __typename?: 'TableResult', name: string, data: Array<Array<string>>, headers: Array<{ __typename?: 'Header', name: string, type: string }> }>> } };
+export type GetExperimentQuery = { __typename?: 'Query', experiment: { __typename?: 'Experiment', name: string, id: string, domain: string, datasets: Array<string>, filter?: Types.Maybe<string>, createdAt?: Types.Maybe<number>, finishedAt?: Types.Maybe<number>, viewed?: Types.Maybe<boolean>, variables: Array<string>, coVariables?: Types.Maybe<Array<string>>, shared: boolean, status?: Types.Maybe<string>, author?: Types.Maybe<{ __typename?: 'Author', username?: Types.Maybe<string>, fullname?: Types.Maybe<string> }>, algorithm: { __typename?: 'Algorithm', id: string, description?: Types.Maybe<string>, label?: Types.Maybe<string>, type?: Types.Maybe<string>, parameters?: Types.Maybe<Array<{ __typename?: 'AlgorithmParameter', id: string, label?: Types.Maybe<string>, value?: Types.Maybe<Array<string>> }>> }, results?: Types.Maybe<Array<{ __typename?: 'GroupsResult', groups: Array<{ __typename?: 'GroupResult', name: string, description?: Types.Maybe<string>, results: Array<{ __typename?: 'GroupsResult' } | { __typename?: 'HeatMapResult', name: string, matrix: Array<Array<number>>, xAxis?: Types.Maybe<{ __typename?: 'ChartAxis', label?: Types.Maybe<string>, categories?: Types.Maybe<Array<string>> }>, yAxis?: Types.Maybe<{ __typename?: 'ChartAxis', label?: Types.Maybe<string>, categories?: Types.Maybe<Array<string>> }> } | { __typename?: 'LineChartResult', name: string, xAxis?: Types.Maybe<{ __typename?: 'ChartAxis', label?: Types.Maybe<string> }>, yAxis?: Types.Maybe<{ __typename?: 'ChartAxis', label?: Types.Maybe<string> }>, lines: Array<{ __typename?: 'LineResult', label: string, x: Array<number>, y: Array<number>, type?: Types.Maybe<Types.LineType>, extraLineInfos?: Types.Maybe<Array<{ __typename?: 'ExtraLineInfo', label: string, values: Array<string> }>> }> } | { __typename?: 'RawResult', rawdata?: Types.Maybe<any> } | { __typename?: 'TableResult', name: string, data: Array<Array<string>>, headers: Array<{ __typename?: 'Header', name: string, type: string }> }> }> } | { __typename?: 'HeatMapResult', name: string, matrix: Array<Array<number>>, xAxis?: Types.Maybe<{ __typename?: 'ChartAxis', label?: Types.Maybe<string>, categories?: Types.Maybe<Array<string>> }>, yAxis?: Types.Maybe<{ __typename?: 'ChartAxis', label?: Types.Maybe<string>, categories?: Types.Maybe<Array<string>> }> } | { __typename?: 'LineChartResult', name: string, xAxis?: Types.Maybe<{ __typename?: 'ChartAxis', label?: Types.Maybe<string> }>, yAxis?: Types.Maybe<{ __typename?: 'ChartAxis', label?: Types.Maybe<string> }>, lines: Array<{ __typename?: 'LineResult', label: string, x: Array<number>, y: Array<number>, type?: Types.Maybe<Types.LineType>, extraLineInfos?: Types.Maybe<Array<{ __typename?: 'ExtraLineInfo', label: string, values: Array<string> }>> }> } | { __typename?: 'RawResult', rawdata?: Types.Maybe<any> } | { __typename?: 'TableResult', name: string, data: Array<Array<string>>, headers: Array<{ __typename?: 'Header', name: string, type: string }> }>> } };
 
 export type CoreGroupInfoFragment = { __typename?: 'Group', id: string, label?: Types.Maybe<string>, description?: Types.Maybe<string>, groups?: Types.Maybe<Array<string>>, variables?: Types.Maybe<Array<string>> };
 
@@ -32,7 +40,7 @@ export type EditExperimentMutationVariables = Types.Exact<{
 }>;
 
 
-export type EditExperimentMutation = { __typename?: 'Mutation', editExperiment: { __typename?: 'Experiment', id?: Types.Maybe<string>, name: string, viewed?: Types.Maybe<boolean>, shared: boolean, status?: Types.Maybe<string>, updateAt?: Types.Maybe<number> } };
+export type EditExperimentMutation = { __typename?: 'Mutation', editExperiment: { __typename?: 'Experiment', id: string, name: string, viewed?: Types.Maybe<boolean>, shared: boolean, status?: Types.Maybe<string>, updateAt?: Types.Maybe<number> } };
 
 export type DeleteExperimentMutationVariables = Types.Exact<{
   id: Types.Scalars['String'];
@@ -50,6 +58,56 @@ export const CoreGroupInfoFragmentDoc = gql`
   variables
 }
     `;
+export const GetExperimentListDocument = gql`
+    query getExperimentList($name: String = "", $page: Float = 0) {
+  experimentList(name: $name, page: $page) {
+    totalPages
+    currentPage
+    totalExperiments
+    experiments {
+      id
+      name
+      createdAt
+      author {
+        username
+        fullname
+      }
+      viewed
+      shared
+      status
+    }
+  }
+}
+    `;
+
+/**
+ * __useGetExperimentListQuery__
+ *
+ * To run a query within a React component, call `useGetExperimentListQuery` and pass it any options that fit your needs.
+ * When your component renders, `useGetExperimentListQuery` returns an object from Apollo Client that contains loading, error, and data properties
+ * you can use to render your UI.
+ *
+ * @param baseOptions options that will be passed into the query, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options;
+ *
+ * @example
+ * const { data, loading, error } = useGetExperimentListQuery({
+ *   variables: {
+ *      name: // value for 'name'
+ *      page: // value for 'page'
+ *   },
+ * });
+ */
+export function useGetExperimentListQuery(baseOptions?: Apollo.QueryHookOptions<GetExperimentListQuery, GetExperimentListQueryVariables>) {
+        const options = {...defaultOptions, ...baseOptions}
+        return Apollo.useQuery<GetExperimentListQuery, GetExperimentListQueryVariables>(GetExperimentListDocument, options);
+      }
+export function useGetExperimentListLazyQuery(baseOptions?: Apollo.LazyQueryHookOptions<GetExperimentListQuery, GetExperimentListQueryVariables>) {
+          const options = {...defaultOptions, ...baseOptions}
+          return Apollo.useLazyQuery<GetExperimentListQuery, GetExperimentListQueryVariables>(GetExperimentListDocument, options);
+        }
+export type GetExperimentListQueryHookResult = ReturnType<typeof useGetExperimentListQuery>;
+export type GetExperimentListLazyQueryHookResult = ReturnType<typeof useGetExperimentListLazyQuery>;
+export type GetExperimentListQueryResult = Apollo.QueryResult<GetExperimentListQuery, GetExperimentListQueryVariables>;
 export const GetExperimentDocument = gql`
     query getExperiment($id: String!) {
   experiment(id: $id) {
@@ -302,6 +360,7 @@ export type DeleteExperimentMutationResult = Apollo.MutationResult<DeleteExperim
 export type DeleteExperimentMutationOptions = Apollo.BaseMutationOptions<DeleteExperimentMutation, DeleteExperimentMutationVariables>;
 export const namedOperations = {
   Query: {
+    getExperimentList: 'getExperimentList',
     getExperiment: 'getExperiment',
     listDomains: 'listDomains'
   },

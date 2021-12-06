@@ -2,16 +2,19 @@ import { gql } from '@apollo/client';
 import { coreInfoResult } from './fragments';
 
 export const QUERY_EXPERIMENT_LIST = gql`
-  query getExperiments($name: String = "", $page: Float = 0) {
-    experiments(name: $name, page: $page) {
+  query getExperimentList($name: String = "", $page: Float = 0) {
+    experimentList(name: $name, page: $page) {
       totalPages
       currentPage
       totalExperiments
-      experiment {
+      experiments {
         id
         name
         createdAt
-        author
+        author {
+          username
+          fullname
+        }
         viewed
         shared
         status

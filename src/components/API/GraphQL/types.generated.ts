@@ -30,6 +30,7 @@ export type AlgorithmInput = {
 
 export type AlgorithmParamInput = {
   id: Scalars['String'];
+  type?: Maybe<ParamType>;
   value: Array<Scalars['String']>;
 };
 
@@ -85,8 +86,9 @@ export type Experiment = {
   datasets: Array<Scalars['String']>;
   domain: Scalars['String'];
   filter?: Maybe<Scalars['String']>;
+  filterVariables?: Maybe<Array<Scalars['String']>>;
   finishedAt?: Maybe<Scalars['Float']>;
-  id?: Maybe<Scalars['String']>;
+  id: Scalars['String'];
   name: Scalars['String'];
   results?: Maybe<Array<ResultUnion>>;
   shared: Scalars['Boolean'];
@@ -215,6 +217,11 @@ export type MutationRemoveExperimentArgs = {
   id: Scalars['String'];
 };
 
+export enum ParamType {
+  Number = 'NUMBER',
+  String = 'STRING'
+}
+
 export type PartialExperiment = {
   __typename?: 'PartialExperiment';
   algorithm?: Maybe<Algorithm>;
@@ -224,6 +231,7 @@ export type PartialExperiment = {
   datasets?: Maybe<Array<Scalars['String']>>;
   domain?: Maybe<Scalars['String']>;
   filter?: Maybe<Scalars['String']>;
+  filterVariables?: Maybe<Array<Scalars['String']>>;
   finishedAt?: Maybe<Scalars['Float']>;
   id?: Maybe<Scalars['String']>;
   name?: Maybe<Scalars['String']>;
@@ -240,7 +248,7 @@ export type Query = {
   algorithms: Array<Algorithm>;
   domains: Array<Domain>;
   experiment: Experiment;
-  experiments: ListExperiments;
+  experimentList: ListExperiments;
 };
 
 
@@ -254,7 +262,7 @@ export type QueryExperimentArgs = {
 };
 
 
-export type QueryExperimentsArgs = {
+export type QueryExperimentListArgs = {
   name?: Maybe<Scalars['String']>;
   page?: Maybe<Scalars['Float']>;
 };
