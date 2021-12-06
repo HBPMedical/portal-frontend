@@ -1,6 +1,25 @@
 import { gql } from '@apollo/client';
 import { coreInfoResult } from './fragments';
 
+export const QUERY_EXPERIMENT_LIST = gql`
+  query getExperiments($name: String = "", $page: Float = 0) {
+    experiments(name: $name, page: $page) {
+      totalPages
+      currentPage
+      totalExperiments
+      experiment {
+        id
+        name
+        createdAt
+        author
+        viewed
+        shared
+        status
+      }
+    }
+  }
+`;
+
 export const QUERY_EXPERIMENT = gql`
   ${coreInfoResult}
 

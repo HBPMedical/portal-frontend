@@ -9,6 +9,13 @@ export default function createGetExperiment(
   selectedExperimentVar: ReactiveVar<Experiment | undefined>,
   draftExperimentVar: ReactiveVar<Experiment>
 ) {
+  /**
+   * Get an experiment
+   * @param id id of the experiment
+   * @param isGlobal if true keep track of the selected experiment and copy the experiment for the draft experiment. If false doesn't do specific thing
+   * @param waitForResult if true polling experiment finished (no more pending), false one time call
+   * @returns loading state, experiment data and error state
+   */
   return (
     id: string,
     isGlobal = false,
