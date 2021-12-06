@@ -11,9 +11,11 @@ import {
   IExperimentList
 } from '../API/Experiment';
 import { selectedExperimentVar } from '../API/GraphQL/cache';
+import { useGetExperimentListLazyQuery } from '../API/GraphQL/queries.generated';
 import { MIN_SEARCH_CHARACTER_NUMBER } from '../constants';
 import Pagination from '../UI/Pagination';
 import { useOnClickOutside } from '../utils';
+import Loader from './Loader';
 
 dayjs.extend(relativeTime);
 dayjs().format();
@@ -93,27 +95,13 @@ interface Props {
   handleSelectExperiment: (experiment?: IExperiment) => void;
 }
 
-interface InternalProps {
-  list: ({ ...params }: ExperimentListQueryParameters) => Promise<void>;
-}
-
 const Search = ({
-  list,
   searchName,
   setSearchName
 }: {
-  list: InternalProps['list'];
   searchName: string;
-  setSearchName: React.Dispatch<React.SetStateAction<string>>;
+  setSearchName: (name: string) => void;
 }): JSX.Element => {
-  useEffect(() => {
-    if (searchName.length > MIN_SEARCH_CHARACTER_NUMBER - 1) {
-      list({ name: searchName });
-    } else {
-      list({ name: '' });
-    }
-  }, [searchName, list]);
-
   return (
     <Form.Control
       autoFocus
@@ -135,41 +123,58 @@ const Items = ({
   getListForExperimentParameters: ({
     ...params
   }: ExperimentListQueryParameters) => Promise<void>;
-  handleOnClick: (experiment?: IExperiment) => void;
+  handleOnClick: (experimentId?: string) => void;
 }): JSX.Element => {
   const [searchName, setSearchName] = useState<string>('');
+  const [pageNumber, setPageNumber] = useState<number>(0);
+
+  const [
+    getExperimentList,
+    { loading, data, error }
+  ] = useGetExperimentListLazyQuery();
+
+  useEffect(() => {
+    console.log('test');
+    getExperimentList({ variables: { name: searchName, page: pageNumber } });
+  }, [searchName, pageNumber, getExperimentList]);
+
+  useEffect(() => {
+    console.log('data', data?.experimentList);
+  }, [data]);
 
   return (
     <>
       <SearchContainer>
-        <Search
-          list={getListForExperimentParameters}
-          searchName={searchName}
-          setSearchName={setSearchName}
-        />
+        <Search searchName={searchName} setSearchName={setSearchName} />
       </SearchContainer>
+      {loading && <Loader />}
+      {!loading && (
+        <>
+          {!data?.experimentList &&
+            searchName.length > MIN_SEARCH_CHARACTER_NUMBER - 1 && (
+              <MessageItem>
+                Your search didn&apos;t return any results
+              </MessageItem>
+            )}
 
-      {!experimentListForParamters?.experiments &&
-        searchName.length > MIN_SEARCH_CHARACTER_NUMBER - 1 && (
-          <MessageItem>Your search didn&apos;t return any results</MessageItem>
-        )}
-
-      {!experimentListForParamters?.experiments &&
-        searchName.length < MIN_SEARCH_CHARACTER_NUMBER && (
-          <MessageItem>You don&apos;t have any experiment yet</MessageItem>
-        )}
-      <DropDownList>
-        {experimentListForParamters?.experiments?.map(
-          (experiment: IExperiment, i: number) => (
-            <ListItem
-              onClick={(): void => handleOnClick(experiment)}
-              key={experiment.uuid}
-            >
-              {experiment.name}
-            </ListItem>
-          )
-        )}
-      </DropDownList>
+          {!data?.experimentList &&
+            searchName.length < MIN_SEARCH_CHARACTER_NUMBER && (
+              <MessageItem>You don&apos;t have any experiment yet</MessageItem>
+            )}
+          <DropDownList>
+            {data?.experimentList.experiments
+              .filter(exp => exp.id !== null)
+              .map(experiment => (
+                <ListItem
+                  onClick={(): void => handleOnClick(experiment.id)}
+                  key={experiment.id}
+                >
+                  {experiment.name}
+                </ListItem>
+              ))}
+          </DropDownList>
+        </>
+      )}
 
       {experimentListForParamters && (
         <PaginationContainer>
@@ -204,8 +209,8 @@ const Dropdown = ({ ...props }: Props): JSX.Element => {
 
   const toggling = (): void => setIsOpen(!isOpen);
 
-  const handleOnClick = (experiment?: IExperiment): void => {
-    props.handleSelectExperiment(experiment);
+  const handleOnClick = (experimentId?: string): void => {
+    //props.handleSelectExperiment(experiment); TODO handle selected experiment
     setIsOpen(false);
   };
 
