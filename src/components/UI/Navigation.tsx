@@ -3,7 +3,7 @@ import { Button } from 'react-bootstrap';
 import { NavLink } from 'react-router-dom';
 import styled from 'styled-components';
 
-import logo from '../../images/hbp-logo.png';
+import logo from '../../images/logo.png';
 import { IExperiment } from '../API/Experiment';
 
 import MIPContext from '../App/MIPContext';

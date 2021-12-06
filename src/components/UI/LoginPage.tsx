@@ -2,7 +2,7 @@ import * as React from 'react';
 import { Container, Jumbotron } from 'react-bootstrap';
 import { Link } from 'react-router-dom';
 import styled from 'styled-components';
-import HBPLogo from '../../images/hbp_logo_135.png';
+import HBPLogo from '../../images/logo_135.png';
 import Helpdesk from './Helpdesk';
 
 const StyledContainer = styled(Container)`
