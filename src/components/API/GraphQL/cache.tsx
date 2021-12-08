@@ -14,7 +14,7 @@ export const cache: InMemoryCache = new InMemoryCache({
   }
 });
 
-const initialExperiment: Experiment = {
+export const initialExperiment: Experiment = {
   id: '',
   algorithm: {
     id: '',
