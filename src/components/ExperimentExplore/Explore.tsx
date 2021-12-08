@@ -4,20 +4,15 @@ import { BsFillCaretRightFill } from 'react-icons/bs';
 import styled from 'styled-components';
 import { APICore, APIExperiment, APIMining, APIModel } from '../API';
 import { VariableEntity } from '../API/Core';
-import { IExperiment } from '../API/Experiment';
 import { D3Model, HierarchyCircularNode, ModelResponse } from '../API/Model';
 import { ONTOLOGY_URL } from '../constants';
 import AvailableAlgorithms from '../ExperimentCreate/AvailableAlgorithms';
 import DropdownParametersExperimentList from '../UI/DropdownParametersExperimentList';
 import LargeDatasetSelect from '../UI/LargeDatasetSelect';
-import { Exareme } from '../API/Exareme';
 import { ModelType } from './Container';
 import Histograms from './D3Histograms';
 import ModelView from './D3Model';
 import Search from './D3Search';
-import { useGetExperimentLazyQuery } from '../API/GraphQL/queries.generated';
-import { Experiment } from '../API/GraphQL/types.generated';
-import { selectedExperimentVar } from '../API/GraphQL/cache';
 
 const DataSelectionBox = styled(Card.Title)`
   display: flex;
@@ -130,7 +125,6 @@ export default (props: ExploreProps): JSX.Element => {
     apiCore,
     apiModel,
     apiMining,
-    apiExperiment,
     children,
     layout,
     selectedNode,
@@ -143,12 +137,6 @@ export default (props: ExploreProps): JSX.Element => {
     zoom
     // setFormulaString
   } = props;
-
-  const [getExperiment, { startPolling }] = useGetExperimentLazyQuery({
-    onCompleted: data => {
-      selectedExperimentVar(data.experiment as Experiment);
-    }
-  });
 
   const model = apiModel.state.model;
   const selectedDatasets = model?.query?.trainingDatasets || [];
@@ -225,24 +213,8 @@ export default (props: ExploreProps): JSX.Element => {
             <Card.Body>
               <MenuParametersContainer>
                 <ParameterContainer>
-                  <h5 style={{ marginRight: '8px', marginTop: '2px' }}>
-                    Parameters
-                  </h5>
-                  <DropdownParametersExperimentList
-                    apiExperiment={apiExperiment}
-                    handleSelectExperiment={(
-                      experiment?: IExperiment
-                    ): void => {
-                      getExperiment({
-                        variables: { id: experiment?.uuid ?? '' }
-                      });
-                      apiExperiment.setExperiment(experiment);
-                      Exareme.handleSelectExperimentToModel(
-                        apiModel,
-                        experiment
-                      );
-                    }}
-                  />
+                  <h5 style={{ marginRight: '8px' }}>Parameters</h5>
+                  <DropdownParametersExperimentList />
                 </ParameterContainer>
                 <div className="item">
                   <Button

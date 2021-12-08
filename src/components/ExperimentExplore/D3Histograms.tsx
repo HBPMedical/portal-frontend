@@ -1,15 +1,13 @@
 import * as d3 from 'd3';
 import React, { useEffect, useRef, useState } from 'react';
-import { Button, DropdownButton, Dropdown, Tab, Tabs } from 'react-bootstrap';
+import { Button, Dropdown, DropdownButton, Tab, Tabs } from 'react-bootstrap';
 import styled from 'styled-components';
-
 import { APIMining } from '../API';
 import { VariableEntity } from '../API/Core';
-import { HistogramVariable, MiningResponse } from '../API/Mining';
-import { ModelResponse } from '../API/Model';
+import { HistogramVariable } from '../API/Mining';
+import { HierarchyCircularNode, ModelResponse } from '../API/Model';
 import Loading from '../UI/Loader';
 import Highchart from '../UI/Visualization/Highchart';
-import { HierarchyCircularNode } from '../API/Model';
 import renderLifeCycle from './renderLifeCycle';
 
 interface Props {
