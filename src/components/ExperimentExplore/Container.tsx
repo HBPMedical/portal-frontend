@@ -13,7 +13,7 @@ import CirclePack from './D3CirclePackLayer';
 import { d3Hierarchy, VariableDatum } from './d3Hierarchy';
 import { useReactiveVar } from '@apollo/client';
 import { Experiment } from '../API/GraphQL/types.generated';
-import { selectedExperimentVar } from '../API/GraphQL/cache';
+import { initialExperiment, selectedExperimentVar } from '../API/GraphQL/cache';
 
 const diameter = 800;
 const padding = 1.5;
@@ -66,9 +66,11 @@ export default ({
 
   // Utility to convert variables to D3 model
   const convertModelToD3Model = (
-    model: Experiment,
-    d3Layout: HierarchyCircularNode
+    d3Layout: HierarchyCircularNode,
+    model?: Experiment
   ): D3Model => {
+    if (!model) model = initialExperiment;
+
     const filterVariables: string[] = [];
     const extractVariablesFromFilter = (filter: any) =>
       filter.rules.forEach((r: any) => {
@@ -89,7 +91,7 @@ export default ({
         ...((model.coVariables &&
           d3Layout
             .descendants()
-            .filter(l => model.coVariables?.includes(l.data.code))) ||
+            .filter(l => model?.coVariables?.includes(l.data.code))) ||
           [])
       ],
       filters: [
@@ -105,7 +107,7 @@ export default ({
           model.variables.length > 0 &&
           d3Layout
             .descendants()
-            .filter(l => model.variables?.includes(l.data.code))) ||
+            .filter(l => model?.variables?.includes(l.data.code))) ||
         []
     };
 
@@ -168,8 +170,8 @@ export default ({
 
   // Sync selected variables and D3 Model
   useEffect(() => {
-    if (selectedExperiment && d3Layout) {
-      apiModel.setD3Model(convertModelToD3Model(selectedExperiment, d3Layout));
+    if (d3Layout) {
+      apiModel.setD3Model(convertModelToD3Model(d3Layout, selectedExperiment));
     }
   }, [apiModel, d3Layout, selectedExperiment]);
 

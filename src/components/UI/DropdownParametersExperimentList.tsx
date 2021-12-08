@@ -1,18 +1,16 @@
 import { useReactiveVar } from '@apollo/client';
 import dayjs from 'dayjs';
 import relativeTime from 'dayjs/plugin/relativeTime';
-import React, { useEffect, useRef, useState } from 'react';
+import React, { useRef, useState, useEffect } from 'react';
 import { Button, Form } from 'react-bootstrap';
 import styled from 'styled-components';
-import { APIExperiment } from '../API';
-import {
-  ExperimentListQueryParameters,
-  IExperiment,
-  IExperimentList
-} from '../API/Experiment';
 import { selectedExperimentVar } from '../API/GraphQL/cache';
-import { useGetExperimentListLazyQuery } from '../API/GraphQL/queries.generated';
-import { MIN_SEARCH_CHARACTER_NUMBER } from '../constants';
+import { experimentUtils } from '../API/GraphQL/operations/utilities';
+import {
+  useGetExperimentLazyQuery,
+  useGetExperimentListLazyQuery
+} from '../API/GraphQL/queries.generated';
+import { Experiment } from '../API/GraphQL/types.generated';
 import Pagination from '../UI/Pagination';
 import { useOnClickOutside } from '../utils';
 import Loader from './Loader';
@@ -90,11 +88,6 @@ const PaginationContainer = styled.div`
   margin-bottom: 1em;
 `;
 
-interface Props {
-  apiExperiment: APIExperiment;
-  handleSelectExperiment: (experiment?: IExperiment) => void;
-}
-
 const Search = ({
   searchName,
   setSearchName
@@ -116,93 +109,52 @@ const Search = ({
 
 const Items = ({
   handleOnClick,
-  experimentListForParamters,
-  getListForExperimentParameters
+  experiments
 }: {
-  experimentListForParamters?: IExperimentList;
-  getListForExperimentParameters: ({
-    ...params
-  }: ExperimentListQueryParameters) => Promise<void>;
   handleOnClick: (experimentId?: string) => void;
+  experiments: Partial<Experiment>[];
 }): JSX.Element => {
-  const [searchName, setSearchName] = useState<string>('');
-  const [pageNumber, setPageNumber] = useState<number>(0);
-
-  const [
-    getExperimentList,
-    { loading, data, error }
-  ] = useGetExperimentListLazyQuery();
-
-  useEffect(() => {
-    console.log('test');
-    getExperimentList({ variables: { name: searchName, page: pageNumber } });
-  }, [searchName, pageNumber, getExperimentList]);
-
-  useEffect(() => {
-    console.log('data', data?.experimentList);
-  }, [data]);
-
   return (
     <>
-      <SearchContainer>
-        <Search searchName={searchName} setSearchName={setSearchName} />
-      </SearchContainer>
-      {loading && <Loader />}
-      {!loading && (
-        <>
-          {!data?.experimentList &&
-            searchName.length > MIN_SEARCH_CHARACTER_NUMBER - 1 && (
-              <MessageItem>
-                Your search didn&apos;t return any results
-              </MessageItem>
-            )}
-
-          {!data?.experimentList &&
-            searchName.length < MIN_SEARCH_CHARACTER_NUMBER && (
-              <MessageItem>You don&apos;t have any experiment yet</MessageItem>
-            )}
-          <DropDownList>
-            {data?.experimentList.experiments
-              .filter(exp => exp.id !== null)
-              .map(experiment => (
-                <ListItem
-                  onClick={(): void => handleOnClick(experiment.id)}
-                  key={experiment.id}
-                >
-                  {experiment.name}
-                </ListItem>
-              ))}
-          </DropDownList>
-        </>
-      )}
-
-      {experimentListForParamters && (
-        <PaginationContainer>
-          <Pagination
-            list={experimentListForParamters}
-            query={getListForExperimentParameters}
-          />
-        </PaginationContainer>
-      )}
-      <ResetItem>
-        <Button
-          onClick={(): void => handleOnClick()}
-          key={'reset'}
-          variant={'light'}
-        >
-          Reset Parameters
-        </Button>
-      </ResetItem>
+      <DropDownList>
+        {experiments.length === 0 && (
+          <MessageItem>There is no result</MessageItem>
+        )}
+        {experiments
+          .filter(exp => exp.id !== null)
+          .map(experiment => (
+            <ListItem
+              onClick={(): void => handleOnClick(experiment.id)}
+              key={experiment.id}
+            >
+              {experiment.name}
+            </ListItem>
+          ))}
+      </DropDownList>
     </>
   );
 };
 
-const Dropdown = ({ ...props }: Props): JSX.Element => {
-  const { apiExperiment } = props;
-  const { state, getListForExperimentParameters } = apiExperiment;
-  const { experimentListForParamters } = state;
-
+const Dropdown = (): JSX.Element => {
   const experiment = useReactiveVar(selectedExperimentVar);
+  const initialPage = 0;
+  const [searchName, setSearchName] = useState<string>('');
+  const [pageNumber, setPageNumber] = useState<number>(initialPage);
+
+  const [getExperiment] = useGetExperimentLazyQuery({
+    onCompleted: data => {
+      experimentUtils.selectExperiment(data.experiment as Experiment);
+    }
+  });
+
+  const [
+    getExperimentList,
+    { loading, data }
+  ] = useGetExperimentListLazyQuery();
+
+  useEffect(() => {
+    getExperimentList();
+  }, [getExperimentList]);
 
   const [isOpen, setIsOpen] = useState(false);
   const node = useRef(null);
@@ -210,12 +162,27 @@ const Dropdown = ({ ...props }: Props): JSX.Element => {
   const toggling = (): void => setIsOpen(!isOpen);
 
   const handleOnClick = (experimentId?: string): void => {
-    //props.handleSelectExperiment(experiment); TODO handle selected experiment
+    if (experimentId && experimentId !== '')
+      getExperiment({ variables: { id: experimentId } });
+    else {
+      experimentUtils.selectExperiment(undefined);
+    }
     setIsOpen(false);
   };
 
   const handleClickOutside = (event: Event): void => {
     setIsOpen(false);
+  };
+
+  const handleSearchChange = (text: string): void => {
+    setSearchName(text);
+    setPageNumber(initialPage);
+    getExperimentList({ variables: { name: text, page: pageNumber } });
+  };
+
+  const handlePageChange = (page: number): void => {
+    setPageNumber(page);
+    getExperimentList({ variables: { name: searchName, page: page } });
   };
 
   useOnClickOutside(node, handleClickOutside);
@@ -227,14 +194,39 @@ const Dropdown = ({ ...props }: Props): JSX.Element => {
       </DropDownHeader>
       {isOpen && (
         <DropDownListContainer>
-          <Items
-            handleOnClick={handleOnClick}
-            {...{ experimentListForParamters, getListForExperimentParameters }}
-          />
+          <SearchContainer>
+            <Search
+              searchName={searchName}
+              setSearchName={handleSearchChange}
+            />
+          </SearchContainer>
+          {loading && <Loader />}
+          {!loading && (
+            <Items
+              experiments={data?.experimentList.experiments ?? []}
+              handleOnClick={handleOnClick}
+            />
+          )}
+          <PaginationContainer>
+            <Pagination
+              totalPages={data?.experimentList.totalPages ?? 0}
+              currentPage={pageNumber}
+              handleSetCurrentPage={handlePageChange}
+            />
+          </PaginationContainer>
+          <ResetItem>
+            <Button
+              onClick={(): void => handleOnClick()}
+              key={'reset'}
+              variant={'light'}
+            >
+              Reset Parameters
+            </Button>
+          </ResetItem>
         </DropDownListContainer>
       )}
     </DropDownContainer>
   );
 };
 
-export default ({ ...props }: Props): JSX.Element => <Dropdown {...props} />;
+export default Dropdown;

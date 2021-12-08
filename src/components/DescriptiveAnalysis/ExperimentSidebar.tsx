@@ -1,13 +1,11 @@
 import React from 'react';
 import { Card } from 'react-bootstrap';
 import { APICore, APIExperiment, APIModel } from '../API';
-import DropdownParametersExperimentList from '../UI/DropdownParametersExperimentList';
-import LargeDatasetSelect from '../UI/LargeDatasetSelect';
-import { Exareme } from '../API/Exareme';
-import Model from '../UI/Model';
-import { IExperiment } from '../API/Experiment';
 import { VariableEntity } from '../API/Core';
 import { ModelResponse } from '../API/Model';
+import DropdownParametersExperimentList from '../UI/DropdownParametersExperimentList';
+import LargeDatasetSelect from '../UI/LargeDatasetSelect';
+import Model from '../UI/Model';
 
 interface Props {
   apiModel: APIModel;
@@ -27,13 +25,7 @@ const ExperimentSidebar = ({
   <Card className="datasets">
     <Card.Body>
       <section>
-        <DropdownParametersExperimentList
-          apiExperiment={apiExperiment}
-          handleSelectExperiment={(experiment?: IExperiment): void => {
-            apiExperiment.setExperiment(experiment);
-            Exareme.handleSelectExperimentToModel(apiModel, experiment);
-          }}
-        />
+        <DropdownParametersExperimentList />
       </section>
       {model?.query?.pathology && (
         <section>

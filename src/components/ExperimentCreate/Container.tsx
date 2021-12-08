@@ -36,7 +36,7 @@ class Container extends React.Component<Props, State> {
   state!: State;
 
   render(): JSX.Element {
-    const { apiCore, apiModel, apiExperiment } = this.props;
+    const { apiCore, apiModel } = this.props;
     const alert = this.state && this.state.alert;
     const query = apiModel.state.model && apiModel.state.model.query;
     const pathology = query?.pathology || '';
@@ -57,18 +57,7 @@ class Container extends React.Component<Props, State> {
             <Card className="datasets">
               <Card.Body>
                 <section>
-                  <DropdownParametersExperimentList
-                    apiExperiment={apiExperiment}
-                    handleSelectExperiment={(
-                      experiment?: IExperiment
-                    ): void => {
-                      apiExperiment.setExperiment(experiment);
-                      Exareme.handleSelectExperimentToModel(
-                        apiModel,
-                        experiment
-                      );
-                    }}
-                  />
+                  <DropdownParametersExperimentList />
                 </section>
                 {query?.pathology && (
                   <section>

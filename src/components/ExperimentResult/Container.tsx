@@ -3,7 +3,8 @@ import { Card } from 'react-bootstrap';
 import { RouteComponentProps, withRouter } from 'react-router-dom';
 import { APICore, APIExperiment, APIModel } from '../API';
 import { VariableEntity } from '../API/Core';
-import { experimentQueries } from '../API/GraphQL/operations/queries';
+import { experimentUtils } from '../API/GraphQL/operations/utilities';
+import { useGetExperimentQuery } from '../API/GraphQL/queries.generated';
 import { Experiment } from '../API/GraphQL/types.generated';
 import FilterDisplay from '../UI/FilterDisplay';
 import ListSection from '../UI/ListSection';
@@ -26,7 +27,12 @@ interface Props extends RouteComponentProps<RouteParams> {
 const Container = ({ ...props }: Props): JSX.Element => {
   const uuid = props.match.params.uuid;
 
-  const { loading, data } = experimentQueries.getExperiment(uuid, true, true);
+  const { loading, data } = useGetExperimentQuery({
+    variables: { id: uuid },
+    onCompleted: data => {
+      experimentUtils.selectExperiment(data.experiment as Experiment);
+    }
+  });
 
   const lookup = (id: string): VariableEntity => {
     return props.apiCore.lookup(id, data?.experiment.domain);

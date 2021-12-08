@@ -16,7 +16,6 @@ import { GoCheck } from 'react-icons/go';
 import { Link } from 'react-router-dom';
 import { Transition } from 'react-transition-group';
 import styled from 'styled-components';
-
 import {
   ExperimentListQueryParameters,
   IExperiment,
@@ -477,7 +476,13 @@ const Items = ({
             </tbody>
           </Table>
           {experimentList.totalPages > 1 && (
-            <Pagination list={experimentList} query={handleQueryParameters} />
+            <Pagination
+              totalPages={0}
+              currentPage={0}
+              handleSetCurrentPage={(page: number): void => {
+                console.log('TODO'); /* @TODO change dummy data */
+              }}
+            />
           )}
         </>
       ) : searchName.length > MIN_SEARCH_CHARACTER_NUMBER - 1 ? (
