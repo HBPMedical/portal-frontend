@@ -28,6 +28,18 @@ const NavBar = styled.nav`
     font-size: 16px;
   }
 
+  .experiments.dropdown-list {
+    margin-right: 10px;
+
+    & > .dropdown-btn {
+      color: white;
+      &:hover {
+        color: #ccc !important;
+        text-decoration: none;
+      }
+    }
+  }
+
   .experiment-nav a:link,
   .experiment-nav a:visited {
     color: #fff;

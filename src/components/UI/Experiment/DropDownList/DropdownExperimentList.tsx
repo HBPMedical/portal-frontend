@@ -1,19 +1,19 @@
-import { useReactiveVar } from '@apollo/client';
 import dayjs from 'dayjs';
 import relativeTime from 'dayjs/plugin/relativeTime';
-import React, { useRef, useState, useEffect } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import { Button, Form } from 'react-bootstrap';
 import styled from 'styled-components';
-import { selectedExperimentVar } from '../API/GraphQL/cache';
-import { experimentUtils } from '../API/GraphQL/operations/utilities';
+import { experimentUtils } from '../../../API/GraphQL/operations/utilities';
 import {
   useGetExperimentLazyQuery,
   useGetExperimentListLazyQuery
-} from '../API/GraphQL/queries.generated';
-import { Experiment } from '../API/GraphQL/types.generated';
-import Pagination from '../UI/Pagination';
-import { useOnClickOutside } from '../utils';
-import Loader from './Loader';
+} from '../../../API/GraphQL/queries.generated';
+import { Experiment } from '../../../API/GraphQL/types.generated';
+import { useOnClickOutside } from '../../../utils';
+import Loader from '../../Loader';
+import Pagination from '../../Pagination';
+import DetailedItemList from './DetailedItemList';
+import SimpleItemList from './SimpleItemList';
 
 dayjs.extend(relativeTime);
 dayjs().format();
@@ -24,7 +24,8 @@ const DropDownContainer = styled.div`
 
 const DropDownHeader = styled.div`
   cursor: pointer;
-  color: #007ad9 !important;
+
+  color: #007ad9;
 
   &:hover {
     color: #0056b3;
@@ -51,32 +52,9 @@ const DropDownListContainer = styled.div`
   z-index: 100;
 `;
 
-const DropDownList = styled.ul`
-  margin: 0;
-  padding: 0;
-`;
-
-const ListItem = styled.li`
-  list-style: none;
-  cursor: pointer;
-  padding: 4px 24px;
-
-  &:hover {
-    background-color: #007ad9;
-    color: white;
-  }
-`;
-
 const ResetItem = styled.div`
   padding: 4px 24px;
   margin-bottom: 4px;
-`;
-
-const MessageItem = styled.li`
-  list-style: none;
-  cursor: pointer;
-  padding: 4px 24px;
-  margin: 0 0 8px 0;
 `;
 
 const SearchContainer = styled.div`
@@ -107,36 +85,13 @@ const Search = ({
   );
 };
 
-const Items = ({
-  handleOnClick,
-  experiments
+const DropdownExperimentList = ({
+  hasDetailedView = false,
+  label = 'Experiment list'
 }: {
-  handleOnClick: (experimentId?: string) => void;
-  experiments: Partial<Experiment>[];
+  hasDetailedView: boolean;
+  label: string;
 }): JSX.Element => {
-  return (
-    <>
-      <DropDownList>
-        {experiments.length === 0 && (
-          <MessageItem>There is no result</MessageItem>
-        )}
-        {experiments
-          .filter(exp => exp.id !== null)
-          .map(experiment => (
-            <ListItem
-              onClick={(): void => handleOnClick(experiment.id)}
-              key={experiment.id}
-            >
-              {experiment.name}
-            </ListItem>
-          ))}
-      </DropDownList>
-    </>
-  );
-};
-
-const Dropdown = (): JSX.Element => {
-  const experiment = useReactiveVar(selectedExperimentVar);
   const initialPage = 0;
   const [searchName, setSearchName] = useState<string>('');
   const [pageNumber, setPageNumber] = useState<number>(initialPage);
@@ -162,10 +117,11 @@ const Dropdown = (): JSX.Element => {
   const toggling = (): void => setIsOpen(!isOpen);
 
   const handleOnClick = (experimentId?: string): void => {
-    if (experimentId && experimentId !== '')
-      getExperiment({ variables: { id: experimentId } });
-    else {
-      experimentUtils.selectExperiment(undefined);
+    if (!hasDetailedView) {
+      if (experimentId && experimentId !== '')
+        getExperiment({ variables: { id: experimentId } });
+      else if (experimentId === null)
+        experimentUtils.selectExperiment(undefined);
     }
     setIsOpen(false);
   };
@@ -188,9 +144,9 @@ const Dropdown = (): JSX.Element => {
   useOnClickOutside(node, handleClickOutside);
 
   return (
-    <DropDownContainer ref={node}>
-      <DropDownHeader onClick={toggling}>
-        {experiment ? `from ${experiment.name}` : 'Select Parameters'}
+    <DropDownContainer ref={node} className="experiments dropdown-list">
+      <DropDownHeader onClick={toggling} className="dropdown-btn">
+        {label}
       </DropDownHeader>
       {isOpen && (
         <DropDownListContainer>
@@ -202,10 +158,22 @@ const Dropdown = (): JSX.Element => {
           </SearchContainer>
           {loading && <Loader />}
           {!loading && (
-            <Items
-              experiments={data?.experimentList.experiments ?? []}
-              handleOnClick={handleOnClick}
-            />
+            <>
+              {!hasDetailedView && (
+                <SimpleItemList
+                  experiments={data?.experimentList.experiments ?? []}
+                  handleOnClick={handleOnClick}
+                />
+              )}
+              {hasDetailedView && (
+                <DetailedItemList
+                  handleOnClick={handleOnClick}
+                  experiments={
+                    (data?.experimentList.experiments as Experiment[]) ?? []
+                  }
+                />
+              )}
+            </>
           )}
           <PaginationContainer>
             <Pagination
@@ -214,19 +182,21 @@ const Dropdown = (): JSX.Element => {
               handleSetCurrentPage={handlePageChange}
             />
           </PaginationContainer>
-          <ResetItem>
-            <Button
-              onClick={(): void => handleOnClick()}
-              key={'reset'}
-              variant={'light'}
-            >
-              Reset Parameters
-            </Button>
-          </ResetItem>
+          {!hasDetailedView && (
+            <ResetItem>
+              <Button
+                onClick={(): void => handleOnClick()}
+                key={'reset'}
+                variant={'light'}
+              >
+                Reset Parameters
+              </Button>
+            </ResetItem>
+          )}
         </DropDownListContainer>
       )}
     </DropDownContainer>
   );
 };
 
-export default Dropdown;
+export default DropdownExperimentList;
