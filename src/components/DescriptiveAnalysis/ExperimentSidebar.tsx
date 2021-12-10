@@ -1,9 +1,11 @@
+import { useReactiveVar } from '@apollo/client';
 import React from 'react';
 import { Card } from 'react-bootstrap';
 import { APICore, APIExperiment, APIModel } from '../API';
 import { VariableEntity } from '../API/Core';
+import { selectedExperimentVar } from '../API/GraphQL/cache';
 import { ModelResponse } from '../API/Model';
-import DropdownParametersExperimentList from '../UI/DropdownParametersExperimentList';
+import DropdownExperimentList from '../UI/Experiment/DropDownList/DropdownExperimentList';
 import LargeDatasetSelect from '../UI/LargeDatasetSelect';
 import Model from '../UI/Model';
 
@@ -16,37 +18,47 @@ interface Props {
 }
 
 const ExperimentSidebar = ({
-  apiExperiment,
   apiModel,
   apiCore,
   model,
   datasets
-}: Props) => (
-  <Card className="datasets">
-    <Card.Body>
-      <section>
-        <DropdownParametersExperimentList />
-      </section>
-      {model?.query?.pathology && (
+}: Props): JSX.Element => {
+  const selectedExperiment = useReactiveVar(selectedExperimentVar);
+
+  return (
+    <Card className="datasets">
+      <Card.Body>
         <section>
-          <h4>Pathology</h4>
-          <p>{model?.query?.pathology}</p>
+          <DropdownExperimentList
+            hasDetailedView={false}
+            label={
+              selectedExperiment
+                ? `from ${selectedExperiment.name}`
+                : 'Select Parameters'
+            }
+          />
         </section>
-      )}
-      {model?.query?.trainingDatasets && (
+        {model?.query?.pathology && (
+          <section>
+            <h4>Pathology</h4>
+            <p>{model?.query?.pathology}</p>
+          </section>
+        )}
+        {model?.query?.trainingDatasets && (
+          <section>
+            <LargeDatasetSelect
+              datasets={datasets}
+              handleSelectDataset={apiModel.selectDataset}
+              selectedDatasets={model?.query?.trainingDatasets || []}
+            ></LargeDatasetSelect>
+          </section>
+        )}
         <section>
-          <LargeDatasetSelect
-            datasets={datasets}
-            handleSelectDataset={apiModel.selectDataset}
-            selectedDatasets={model?.query?.trainingDatasets || []}
-          ></LargeDatasetSelect>
+          <Model model={model} lookup={apiCore.lookup} />
         </section>
-      )}
-      <section>
-        <Model model={model} lookup={apiCore.lookup} />
-      </section>
-    </Card.Body>
-  </Card>
-);
+      </Card.Body>
+    </Card>
+  );
+};
 
 export default ExperimentSidebar;

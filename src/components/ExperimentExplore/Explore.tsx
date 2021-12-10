@@ -1,13 +1,15 @@
+import { useReactiveVar } from '@apollo/client';
 import React from 'react';
 import { Button, Card, Dropdown, DropdownButton } from 'react-bootstrap';
 import { BsFillCaretRightFill } from 'react-icons/bs';
 import styled from 'styled-components';
 import { APICore, APIExperiment, APIMining, APIModel } from '../API';
 import { VariableEntity } from '../API/Core';
+import { selectedExperimentVar } from '../API/GraphQL/cache';
 import { D3Model, HierarchyCircularNode, ModelResponse } from '../API/Model';
 import { ONTOLOGY_URL } from '../constants';
 import AvailableAlgorithms from '../ExperimentCreate/AvailableAlgorithms';
-import DropdownParametersExperimentList from '../UI/DropdownParametersExperimentList';
+import DropdownExperimentList from '../UI/Experiment/DropDownList/DropdownExperimentList';
 import LargeDatasetSelect from '../UI/LargeDatasetSelect';
 import { ModelType } from './Container';
 import Histograms from './D3Histograms';
@@ -153,6 +155,8 @@ export default (props: ExploreProps): JSX.Element => {
     variablesForPathology &&
     variablesForPathology.filter((v: any) => v.type === 'nominal');
 
+  const selectedExperiment = useReactiveVar(selectedExperimentVar);
+
   return (
     <>
       <Grid>
@@ -214,7 +218,14 @@ export default (props: ExploreProps): JSX.Element => {
               <MenuParametersContainer>
                 <ParameterContainer>
                   <h5 style={{ marginRight: '8px' }}>Parameters</h5>
-                  <DropdownParametersExperimentList />
+                  <DropdownExperimentList
+                    hasDetailedView={false}
+                    label={
+                      selectedExperiment
+                        ? `from ${selectedExperiment.name}`
+                        : 'Select Parameters'
+                    }
+                  />
                 </ParameterContainer>
                 <div className="item">
                   <Button

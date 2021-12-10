@@ -1,4 +1,5 @@
-import React, { useCallback } from 'react';
+import React from 'react';
+import { Spinner } from 'react-bootstrap';
 import { Route, Switch } from 'react-router-dom';
 import styled from 'styled-components';
 import {
@@ -9,14 +10,13 @@ import {
   APIUser,
   backendURL
 } from '../API';
-import { ExperimentListQueryParameters, IExperiment } from '../API/Experiment';
 import { DescriptiveAnalysis } from '../DescriptiveAnalysis';
 import ExperimentCreate from '../ExperimentCreate/Container';
 import Explore from '../ExperimentExplore/Container';
 import ExperimentResult from '../ExperimentResult/Container';
 import Help from '../Help/Videos';
 import DataCatalog from '../UI/DataCatalog';
-import ExperimentList from '../UI/DropdownExperimentList';
+import DropdownExperimentList from '../UI/Experiment/DropDownList/DropdownExperimentList';
 import Footer from '../UI/Footer';
 import Galaxy from '../UI/Galaxy';
 import { GlobalStyles } from '../UI/GlobalStyle';
@@ -25,7 +25,6 @@ import Navigation from '../UI/Navigation';
 import NotFound from '../UI/NotFound';
 import TOS from '../UI/TOS';
 import Tutorial from '../UserGuide/Tutorial';
-import { Spinner } from 'react-bootstrap';
 
 const Main = styled.main<MainProps>`
   margin: 0 auto;
@@ -112,21 +111,9 @@ const App = ({
             apiExperiment.state.experiment
           )}
         >
-          <ExperimentList
-            username={apiUser.state.user?.username}
-            experimentList={apiExperiment.state.experimentList}
-            handleDelete={(uuid: string): Promise<void> =>
-              apiExperiment.delete({ uuid })
-            }
-            handleUpdate={(
-              uuid: string,
-              experiment: Partial<IExperiment>
-            ): Promise<void> => apiExperiment.update({ uuid, experiment })}
-            handleQueryParameters={useCallback(
-              ({ ...params }: ExperimentListQueryParameters): Promise<void> =>
-                apiExperiment.list({ ...params }),
-              [apiExperiment]
-            )}
+          <DropdownExperimentList
+            hasDetailedView={true}
+            label={'My Experiments'}
           />
         </Navigation>
       </header>

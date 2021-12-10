@@ -1,3 +1,4 @@
+import { useReactiveVar } from '@apollo/client';
 import * as React from 'react';
 import { Card, Tab, Tabs } from 'react-bootstrap';
 import { RouteComponentProps, withRouter } from 'react-router-dom';
@@ -5,9 +6,10 @@ import styled from 'styled-components';
 import { APICore, APIExperiment, APIModel } from '../API';
 import { Algorithm, AlgorithmParameter } from '../API/Core';
 import { Exareme } from '../API/Exareme';
-import { IExperiment, IExperimentPrototype } from '../API/Experiment';
+import { IExperimentPrototype } from '../API/Experiment';
+import { selectedExperimentVar } from '../API/GraphQL/cache';
 import { Alert, IAlert } from '../UI/Alert';
-import DropdownParametersExperimentList from '../UI/DropdownParametersExperimentList';
+import DropdownExperimentList from '../UI/Experiment/DropDownList/DropdownExperimentList';
 import LargeDatasetSelect from '../UI/LargeDatasetSelect';
 import Model from '../UI/Model';
 import AvailableAlgorithms from './AvailableAlgorithms';
@@ -41,6 +43,7 @@ class Container extends React.Component<Props, State> {
     const query = apiModel.state.model && apiModel.state.model.query;
     const pathology = query?.pathology || '';
     const datasets = apiCore.state.pathologiesDatasets[pathology];
+    const selectedExperiment = useReactiveVar(selectedExperimentVar);
 
     return (
       <div className="Experiment">
@@ -57,7 +60,14 @@ class Container extends React.Component<Props, State> {
             <Card className="datasets">
               <Card.Body>
                 <section>
-                  <DropdownParametersExperimentList />
+                  <DropdownExperimentList
+                    hasDetailedView={false}
+                    label={
+                      selectedExperiment
+                        ? `from ${selectedExperiment.name}`
+                        : 'Select Parameters'
+                    }
+                  />
                 </section>
                 {query?.pathology && (
                   <section>
@@ -143,16 +153,6 @@ class Container extends React.Component<Props, State> {
 
   private handleChangeParameters = (parameters: AlgorithmParameter[]): void => {
     this.setState({ parameters });
-  };
-
-  private handleSelectExperiment = async (
-    experiment: IExperiment
-  ): Promise<void> => {
-    const { uuid } = experiment;
-    const { apiExperiment, history } = this.props;
-    history.push(`/experiment/${uuid}`);
-
-    return await apiExperiment.get({ uuid });
   };
 
   private handleGoBackToReview = (): void => {

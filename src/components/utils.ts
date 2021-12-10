@@ -16,24 +16,28 @@ export const history = createBrowserHistory();
  * @param {function} action - the action to perform on key press
  */
 
-export function useKeyPressed(
-  keyLookup: (event: KeyboardEvent) => boolean
-): boolean {
+const keyLookup = (event: KeyboardEvent, key: string): boolean => {
+  return event.key === key;
+};
+
+export function useKeyPressed(key: string, action: () => void): boolean {
   const [keyPressed, setKeyPressed] = useState(false);
 
   useEffect(() => {
-    const downHandler = (ev: KeyboardEvent): void =>
-      setKeyPressed(keyLookup(ev));
-    const upHandler = (ev: KeyboardEvent): void => setKeyPressed(keyLookup(ev));
+    const keyHandler = (ev: KeyboardEvent): void => {
+      const state = keyLookup(ev, key);
+      setKeyPressed(state);
+      if (state) action();
+    };
 
-    window.addEventListener('keydown', downHandler);
-    window.addEventListener('keyup', upHandler);
+    window.addEventListener('keydown', keyHandler);
+    window.addEventListener('keyup', keyHandler);
 
     return (): void => {
-      window.removeEventListener('keydown', downHandler);
-      window.removeEventListener('keyup', upHandler);
+      window.removeEventListener('keydown', keyHandler);
+      window.removeEventListener('keyup', keyHandler);
     };
-  }, [keyLookup]);
+  }, [action, key]);
 
   return keyPressed;
 }
