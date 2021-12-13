@@ -488,12 +488,13 @@ class Experiment extends Container<State> {
         const formula =
           (data &&
             (data.transformations || data.interactions) && {
-              single: data?.transformations?.map(t => ({
-                // eslint-disable-next-line @typescript-eslint/camelcase
-                var_name: t.name,
-                // eslint-disable-next-line @typescript-eslint/camelcase
-                unary_operation: t.operation
-              })),
+              single:
+                data?.transformations?.map(t => ({
+                  // eslint-disable-next-line @typescript-eslint/camelcase
+                  var_name: t.name,
+                  // eslint-disable-next-line @typescript-eslint/camelcase
+                  unary_operation: t.operation
+                })) ?? [],
               interactions: data?.interactions?.map(v =>
                 v.reduce((a, e, i) => ({ ...a, [`var${i + 1}`]: e }), {})
               )
