@@ -12,9 +12,21 @@ export default function createSelectExperiment(
    */
   return (experiment?: Experiment): void => {
     selectedExperimentVar(experiment);
-    if (experiment)
-      draftExperimentVar(
-        JSON.parse(JSON.stringify(selectedExperimentVar())) as Experiment
-      ); // simple deep copy (should be optimized if the copy method is slow)
+    if (experiment) {
+      const {
+        results,
+        name,
+        viewed,
+        shared,
+        createdAt,
+        finishedAt,
+        status,
+        id,
+        ...selectedExperiment
+      } = experiment;
+      const merge = { ...draftExperimentVar(), ...selectedExperiment };
+      draftExperimentVar(JSON.parse(JSON.stringify(merge)) as Experiment);
+    }
+    // simple deep copy (should be optimized if the copy method is slow)
   };
 }

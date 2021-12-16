@@ -1,6 +1,31 @@
 import { gql } from '@apollo/client';
 import { coreInfoResult } from './fragments';
 
+export const QUERY_VARS_FROM_DOMAIN = gql`
+  query getVariablesFromDomain($id: String!) {
+    domains(ids: [$id]) {
+      variables {
+        id
+        label
+        type
+      }
+    }
+  }
+`;
+
+export const QUERY_DOMAIN_LIST = gql`
+  query getDomainList {
+    domains {
+      id
+      label
+      datasets {
+        id
+        label
+      }
+    }
+  }
+`;
+
 export const QUERY_EXPERIMENT_LIST = gql`
   query getExperimentList($name: String = "", $page: Float = 0) {
     experimentList(name: $name, page: $page) {

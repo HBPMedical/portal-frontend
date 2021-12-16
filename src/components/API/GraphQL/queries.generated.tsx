@@ -4,6 +4,18 @@ import { gql } from '@apollo/client';
 import { CoreInfoResultFragmentDoc } from './fragments.generated';
 import * as Apollo from '@apollo/client';
 const defaultOptions =  {}
+export type GetVariablesFromDomainQueryVariables = Types.Exact<{
+  id: Types.Scalars['String'];
+}>;
+
+
+export type GetVariablesFromDomainQuery = { __typename?: 'Query', domains: Array<{ __typename?: 'Domain', variables: Array<{ __typename?: 'Variable', id: string, label?: Types.Maybe<string>, type?: Types.Maybe<string> }> }> };
+
+export type GetDomainListQueryVariables = Types.Exact<{ [key: string]: never; }>;
+
+
+export type GetDomainListQuery = { __typename?: 'Query', domains: Array<{ __typename?: 'Domain', id: string, label?: Types.Maybe<string>, datasets: Array<{ __typename?: 'Category', id: string, label?: Types.Maybe<string> }> }> };
+
 export type GetExperimentListQueryVariables = Types.Exact<{
   name?: Types.Maybe<Types.Scalars['String']>;
   page?: Types.Maybe<Types.Scalars['Float']>;
@@ -58,6 +70,84 @@ export const CoreGroupInfoFragmentDoc = gql`
   variables
 }
     `;
+export const GetVariablesFromDomainDocument = gql`
+    query getVariablesFromDomain($id: String!) {
+  domains(ids: [$id]) {
+    variables {
+      id
+      label
+      type
+    }
+  }
+}
+    `;
+
+/**
+ * __useGetVariablesFromDomainQuery__
+ *
+ * To run a query within a React component, call `useGetVariablesFromDomainQuery` and pass it any options that fit your needs.
+ * When your component renders, `useGetVariablesFromDomainQuery` returns an object from Apollo Client that contains loading, error, and data properties
+ * you can use to render your UI.
+ *
+ * @param baseOptions options that will be passed into the query, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options;
+ *
+ * @example
+ * const { data, loading, error } = useGetVariablesFromDomainQuery({
+ *   variables: {
+ *      id: // value for 'id'
+ *   },
+ * });
+ */
+export function useGetVariablesFromDomainQuery(baseOptions: Apollo.QueryHookOptions<GetVariablesFromDomainQuery, GetVariablesFromDomainQueryVariables>) {
+        const options = {...defaultOptions, ...baseOptions}
+        return Apollo.useQuery<GetVariablesFromDomainQuery, GetVariablesFromDomainQueryVariables>(GetVariablesFromDomainDocument, options);
+      }
+export function useGetVariablesFromDomainLazyQuery(baseOptions?: Apollo.LazyQueryHookOptions<GetVariablesFromDomainQuery, GetVariablesFromDomainQueryVariables>) {
+          const options = {...defaultOptions, ...baseOptions}
+          return Apollo.useLazyQuery<GetVariablesFromDomainQuery, GetVariablesFromDomainQueryVariables>(GetVariablesFromDomainDocument, options);
+        }
+export type GetVariablesFromDomainQueryHookResult = ReturnType<typeof useGetVariablesFromDomainQuery>;
+export type GetVariablesFromDomainLazyQueryHookResult = ReturnType<typeof useGetVariablesFromDomainLazyQuery>;
+export type GetVariablesFromDomainQueryResult = Apollo.QueryResult<GetVariablesFromDomainQuery, GetVariablesFromDomainQueryVariables>;
+export const GetDomainListDocument = gql`
+    query getDomainList {
+  domains {
+    id
+    label
+    datasets {
+      id
+      label
+    }
+  }
+}
+    `;
+
+/**
+ * __useGetDomainListQuery__
+ *
+ * To run a query within a React component, call `useGetDomainListQuery` and pass it any options that fit your needs.
+ * When your component renders, `useGetDomainListQuery` returns an object from Apollo Client that contains loading, error, and data properties
+ * you can use to render your UI.
+ *
+ * @param baseOptions options that will be passed into the query, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options;
+ *
+ * @example
+ * const { data, loading, error } = useGetDomainListQuery({
+ *   variables: {
+ *   },
+ * });
+ */
+export function useGetDomainListQuery(baseOptions?: Apollo.QueryHookOptions<GetDomainListQuery, GetDomainListQueryVariables>) {
+        const options = {...defaultOptions, ...baseOptions}
+        return Apollo.useQuery<GetDomainListQuery, GetDomainListQueryVariables>(GetDomainListDocument, options);
+      }
+export function useGetDomainListLazyQuery(baseOptions?: Apollo.LazyQueryHookOptions<GetDomainListQuery, GetDomainListQueryVariables>) {
+          const options = {...defaultOptions, ...baseOptions}
+          return Apollo.useLazyQuery<GetDomainListQuery, GetDomainListQueryVariables>(GetDomainListDocument, options);
+        }
+export type GetDomainListQueryHookResult = ReturnType<typeof useGetDomainListQuery>;
+export type GetDomainListLazyQueryHookResult = ReturnType<typeof useGetDomainListLazyQuery>;
+export type GetDomainListQueryResult = Apollo.QueryResult<GetDomainListQuery, GetDomainListQueryVariables>;
 export const GetExperimentListDocument = gql`
     query getExperimentList($name: String = "", $page: Float = 0) {
   experimentList(name: $name, page: $page) {
@@ -360,6 +450,8 @@ export type DeleteExperimentMutationResult = Apollo.MutationResult<DeleteExperim
 export type DeleteExperimentMutationOptions = Apollo.BaseMutationOptions<DeleteExperimentMutation, DeleteExperimentMutationVariables>;
 export const namedOperations = {
   Query: {
+    getVariablesFromDomain: 'getVariablesFromDomain',
+    getDomainList: 'getDomainList',
     getExperimentList: 'getExperimentList',
     getExperiment: 'getExperiment',
     listDomains: 'listDomains'

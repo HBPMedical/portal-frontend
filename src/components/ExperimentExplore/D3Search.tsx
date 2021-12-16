@@ -166,7 +166,6 @@ export default (props: Props): JSX.Element => {
     <Shortcuts>
       <input
         placeholder="Search"
-        // tslint:disable jsx-no-lambda
         onFocus={(): void => setVisibleResults(searchResult ? true : false)}
         onBlur={handleBlur}
         onChange={handleChangeInput}

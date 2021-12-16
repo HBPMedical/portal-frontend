@@ -1,49 +1,23 @@
 import { useReactiveVar } from '@apollo/client';
-import React from 'react';
-import { Button, Card, Dropdown, DropdownButton } from 'react-bootstrap';
+import React, { useEffect, useCallback } from 'react';
+import { Button, Card } from 'react-bootstrap';
 import { BsFillCaretRightFill } from 'react-icons/bs';
 import styled from 'styled-components';
 import { APICore, APIExperiment, APIMining, APIModel } from '../API';
 import { VariableEntity } from '../API/Core';
-import { selectedExperimentVar } from '../API/GraphQL/cache';
+import {
+  draftExperimentVar,
+  selectedExperimentVar
+} from '../API/GraphQL/cache';
+import { useGetDomainListQuery } from '../API/GraphQL/queries.generated';
 import { D3Model, HierarchyCircularNode, ModelResponse } from '../API/Model';
 import { ONTOLOGY_URL } from '../constants';
 import AvailableAlgorithms from '../ExperimentCreate/AvailableAlgorithms';
 import DropdownExperimentList from '../UI/Experiment/DropDownList/DropdownExperimentList';
-import LargeDatasetSelect from '../UI/LargeDatasetSelect';
 import { ModelType } from './Container';
 import Histograms from './D3Histograms';
 import ModelView from './D3Model';
-import Search from './D3Search';
-
-const DataSelectionBox = styled(Card.Title)`
-  display: flex;
-  padding: 0.4em;
-  margin-bottom: 4px;
-  justify-content: space-between;
-  align-items: center;
-  background-color: #eee;
-`;
-
-const PathologiesBox = styled.div`
-  margin-top: 4px;
-  font-size: 14px;
-  flex: 0 1 1;
-`;
-
-const DatasetsBox = styled.div`
-  margin-top: 4px;
-  font-size: 14px;
-  margin-left: 8px;
-  flex: 0 1 1;
-`;
-
-const SearchBox = styled.div`
-  margin-top: 4px;
-  margin-left: 8px;
-  flex: 2;
-  /* width: 320px; */
-`;
+import DataSelection from './DataSelection';
 
 const MenuParametersContainer = styled.div`
   display: flex;
@@ -95,7 +69,7 @@ const Col2 = styled.div`
   flex: 1;
 `;
 
-const Col1 = styled(Col2)`
+const Col1 = styled(Col2 as any)`
   margin-right: 8px;
   flex: 1;
 `;
@@ -110,7 +84,6 @@ export interface ExploreProps {
   layout: HierarchyCircularNode;
   histograms?: any;
   d3Model: D3Model;
-  handleSelectPathology: (code: string) => void;
   handleSelectNode: (node: HierarchyCircularNode) => void;
   handleUpdateD3Model: (
     model?: ModelType,
@@ -119,7 +92,6 @@ export interface ExploreProps {
   handleSelectModel: (model?: ModelResponse) => void;
   handleGoToAnalysis: any; // FIXME Promise<void>
   zoom: (circleNode: HierarchyCircularNode) => void;
-  setFormulaString: (f: string) => void;
 }
 
 export default (props: ExploreProps): JSX.Element => {
@@ -133,17 +105,17 @@ export default (props: ExploreProps): JSX.Element => {
     histograms,
     d3Model,
     handleSelectNode,
-    handleSelectPathology,
     handleUpdateD3Model,
     handleGoToAnalysis,
     zoom
-    // setFormulaString
   } = props;
 
+  const selectedExperiment = useReactiveVar(selectedExperimentVar);
+  const draftExperiment = useReactiveVar(draftExperimentVar);
+  const { data: dataDomains } = useGetDomainListQuery();
+
   const model = apiModel.state.model;
-  const selectedDatasets = model?.query?.trainingDatasets || [];
-  const selectedPathology = model?.query?.pathology || '';
-  const datasets = apiCore.state.pathologiesDatasets[selectedPathology];
+  const selectedPathology = draftExperiment.domain;
 
   const variablesForPathologyDict = apiCore.state.pathologiesVariables;
   const variablesForPathology: VariableEntity[] | undefined =
@@ -155,60 +127,41 @@ export default (props: ExploreProps): JSX.Element => {
     variablesForPathology &&
     variablesForPathology.filter((v: any) => v.type === 'nominal');
 
-  const selectedExperiment = useReactiveVar(selectedExperimentVar);
+  const changeDomain = useCallback(
+    (domain: string) => {
+      draftExperimentVar({
+        ...draftExperiment,
+        domain,
+        datasets:
+          dataDomains?.domains
+            .filter(d => d.id === domain)
+            .flatMap(d => d.datasets.map(ds => ds.id)) ?? []
+      });
+    },
+    [dataDomains, draftExperiment]
+  );
+
+  /**
+   * after change on domains or on DraftExperiment we check there is a default domain and dataset
+   */
+  useEffect(() => {
+    if (!draftExperiment.domain && dataDomains?.domains) {
+      const domain = dataDomains.domains[0]?.id;
+      if (domain) changeDomain(domain);
+    }
+  }, [changeDomain, dataDomains, draftExperiment]);
 
   return (
     <>
       <Grid>
         <Col1>
           <Card>
-            <DataSelectionBox>
-              <PathologiesBox>
-                {apiCore.state.pathologies &&
-                  apiCore.state.pathologies.length > 1 && (
-                    <DropdownButton
-                      size="sm"
-                      id="dropdown-pathology"
-                      variant="light"
-                      title={
-                        `${selectedPathology
-                          ?.charAt(0)
-                          .toUpperCase()}${selectedPathology?.slice(1)}` ||
-                        'Pathology'
-                      }
-                    >
-                      {apiCore.state.pathologies.map((g, i: number) => (
-                        <Dropdown.Item
-                          onSelect={(): void => {
-                            handleSelectPathology(g.code);
-                          }}
-                          eventKey={`${i}`}
-                          key={`${g.code}`}
-                          value={g.code}
-                        >
-                          {g.label}
-                        </Dropdown.Item>
-                      ))}
-                    </DropdownButton>
-                  )}
-              </PathologiesBox>
-
-              <DatasetsBox>
-                <LargeDatasetSelect
-                  datasets={datasets}
-                  handleSelectDataset={apiModel.selectDataset}
-                  selectedDatasets={selectedDatasets}
-                  isDropdown={true}
-                ></LargeDatasetSelect>
-              </DatasetsBox>
-              <SearchBox>
-                <Search
-                  hierarchy={layout}
-                  zoom={zoom}
-                  handleSelectNode={handleSelectNode}
-                />
-              </SearchBox>
-            </DataSelectionBox>
+            <DataSelection
+              zoom={zoom}
+              handleChangeDomain={changeDomain}
+              hierarchy={layout}
+              handleSelectNode={handleSelectNode}
+            ></DataSelection>
             <Card.Body style={{ margin: 0, padding: 0 }}>{children}</Card.Body>
           </Card>
         </Col1>
@@ -251,8 +204,7 @@ export default (props: ExploreProps): JSX.Element => {
                     disabled={
                       !selectedNode || selectedNode.data.code === 'root'
                     }
-                    // tslint:disable-next-line jsx-no-lambda
-                    onClick={() =>
+                    onClick={(): void =>
                       handleUpdateD3Model(ModelType.VARIABLE, selectedNode)
                     }
                   >
@@ -274,8 +226,7 @@ export default (props: ExploreProps): JSX.Element => {
                     disabled={
                       !selectedNode || selectedNode.data.code === 'root'
                     }
-                    // tslint:disable-next-line jsx-no-lambda
-                    onClick={() =>
+                    onClick={(): void =>
                       handleUpdateD3Model(ModelType.COVARIABLE, selectedNode)
                     }
                   >
@@ -297,8 +248,7 @@ export default (props: ExploreProps): JSX.Element => {
                     disabled={
                       !selectedNode || selectedNode.data.code === 'root'
                     }
-                    // tslint:disable-next-line jsx-no-lambda
-                    onClick={() =>
+                    onClick={(): void =>
                       handleUpdateD3Model(ModelType.FILTER, selectedNode)
                     }
                   >
