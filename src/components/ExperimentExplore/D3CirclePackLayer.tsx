@@ -1,10 +1,8 @@
-import './CirclePack.css';
-
 import * as d3 from 'd3';
 import React, { useCallback, useEffect, useRef } from 'react';
-
 import { APICore, APIMining, APIModel, APIExperiment } from '../API';
 import { D3Model, HierarchyCircularNode, ModelResponse } from '../API/Model';
+import './CirclePack.css';
 import { ModelType } from './Container';
 import Explore from './Explore';
 
@@ -34,41 +32,22 @@ export interface Props {
 }
 
 const maxSigns = 13;
-const extractWord = (bit: string) => (bit !== undefined ? bit : '');
 
-// "Sleeping with or checking on attachment figures at night in the past 4 weeks"
-// very basic text splitting, test for 3, 2, 1 words
+// input : "Sleeping with or checking on attachment figures at night in the past 4 weeks"
+// ouput : ['Sleeping', 'with or', 'checking on', 'attachment', 'figures at', 'night in the', 'past 4 weeks']
 const splitText = (text: string): string[] => {
-  const acc: string[] = [];
-  let currentBitIndex = 0;
-  const bits = text.split(/(?=[A-Z][a-z])|[\s+]|_/g); // ["Sleeping", "with", "or", "checking", "on" ...]
+  const bits = text.split(/(?=[A-Z][a-z])|[\s+]|_/g);
 
-  bits.forEach((curr, i) => {
-    if (i === currentBitIndex) {
-      const test1word = extractWord(bits[currentBitIndex]);
-      const test2word = [
-        test1word,
-        extractWord(bits[currentBitIndex + 1])
-      ].join(' ');
-      const test3word = [
-        test2word,
-        extractWord(bits[currentBitIndex + 2])
-      ].join(' ');
-
-      if (test3word.length < maxSigns) {
-        currentBitIndex = currentBitIndex + 3;
-        acc.push(test3word);
-      } else if (test2word.length < maxSigns) {
-        currentBitIndex = currentBitIndex + 2;
-        acc.push(test2word);
-      } else {
-        currentBitIndex = currentBitIndex + 1;
-        acc.push(test1word);
-      }
-    }
-  });
-
-  return acc;
+  return bits.reduce(
+    (accumulator, value) => {
+      const lastItem = accumulator.pop() ?? '';
+      const merge = [lastItem, value].join(' ').trim();
+      return merge.length >= maxSigns
+        ? [...accumulator, lastItem, value]
+        : [...accumulator, merge];
+    },
+    ['']
+  );
 };
 
 export default ({ layout, ...props }: Props): JSX.Element => {

@@ -20,6 +20,11 @@ export const initialUser = {
   username: 'anonymous'
 };
 
+type dataContext = {
+  domain: string;
+  datasets: string[];
+};
+
 export const selectedExperimentVar = makeVar<Experiment | undefined>(undefined);
 export const draftExperimentVar = makeVar<Experiment>(initialExperiment);
 export const userVar = makeVar<typeof initialUser>(initialUser);

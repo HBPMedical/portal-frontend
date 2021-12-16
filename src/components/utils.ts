@@ -1,12 +1,19 @@
 import numbro from 'numbro';
 import { createBrowserHistory } from 'history';
 import { useEffect, RefObject, useState } from 'react';
+import { VariableDatum } from './ExperimentExplore/d3Hierarchy';
+
+export type HierarchyCircularNode = d3.HierarchyCircularNode<VariableDatum>;
 
 export const round = (num: number, decimals = 3): string =>
   // !(num % 1 === 0) checks if number is an Integer
   !isNaN(num) && !(num % 1 === 0)
     ? numbro(num).format({ mantissa: decimals })
     : `${num}`;
+
+export const uppercase = (text: string): string => {
+  return text ? `${text?.charAt(0).toUpperCase()}${text?.slice(1)}` : text;
+};
 
 export const history = createBrowserHistory();
 
