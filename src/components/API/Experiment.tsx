@@ -495,9 +495,10 @@ class Experiment extends Container<State> {
                   // eslint-disable-next-line @typescript-eslint/camelcase
                   unary_operation: t.operation
                 })) ?? [],
-              interactions: data?.interactions?.map(v =>
-                v.reduce((a, e, i) => ({ ...a, [`var${i + 1}`]: e }), {})
-              )
+              interactions:
+                data?.interactions?.map(v =>
+                  v.reduce((a, e, i) => ({ ...a, [`var${i + 1}`]: e }), {})
+                ) ?? []
             }) ||
           null;
 
