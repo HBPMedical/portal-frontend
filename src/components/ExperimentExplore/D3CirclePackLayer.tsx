@@ -1,6 +1,8 @@
+import { useReactiveVar } from '@apollo/client';
 import * as d3 from 'd3';
 import React, { useCallback, useEffect, useRef } from 'react';
 import { APICore, APIMining, APIModel, APIExperiment } from '../API';
+import { draftExperimentVar } from '../API/GraphQL/cache';
 import { D3Model, HierarchyCircularNode, ModelResponse } from '../API/Model';
 import './CirclePack.css';
 import { ModelType } from './Container';
@@ -10,6 +12,12 @@ const diameter = 800;
 const padding = 1.5;
 
 type IView = [number, number, number];
+
+type GroupVars = {
+  name: string;
+  items: string[];
+  color: string;
+};
 
 const depth = (n: HierarchyCircularNode): number =>
   n.children ? 1 + (d3.max<number>(n.children.map(depth)) || 0) : 1;
@@ -29,6 +37,7 @@ export interface Props {
   handleSelectModel: (d3Model?: ModelResponse) => void;
   handleGoToAnalysis: Function;
   setFormulaString: (f: string) => void;
+  groupVars: GroupVars[];
 }
 
 const maxSigns = 13;
@@ -54,7 +63,8 @@ export default ({ layout, ...props }: Props): JSX.Element => {
   const svgRef = useRef(null);
   const view = useRef<IView>([diameter / 2, diameter / 2, diameter]);
   const focus = useRef(layout);
-  const { d3Model, selectedNode } = props;
+  const draftExperiment = useReactiveVar(draftExperimentVar);
+  const { d3Model, selectedNode, groupVars } = props;
 
   const color = d3
     .scaleLinear<string, string>()
@@ -137,16 +147,11 @@ export default ({ layout, ...props }: Props): JSX.Element => {
 
   useEffect(() => {
     const svg = d3.select(svgRef.current);
-    const circle = svg.selectAll('circle');
+    const circle = svg.selectAll<any, HierarchyCircularNode>('circle');
     circle
       .style('fill-opacity', '1')
       .filter(
-        (d: any) =>
-          ![
-            ...(d3Model.variables || []),
-            ...(d3Model.covariables || []),
-            ...(d3Model.filters || [])
-          ].includes(d)
+        (d: any) => ![...(groupVars.flatMap(g => g.items) || [])].includes(d)
       )
       .style('fill', (d: any) =>
         d.children ? colorCallback(d.depth) ?? 'white' : 'white'
@@ -160,12 +165,24 @@ export default ({ layout, ...props }: Props): JSX.Element => {
         .style('fill-opacity', '0.8');
     }
 
+    groupVars.forEach(g => {
+      circle
+        .filter(d => g.items.includes(d.data.code))
+        .transition()
+        .duration(250)
+        .style('fill', g.color ?? 'white');
+    });
+
+    // filter => slategray
+    // variables => #5cb85c
+    // coVariables => #f0ad4e
+
     if (d3Model.filters && d3Model.filters.length > 0) {
       circle
-        .filter(
-          (d: any) =>
-            d3Model.filters !== undefined && d3Model.filters.includes(d)
-        )
+        .filter((d: any) => {
+          console.log(d);
+          return d3Model.filters !== undefined && d3Model.filters.includes(d);
+        })
         .transition()
         .duration(250)
         .style('fill', 'slategray');
@@ -191,7 +208,7 @@ export default ({ layout, ...props }: Props): JSX.Element => {
         .duration(250)
         .style('fill', '#f0ad4e');
     }
-  }, [d3Model, colorCallback, selectedNode, layout]);
+  }, [d3Model, colorCallback, selectedNode, layout, groupVars]);
 
   const zoomCallback = useCallback(zoom, []);
   const selectNodeCallback = useCallback(props.handleSelectNode, []);

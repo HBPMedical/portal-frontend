@@ -8,12 +8,15 @@ import { VariableEntity } from '../API/Core';
 import { D3Model, HierarchyCircularNode, ModelResponse } from '../API/Model';
 import { AppConfig } from '../App/App';
 import { LONGITUDINAL_DATASET_TYPE } from '../constants';
-import Modal from '../UI/Modal';
 import CirclePack from './D3CirclePackLayer';
 import { d3Hierarchy, VariableDatum } from './d3Hierarchy';
 import { useReactiveVar } from '@apollo/client';
-import { Experiment } from '../API/GraphQL/types.generated';
-import { initialExperiment, selectedExperimentVar } from '../API/GraphQL/cache';
+import { Experiment, Group, Variable } from '../API/GraphQL/types.generated';
+import {
+  draftExperimentVar,
+  initialExperiment,
+  selectedExperimentVar
+} from '../API/GraphQL/cache';
 
 const diameter = 800;
 const padding = 1.5;
@@ -41,6 +44,39 @@ interface Props extends RouteComponentProps {
   apiUser: APIUser;
 }
 
+const groupsToTreeView = (
+  group: Group,
+  groups: Group[],
+  vars: Variable[]
+): VariableDatum => {
+  const childVars =
+    group.variables
+      ?.map(varId => vars.find(v => v.id === varId))
+      .filter(v => v)
+      .map(v => v as Variable)
+      .map(v => ({
+        code: v.id,
+        description: v.description ?? '',
+        isVariable: true,
+        label: v.label ?? v.id,
+        type: v.type ?? undefined
+      })) ?? [];
+
+  const childGroups =
+    group.groups
+      ?.map(grpId => groups.find(grp => grp.id === grpId))
+      .filter(g => g)
+      .map(g => g as Group)
+      .map(g => groupsToTreeView(g, groups, vars)) ?? [];
+
+  return {
+    code: group.id,
+    description: group.description ?? '',
+    label: group.label ?? group.id,
+    children: [...childGroups, ...childVars]
+  };
+};
+
 export default ({
   apiCore,
   apiMining,
@@ -54,6 +90,7 @@ export default ({
   >();
 
   const selectedExperiment = useReactiveVar(selectedExperimentVar);
+  const draftExperiment = useReactiveVar(draftExperimentVar);
 
   // D3Model is used to expose D3 data and interact with the D3 Layout.
   const [d3Layout, setD3Layout] = useState<HierarchyCircularNode>();
@@ -277,24 +314,6 @@ export default ({
     setShowPathologySwitchWarning(true);
   };
 
-  const handleCancelSwitchPathology = (): void => {
-    setShowPathologySwitchWarning(false);
-  };
-
-  const handleOKSwitchPathology = (): void => {
-    setShowPathologySwitchWarning(false);
-    setSelectedNode(undefined);
-    if (apiCore.state.pathologies) {
-      const newModel: ModelResponse = {
-        query: {
-          pathology: nextPathologyCode,
-          trainingDatasets: apiCore.state.pathologiesDatasets[nextPathologyCode]
-        }
-      };
-      apiModel.setModel(newModel);
-    }
-  };
-
   const handleGoToAnalysis = async (): Promise<void> => {
     history.push(`/analysis`);
   };
@@ -327,16 +346,13 @@ export default ({
           />
         </AlertBox>
       )}
-      <Modal
-        show={showPathologySwitchWarning}
-        title="Change Pathology ?"
-        body="Selecting a new pathology will reset your selection"
-        handleCancel={handleCancelSwitchPathology}
-        handleOK={handleOKSwitchPathology}
-      />
-
       {d3Layout && (
-        <CirclePack layout={d3Layout} d3Model={d3Model} {...nextProps} />
+        <CirclePack
+          layout={d3Layout}
+          d3Model={d3Model}
+          groupVars={[]}
+          {...nextProps}
+        />
       )}
     </>
   );
