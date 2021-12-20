@@ -1,28 +1,38 @@
+import { ApolloClient, InMemoryCache } from '@apollo/client';
 import request from 'request-promise-native';
 import { Container } from 'unstated';
-
 import { backendURL } from '../API';
-import { FORBIDDEN_ACCESS_MESSAGE } from '../constants';
-
 import { Exareme } from '../API/Exareme';
+import { FORBIDDEN_ACCESS_MESSAGE } from '../constants';
+import {
+  Domain,
+  Group,
+  Variable as VariableData
+} from './GraphQL/types.generated';
+import { QUERY_DOMAINS } from './GraphQL/queries';
+import { graphQLURL } from './RequestURLS';
+import config from './RequestHeaders';
 
 export interface Variable {
   code: string;
   label?: string;
 }
+
+export type types =
+  | 'nominal'
+  | 'ordinal'
+  | 'real'
+  | 'integer'
+  | 'text'
+  | 'date';
+
 export interface VariableEntity extends Variable {
-  type?: 'nominal' | 'ordinal' | 'real' | 'integer' | 'text' | 'date';
+  type?: types;
   description?: string;
   enumerations?: Variable[];
   group?: Variable[];
   info?: string;
-}
-
-interface Pathology {
-  code: string;
-  label: string;
-  datasets: VariableEntity[];
-  metadataHierarchy: Hierarchy;
+  isCategorical?: boolean;
 }
 
 interface Hierarchy {
@@ -120,6 +130,10 @@ interface PathologiesHierarchies {
   [key: string]: Hierarchy;
 }
 
+interface Dictionary<T> {
+  [Key: string]: T;
+}
+
 export interface State {
   error?: string;
   loading?: boolean;
@@ -134,6 +148,15 @@ export interface State {
   pathologiesDatasets: PathologiesVariables;
   pathologiesHierarchies: PathologiesHierarchies;
 }
+
+export const apolloClient = new ApolloClient({
+  uri: graphQLURL,
+  cache: new InMemoryCache(),
+  headers: {
+    ...config.options?.headers,
+    accept: 'application/json, text/plain, */*'
+  }
+});
 
 class Core extends Container<State> {
   state: State = {
@@ -186,20 +209,12 @@ class Core extends Container<State> {
 
   fetchPathologies = async (): Promise<void> => {
     try {
-      const data = await request.get(
-        `${this.backendURL}/pathologies`,
-        this.options
-      );
-      const json = await JSON.parse(data);
-      if (json.error) {
-        return await this.setState({
-          error: json.error
-        });
-      }
+      const query = await apolloClient.query({ query: QUERY_DOMAINS });
+      const domains: Domain[] = query.data.domains;
 
-      const pathologies: Variable[] = json.map((h: Variable) => ({
-        code: h.code,
-        label: h.label
+      const pathologies: Variable[] = domains.map(domain => ({
+        code: domain.id,
+        label: domain.label ?? ''
       }));
 
       if (pathologies && pathologies.length === 0) {
@@ -208,9 +223,44 @@ class Core extends Container<State> {
         });
       }
 
-      const pathologiesVariables = this.pathologiesVariables(json);
-      const pathologiesDatasets = this.pathologiesDatasets(json);
-      const pathologiesHierarchies = this.pathologiesHierarchies(json);
+      const pathologiesVariables: PathologiesVariables = {};
+      const pathologiesDatasets: PathologiesVariables = {};
+      const pathologiesHierarchies: PathologiesHierarchies = {};
+
+      // Variable interface should be seen as an Entity interface
+
+      domains.forEach(domain => {
+        const vars: VariableEntity[] = domain.variables.map(
+          this.dataToVariable
+        );
+
+        const datasets = domain.datasets.map(
+          (dataset): Variable => {
+            return {
+              code: dataset.id,
+              label: dataset.label ?? ''
+            };
+          }
+        );
+
+        const lookupGroups: Dictionary<Group> = {};
+
+        domain.groups.forEach(group => {
+          if (!lookupGroups[group.id]) {
+            lookupGroups[group.id] = group;
+          }
+        });
+
+        const groups: Hierarchy = this.dataToHierarchy(
+          domain.rootGroup,
+          vars,
+          lookupGroups
+        );
+
+        pathologiesVariables[domain.id] = vars;
+        pathologiesDatasets[domain.id] = datasets;
+        pathologiesHierarchies[domain.id] = groups;
+      });
 
       return await this.setState({
         error: undefined,
@@ -224,6 +274,47 @@ class Core extends Container<State> {
         pathologyError: FORBIDDEN_ACCESS_MESSAGE
       });
     }
+  };
+
+  private dataToVariable = (variable: VariableData): VariableEntity => {
+    const enums = variable.enumerations
+      ? variable.enumerations.map(cat => {
+          return {
+            code: cat.id,
+            label: cat.label ?? ''
+          };
+        })
+      : [];
+
+    return {
+      code: variable.id,
+      label: variable.label ?? '',
+      description: variable.description ?? '',
+      isCategorical: enums.length !== 0,
+      enumerations: enums,
+      type: (variable.type as types) ?? undefined
+    };
+  };
+
+  private dataToHierarchy = (
+    group: Group,
+    lookupVars: VariableEntity[],
+    lookupGroup: Dictionary<Group>
+  ): Hierarchy => {
+    return {
+      code: group.id,
+      label: group.label ?? '',
+      variables: group.variables
+        ? (group.variables
+            .map(variable => lookupVars.find(item => item.code === variable))
+            .filter(item => !!item) as VariableEntity[])
+        : [], //can be optimize (time complexity over memory complexity) by doing a lookup table
+      groups: group.groups
+        ? group.groups.map(it =>
+            this.dataToHierarchy(lookupGroup[it], lookupVars, lookupGroup)
+          )
+        : []
+    };
   };
 
   algorithms = async (all = false): Promise<void> => {
@@ -276,51 +367,6 @@ class Core extends Container<State> {
     defaults?: any;
   }): string => {
     return defaults[label] ? defaults[label] : '';
-  };
-
-  private pathologiesVariables = (json: Pathology[]): PathologiesVariables => {
-    const pathologiesVariables: PathologiesVariables = {};
-    json.forEach(pathology => {
-      let variables: VariableEntity[] = [];
-
-      const dummyAccumulator = (node: any): void => {
-        if (node.variables) {
-          variables = [...variables, ...node.variables];
-        }
-
-        if (node.groups) {
-          return node.groups.map(dummyAccumulator);
-        }
-      };
-
-      if (pathology) {
-        dummyAccumulator(pathology.metadataHierarchy);
-      }
-
-      pathologiesVariables[pathology.code] = variables;
-    });
-
-    return pathologiesVariables;
-  };
-
-  private pathologiesDatasets = (json: Pathology[]): PathologiesVariables => {
-    const pathologiesDatasets: PathologiesVariables = {};
-    json.forEach(pathology => {
-      pathologiesDatasets[pathology.code] = pathology.datasets;
-    });
-
-    return pathologiesDatasets;
-  };
-
-  private pathologiesHierarchies = (
-    json: Pathology[]
-  ): PathologiesHierarchies => {
-    const pathologiesDatasets: PathologiesHierarchies = {};
-    json.forEach(pathology => {
-      pathologiesDatasets[pathology.code] = pathology.metadataHierarchy;
-    });
-
-    return pathologiesDatasets;
   };
 
   private fetchAlgorithms = async (

@@ -10,7 +10,7 @@ import {
   backendURL
 } from '../API';
 import { ExperimentListQueryParameters, IExperiment } from '../API/Experiment';
-import ExperimentReview from '../ExperimentAnalysis/Container';
+import { DescriptiveAnalysis } from '../DescriptiveAnalysis';
 import ExperimentCreate from '../ExperimentCreate/Container';
 import Explore from '../ExperimentExplore/Container';
 import ExperimentResult from '../ExperimentResult/Container';
@@ -177,11 +177,10 @@ const App = ({
                 />
 
                 <Route
-                  path="/review"
+                  path={['/review', '/analysis']}
                   // tslint:disable-next-line jsx-no-lambda
                   render={(props): JSX.Element => (
-                    <ExperimentReview
-                      apiMining={apiMining}
+                    <DescriptiveAnalysis
                       apiModel={apiModel}
                       apiCore={apiCore}
                       apiExperiment={apiExperiment}

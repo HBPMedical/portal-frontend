@@ -1,4 +1,4 @@
-FROM node:latest as builder
+FROM node:lts as builder
 LABEL maintainer = "manuel.spuhler@chuv.ch"
 
 WORKDIR /frontend
@@ -34,7 +34,7 @@ RUN apk add --no-cache --update ca-certificates wget openssl bash && update-ca-c
 
 # Add frontend config
 COPY ./docker/runner/conf/config.json.tmpl \
-     /portal/conf/
+    /portal/conf/
 
 # Add reverse proxy / webserver config
 COPY ./docker/runner/conf/Caddyfile /etc/caddy/Caddyfile
@@ -61,3 +61,4 @@ LABEL org.label-schema.build-date=$BUILD_DATE \
     org.label-schema.docker.dockerfile="Dockerfile" \
     org.label-schema.memory-hint="10" \
     org.label-schema.schema-version="1.0"
+

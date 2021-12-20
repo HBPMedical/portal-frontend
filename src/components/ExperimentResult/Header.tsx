@@ -40,7 +40,7 @@ export default ({
           </h3>
           <p className="item">
             Created {experiment && dayjs().to(dayjs(experiment.created))} by{' '}
-            {experiment?.createdBy}
+            {experiment?.createdBy?.fullname}
           </p>
         </div>
 

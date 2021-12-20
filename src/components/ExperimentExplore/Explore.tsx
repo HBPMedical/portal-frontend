@@ -217,7 +217,9 @@ export default (props: ExploreProps): JSX.Element => {
             <Card.Body>
               <MenuParametersContainer>
                 <ParameterContainer>
-                  <h5 style={{ marginRight: '8px' }}>Parameters</h5>
+                  <h5 style={{ marginRight: '8px', marginTop: '2px' }}>
+                    Parameters
+                  </h5>
                   <DropdownParametersExperimentList
                     apiExperiment={apiExperiment}
                     handleSelectExperiment={(
@@ -290,7 +292,7 @@ export default (props: ExploreProps): JSX.Element => {
                     ).length === selectedNode.leaves().length
                       ? '-'
                       : '+'}{' '}
-                    As covariable
+                    As covariate
                   </Button>
                 }
                 buttonFilter={

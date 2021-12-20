@@ -1,4 +1,0 @@
-
-[submodule "test-server/mip-deployment"]
-	path = test-server/mip-deployment
-	url = https://github.com/HBPMedical/mip-deployment.git

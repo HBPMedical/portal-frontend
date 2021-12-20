@@ -1,4 +1,20 @@
 # Changelog
+## 2021/10/08
+
+- Added Storybook. 
+- Table and GroupTable visual components.
+- Integrated new Descriptive Statistics output
+- Draft Formula UI
+- GraphQL implementation for Metadata
+- GraphQL implementation for Descriptive Statistics
+
+## 7.1.0 - 2021/01/14
+
+- Moved web server from nginx to Caddy
+
+## 7.0.0 - 2021/01/14
+
+- Integration with new Backend API
 
 ## 6.4.12 - 2021/01/14
 

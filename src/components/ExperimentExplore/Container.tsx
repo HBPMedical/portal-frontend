@@ -3,7 +3,6 @@ import React, { useEffect, useState } from 'react';
 import { Alert } from 'react-bootstrap';
 import { RouteComponentProps } from 'react-router-dom';
 import styled from 'styled-components';
-
 import { APICore, APIExperiment, APIMining, APIModel, APIUser } from '../API';
 import { VariableEntity } from '../API/Core';
 import { D3Model, HierarchyCircularNode, ModelResponse } from '../API/Model';
@@ -308,7 +307,7 @@ export default ({
   };
 
   const handleGoToAnalysis = async (): Promise<void> => {
-    history.push(`/review`);
+    history.push(`/analysis`);
   };
 
   const nextProps = {

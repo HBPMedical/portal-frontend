@@ -21,7 +21,7 @@ const algorithmLabel = 'Logistic Regression';
 const parameters: ExperimentParameter[] = [
   {
     name: 'x', // covariable
-    value: 'lefthippocampus'
+    value: 'lefthippocampus,rightacgganteriorcingulategyrus'
   },
   {
     name: 'y', // variable
@@ -43,6 +43,10 @@ const parameters: ExperimentParameter[] = [
   {
     name: 'filter',
     value: ''
+  },
+  {
+    name: 'formula',
+    value: "{\"single\":[{\"var_name\":\"lefthippocampus\",\"unary_operation\":\"standardize\"},{\"var_name\":\"rightacgganteriorcingulategyrus\",\"unary_operation\":\"center\"}],\"interactions\":[{\"var1\":\"lefthippocampus\",\"var2\":\"rightacgganteriorcingulategyrus\"}]}"
   }
 ];
 
@@ -74,7 +78,7 @@ describe('Integration Test for experiment API', () => {
     }
 
     const experimentState = await waitForResult({ uuid });
-    
+
     expect(experimentState.experiment.status).toStrictEqual('success');
     expect(experimentState.experiment).toBeTruthy();
 
@@ -89,6 +93,6 @@ describe('Integration Test for experiment API', () => {
         .find('div.result table tbody tr td')
         .at(1)
         .text()
-    ).toEqual('-7.628');
+    ).toEqual('9.685');
   });
 });
