@@ -231,7 +231,9 @@ class Mining extends Container<MiningState> {
         return this.setState({
           histograms: {
             data: undefined,
-            error: response.data.message,
+            error:
+              response.data.message ??
+              (mining.result ? mining.result[0].data : 'unknown error occured'),
             loading: false
           }
         });
