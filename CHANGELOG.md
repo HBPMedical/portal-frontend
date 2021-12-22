@@ -1,10 +1,18 @@
 # Changelog
-## 2021/10/08
 
+## 8.0.1 - 2021/12/22
+
+- Updated Login Page links
+- Integrated new portal backend experiment status logic 
+## 8.0.0 - 2021/12/21
+
+- Formula UI
+  - Interaction and transformation operation on contiunous data
+  - Integrated for Descriptive Statistics and Logistic Regression
+- GraphQL type definitions available for frontend
 - Added Storybook. 
-- Table and GroupTable visual components.
+  - Table and GroupTable visual components.
 - Integrated new Descriptive Statistics output
-- Draft Formula UI
 - GraphQL implementation for Metadata
 - GraphQL implementation for Descriptive Statistics
 
