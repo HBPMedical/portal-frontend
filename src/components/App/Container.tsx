@@ -55,8 +55,8 @@ class AppContainer extends React.Component<any, State> {
       }
     } catch (e) {
       appConfig = {
-        instanceName: 'MIP 6.4 Development',
-        version: 'dev 6.4',
+        instanceName: 'MIP 6.5 Development',
+        version: 'dev 6.5',
         datacatalogueUrl: undefined
       };
 
