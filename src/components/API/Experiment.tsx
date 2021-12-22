@@ -200,11 +200,12 @@ class Experiment extends Container<State> {
         ...experiment,
         status: 'error',
         result: [
-          {
-            type: MIME_TYPES.ERROR,
-            data: 'An unknown error occured. Please retry in a moment'
-          },
-          ...(experiment?.result || [])
+          ...(experiment?.result ?? [
+            {
+              type: MIME_TYPES.ERROR,
+              data: 'An unknown error occured. Please retry in a moment'
+            }
+          ])
         ]
       };
     }
