@@ -1,8 +1,6 @@
-import { useReactiveVar } from '@apollo/client';
 import * as d3 from 'd3';
 import React, { useCallback, useEffect, useRef } from 'react';
-import { APICore, APIMining, APIModel, APIExperiment } from '../API';
-import { draftExperimentVar } from '../API/GraphQL/cache';
+import { APICore, APIExperiment, APIMining, APIModel } from '../API';
 import { D3Model, HierarchyCircularNode, ModelResponse } from '../API/Model';
 import './CirclePack.css';
 import { ModelType } from './Container';
@@ -63,8 +61,7 @@ export default ({ layout, ...props }: Props): JSX.Element => {
   const svgRef = useRef(null);
   const view = useRef<IView>([diameter / 2, diameter / 2, diameter]);
   const focus = useRef(layout);
-  const draftExperiment = useReactiveVar(draftExperimentVar);
-  const { d3Model, selectedNode, groupVars } = props;
+  const { selectedNode, groupVars } = props;
 
   const color = d3
     .scaleLinear<string, string>()
@@ -91,7 +88,7 @@ export default ({ layout, ...props }: Props): JSX.Element => {
     node.attr('r', (d: any) => d.r * k);
   };
 
-  const zoom = (circleNode: HierarchyCircularNode | undefined) => {
+  const zoom = (circleNode: HierarchyCircularNode | undefined): void => {
     if (!circleNode) {
       return;
     }
@@ -151,15 +148,15 @@ export default ({ layout, ...props }: Props): JSX.Element => {
     circle
       .style('fill-opacity', '1')
       .filter(
-        (d: any) => ![...(groupVars.flatMap(g => g.items) || [])].includes(d)
+        d => ![...(groupVars.flatMap(g => g.items) || [])].includes(d.data.code)
       )
-      .style('fill', (d: any) =>
+      .style('fill', d =>
         d.children ? colorCallback(d.depth) ?? 'white' : 'white'
       );
 
     if (selectedNode && selectedNode !== layout) {
       circle
-        .filter((d: any) => d.data.code === selectedNode.data.code)
+        .filter(d => d.data.code === selectedNode.data.code)
         .transition()
         .duration(80)
         .style('fill-opacity', '0.8');
@@ -176,39 +173,7 @@ export default ({ layout, ...props }: Props): JSX.Element => {
     // filter => slategray
     // variables => #5cb85c
     // coVariables => #f0ad4e
-
-    if (d3Model.filters && d3Model.filters.length > 0) {
-      circle
-        .filter((d: any) => {
-          console.log(d);
-          return d3Model.filters !== undefined && d3Model.filters.includes(d);
-        })
-        .transition()
-        .duration(250)
-        .style('fill', 'slategray');
-    }
-    if (d3Model.variables) {
-      circle
-        .filter(
-          (d: any) =>
-            d3Model.variables !== undefined && d3Model.variables.includes(d)
-        )
-        .transition()
-        .duration(250)
-        .style('fill', '#5cb85c');
-    }
-
-    if (d3Model.covariables && d3Model.covariables.length > 0) {
-      circle
-        .filter(
-          (d: any) =>
-            d3Model.covariables !== undefined && d3Model.covariables.includes(d)
-        )
-        .transition()
-        .duration(250)
-        .style('fill', '#f0ad4e');
-    }
-  }, [d3Model, colorCallback, selectedNode, layout, groupVars]);
+  }, [colorCallback, selectedNode, layout, groupVars]);
 
   const zoomCallback = useCallback(zoom, []);
   const selectNodeCallback = useCallback(props.handleSelectNode, []);
