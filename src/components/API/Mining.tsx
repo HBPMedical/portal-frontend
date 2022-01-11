@@ -3,7 +3,7 @@ import { Container } from 'unstated';
 
 import { backendURL } from '../API';
 import { ERRORS_OUTPUT, HISTOGRAMS_STORAGE_KEY } from '../constants';
-import { VariableDatum } from '../ExperimentExplore/d3Hierarchy';
+import { NodeData } from '../ExperimentExplore/d3Hierarchy';
 import { Algorithm, AlgorithmParameterRequest, VariableEntity } from './Core';
 import { IExperiment } from './Experiment';
 
@@ -135,7 +135,7 @@ class Mining extends Container<MiningState> {
     datasets,
     pathology
   }: {
-    y: VariableDatum;
+    y: NodeData;
     datasets: VariableEntity[];
     pathology: string;
   }): Promise<void> => {
@@ -166,7 +166,7 @@ class Mining extends Container<MiningState> {
       {
         name: 'y',
         label: 'y',
-        value: y.code
+        value: y.id
       },
       {
         name: 'pathology',
@@ -181,14 +181,14 @@ class Mining extends Container<MiningState> {
 
     const xVariables = Object.values(choosenHistogramVariablesByPathology)
       .map((v: VariableEntity) => v.code)
-      .filter(v => y.code !== v);
+      .filter(v => y.id !== v);
 
     const type = y.type || 'real';
     if (type !== 'nominal') {
       parameters.push({
         name: 'bins',
         label: 'bins',
-        value: JSON.stringify({ [y.code]: 20 })
+        value: JSON.stringify({ [y.id]: 20 })
       });
     }
 

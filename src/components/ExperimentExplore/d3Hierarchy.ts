@@ -1,45 +1,56 @@
 import * as d3 from 'd3';
+import { Group, Variable } from '../API/GraphQL/types.generated';
 
-export interface VariableDatum {
-  code: string;
+export interface NodeData {
+  id: string;
   description?: string;
   label: string;
   isVariable?: boolean;
-  children?: VariableDatum[];
+  children?: NodeData[];
   type?: string;
 }
 
-export type HierarchyNode = d3.HierarchyNode<VariableDatum>;
+export type HierarchyNode = d3.HierarchyNode<NodeData>;
 
-const hierarchyTransform = (node: any): VariableDatum | undefined =>
-  node
-    ? {
-        children: [
-          ...((node.groups && node.groups.map(hierarchyTransform)) || []),
-          ...((node.variables &&
-            node.variables.map((v: any) => ({
-              code: v.code,
-              description: v.description,
-              isVariable: true,
-              label: v.label || v.code,
-              type: v.type
-            }))) ||
-            [])
-        ],
-        code: node.code,
-        description: node.description,
-        label: node.label || node.code,
-        type: node.type
-      }
-    : undefined;
+export const groupsToTreeView = (
+  group: Group,
+  groups: Group[],
+  vars: Variable[]
+): NodeData => {
+  const childVars =
+    group.variables
+      ?.map(varId => vars.find(v => v.id === varId))
+      .filter(v => v)
+      .map(v => v as Variable)
+      .map(v => ({
+        id: v.id,
+        description: v.description ?? '',
+        isVariable: true,
+        label: v.label ?? v.id,
+        type: v.type ?? undefined
+      })) ?? [];
 
-export const d3Hierarchy = (hierarchy: any): HierarchyNode | undefined => {
-  const root = hierarchyTransform(hierarchy);
+  const childGroups =
+    group.groups
+      ?.map(grpId => groups.find(grp => grp.id === grpId))
+      .filter(g => g)
+      .map(g => g as Group)
+      .map(g => groupsToTreeView(g, groups, vars)) ?? [];
+
+  return {
+    id: group.id,
+    description: group.description ?? '',
+    label: group.label ?? group.id,
+    children: [...childGroups, ...childVars]
+  };
+};
+
+export const d3Hierarchy = (root: NodeData): HierarchyNode | undefined => {
   const hierarchyNode = root
     ? d3
         .hierarchy(root)
-        .sum((d: any) => d.label && d.label.length)
-        .sort((a: any, b: any) => b.value - a.value)
+        .sum(d => (d.label ?? '').length)
+        .sort((a, b) => (b.value ?? 0) - (a.value ?? 0))
     : undefined;
 
   return hierarchyNode;

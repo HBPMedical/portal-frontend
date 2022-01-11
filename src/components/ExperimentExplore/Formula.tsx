@@ -59,26 +59,25 @@ export default ({
         const leftTerm = [
           ...((variables &&
             variables.map(v =>
-              prevFormula.leftTerm.map(t => t.factor).includes(v.data.code)
-                ? prevFormula.leftTerm.find(t => t.factor === v.data.code)!
-                : { factor: v.data.code, operator: '+' }
+              prevFormula.leftTerm.map(t => t.factor).includes(v.data.id)
+                ? prevFormula.leftTerm.find(t => t.factor === v.data.id)!
+                : { factor: v.data.id, operator: '+' }
             )) ||
             [])
         ].filter(
-          t => variables && variables.map(v => v.data.code).includes(t.factor)
+          t => variables && variables.map(v => v.data.id).includes(t.factor)
         );
 
         const rightTerm = [
           ...((covariables &&
             covariables.map(v =>
-              prevFormula.rightTerm.map(t => t.factor).includes(v.data.code)
-                ? prevFormula.rightTerm.find(t => t.factor === v.data.code)!
-                : { factor: v.data.code, operator: '+' }
+              prevFormula.rightTerm.map(t => t.factor).includes(v.data.id)
+                ? prevFormula.rightTerm.find(t => t.factor === v.data.id)!
+                : { factor: v.data.id, operator: '+' }
             )) ||
             [])
         ].filter(
-          t =>
-            covariables && covariables.map(v => v.data.code).includes(t.factor)
+          t => covariables && covariables.map(v => v.data.id).includes(t.factor)
         );
 
         return {
@@ -97,9 +96,9 @@ export default ({
     }
 
     const variables =
-      parameters.variables && parameters.variables.map(c => c.data.code);
+      parameters.variables && parameters.variables.map(c => c.data.id);
     const covariables =
-      parameters.covariables && parameters.covariables.map(c => c.data.code);
+      parameters.covariables && parameters.covariables.map(c => c.data.id);
     const [leftStringTerms, rightStringTerms] = editedFormula.split('~');
 
     // filter left terms => ['+', 'y1', ...]
@@ -161,7 +160,7 @@ export default ({
     const nextSelectedVariables =
       parameters.variables &&
       parameters.variables.filter(
-        v => !leftTerm.map(t => t.factor).includes(v.data.code)
+        v => !leftTerm.map(t => t.factor).includes(v.data.id)
       );
     nextSelectedVariables &&
       nextSelectedVariables.forEach(v =>
@@ -171,7 +170,7 @@ export default ({
     const nextSelectedCovariables =
       parameters.covariables &&
       parameters.covariables.filter(
-        v => !rightTerm.map(t => t.factor).includes(v.data.code)
+        v => !rightTerm.map(t => t.factor).includes(v.data.id)
       );
     nextSelectedCovariables &&
       nextSelectedCovariables.forEach(v =>
