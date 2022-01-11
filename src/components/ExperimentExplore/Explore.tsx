@@ -1,5 +1,5 @@
 import { useReactiveVar } from '@apollo/client';
-import React, { useEffect, useCallback } from 'react';
+import React, { useCallback, useEffect } from 'react';
 import { Button, Card } from 'react-bootstrap';
 import { BsFillCaretRightFill } from 'react-icons/bs';
 import styled from 'styled-components';
@@ -9,6 +9,8 @@ import {
   draftExperimentVar,
   selectedExperimentVar
 } from '../API/GraphQL/cache';
+import { localMutations } from '../API/GraphQL/operations/mutations';
+import { VarType } from '../API/GraphQL/operations/mutations/experiments/toggleVarsExperiment';
 import { useGetDomainListQuery } from '../API/GraphQL/queries.generated';
 import { D3Model, HierarchyCircularNode, ModelResponse } from '../API/Model';
 import { ONTOLOGY_URL } from '../constants';
@@ -201,18 +203,30 @@ export default (props: ExploreProps): JSX.Element => {
                     className="child"
                     variant={'success'}
                     size="sm"
-                    disabled={
-                      !selectedNode || selectedNode.data.code === 'root'
-                    }
-                    onClick={(): void =>
-                      handleUpdateD3Model(ModelType.VARIABLE, selectedNode)
-                    }
+                    disabled={!selectedNode || selectedNode.data.id === 'root'}
+                    onClick={(): void => {
+                      if (!selectedNode) return;
+
+                      const vars = (selectedNode
+                        ?.leaves()
+                        .filter(node => node.data.id)
+                        .map(node => node.data.id) ?? []) as string[];
+
+                      localMutations.toggleVarsDraftExperiment(
+                        vars,
+                        VarType.VARIABLES
+                      );
+
+                      handleUpdateD3Model(ModelType.VARIABLE, selectedNode);
+                    }}
                   >
                     {d3Model.variables &&
                     selectedNode &&
-                    d3Model.variables.filter(c =>
-                      selectedNode.leaves().includes(c)
-                    ).length === selectedNode.leaves().length
+                    selectedNode
+                      .leaves()
+                      .filter(n =>
+                        draftExperiment.variables?.includes(n.data.id)
+                      ).length === selectedNode.leaves().length
                       ? '-'
                       : '+'}{' '}
                     As variable
@@ -223,18 +237,29 @@ export default (props: ExploreProps): JSX.Element => {
                     className="child"
                     variant={'warning'}
                     size="sm"
-                    disabled={
-                      !selectedNode || selectedNode.data.code === 'root'
-                    }
-                    onClick={(): void =>
-                      handleUpdateD3Model(ModelType.COVARIABLE, selectedNode)
-                    }
+                    disabled={!selectedNode || selectedNode.data.id === 'root'}
+                    onClick={(): void => {
+                      if (!selectedNode) return;
+
+                      const vars = (selectedNode
+                        ?.leaves()
+                        .filter(node => node.data.id)
+                        .map(node => node.data.id) ?? []) as string[];
+
+                      localMutations.toggleVarsDraftExperiment(
+                        vars,
+                        VarType.COVARIATES
+                      );
+                      handleUpdateD3Model(ModelType.COVARIABLE, selectedNode);
+                    }}
                   >
-                    {d3Model.covariables &&
+                    {draftExperiment.coVariables &&
                     selectedNode &&
-                    d3Model.covariables.filter(c =>
-                      selectedNode.leaves().includes(c)
-                    ).length === selectedNode.leaves().length
+                    selectedNode
+                      .leaves()
+                      .filter(n =>
+                        draftExperiment.coVariables?.includes(n.data.id)
+                      ).length === selectedNode.leaves().length
                       ? '-'
                       : '+'}{' '}
                     As covariate
@@ -245,18 +270,29 @@ export default (props: ExploreProps): JSX.Element => {
                     className="child"
                     variant={'secondary'}
                     size="sm"
-                    disabled={
-                      !selectedNode || selectedNode.data.code === 'root'
-                    }
-                    onClick={(): void =>
-                      handleUpdateD3Model(ModelType.FILTER, selectedNode)
-                    }
+                    disabled={!selectedNode || selectedNode.data.id === 'root'}
+                    onClick={(): void => {
+                      if (!selectedNode) return;
+
+                      const vars = (selectedNode
+                        ?.leaves()
+                        .filter(node => node.data.id)
+                        .map(node => node.data.id) ?? []) as string[];
+
+                      localMutations.toggleVarsDraftExperiment(
+                        vars,
+                        VarType.FILTER
+                      );
+                      handleUpdateD3Model(ModelType.FILTER, selectedNode);
+                    }}
                   >
-                    {d3Model.filters &&
+                    {draftExperiment.filterVariables &&
                     selectedNode &&
-                    d3Model.filters.filter(c =>
-                      selectedNode.leaves().includes(c)
-                    ).length === selectedNode.leaves().length
+                    selectedNode
+                      .leaves()
+                      .filter(n =>
+                        draftExperiment.filterVariables?.includes(n.data.id)
+                      ).length === selectedNode.leaves().length
                       ? '-'
                       : '+'}{' '}
                     As filter
