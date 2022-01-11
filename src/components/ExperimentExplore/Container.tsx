@@ -1,22 +1,17 @@
+import { useReactiveVar } from '@apollo/client';
 import * as d3 from 'd3';
 import React, { useEffect, useState } from 'react';
 import { Alert } from 'react-bootstrap';
 import { RouteComponentProps } from 'react-router-dom';
 import styled from 'styled-components';
 import { APICore, APIExperiment, APIMining, APIModel, APIUser } from '../API';
-import { VariableEntity } from '../API/Core';
-import { D3Model, HierarchyCircularNode, ModelResponse } from '../API/Model';
+import { draftExperimentVar, selectedDomainVar } from '../API/GraphQL/cache';
+import { localMutations } from '../API/GraphQL/operations/mutations';
+import { useListDomainsQuery } from '../API/GraphQL/queries.generated';
+import { HierarchyCircularNode, ModelResponse } from '../API/Model';
 import { AppConfig } from '../App/App';
-import { LONGITUDINAL_DATASET_TYPE } from '../constants';
-import CirclePack from './D3CirclePackLayer';
-import { d3Hierarchy, VariableDatum } from './d3Hierarchy';
-import { useReactiveVar } from '@apollo/client';
-import { Experiment, Group, Variable } from '../API/GraphQL/types.generated';
-import {
-  draftExperimentVar,
-  initialExperiment,
-  selectedExperimentVar
-} from '../API/GraphQL/cache';
+import CirclePack, { GroupVars } from './D3CirclePackLayer';
+import { d3Hierarchy, groupsToTreeView, NodeData } from './d3Hierarchy';
 
 const diameter = 800;
 const padding = 1.5;
@@ -44,39 +39,6 @@ interface Props extends RouteComponentProps {
   apiUser: APIUser;
 }
 
-const groupsToTreeView = (
-  group: Group,
-  groups: Group[],
-  vars: Variable[]
-): VariableDatum => {
-  const childVars =
-    group.variables
-      ?.map(varId => vars.find(v => v.id === varId))
-      .filter(v => v)
-      .map(v => v as Variable)
-      .map(v => ({
-        code: v.id,
-        description: v.description ?? '',
-        isVariable: true,
-        label: v.label ?? v.id,
-        type: v.type ?? undefined
-      })) ?? [];
-
-  const childGroups =
-    group.groups
-      ?.map(grpId => groups.find(grp => grp.id === grpId))
-      .filter(g => g)
-      .map(g => g as Group)
-      .map(g => groupsToTreeView(g, groups, vars)) ?? [];
-
-  return {
-    code: group.id,
-    description: group.description ?? '',
-    label: group.label ?? group.id,
-    children: [...childGroups, ...childVars]
-  };
-};
-
 export default ({
   apiCore,
   apiMining,
@@ -89,8 +51,17 @@ export default ({
     HierarchyCircularNode | undefined
   >();
 
-  const selectedExperiment = useReactiveVar(selectedExperimentVar);
+  const domain = useReactiveVar(selectedDomainVar);
   const draftExperiment = useReactiveVar(draftExperimentVar);
+
+  const { data, loading } = useListDomainsQuery({
+    onCompleted: data => {
+      if (data.domains) {
+        localMutations.setDomains(data.domains);
+        localMutations.selectDomain(data.domains[0].id);
+      }
+    }
+  });
 
   // D3Model is used to expose D3 data and interact with the D3 Layout.
   const [d3Layout, setD3Layout] = useState<HierarchyCircularNode>();
@@ -100,56 +71,46 @@ export default ({
   );
   const [nextPathologyCode, setNextPathologyCode] = useState(''); // TODO: maybe there is a better way... like promise.then() ?
   const { history } = props;
+  const [selectedGroupVars, setSelectedGroupVars] = useState<GroupVars[]>([]);
 
-  // Utility to convert variables to D3 model
-  const convertModelToD3Model = (
-    d3Layout: HierarchyCircularNode,
-    model?: Experiment
-  ): D3Model => {
-    if (!model) model = initialExperiment;
+  useEffect(() => {
+    if (!draftExperiment) return;
 
-    const filterVariables: string[] = [];
-    const extractVariablesFromFilter = (filter: any) =>
-      filter.rules.forEach((r: any) => {
-        if (r.rules) {
-          extractVariablesFromFilter(r);
-        }
-        if (r.id) {
-          filterVariables.push(r.id);
-        }
-      });
+    const groupVars = [
+      ['Variables', draftExperiment.variables, '#5cb85c'],
+      ['Covariates', draftExperiment.coVariables, '#f0ad4e'],
+      ['Filters', draftExperiment.filterVariables, 'slategrey']
+    ]
+      .filter(item => item[1] && item[1].length)
+      .map(item => ({
+        name: item[0] as string,
+        items: item[1] as string[],
+        color: item[2] as string
+      }));
 
-    if (model && model.filter) {
-      extractVariablesFromFilter(JSON.parse(model.filter));
-    }
+    setSelectedGroupVars(groupVars);
+  }, [draftExperiment]);
 
-    const nextModel = {
-      covariables: [
-        ...((model.coVariables &&
-          d3Layout
-            .descendants()
-            .filter(l => model?.coVariables?.includes(l.data.code))) ||
-          [])
-      ],
-      filters: [
-        ...((filterVariables &&
-          d3Layout
-            .descendants()
-            .filter(l => filterVariables.includes(l.data.code))) ||
-          [])
-      ],
-      groupings: undefined,
-      variables:
-        (model.variables !== undefined &&
-          model.variables.length > 0 &&
-          d3Layout
-            .descendants()
-            .filter(l => model?.variables?.includes(l.data.code))) ||
-        []
-    };
+  useEffect(() => {
+    if (!domain) return;
 
-    return nextModel;
-  };
+    //Build group tree with variables
+    const rootNode = groupsToTreeView(
+      domain.rootGroup,
+      domain.groups,
+      domain.variables
+    );
+
+    const hierarchyNode = d3Hierarchy(rootNode);
+
+    const bubbleLayout = d3
+      .pack<NodeData>()
+      .size([diameter, diameter])
+      .padding(padding);
+
+    const d3layout = hierarchyNode && bubbleLayout(hierarchyNode);
+    setD3Layout(d3layout);
+  }, [data, domain]);
 
   useEffect(() => {
     if (
@@ -160,57 +121,6 @@ export default ({
       history.push('/tos');
     }
   }, [apiUser.state, history]);
-
-  // select default pathology at start
-  useEffect(() => {
-    const model = apiModel.state.model;
-    if (!model && apiCore.state.pathologies) {
-      const defaultPathology = apiCore.state.pathologies.find(
-        (_, i) => i === 0
-      );
-      const r = new RegExp(LONGITUDINAL_DATASET_TYPE);
-      const datasets =
-        apiCore.state.pathologiesDatasets[defaultPathology?.code || ''];
-
-      const trainingDatasets = datasets?.filter(
-        (d: VariableEntity) => !r.test(d.code)
-      );
-      const newModel = {
-        query: {
-          pathology: defaultPathology?.code,
-          trainingDatasets
-        }
-      };
-
-      apiModel.setModel(newModel);
-    }
-  }, [apiCore, apiCore.state.pathologies, apiModel]);
-
-  // Switch datasets, variables, models based on selected pathology
-  useEffect(() => {
-    const model = apiModel.state.model;
-    if (model) {
-      const hierarchy =
-        apiCore.state.pathologiesHierarchies[model.query.pathology || ''];
-      if (hierarchy) {
-        const node = d3Hierarchy(hierarchy);
-        const bubbleLayout = d3
-          .pack<VariableDatum>()
-          .size([diameter, diameter])
-          .padding(padding);
-
-        const d3layout = node && bubbleLayout(node);
-        setD3Layout(d3layout);
-      }
-    }
-  }, [apiCore, apiModel.state.model]);
-
-  // Sync selected variables and D3 Model
-  useEffect(() => {
-    if (d3Layout) {
-      apiModel.setD3Model(convertModelToD3Model(d3Layout, selectedExperiment));
-    }
-  }, [apiModel, d3Layout, selectedExperiment]);
 
   // Load Histograms for selected variable
   const trainingDatasets =
@@ -234,6 +144,7 @@ export default ({
     trainingDatasets
   ]);
 
+  // TODO remove handleUpdateD3Model from all component
   // Update D3 data from interaction with D3 widgets (PackLayer, Model, breadcrumb, search bar)
   const handleUpdateD3Model = (
     type?: ModelType,
@@ -350,7 +261,7 @@ export default ({
         <CirclePack
           layout={d3Layout}
           d3Model={d3Model}
-          groupVars={[]}
+          groupVars={selectedGroupVars}
           {...nextProps}
         />
       )}
