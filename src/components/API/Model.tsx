@@ -5,6 +5,7 @@ import { backendURL } from '../API';
 import { LONGITUDINAL_DATASET_TYPE } from '../constants';
 import { VariableEntity } from './Core';
 import { NodeData } from '../ExperimentExplore/d3Hierarchy';
+import { ExperimentCreateInput } from './GraphQL/types.generated';
 
 export type HierarchyCircularNode = d3.HierarchyCircularNode<NodeData>;
 
