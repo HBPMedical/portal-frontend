@@ -16,8 +16,8 @@ export default function createToggleVarsExperiment(
     const newExperiment = { ...experimentVar() };
 
     newExperiment[type] = [
-      ...oldData.filter(v => !vars.includes(v)),
-      ...vars.filter(v => !oldData.includes(v))
+      ...vars.filter(v => !oldData.includes(v)),
+      ...oldData.filter(v => !vars.includes(v))
     ];
 
     if (type === VarType.VARIABLES) {

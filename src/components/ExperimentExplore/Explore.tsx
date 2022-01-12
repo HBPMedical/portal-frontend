@@ -1,12 +1,13 @@
 import { useReactiveVar } from '@apollo/client';
 import React, { useCallback, useEffect } from 'react';
-import { Button, Card } from 'react-bootstrap';
-import { BsFillCaretRightFill } from 'react-icons/bs';
+import { Button, Card, Col, Container, Row } from 'react-bootstrap';
+import { BsFillCaretRightFill, BsTrash } from 'react-icons/bs';
 import styled from 'styled-components';
 import { APICore, APIExperiment, APIMining, APIModel } from '../API';
 import { VariableEntity } from '../API/Core';
 import {
   draftExperimentVar,
+  selectedDomainVar,
   selectedExperimentVar
 } from '../API/GraphQL/cache';
 import { localMutations } from '../API/GraphQL/operations/mutations';
@@ -16,9 +17,9 @@ import { D3Model, HierarchyCircularNode, ModelResponse } from '../API/Model';
 import { ONTOLOGY_URL } from '../constants';
 import AvailableAlgorithms from '../ExperimentCreate/AvailableAlgorithms';
 import DropdownExperimentList from '../UI/Experiment/DropDownList/DropdownExperimentList';
+import VariablesGroupList from '../UI/Variable/VariablesGroupList';
 import { ModelType } from './Container';
 import Histograms from './D3Histograms';
-import ModelView from './D3Model';
 import DataSelection from './DataSelection';
 
 const MenuParametersContainer = styled.div`
@@ -114,10 +115,11 @@ export default (props: ExploreProps): JSX.Element => {
 
   const selectedExperiment = useReactiveVar(selectedExperimentVar);
   const draftExperiment = useReactiveVar(draftExperimentVar);
+  const domain = useReactiveVar(selectedDomainVar);
   const { data: dataDomains } = useGetDomainListQuery();
 
   const model = apiModel.state.model;
-  const selectedPathology = draftExperiment.domain;
+  const selectedPathology = domain?.id;
 
   const variablesForPathologyDict = apiCore.state.pathologiesVariables;
   const variablesForPathology: VariableEntity[] | undefined =
@@ -193,112 +195,97 @@ export default (props: ExploreProps): JSX.Element => {
                 </div>
               </MenuParametersContainer>
 
-              <ModelView
-                d3Model={d3Model}
-                handleUpdateD3Model={handleUpdateD3Model}
-                handleSelectNode={handleSelectNode}
-                zoom={zoom}
-                buttonVariable={
-                  <Button
-                    className="child"
-                    variant={'success'}
-                    size="sm"
-                    disabled={!selectedNode || selectedNode.data.id === 'root'}
-                    onClick={(): void => {
-                      if (!selectedNode) return;
+              <Container>
+                <Row>
+                  {[
+                    [
+                      'As variable',
+                      'success',
+                      [...(draftExperiment.variables || [])],
+                      VarType.VARIABLES
+                    ],
+                    [
+                      'As covariate',
+                      'warning',
+                      [...(draftExperiment.coVariables || [])],
+                      VarType.COVARIATES
+                    ],
+                    [
+                      'As filter',
+                      'secondary',
+                      [...(draftExperiment.filterVariables || [])],
+                      VarType.FILTER
+                    ]
+                  ].map(bag => (
+                    <Col className="px-1" key={bag[0] as string}>
+                      <div className="d-flex justify-content-between mb-1">
+                        <Button
+                          className="child"
+                          variant={bag[1] as string}
+                          size="sm"
+                          disabled={
+                            !selectedNode || selectedNode.data.id === 'root'
+                          }
+                          onClick={(): void => {
+                            if (!selectedNode) return;
 
-                      const vars = (selectedNode
-                        ?.leaves()
-                        .filter(node => node.data.id)
-                        .map(node => node.data.id) ?? []) as string[];
+                            const vars = (selectedNode
+                              ?.leaves()
+                              .filter(node => node.data.id)
+                              .map(node => node.data.id) ?? []) as string[];
 
-                      localMutations.toggleVarsDraftExperiment(
-                        vars,
-                        VarType.VARIABLES
-                      );
+                            localMutations.toggleVarsDraftExperiment(
+                              vars,
+                              bag[3] as VarType
+                            );
+                          }}
+                        >
+                          {bag[2] &&
+                          selectedNode &&
+                          selectedNode
+                            .leaves()
+                            .filter(n => bag[2]?.includes(n.data.id)).length ===
+                            selectedNode.leaves().length
+                            ? '-'
+                            : '+'}{' '}
+                          {bag[0]}
+                        </Button>
 
-                      handleUpdateD3Model(ModelType.VARIABLE, selectedNode);
-                    }}
-                  >
-                    {d3Model.variables &&
-                    selectedNode &&
-                    selectedNode
-                      .leaves()
-                      .filter(n =>
-                        draftExperiment.variables?.includes(n.data.id)
-                      ).length === selectedNode.leaves().length
-                      ? '-'
-                      : '+'}{' '}
-                    As variable
-                  </Button>
-                }
-                buttonCovariable={
-                  <Button
-                    className="child"
-                    variant={'warning'}
-                    size="sm"
-                    disabled={!selectedNode || selectedNode.data.id === 'root'}
-                    onClick={(): void => {
-                      if (!selectedNode) return;
-
-                      const vars = (selectedNode
-                        ?.leaves()
-                        .filter(node => node.data.id)
-                        .map(node => node.data.id) ?? []) as string[];
-
-                      localMutations.toggleVarsDraftExperiment(
-                        vars,
-                        VarType.COVARIATES
-                      );
-                      handleUpdateD3Model(ModelType.COVARIABLE, selectedNode);
-                    }}
-                  >
-                    {draftExperiment.coVariables &&
-                    selectedNode &&
-                    selectedNode
-                      .leaves()
-                      .filter(n =>
-                        draftExperiment.coVariables?.includes(n.data.id)
-                      ).length === selectedNode.leaves().length
-                      ? '-'
-                      : '+'}{' '}
-                    As covariate
-                  </Button>
-                }
-                buttonFilter={
-                  <Button
-                    className="child"
-                    variant={'secondary'}
-                    size="sm"
-                    disabled={!selectedNode || selectedNode.data.id === 'root'}
-                    onClick={(): void => {
-                      if (!selectedNode) return;
-
-                      const vars = (selectedNode
-                        ?.leaves()
-                        .filter(node => node.data.id)
-                        .map(node => node.data.id) ?? []) as string[];
-
-                      localMutations.toggleVarsDraftExperiment(
-                        vars,
-                        VarType.FILTER
-                      );
-                      handleUpdateD3Model(ModelType.FILTER, selectedNode);
-                    }}
-                  >
-                    {draftExperiment.filterVariables &&
-                    selectedNode &&
-                    selectedNode
-                      .leaves()
-                      .filter(n =>
-                        draftExperiment.filterVariables?.includes(n.data.id)
-                      ).length === selectedNode.leaves().length
-                      ? '-'
-                      : '+'}{' '}
-                    As filter
-                  </Button>
-                }
-              />
+                        {bag[2].length > 0 && (
+                          <Button
+                            size="sm"
+                            variant="outline-danger"
+                            onClick={() =>
+                              localMutations.toggleVarsDraftExperiment(
+                                bag[2] as string[],
+                                bag[3] as VarType
+                              )
+                            }
+                          >
+                            <BsTrash />{' '}
+                          </Button>
+                        )}
+                      </div>
+                      <VariablesGroupList
+                        variables={
+                          domain?.variables?.filter(v =>
+                            bag[2].includes(v.id)
+                          ) ?? []
+                        }
+                        handleOnDeleteItem={(id): void => {
+                          localMutations.toggleVarsDraftExperiment(
+                            [id],
+                            bag[3] as VarType
+                          );
+                        }}
+                        handleOnItemClick={(id): void => {
+                          localMutations.setZoomToNode(id);
+                        }}
+                      ></VariablesGroupList>
+                    </Col>
+                  ))}
+                </Row>
+              </Container>
               <AlgorithmTitleContainer>
                 <p>
                   <strong>Available algorithms</strong>

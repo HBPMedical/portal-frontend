@@ -21,8 +21,8 @@ export const initialUser = {
 };
 
 export const zoomNodeVar = makeVar<string | undefined>(undefined);
-
 export const domainsVar = makeVar<Domain[]>([]);
+export const selectedVariableVar = makeVar<string | undefined>(undefined);
 export const selectedDomainVar = makeVar<Domain | undefined>(undefined);
 export const selectedExperimentVar = makeVar<Experiment | undefined>(undefined);
 export const draftExperimentVar = makeVar<Experiment>(initialExperiment);
