@@ -15,7 +15,11 @@ import createUpdateExperiment from './experiments/updateExperiment';
 
 export const localMutations = {
   setDomains: createSetDomains(domainsVar),
-  selectDomain: createSelectDomain(selectedDomainVar, domainsVar),
+  selectDomain: createSelectDomain(
+    selectedDomainVar,
+    domainsVar,
+    draftExperimentVar
+  ),
   updateDraftExperiment: createUpdateExperiment(draftExperimentVar),
   toggleVarsDraftExperiment: createToggleVarsExperiment(draftExperimentVar),
   setZoomToNode: createSetZoomToNode(zoomNodeVar),

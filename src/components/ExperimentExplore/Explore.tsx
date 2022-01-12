@@ -1,5 +1,5 @@
 import { useReactiveVar } from '@apollo/client';
-import React, { useCallback, useEffect } from 'react';
+import React from 'react';
 import { Button, Card, Col, Container, Row } from 'react-bootstrap';
 import { BsFillCaretRightFill, BsTrash } from 'react-icons/bs';
 import styled from 'styled-components';
@@ -18,7 +18,6 @@ import { ONTOLOGY_URL } from '../constants';
 import AvailableAlgorithms from '../ExperimentCreate/AvailableAlgorithms';
 import DropdownExperimentList from '../UI/Experiment/DropDownList/DropdownExperimentList';
 import VariablesGroupList from '../UI/Variable/VariablesGroupList';
-import { ModelType } from './Container';
 import Histograms from './D3Histograms';
 import DataSelection from './DataSelection';
 
@@ -88,10 +87,6 @@ export interface ExploreProps {
   histograms?: any;
   d3Model: D3Model;
   handleSelectNode: (node: HierarchyCircularNode) => void;
-  handleUpdateD3Model: (
-    model?: ModelType,
-    node?: HierarchyCircularNode
-  ) => void;
   handleSelectModel: (model?: ModelResponse) => void;
   handleGoToAnalysis: any; // FIXME Promise<void>
   zoom: (circleNode: HierarchyCircularNode) => void;
@@ -108,7 +103,6 @@ export default (props: ExploreProps): JSX.Element => {
     histograms,
     d3Model,
     handleSelectNode,
-    handleUpdateD3Model,
     handleGoToAnalysis,
     zoom
   } = props;
@@ -131,30 +125,6 @@ export default (props: ExploreProps): JSX.Element => {
     variablesForPathology &&
     variablesForPathology.filter((v: any) => v.type === 'nominal');
 
-  const changeDomain = useCallback(
-    (domain: string) => {
-      draftExperimentVar({
-        ...draftExperiment,
-        domain,
-        datasets:
-          dataDomains?.domains
-            .filter(d => d.id === domain)
-            .flatMap(d => d.datasets.map(ds => ds.id)) ?? []
-      });
-    },
-    [dataDomains, draftExperiment]
-  );
-
-  /**
-   * after change on domains or on DraftExperiment we check there is a default domain and dataset
-   */
-  useEffect(() => {
-    if (!draftExperiment.domain && dataDomains?.domains) {
-      const domain = dataDomains.domains[0]?.id;
-      if (domain) changeDomain(domain);
-    }
-  }, [changeDomain, dataDomains, draftExperiment]);
-
   return (
     <>
       <Grid>
@@ -162,7 +132,7 @@ export default (props: ExploreProps): JSX.Element => {
           <Card>
             <DataSelection
               zoom={zoom}
-              handleChangeDomain={changeDomain}
+              handleChangeDomain={(d): void => localMutations.selectDomain(d)}
               hierarchy={layout}
               handleSelectNode={handleSelectNode}
             ></DataSelection>

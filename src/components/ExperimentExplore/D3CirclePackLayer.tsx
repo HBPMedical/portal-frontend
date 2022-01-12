@@ -33,7 +33,6 @@ export interface Props {
   d3Model: D3Model;
   handleSelectPathology: (code: string) => void;
   handleSelectNode: (node: HierarchyCircularNode) => void;
-  handleUpdateD3Model: (type?: ModelType, node?: HierarchyCircularNode) => void;
   handleSelectModel: (d3Model?: ModelResponse) => void;
   handleGoToAnalysis: Function;
   setFormulaString: (f: string) => void;

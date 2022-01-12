@@ -54,7 +54,7 @@ export default ({
   const domain = useReactiveVar(selectedDomainVar);
   const draftExperiment = useReactiveVar(draftExperimentVar);
 
-  const { data, loading } = useListDomainsQuery({
+  const { data } = useListDomainsQuery({
     onCompleted: data => {
       if (data.domains) {
         localMutations.setDomains(data.domains);
@@ -144,78 +144,6 @@ export default ({
     trainingDatasets
   ]);
 
-  // TODO remove handleUpdateD3Model from all component
-  // Update D3 data from interaction with D3 widgets (PackLayer, Model, breadcrumb, search bar)
-  const handleUpdateD3Model = (
-    type?: ModelType,
-    node?: HierarchyCircularNode
-  ): void => {
-    if (node === undefined) {
-      return;
-    }
-
-    const d3Model = apiModel.state.internalD3Model;
-
-    if (type === ModelType.VARIABLE) {
-      const nextModel = d3Model.variables
-        ? {
-            ...d3Model,
-            variables: [
-              ...d3Model.variables.filter(c => !node.leaves().includes(c)),
-              ...node.leaves().filter(c => !d3Model.variables!.includes(c))
-            ],
-            covariables: d3Model.covariables
-              ? [...d3Model.covariables.filter(c => !node.leaves().includes(c))]
-              : []
-          }
-        : {
-            ...d3Model,
-            covariables:
-              d3Model.covariables &&
-              d3Model.covariables.filter(c => c !== node),
-            variables: node.leaves()
-          };
-
-      apiModel.setD3Model(nextModel);
-    }
-
-    if (type === ModelType.COVARIABLE) {
-      const nextModel = d3Model.covariables
-        ? {
-            ...d3Model,
-            covariables: [
-              ...d3Model.covariables.filter(c => !node.leaves().includes(c)),
-              ...node.leaves().filter(c => !d3Model.covariables!.includes(c))
-            ],
-            variables: d3Model.variables
-              ? [...d3Model.variables.filter(c => !node.leaves().includes(c))]
-              : []
-          }
-        : {
-            ...d3Model,
-            covariables: node.leaves(),
-            variables:
-              d3Model.variables && d3Model.variables.filter(c => c !== node)
-          };
-
-      apiModel.setD3Model(nextModel);
-    }
-
-    if (type === ModelType.FILTER) {
-      const nextModel = d3Model.filters
-        ? {
-            ...d3Model,
-            filters: [
-              ...d3Model.filters.filter(c => !node.leaves().includes(c)),
-              ...node.leaves().filter(c => !d3Model.filters!.includes(c))
-            ]
-          }
-        : { ...d3Model, filters: node.leaves() };
-
-      apiModel.setD3Model(nextModel);
-    }
-  };
-
   const handleSelectModel = (nextModel?: ModelResponse): void => {
     apiModel.setModel(nextModel);
   };
@@ -238,7 +166,6 @@ export default ({
     handleSelectModel,
     handleSelectNode: setSelectedNode,
     handleSelectPathology,
-    handleUpdateD3Model,
     histograms: apiMining.state.histograms,
     selectedNode,
     setFormulaString
