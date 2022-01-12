@@ -11,7 +11,6 @@ export default function createToggleVarsExperiment(
   experimentVar: ReactiveVar<Experiment>
 ) {
   return (vars: string[], type: VarType): void => {
-    console.log('toogle', type, vars);
     const oldData = experimentVar()[type] ?? [];
     const newExperiment = { ...experimentVar() };
 
