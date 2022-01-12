@@ -66,9 +66,16 @@ export type ChartAxis = {
   label?: Maybe<Scalars['String']>;
 };
 
+export type Dataset = {
+  __typename?: 'Dataset';
+  id: Scalars['String'];
+  isLongitudinal?: Maybe<Scalars['Boolean']>;
+  label?: Maybe<Scalars['String']>;
+};
+
 export type Domain = {
   __typename?: 'Domain';
-  datasets: Array<Category>;
+  datasets: Array<Dataset>;
   description?: Maybe<Scalars['String']>;
   groups: Array<Group>;
   id: Scalars['String'];

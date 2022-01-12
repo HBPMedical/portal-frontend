@@ -2,7 +2,8 @@ import { useReactiveVar } from '@apollo/client';
 import React from 'react';
 import { Card, Dropdown, DropdownButton } from 'react-bootstrap';
 import styled from 'styled-components';
-import { draftExperimentVar } from '../API/GraphQL/cache';
+import { draftExperimentVar, selectedDomainVar } from '../API/GraphQL/cache';
+import { localMutations } from '../API/GraphQL/operations/mutations';
 import { useGetDomainListQuery } from '../API/GraphQL/queries.generated';
 import DataSelect from '../UI/DataSelect';
 import Loader from '../UI/Loader';
@@ -51,25 +52,19 @@ const DataSelection = ({
   handleSelectNode: (node: HierarchyCircularNode) => void;
   handleChangeDataset?: (datasets: string[]) => void;
 }): JSX.Element => {
+  const domain = useReactiveVar(selectedDomainVar);
   const { data, loading } = useGetDomainListQuery();
   const draftExp = useReactiveVar(draftExperimentVar);
-  const datasets =
-    data?.domains
-      .filter(dom => dom.id === draftExp?.domain)
-      .flatMap(dom => dom.datasets)
-      .map(dataset => ({ id: dataset.id, label: dataset.label ?? '' })) ?? [];
 
   const handleSelectDataset = (id: string): void => {
     const index = draftExp?.datasets.indexOf(id);
 
     if (index === -1) {
-      draftExperimentVar({
-        ...draftExp,
+      localMutations.updateDraftExperiment({
         datasets: [...draftExp?.datasets, id]
       });
     } else {
-      draftExperimentVar({
-        ...draftExp,
+      localMutations.updateDraftExperiment({
         datasets: draftExp?.datasets.filter(d => d !== id)
       });
     }
@@ -107,7 +102,7 @@ const DataSelection = ({
 
           <DatasetsBox>
             <DataSelect
-              datasets={[datasets]}
+              datasets={domain?.datasets ?? []}
               handleSelectDataset={handleSelectDataset}
               selectedDatasets={draftExp?.datasets}
               isDropdown

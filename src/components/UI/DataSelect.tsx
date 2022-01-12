@@ -1,6 +1,7 @@
 import React, { useRef } from 'react';
 import { Button, Form } from 'react-bootstrap';
 import styled from 'styled-components';
+import { Dataset } from '../API/GraphQL/types.generated';
 import { useOnClickOutside } from '../utils';
 
 const DropDownPanel = styled.div`
@@ -80,14 +81,8 @@ const Card = styled.div`
     margin: 6px 0;
   }
 `;
-
-type item = {
-  id: string;
-  label: string;
-};
-
 interface Props {
-  datasets: item[][];
+  datasets: Dataset[];
   handleSelectDataset: (id: string) => void;
   selectedDatasets: string[];
   isDropdown?: boolean;
@@ -108,7 +103,13 @@ export default ({
     if (visible && event.target !== btn.current) setVisible(false);
   });
 
-  const container = datasets.map((list, i) => {
+  const ndatasets = datasets.filter(d => !d.isLongitudinal) ?? [];
+  const ldatasets = datasets.filter(d => !!d.isLongitudinal) ?? [];
+
+  const grpDatasets =
+    ldatasets.length > 0 ? [ndatasets, ldatasets] : [ndatasets];
+
+  const container = grpDatasets.map((list, i) => {
     const elements = list.map(item => (
       <span key={item.id}>
         <Form.Check
@@ -128,7 +129,7 @@ export default ({
     return (
       <div key={`list-${i}`}>
         {elements}
-        {i > 0 && <hr />}
+        {i !== grpDatasets.length - 1 && <hr />}
       </div>
     );
   });

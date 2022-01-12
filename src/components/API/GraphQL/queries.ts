@@ -21,6 +21,7 @@ export const QUERY_DOMAIN_LIST = gql`
       datasets {
         id
         label
+        isLongitudinal
       }
     }
   }
@@ -113,6 +114,7 @@ export const QUERY_DOMAINS = gql`
       datasets {
         id
         label
+        isLongitudinal
       }
       variables {
         id
