@@ -3,7 +3,7 @@ import { Card } from 'react-bootstrap';
 import { RouteComponentProps, withRouter } from 'react-router-dom';
 import { APICore, APIExperiment, APIModel } from '../API';
 import { VariableEntity } from '../API/Core';
-import { experimentUtils } from '../API/GraphQL/operations/utilities';
+import { localMutations } from '../API/GraphQL/operations/mutations';
 import { useGetExperimentQuery } from '../API/GraphQL/queries.generated';
 import { Experiment } from '../API/GraphQL/types.generated';
 import FilterDisplay from '../UI/FilterDisplay';
@@ -30,7 +30,7 @@ const Container = ({ ...props }: Props): JSX.Element => {
   const { loading, data } = useGetExperimentQuery({
     variables: { id: uuid },
     onCompleted: data => {
-      experimentUtils.selectExperiment(data.experiment as Experiment);
+      localMutations.selectExperiment(data.experiment as Experiment);
     }
   });
 

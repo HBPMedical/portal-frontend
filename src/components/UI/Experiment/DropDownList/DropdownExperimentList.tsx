@@ -3,7 +3,7 @@ import relativeTime from 'dayjs/plugin/relativeTime';
 import React, { useEffect, useRef, useState } from 'react';
 import { Button, Form } from 'react-bootstrap';
 import styled from 'styled-components';
-import { experimentUtils } from '../../../API/GraphQL/operations/utilities';
+import { localMutations } from '../../../API/GraphQL/operations/mutations';
 import {
   useGetExperimentLazyQuery,
   useGetExperimentListLazyQuery
@@ -98,7 +98,7 @@ const DropdownExperimentList = ({
 
   const [getExperiment] = useGetExperimentLazyQuery({
     onCompleted: data => {
-      experimentUtils.selectExperiment(data.experiment as Experiment);
+      localMutations.selectExperiment(data.experiment as Experiment);
     }
   });
 
@@ -120,8 +120,8 @@ const DropdownExperimentList = ({
     if (!hasDetailedView) {
       if (experimentId && experimentId !== '')
         getExperiment({ variables: { id: experimentId } });
-      else if (experimentId === null)
-        experimentUtils.selectExperiment(undefined);
+      else if (experimentId === undefined)
+        localMutations.resetSelectedExperiment();
     }
     setIsOpen(false);
   };
