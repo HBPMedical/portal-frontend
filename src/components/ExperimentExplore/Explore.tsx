@@ -12,7 +12,6 @@ import {
 } from '../API/GraphQL/cache';
 import { localMutations } from '../API/GraphQL/operations/mutations';
 import { VarType } from '../API/GraphQL/operations/mutations/experiments/toggleVarsExperiment';
-import { useGetDomainListQuery } from '../API/GraphQL/queries.generated';
 import { D3Model, HierarchyCircularNode, ModelResponse } from '../API/Model';
 import { ONTOLOGY_URL } from '../constants';
 import AvailableAlgorithms from '../ExperimentCreate/AvailableAlgorithms';
@@ -101,7 +100,6 @@ export default (props: ExploreProps): JSX.Element => {
     layout,
     selectedNode,
     histograms,
-    d3Model,
     handleSelectNode,
     handleGoToAnalysis,
     zoom
@@ -110,7 +108,6 @@ export default (props: ExploreProps): JSX.Element => {
   const selectedExperiment = useReactiveVar(selectedExperimentVar);
   const draftExperiment = useReactiveVar(draftExperimentVar);
   const domain = useReactiveVar(selectedDomainVar);
-  const { data: dataDomains } = useGetDomainListQuery();
 
   const model = apiModel.state.model;
   const selectedPathology = domain?.id;

@@ -1,5 +1,5 @@
 import { useReactiveVar } from '@apollo/client';
-import React from 'react';
+import React, { useRef } from 'react';
 import { Card, Dropdown, DropdownButton } from 'react-bootstrap';
 import styled from 'styled-components';
 import { draftExperimentVar, selectedDomainVar } from '../API/GraphQL/cache';
@@ -7,7 +7,8 @@ import { localMutations } from '../API/GraphQL/operations/mutations';
 import { useGetDomainListQuery } from '../API/GraphQL/queries.generated';
 import DataSelect from '../UI/DataSelect';
 import Loader from '../UI/Loader';
-import { uppercase, HierarchyCircularNode } from '../utils';
+import Modal, { ModalComponentHandle } from '../UI/Modal';
+import { HierarchyCircularNode, uppercase } from '../utils';
 import Search from './D3Search';
 
 const DataSelectionBox = styled(Card.Title)`
@@ -19,7 +20,7 @@ const DataSelectionBox = styled(Card.Title)`
   background-color: #eee;
 `;
 
-const PathologiesBox = styled.div`
+const DomainsBox = styled.div`
   margin-top: 4px;
   font-size: 14px;
   flex: 0 1 1;
@@ -53,6 +54,7 @@ const DataSelection = ({
   handleChangeDataset?: (datasets: string[]) => void;
 }): JSX.Element => {
   const domain = useReactiveVar(selectedDomainVar);
+  const modalRef = useRef<ModalComponentHandle>(null);
   const { data, loading } = useGetDomainListQuery();
   const draftExp = useReactiveVar(draftExperimentVar);
 
@@ -72,52 +74,67 @@ const DataSelection = ({
     handleChangeDataset?.(draftExperimentVar().datasets);
   };
 
-  return (
-    <DataSelectionBox>
-      {loading && <Loader />}
-      {!loading && (
-        <>
-          <PathologiesBox>
-            {data?.domains && data?.domains.length > 1 && (
-              <DropdownButton
-                size="sm"
-                id="dropdown-pathology"
-                variant="light"
-                title={uppercase(draftExp?.domain) || 'Domains'}
-              >
-                {data.domains.map(d => (
-                  <Dropdown.Item
-                    onSelect={(): void => {
-                      handleChangeDomain(d.id);
-                    }}
-                    key={d.id}
-                    value={d.id}
-                  >
-                    {d.label}
-                  </Dropdown.Item>
-                ))}
-              </DropdownButton>
-            )}
-          </PathologiesBox>
+  const showDialogDomainChange = async (id: string): Promise<void> => {
+    if (!modalRef.current) return;
+    const reply = await modalRef.current.open(
+      'Change domain ?',
+      'Selecting a new domain will reset your selection'
+    );
 
-          <DatasetsBox>
-            <DataSelect
-              datasets={domain?.datasets ?? []}
-              handleSelectDataset={handleSelectDataset}
-              selectedDatasets={draftExp?.datasets}
-              isDropdown
-            ></DataSelect>
-          </DatasetsBox>
-          <SearchBox>
-            <Search
-              hierarchy={hierarchy}
-              zoom={zoom}
-              handleSelectNode={handleSelectNode}
-            />
-          </SearchBox>
-        </>
-      )}
-    </DataSelectionBox>
+    if (reply) {
+      handleChangeDomain(id);
+    }
+  };
+
+  return (
+    <>
+      <Modal ref={modalRef} />
+      <DataSelectionBox>
+        {loading && <Loader />}
+        {!loading && (
+          <>
+            <DomainsBox>
+              {data?.domains && data?.domains.length > 1 && (
+                <DropdownButton
+                  size="sm"
+                  id="dropdown-pathology"
+                  variant="light"
+                  title={uppercase(draftExp?.domain) || 'Domains'}
+                >
+                  {data.domains.map(d => (
+                    <Dropdown.Item
+                      onSelect={(): void => {
+                        showDialogDomainChange(d.id);
+                      }}
+                      key={d.id}
+                      value={d.id}
+                    >
+                      {d.label}
+                    </Dropdown.Item>
+                  ))}
+                </DropdownButton>
+              )}
+            </DomainsBox>
+
+            <DatasetsBox>
+              <DataSelect
+                datasets={domain?.datasets ?? []}
+                handleSelectDataset={handleSelectDataset}
+                selectedDatasets={draftExp?.datasets}
+                isDropdown
+              ></DataSelect>
+            </DatasetsBox>
+            <SearchBox>
+              <Search
+                hierarchy={hierarchy}
+                zoom={zoom}
+                handleSelectNode={handleSelectNode}
+              />
+            </SearchBox>
+          </>
+        )}
+      </DataSelectionBox>
+    </>
   );
 };
 

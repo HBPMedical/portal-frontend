@@ -66,10 +66,6 @@ export default ({
   // D3Model is used to expose D3 data and interact with the D3 Layout.
   const [d3Layout, setD3Layout] = useState<HierarchyCircularNode>();
   const [, setFormulaString] = useState<string>('');
-  const [showPathologySwitchWarning, setShowPathologySwitchWarning] = useState(
-    false
-  );
-  const [nextPathologyCode, setNextPathologyCode] = useState(''); // TODO: maybe there is a better way... like promise.then() ?
   const { history } = props;
   const [selectedGroupVars, setSelectedGroupVars] = useState<GroupVars[]>([]);
 
@@ -77,9 +73,9 @@ export default ({
     if (!draftExperiment) return;
 
     const groupVars = [
+      ['Filters', draftExperiment.filterVariables, 'slategrey'],
       ['Variables', draftExperiment.variables, '#5cb85c'],
-      ['Covariates', draftExperiment.coVariables, '#f0ad4e'],
-      ['Filters', draftExperiment.filterVariables, 'slategrey']
+      ['Covariates', draftExperiment.coVariables, '#f0ad4e']
     ]
       .filter(item => item[1] && item[1].length)
       .map(item => ({
@@ -148,11 +144,6 @@ export default ({
     apiModel.setModel(nextModel);
   };
 
-  const handleSelectPathology = (code: string): void => {
-    setNextPathologyCode(code);
-    setShowPathologySwitchWarning(true);
-  };
-
   const handleGoToAnalysis = async (): Promise<void> => {
     history.push(`/analysis`);
   };
@@ -165,7 +156,6 @@ export default ({
     handleGoToAnalysis,
     handleSelectModel,
     handleSelectNode: setSelectedNode,
-    handleSelectPathology,
     histograms: apiMining.state.histograms,
     selectedNode,
     setFormulaString
@@ -184,6 +174,7 @@ export default ({
           />
         </AlertBox>
       )}
+
       {d3Layout && (
         <CirclePack
           layout={d3Layout}

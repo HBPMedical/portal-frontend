@@ -5,7 +5,6 @@ import { APICore, APIExperiment, APIMining, APIModel } from '../API';
 import { zoomNodeVar } from '../API/GraphQL/cache';
 import { D3Model, HierarchyCircularNode, ModelResponse } from '../API/Model';
 import './CirclePack.css';
-import { ModelType } from './Container';
 import Explore from './Explore';
 
 const diameter = 800;
@@ -31,7 +30,6 @@ export interface Props {
   layout: HierarchyCircularNode;
   histograms?: any;
   d3Model: D3Model;
-  handleSelectPathology: (code: string) => void;
   handleSelectNode: (node: HierarchyCircularNode) => void;
   handleSelectModel: (d3Model?: ModelResponse) => void;
   handleGoToAnalysis: Function;
