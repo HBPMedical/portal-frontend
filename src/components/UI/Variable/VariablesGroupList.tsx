@@ -12,6 +12,11 @@ const ListGroupVariables = styled(ListGroup)`
   -webkit-overflow-scrolling: touch;
 `;
 
+const ButtonList = styled(Button)`
+  text-align: left;
+  text-decoration: none;
+`;
+
 export default ({
   handleOnItemClick,
   handleOnDeleteItem,
@@ -30,14 +35,14 @@ export default ({
         >
           <div className="d-flex flex-column">
             <div>
-              <Button
+              <ButtonList
                 onClick={(): void => handleOnItemClick(v.id)}
                 variant="link"
                 size="sm"
-                className="fw-bold px-0 py-0 text-left"
+                className="fw-bold px-0 py-0"
               >
                 {v.label ?? v.id}
-              </Button>
+              </ButtonList>
             </div>
             {v.type && (
               <small className="text-muted">
