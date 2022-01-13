@@ -33,7 +33,6 @@ export interface Props {
   handleSelectNode: (node: HierarchyCircularNode) => void;
   handleSelectModel: (d3Model?: ModelResponse) => void;
   handleGoToAnalysis: Function;
-  setFormulaString: (f: string) => void;
   groupVars: GroupVars[];
 }
 

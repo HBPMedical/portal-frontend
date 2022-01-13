@@ -65,7 +65,6 @@ export default ({
 
   // D3Model is used to expose D3 data and interact with the D3 Layout.
   const [d3Layout, setD3Layout] = useState<HierarchyCircularNode>();
-  const [, setFormulaString] = useState<string>('');
   const { history } = props;
   const [selectedGroupVars, setSelectedGroupVars] = useState<GroupVars[]>([]);
 
@@ -157,8 +156,7 @@ export default ({
     handleSelectModel,
     handleSelectNode: setSelectedNode,
     histograms: apiMining.state.histograms,
-    selectedNode,
-    setFormulaString
+    selectedNode
   };
 
   const d3Model = apiModel.state.internalD3Model;
