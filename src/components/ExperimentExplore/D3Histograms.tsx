@@ -1,9 +1,11 @@
+import { useReactiveVar } from '@apollo/client';
 import * as d3 from 'd3';
 import React, { useEffect, useRef, useState } from 'react';
 import { Button, Dropdown, DropdownButton, Tab, Tabs } from 'react-bootstrap';
 import styled from 'styled-components';
 import { APIMining } from '../API';
 import { VariableEntity } from '../API/Core';
+import { draftExperimentVar } from '../API/GraphQL/cache';
 import { HistogramVariable } from '../API/Mining';
 import { HierarchyCircularNode, ModelResponse } from '../API/Model';
 import Loading from '../UI/Loader';
@@ -111,6 +113,7 @@ export default (props: Props): JSX.Element => {
   const divRef = useRef(null);
   const [choosenVariables, setChoosenVariables] = useState<HistogramVariable>();
   const [selectedTab, setSelectedTab] = useState(0);
+  const draftExperiment = useReactiveVar(draftExperimentVar);
   const {
     apiMining,
     handleSelectedNode,
@@ -122,7 +125,7 @@ export default (props: Props): JSX.Element => {
   } = props;
 
   useEffect(() => {
-    const pathology = model?.query?.pathology;
+    const pathology = draftExperiment.domain;
     if (pathology) {
       const choosenHistogramVariablesByPathology = apiMining.groupingForPathology(
         pathology
@@ -132,7 +135,7 @@ export default (props: Props): JSX.Element => {
         setChoosenVariables(choosenHistogramVariablesByPathology);
       }
     }
-  }, [apiMining, model]);
+  }, [apiMining, draftExperiment.domain, model]);
 
   const handleChooseVariable = (
     index: number,
@@ -142,7 +145,7 @@ export default (props: Props): JSX.Element => {
       ? { ...choosenVariables, [index]: variable }
       : { [index]: variable };
     setChoosenVariables(nextChoosenVariables);
-    const pathology = model?.query?.pathology;
+    const pathology = draftExperiment.domain;
     if (pathology && choosenVariables) {
       apiMining.setGroupingForPathology(pathology, nextChoosenVariables);
     }

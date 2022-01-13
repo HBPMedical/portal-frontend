@@ -136,7 +136,7 @@ class Mining extends Container<MiningState> {
     pathology
   }: {
     y: NodeData;
-    datasets: VariableEntity[];
+    datasets: string[];
     pathology: string;
   }): Promise<void> => {
     if (datasets.length === 0) {
@@ -161,7 +161,7 @@ class Mining extends Container<MiningState> {
       {
         name: 'dataset',
         label: 'dataset',
-        value: datasets.map(d => d.code).toString()
+        value: datasets.toString()
       },
       {
         name: 'y',

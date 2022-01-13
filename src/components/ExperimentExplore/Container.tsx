@@ -118,25 +118,20 @@ export default ({
   }, [apiUser.state, history]);
 
   // Load Histograms for selected variable
-  const trainingDatasets =
-    apiModel.state.model && apiModel.state.model.query.trainingDatasets;
   useEffect(() => {
-    const model = apiModel.state.model;
-    const datasets =
-      (model && model.query && model.query.trainingDatasets) || [];
     if (selectedNode && selectedNode.data.isVariable) {
       apiMining.multipleHistograms({
-        datasets: datasets,
+        datasets: draftExperiment.datasets ?? [],
         y: selectedNode.data,
-        pathology: (model && model.query && model.query.pathology) || ''
+        pathology: draftExperiment.domain || ''
       });
     }
   }, [
     selectedNode,
     apiMining,
-    apiModel.state.model,
     apiMining.state.refetchAlgorithms,
-    trainingDatasets
+    draftExperiment.datasets,
+    draftExperiment.domain
   ]);
 
   const handleSelectModel = (nextModel?: ModelResponse): void => {
