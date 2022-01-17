@@ -1,18 +1,19 @@
-import React, { useState } from 'react';
+import { useReactiveVar } from '@apollo/client';
+import React, { useEffect, useState } from 'react';
 import { Button, Card } from 'react-bootstrap';
 import { RouteComponentProps } from 'react-router-dom';
 import Sidebar from 'react-sidebar';
 import { APICore, APIExperiment, APIModel } from '../API';
-import { VariableEntity } from '../API/Core';
+import { draftExperimentVar, selectedDomainVar } from '../API/GraphQL/cache';
 import { useCreateExperimentMutation } from '../API/GraphQL/queries.generated';
 import { ResultUnion } from '../API/GraphQL/types.generated';
+import { IFormula } from '../API/Model';
 import ResultDispatcher from '../ExperimentResult/ResultDispatcher';
 import Error from '../UI/Error';
 import Loader from '../UI/Loader';
 import ExperimentSidebar from './ExperimentSidebar';
-import Header from './Header';
 import Wrapper from './FilterFormulaWrapper';
-import { IFormula } from '../API/Model';
+import Header from './Header';
 
 interface Props extends RouteComponentProps {
   apiModel: APIModel;
@@ -26,7 +27,6 @@ const Container = ({
   apiExperiment,
   ...props
 }: Props): JSX.Element => {
-  const [shouldReload, setShouldReload] = useState(true);
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const [
     createTransientMutation,
@@ -36,37 +36,33 @@ const Container = ({
   const { history } = props;
   const model = apiModel.state.model;
   const query = model?.query;
-  const trainingDatasets = query?.trainingDatasets;
   const queryfilters = query?.filters;
   const pathology = query?.pathology || '';
   const datasets = apiCore.state.pathologiesDatasets[pathology];
   const results = data?.createExperiment.results as ResultUnion[];
+  const draftExperiment = useReactiveVar(draftExperimentVar);
+  const domain = useReactiveVar(selectedDomainVar);
 
-  React.useEffect(() => {
-    // if (!shouldReload) {
-    //   return;
-    // }
-
+  useEffect(() => {
     const query = apiModel?.state?.model?.query;
-    const datasets = query?.trainingDatasets;
+    const datasets = draftExperiment.datasets;
 
     if (datasets && query) {
       const formula = query?.formula;
 
       const variables = [
-        ...(query.variables?.map(variable => variable.code) ?? []),
-        ...(query.coVariables?.map(variable => variable.code) ?? []),
-        ...(query.groupings?.map(variable => variable.code) ?? [])
+        ...(draftExperiment.variables ?? []),
+        ...(draftExperiment.coVariables ?? [])
       ];
 
       createTransientMutation({
         variables: {
           data: {
             name: 'Descriptive analysis',
-            datasets: datasets.map(dataset => dataset.code),
+            datasets: datasets,
             variables,
-            domain: query.pathology ?? '',
-            filter: query.filters,
+            domain: draftExperiment.domain ?? '',
+            filter: draftExperiment.filter,
             algorithm: {
               id: 'DESCRIPTIVE_STATS',
               type: 'string'
@@ -76,16 +72,17 @@ const Container = ({
           }
         }
       });
-
-      setShouldReload(false);
     }
   }, [
     apiModel.state.model,
-    trainingDatasets,
     queryfilters,
-    shouldReload,
     createTransientMutation,
-    apiModel
+    apiModel,
+    draftExperiment.datasets,
+    draftExperiment.domain,
+    draftExperiment.filter,
+    draftExperiment.variables,
+    draftExperiment.coVariables
   ]);
 
   const handleCreateExperiment = async (): Promise<void> => {
@@ -103,52 +100,40 @@ const Container = ({
     const model = apiModel.state.model;
     if (model) {
       model.query.filters = (filters && JSON.stringify(filters)) || '';
-      setShouldReload(true);
       await apiModel.setModel(model);
     }
   };
 
   const handleUpdateFormula = async (formula?: IFormula): Promise<void> => {
-    const model = apiModel.state.model;
-    if (model) {
-      model.query.formula = formula;
-      setShouldReload(true);
+    if (draftExperiment) {
+      draftExperiment.formula = formula;
       await apiModel.setModel(model);
     }
   };
 
-  const makeFilters = ({
-    apiCore,
-    apiModel
-  }: {
-    apiCore: APICore;
-    apiModel: APIModel;
-  }): any => {
-    const query = apiModel.state.model && apiModel.state.model.query;
+  const makeFilters = ({ apiCore }: { apiCore: APICore }): any => {
     const variablesForPathology = apiCore.state.pathologiesVariables;
-    const pathology = query?.pathology;
+    const pathology = domain?.id;
     const variables =
       pathology && variablesForPathology && variablesForPathology[pathology];
 
     // FIXME: move to Filter, refactor in a pure way
     let fields: any[] = [];
     const buildFilter = (code: string) => {
-      if (!variables) {
+      if (!domain || !domain.variables) {
         return [];
       }
 
-      const originalVar = variables.find(
-        (variable: VariableEntity) => variable.code === code
-      );
+      const originalVar = domain.variables.find(v => v.id === code);
 
       if (!originalVar) {
         return [];
       }
 
       const output: any = {
-        id: code,
-        label: originalVar.label || originalVar.code,
-        name: code
+        id: originalVar.id,
+        label: originalVar.label || originalVar.id,
+        name: originalVar.id
       };
 
       if (originalVar && originalVar.enumerations) {
@@ -189,7 +174,7 @@ const Container = ({
       return output;
     };
 
-    const allVariables = query?.filterVariables?.map(f => f.code) || [];
+    const allVariables = draftExperiment.filterVariables || [];
 
     // add filter variables
     const extractVariablesFromFilter = (filter: any) =>
@@ -202,8 +187,8 @@ const Container = ({
         }
       });
 
-    if (query && query.filters) {
-      extractVariablesFromFilter(JSON.parse(query.filters));
+    if (draftExperiment && draftExperiment.filter) {
+      extractVariablesFromFilter(JSON.parse(draftExperiment.filter));
     }
 
     const allUniqVariables = Array.from(new Set(allVariables));
@@ -211,12 +196,16 @@ const Container = ({
       (variables &&
         [...allUniqVariables.map(buildFilter)].filter((f: any) => f.id)) ||
       [];
-    const filters = (query && query.filters && JSON.parse(query.filters)) || '';
+    const filters =
+      (draftExperiment &&
+        draftExperiment.filter &&
+        JSON.parse(draftExperiment.filter)) ||
+      '';
 
     return { query, filters, fields };
   };
 
-  const { fields, filters } = makeFilters({ apiCore, apiModel });
+  const { fields, filters } = makeFilters({ apiCore });
 
   return (
     <>

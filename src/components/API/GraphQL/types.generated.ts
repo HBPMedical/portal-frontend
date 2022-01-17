@@ -95,6 +95,7 @@ export type Experiment = {
   filter?: Maybe<Scalars['String']>;
   filterVariables?: Maybe<Array<Scalars['String']>>;
   finishedAt?: Maybe<Scalars['Float']>;
+  formula?: Maybe<Formula>;
   id: Scalars['String'];
   name: Scalars['String'];
   results?: Maybe<Array<ResultUnion>>;
@@ -129,8 +130,14 @@ export type ExtraLineInfo = {
   values: Array<Scalars['String']>;
 };
 
+export type Formula = {
+  __typename?: 'Formula';
+  interactions?: Maybe<Array<Array<Scalars['String']>>>;
+  transformations?: Maybe<Array<Transformation>>;
+};
+
 export type FormulaTransformation = {
-  name: Scalars['String'];
+  id: Scalars['String'];
   operation: Scalars['String'];
 };
 
@@ -240,6 +247,7 @@ export type PartialExperiment = {
   filter?: Maybe<Scalars['String']>;
   filterVariables?: Maybe<Array<Scalars['String']>>;
   finishedAt?: Maybe<Scalars['Float']>;
+  formula?: Maybe<Formula>;
   id?: Maybe<Scalars['String']>;
   name?: Maybe<Scalars['String']>;
   results?: Maybe<Array<ResultUnion>>;
@@ -286,6 +294,14 @@ export type TableResult = {
   data: Array<Array<Scalars['String']>>;
   headers: Array<Header>;
   name: Scalars['String'];
+};
+
+export type Transformation = {
+  __typename?: 'Transformation';
+  /** Variable's id on which to apply the transformation */
+  id: Scalars['String'];
+  /** Transformation to apply */
+  operation: Scalars['String'];
 };
 
 export type Variable = {
