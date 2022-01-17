@@ -151,7 +151,7 @@ class Model extends React.Component<Props> {
         {transformations?.map(t => (
           <p key={t.operation}>
             <em>{t.operation}: </em>
-            {t.name}
+            {t.id}
           </p>
         )) || <></>}
       </>

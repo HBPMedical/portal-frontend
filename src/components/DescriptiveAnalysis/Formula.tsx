@@ -9,7 +9,7 @@ type Modify<T, R> = Omit<T, keyof R> & R;
 type SelectedTransformation = Modify<
   FormulaTransformation,
   {
-    name: string | undefined;
+    id: string | undefined;
     operation: string | undefined;
   }
 >;
@@ -74,7 +74,7 @@ const Formula = React.memo(
     const handleSetTransform = (): void => {
       const formula = query?.formula;
       const transformations = formula?.transformations || null;
-      if (selectedTransform?.name && selectedTransform?.operation) {
+      if (selectedTransform?.id && selectedTransform?.operation) {
         const nextFormula = {
           ...formula,
           transformations: [
@@ -91,7 +91,7 @@ const Formula = React.memo(
       const formula = query?.formula;
       const previousTransformations = formula?.transformations;
       const transformations = previousTransformations?.filter(
-        t => t.name !== transformation?.name
+        t => t.id !== transformation?.id
       );
       const nextFormula = {
         ...formula,
@@ -134,7 +134,7 @@ const Formula = React.memo(
     }: {
       transformation?: FormulaTransformation;
     }) => {
-      const name = transformation?.name || selectedTransform?.name;
+      const name = transformation?.id || selectedTransform?.id;
       const operation =
         transformation?.operation || selectedTransform?.operation;
 
@@ -144,13 +144,13 @@ const Formula = React.memo(
             <Form.Label style={{ display: 'none' }}>Variables</Form.Label>
             <Form.Control
               as="select"
-              disabled={transformation?.name !== undefined}
+              disabled={transformation?.id !== undefined}
               value={name}
               onChange={(event: React.FormEvent<any>): void => {
                 event.preventDefault();
                 const nextName = (event.target as HTMLInputElement).value;
                 setSelectedTransform(prevSelectedTransform => ({
-                  name: nextName,
+                  id: nextName,
                   operation: prevSelectedTransform?.operation
                 }));
               }}
@@ -161,7 +161,7 @@ const Formula = React.memo(
                   key={`variable-${v.code}`}
                   value={v.code}
                   disabled={formula?.transformations
-                    ?.map(t => t.name)
+                    ?.map(t => t.id)
                     .includes(v.code)}
                 >
                   {v.label}
@@ -179,7 +179,7 @@ const Formula = React.memo(
                 event.preventDefault();
                 const t = (event.target as HTMLInputElement).value;
                 setSelectedTransform(prevSelectedTransform => ({
-                  name: prevSelectedTransform?.name,
+                  id: prevSelectedTransform?.id,
                   operation: t
                 }));
               }}
@@ -198,7 +198,7 @@ const Formula = React.memo(
           </Form.Group>
 
           <Form.Group as={Col}>
-            {selectedTransform?.name &&
+            {selectedTransform?.id &&
               selectedTransform?.operation &&
               !transformation && (
                 <Button variant="info" onClick={() => handleSetTransform()}>
@@ -320,7 +320,7 @@ const Formula = React.memo(
               <TransformRow
                 transformation={transformation}
                 // eslint-disable-next-line
-                key={`transformations-row-${transformation.name}`}
+                key={`transformations-row-${transformation.id}`}
               />
             ))}
 

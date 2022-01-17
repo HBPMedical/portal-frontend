@@ -492,7 +492,7 @@ class Experiment extends Container<State> {
               single:
                 data?.transformations?.map(t => ({
                   // eslint-disable-next-line @typescript-eslint/camelcase
-                  var_name: t.name,
+                  var_name: t.id,
                   // eslint-disable-next-line @typescript-eslint/camelcase
                   unary_operation: t.operation
                 })) ?? [],
