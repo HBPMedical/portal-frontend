@@ -12,6 +12,8 @@ export default function createSelectDomain(
    * @param id id of the domain
    */
   return (id: string): void => {
+    if (selectedDomainVar() && selectedDomainVar()?.id === id) return; // the domain is already selected
+
     const domain = domainsVar().find(d => d.id === id);
     if (!domain) throw new Error('The selected domain cannot be found !');
 
