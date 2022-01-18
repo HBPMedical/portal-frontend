@@ -167,12 +167,7 @@ const App = ({
                   path={['/review', '/analysis']}
                   // tslint:disable-next-line jsx-no-lambda
                   render={(props): JSX.Element => (
-                    <DescriptiveAnalysis
-                      apiModel={apiModel}
-                      apiCore={apiCore}
-                      apiExperiment={apiExperiment}
-                      {...props}
-                    />
+                    <DescriptiveAnalysis apiCore={apiCore} {...props} />
                   )}
                 />
                 <Route

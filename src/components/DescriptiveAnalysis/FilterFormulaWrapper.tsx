@@ -1,25 +1,24 @@
-import React, { useMemo } from 'react';
+import React, { useCallback, useMemo } from 'react';
 import { Card, Container, Navbar } from 'react-bootstrap';
 import { APICore } from '../API';
-import { VariableEntity } from '../API/Core';
-import { IFormula, Query } from '../API/Model';
+import { localMutations } from '../API/GraphQL/operations/mutations';
+import { Domain, Experiment, Variable } from '../API/GraphQL/types.generated';
+import { IFormula } from '../API/Model';
 import Filter from './Filter';
 import Formula from './Formula';
 
 interface IFilters {
   fields: any;
   filters: any;
-  handleUpdateFilter: any;
 }
 
 interface IOptions {
-  query?: Query;
-  handleUpdateFormula: (formula?: IFormula) => void;
-  lookup: (code: string, pathologyCode: string | undefined) => VariableEntity;
+  domain: Domain;
   apiCore: APICore;
+  experiment: Experiment;
 }
 
-const NavBar = () => (
+const NavBar = (): JSX.Element => (
   <Navbar bg="info" variant="dark">
     <Container>
       <Navbar.Brand>Filters and Formula</Navbar.Brand>
@@ -27,19 +26,35 @@ const NavBar = () => (
   </Navbar>
 );
 
+const handleUpdateFilter = (data: string): void => {
+  const filter = (data && JSON.stringify(data)) || '';
+  localMutations.updateDraftExperiment({
+    filter
+  });
+};
+
+const handleUpdateFormula = (formula?: IFormula): void => {
+  localMutations.updateDraftExperiment({
+    formula
+  });
+};
+
 const Options = ({
   fields,
   filters,
-  handleUpdateFilter,
-  handleUpdateFormula,
-  query,
-  lookup,
-  apiCore
-}: IFilters & IOptions) => {
-  const handleUpdateFormulaCallback = React.useCallback(handleUpdateFormula, [
-    query?.formula // hacky way to force re-render on formula changes
-  ]);
+  apiCore,
+  experiment,
+  domain
+}: IFilters & IOptions): JSX.Element => {
+  const lookup = useCallback(
+    (id: string): Variable | undefined =>
+      domain.variables.find(v => v.id === id),
+    [domain]
+  );
 
+  const handleUpdateFormulaCallback = React.useCallback(handleUpdateFormula, [
+    experiment.formula // hacky way to force re-render on formula changes
+  ]);
   // Avoid re-rendering of formula and losing focus on select input
   const memoizedAlgorithms = useMemo(
     () =>
@@ -64,7 +79,7 @@ const Options = ({
       <Card>
         <Card.Body>
           <Formula
-            query={query}
+            experiment={experiment}
             lookup={lookup}
             handleUpdateFormula={handleUpdateFormulaCallback}
             availableAlgorithms={memoizedAlgorithms}

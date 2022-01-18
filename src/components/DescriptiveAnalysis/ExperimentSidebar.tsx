@@ -6,7 +6,7 @@ import LargeDatasetSelect from '../UI/LargeDatasetSelect';
 import Model from '../UI/Model';
 
 interface Props {
-  domain: Domain;
+  domain?: Domain;
   selectedExperiment: Experiment | undefined;
   draftExperiment: Experiment;
   handleSelectDataset: (id: string) => void;
@@ -39,7 +39,7 @@ const ExperimentSidebar = ({
         {draftExperiment && (
           <section>
             <LargeDatasetSelect
-              datasets={domain.datasets}
+              datasets={domain?.datasets}
               selectedDatasets={draftExperiment.datasets}
               handleSelectDataset={handleSelectDataset}
             />
