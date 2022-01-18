@@ -78,16 +78,16 @@ class Container extends React.Component<Props, State> {
 
                 {datasets && (
                   <section>
-                    <LargeDatasetSelect
+                    {/*<LargeDatasetSelect
                       datasets={datasets}
                       handleSelectDataset={apiModel.selectDataset}
                       selectedDatasets={query?.trainingDatasets || []}
-                    ></LargeDatasetSelect>
+                    ></LargeDatasetSelect>*/}
                   </section>
                 )}
 
                 <section>
-                  <Model model={apiModel.state.model} lookup={apiCore.lookup} />
+                  {/*<Model model={apiModel.state.model} lookup={apiCore.lookup} />*/}
                 </section>
               </Card.Body>
             </Card>
