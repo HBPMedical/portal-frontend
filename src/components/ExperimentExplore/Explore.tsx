@@ -129,7 +129,6 @@ export default (props: ExploreProps): JSX.Element => {
           <Card>
             <DataSelection
               zoom={zoom}
-              handleChangeDomain={(d): void => localMutations.selectDomain(d)}
               hierarchy={layout}
               handleSelectNode={handleSelectNode}
             ></DataSelection>

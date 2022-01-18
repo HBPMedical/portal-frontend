@@ -47,7 +47,7 @@ const DataSelection = ({
   handleSelectNode,
   handleChangeDataset
 }: {
-  handleChangeDomain: (domain: string) => void;
+  handleChangeDomain?: (domain: string) => void;
   hierarchy: HierarchyCircularNode;
   zoom: (circleNode: HierarchyCircularNode) => void;
   handleSelectNode: (node: HierarchyCircularNode) => void;
@@ -82,7 +82,8 @@ const DataSelection = ({
     );
 
     if (reply) {
-      handleChangeDomain(id);
+      localMutations.selectDomain(id);
+      handleChangeDomain?.(id);
     }
   };
 
