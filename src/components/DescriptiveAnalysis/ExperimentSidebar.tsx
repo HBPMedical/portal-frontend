@@ -1,30 +1,23 @@
-import { useReactiveVar } from '@apollo/client';
 import React from 'react';
 import { Card } from 'react-bootstrap';
-import { APICore, APIExperiment, APIModel } from '../API';
-import { VariableEntity } from '../API/Core';
-import { selectedExperimentVar } from '../API/GraphQL/cache';
-import { ModelResponse } from '../API/Model';
+import { Domain, Experiment } from '../API/GraphQL/types.generated';
 import DropdownExperimentList from '../UI/Experiment/DropDownList/DropdownExperimentList';
 import LargeDatasetSelect from '../UI/LargeDatasetSelect';
 import Model from '../UI/Model';
 
 interface Props {
-  apiModel: APIModel;
-  apiCore: APICore;
-  apiExperiment: APIExperiment;
-  model?: ModelResponse;
-  datasets: VariableEntity[];
+  domain: Domain;
+  selectedExperiment: Experiment | undefined;
+  draftExperiment: Experiment;
+  handleSelectDataset: (id: string) => void;
 }
 
 const ExperimentSidebar = ({
-  apiModel,
-  apiCore,
-  model,
-  datasets
+  domain,
+  selectedExperiment,
+  draftExperiment,
+  handleSelectDataset
 }: Props): JSX.Element => {
-  const selectedExperiment = useReactiveVar(selectedExperimentVar);
-
   return (
     <Card className="datasets">
       <Card.Body>
@@ -38,23 +31,22 @@ const ExperimentSidebar = ({
             }
           />
         </section>
-        {model?.query?.pathology && (
+        {domain && (
           <section>
-            <h4>Pathology</h4>
-            <p>{model?.query?.pathology}</p>
+            <h4>{domain.label ?? domain.id}</h4>
           </section>
         )}
-        {model?.query?.trainingDatasets && (
+        {draftExperiment && (
           <section>
             <LargeDatasetSelect
-              datasets={datasets}
-              handleSelectDataset={apiModel.selectDataset}
-              selectedDatasets={model?.query?.trainingDatasets || []}
-            ></LargeDatasetSelect>
+              datasets={domain.datasets}
+              selectedDatasets={draftExperiment.datasets}
+              handleSelectDataset={handleSelectDataset}
+            />
           </section>
         )}
         <section>
-          <Model model={model} lookup={apiCore.lookup} />
+          {domain && <Model experiment={draftExperiment} domain={domain} />}
         </section>
       </Card.Body>
     </Card>
