@@ -185,11 +185,12 @@ const App = ({
                   exact={true}
                   path="/experiment"
                   // tslint:disable-next-line jsx-no-lambda
-                  render={(): JSX.Element => (
+                  render={(props): JSX.Element => (
                     <ExperimentCreate
                       apiExperiment={apiExperiment}
                       apiCore={apiCore}
                       apiModel={apiModel}
+                      {...props}
                     />
                   )}
                 />
