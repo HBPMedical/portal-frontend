@@ -1,10 +1,14 @@
 import { useReactiveVar } from '@apollo/client';
 import React, { useState } from 'react';
 import { Card, Tab, Tabs } from 'react-bootstrap';
-import { RouteComponentProps, withRouter } from 'react-router-dom';
+import { RouteComponentProps } from 'react-router-dom';
 import styled from 'styled-components';
 import { APICore, APIExperiment, APIModel } from '../API';
-import { Algorithm, AlgorithmParameter } from '../API/Core';
+import {
+  Algorithm,
+  AlgorithmParameter,
+  AlgorithmParameterRequest
+} from '../API/Core';
 import { Exareme } from '../API/Exareme';
 import { IExperimentPrototype } from '../API/Experiment';
 import {
@@ -13,6 +17,8 @@ import {
   selectedExperimentVar
 } from '../API/GraphQL/cache';
 import { localMutations } from '../API/GraphQL/operations/mutations';
+import { useCreateExperimentMutation } from '../API/GraphQL/queries.generated';
+import { Variable } from '../API/GraphQL/types.generated';
 import { Alert, IAlert } from '../UI/Alert';
 import DropdownExperimentList from '../UI/Experiment/DropDownList/DropdownExperimentList';
 import LargeDatasetSelect from '../UI/LargeDatasetSelect';
@@ -33,6 +39,11 @@ interface Props extends RouteComponentProps {
   apiModel: APIModel;
 }
 
+interface Testing {
+  name: string;
+  value: string;
+}
+
 export const ExperimentCreateContainer = ({
   apiCore,
   apiModel,
@@ -45,10 +56,29 @@ export const ExperimentCreateContainer = ({
   const selectedExperiment = useReactiveVar(selectedExperimentVar);
   const domain = useReactiveVar(selectedDomainVar);
   const experiment = useReactiveVar(draftExperimentVar);
+  const [createExperiment] = useCreateExperimentMutation({
+    onCompleted: data => {
+      const id = data.createExperiment.id;
+      if (id) {
+        history.push(`/experiment/${id}`);
+      }
+    },
+    onError: data => {
+      setAlert({
+        message: data.message,
+        title: 'Error',
+        styled: 'error'
+      });
+    }
+  });
 
   const handleSelectAlgorithm = (algo: Algorithm): void => {
     setAlgorithm(algo);
     setParameters(algo.parameters as AlgorithmParameter[]);
+  };
+
+  const lookup = (id: string): Variable | undefined => {
+    return domain?.variables.find(v => v.id === id);
   };
 
   const handleChangeParameters = (parameters: AlgorithmParameter[]): void => {
@@ -59,9 +89,41 @@ export const ExperimentCreateContainer = ({
     history.push(`/analysis`);
   };
 
-  const handleSaveAndRunExperiment = async (
-    experimentName: string
-  ): Promise<void> => {
+  const handleRunExperiment = (): void => {
+    if (!algorithm || !parameters) {
+      setAlert({ message: 'Select an algorithm' });
+      return;
+    }
+
+    createExperiment({
+      variables: {
+        isTransient: false,
+        data: {
+          name: experiment.name,
+          datasets: experiment.datasets,
+          domain: experiment.domain,
+          variables: experiment.variables,
+          coVariables: experiment.coVariables,
+          filter: experiment.filter,
+          interactions: experiment.formula?.interactions,
+          transformations: experiment.formula?.transformations,
+          algorithm: {
+            id: algorithm.name,
+            type: algorithm.type,
+            parameters:
+              (algorithm.parameters as AlgorithmParameterRequest[])
+                ?.filter(p => !!p.value)
+                .map(p => ({
+                  id: p.name,
+                  value: p.value
+                })) ?? []
+          }
+        }
+      }
+    });
+  };
+
+  const handleSaveAndRunExperiment = async (name: string): Promise<void> => {
     const model = apiModel.state.model;
     if (!model) {
       setAlert({
@@ -89,7 +151,7 @@ export const ExperimentCreateContainer = ({
         parameters: nextParameters,
         type: algorithm.type
       },
-      name: experimentName
+      name
     };
 
     const experiment = Exareme.handleParametersExceptions(tmpexperiment);
@@ -112,10 +174,13 @@ export const ExperimentCreateContainer = ({
     <div className="Experiment">
       <div className="header">
         <ExperimentCreateHeader
-          model={apiModel.state.model}
+          experiment={experiment}
           method={algorithm}
           handleGoBackToReview={handleGoBackToReview}
-          handleSaveAndRunExperiment={handleSaveAndRunExperiment}
+          handleRunExperiment={handleRunExperiment}
+          handleNameChange={(name: string): void =>
+            localMutations.updateDraftExperiment({ name })
+          }
         />
       </div>
       <div className="content">
@@ -174,11 +239,11 @@ export const ExperimentCreateContainer = ({
                 >
                   <Tab eventKey={'1'} title="Algorithm">
                     <Parameters
+                      experiment={experiment}
                       algorithm={algorithm}
                       parameters={parameters}
                       handleChangeParameters={handleChangeParameters}
-                      query={apiModel.state.model && apiModel.state.model.query}
-                      apiCore={apiCore}
+                      lookup={lookup}
                     />
                   </Tab>
                   <Tab eventKey={'2'} title="About running experiments">
@@ -195,9 +260,9 @@ export const ExperimentCreateContainer = ({
               <h4>Available Algorithms</h4>
               <AvailableAlgorithms
                 algorithms={apiCore.state.algorithms}
-                lookup={apiCore.lookup}
+                lookup={lookup}
                 handleSelectMethod={handleSelectAlgorithm}
-                apiModel={apiModel}
+                experiment={experiment}
               />
             </Card.Body>
           </Card>

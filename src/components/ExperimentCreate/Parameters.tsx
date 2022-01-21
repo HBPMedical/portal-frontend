@@ -1,11 +1,9 @@
-import React, { useCallback, useEffect, useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { Form } from 'react-bootstrap';
 import Select from 'react-select';
 import styled from 'styled-components';
-import { APICore } from '../API';
-import { Algorithm, AlgorithmParameter, VariableEntity } from '../API/Core';
+import { Algorithm, AlgorithmParameter } from '../API/Core';
 import { Experiment, Variable } from '../API/GraphQL/types.generated';
-import { Query } from '../API/Model';
 import CategoryChooser from './CategoryValuesChooser';
 import LogisticCategory from './LogisticCategory';
 
@@ -37,16 +35,14 @@ const HelpBlock = styled.div`
 type LocalVar = { value: string; label: string }[] | undefined;
 
 interface Props {
-  apiCore: APICore;
   algorithm?: Algorithm;
   parameters?: AlgorithmParameter[];
-  experiment?: Experiment;
+  experiment: Experiment;
   handleChangeParameters: (parameters: AlgorithmParameter[]) => void;
   lookup: (id: string) => Variable | undefined;
 }
 
 const Parameters = ({
-  apiCore,
   algorithm,
   parameters,
   experiment,
@@ -236,26 +232,26 @@ const Parameters = ({
 
                     {parameter.label === 'referencevalues' && (
                       <CategoryChooser
-                        apiCore={apiCore}
-                        query={query}
+                        experiment={experiment}
                         parameterName={parameter.name}
                         required={parameter.valueNotBlank === 'true'}
                         handleChangeCategoryParameter={
                           handleChangeCategoryParameter
                         }
+                        lookup={lookup}
                       />
                     )}
 
                     {(parameter.name === 'negative_level' ||
                       parameter.name === 'positive_level') && (
                       <LogisticCategory
-                        apiCore={apiCore}
-                        query={query}
+                        experiment={experiment}
                         parameterName={parameter.name}
                         required={parameter.valueNotBlank === 'true'}
                         handleChangeCategoryParameter={
                           handleChangeCategoryParameter
                         }
+                        lookup={lookup}
                       />
                     )}
 
@@ -271,17 +267,13 @@ const Parameters = ({
                           handleChangeParameter(event, parameter.label)
                         }
                       >
-                        {apiCore
-                          .lookup(
-                            query?.variables?.find((v, i) => i === 0)?.code ||
-                              '',
-                            query?.pathology
-                          )
-                          ?.enumerations?.map((v: VariableEntity) => (
-                            <option key={v.code} value={v.code}>
-                              {v.label}
-                            </option>
-                          ))}
+                        {lookup(
+                          experiment?.variables[0] || ''
+                        )?.enumerations?.map(v => (
+                          <option key={v.id} value={v.id}>
+                            {v.label}
+                          </option>
+                        ))}
                       </Form.Control>
                     )}
 

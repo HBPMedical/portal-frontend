@@ -2,18 +2,17 @@ import React, { useCallback, useEffect, useState } from 'react';
 import { Form } from 'react-bootstrap';
 import styled from 'styled-components';
 
-import { APICore } from '../API';
-import { Variable, VariableEntity } from '../API/Core';
-import { Query } from '../API/Model';
+import { VariableEntity } from '../API/Core';
+import { Experiment, Variable } from '../API/GraphQL/types.generated';
 
 type LocalVar = VariableEntity[] | undefined;
 
 interface Props {
-  apiCore: APICore;
   parameterName: string;
-  query?: Query;
   required?: boolean;
-  handleChangeCategoryParameter: (code: string, value: string) => void;
+  experiment: Experiment;
+  handleChangeCategoryParameter: (id: string, value: string) => void;
+  lookup: (id: string) => Variable | undefined;
 }
 
 const ControlBox = styled.div`
@@ -21,36 +20,37 @@ const ControlBox = styled.div`
 `;
 
 export default ({
-  apiCore,
-  query,
   parameterName,
+  experiment,
   required = false,
-  handleChangeCategoryParameter
+  handleChangeCategoryParameter,
+  lookup
 }: Props): JSX.Element => {
-  const [categories, setCategories] = useState<LocalVar>();
-  const lookupCallback = useCallback(apiCore.lookup, []);
+  const [categories, setCategories] = useState<Variable[]>();
+  const lookupCallback = useCallback(lookup, []);
   const handleChangeCategoryParameterCallback = useCallback(
     handleChangeCategoryParameter,
     []
   );
 
   useEffect(() => {
-    const categoricalVariables: VariableEntity[] | undefined = query && [
-      ...(query.variables || [])
+    const categoricalVariables: string[] | undefined = [
+      ...(experiment.variables || [])
     ];
     const vars =
       categoricalVariables &&
       categoricalVariables
-        .map(v => lookupCallback(v.code, query?.pathology))
-        .filter(v => v.type === 'nominal');
-    setCategories(vars);
+        .map(v => lookupCallback(v))
+        .filter(v => v && v.type === 'nominal');
+
+    setCategories(vars as Variable[]);
 
     handleChangeCategoryParameterCallback(parameterName, '');
   }, [
-    query,
     lookupCallback,
     handleChangeCategoryParameterCallback,
-    parameterName
+    parameterName,
+    experiment.variables
   ]);
 
   const handleChangeValue = (
@@ -68,15 +68,15 @@ export default ({
       {!categories && <p>Please, select a categorical variable</p>}
       {categories &&
         categories.map(category => (
-          <ControlBox key={category.code}>
+          <ControlBox key={category.id}>
             <Form.Label>{category.label}</Form.Label>
             <Form.Control
               as={'select'}
               placeholder="select"
-              id={`parameter-category-chooser-${category.code}`}
+              id={`parameter-category-chooser-${category.id}`}
               required={required}
               onChange={(event): void => {
-                handleChangeValue(event, category.code);
+                handleChangeValue(event, category.id);
               }}
             >
               <option value={'select'}>
@@ -84,8 +84,8 @@ export default ({
               </option>
               {category &&
                 category.enumerations &&
-                category.enumerations.map((v: Variable) => (
-                  <option key={v.code} value={v.code}>
+                category.enumerations.map(v => (
+                  <option key={v.id} value={v.id}>
                     {v.label}
                   </option>
                 ))}
