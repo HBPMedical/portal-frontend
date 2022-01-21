@@ -31,7 +31,7 @@ export type AlgorithmInput = {
 export type AlgorithmParamInput = {
   id: Scalars['String'];
   type?: Maybe<ParamType>;
-  value: Array<Scalars['String']>;
+  value: Scalars['String'];
 };
 
 export type AlgorithmParameter = {
@@ -45,7 +45,7 @@ export type AlgorithmParameter = {
   max?: Maybe<Scalars['String']>;
   min?: Maybe<Scalars['String']>;
   type?: Maybe<Scalars['String']>;
-  value?: Maybe<Array<Scalars['String']>>;
+  value?: Maybe<Scalars['String']>;
 };
 
 export type Author = {
