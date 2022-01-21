@@ -12,6 +12,7 @@ import {
 } from '../API/GraphQL/cache';
 import { localMutations } from '../API/GraphQL/operations/mutations';
 import { VarType } from '../API/GraphQL/operations/mutations/experiments/toggleVarsExperiment';
+import { Variable } from '../API/GraphQL/types.generated';
 import { D3Model, HierarchyCircularNode, ModelResponse } from '../API/Model';
 import { ONTOLOGY_URL } from '../constants';
 import AvailableAlgorithms from '../ExperimentCreate/AvailableAlgorithms';
@@ -121,6 +122,10 @@ export default (props: ExploreProps): JSX.Element => {
   const independantsVariables =
     variablesForPathology &&
     variablesForPathology.filter((v: any) => v.type === 'nominal');
+
+  const lookup = (id: string): Variable | undefined => {
+    return domain?.variables.find(v => v.id === id);
+  };
 
   return (
     <>
@@ -269,8 +274,8 @@ export default (props: ExploreProps): JSX.Element => {
               <AvailableAlgorithms
                 layout={'inline'}
                 algorithms={apiCore.state.algorithms}
-                lookup={apiCore.lookup}
-                apiModel={apiModel}
+                lookup={lookup}
+                experiment={draftExperiment}
               />
             </Card.Body>
           </Card>
