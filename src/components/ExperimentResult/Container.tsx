@@ -1,4 +1,4 @@
-import * as React from 'react';
+import React, { useState } from 'react';
 import { Card } from 'react-bootstrap';
 import { RouteComponentProps, withRouter } from 'react-router-dom';
 import { APICore, APIExperiment, APIModel } from '../API';
@@ -26,11 +26,30 @@ interface Props extends RouteComponentProps<RouteParams> {
 
 const Container = ({ ...props }: Props): JSX.Element => {
   const uuid = props.match.params.uuid;
+  const [isPolling, setIsPolling] = useState<boolean>(false);
+  const [experiment, setExperiment] = useState<Experiment>();
 
-  const { loading, data } = useGetExperimentQuery({
+  const { loading, data, startPolling, stopPolling } = useGetExperimentQuery({
     variables: { id: uuid },
+    fetchPolicy: 'network-only',
+    notifyOnNetworkStatusChange: true, // needed to refire onCompleted after each poll
     onCompleted: data => {
-      localMutations.selectExperiment(data.experiment as Experiment);
+      switch (data.experiment.status) {
+        case 'pending':
+          if (!isPolling) {
+            startPolling(2000);
+            setIsPolling(true);
+          }
+          break;
+        case 'success':
+          setExperiment(data.experiment as Experiment);
+          break;
+      }
+
+      if (data.experiment.status !== 'pending' && isPolling) {
+        stopPolling();
+        setIsPolling(false);
+      }
     }
   });
 
@@ -45,6 +64,9 @@ const Container = ({ ...props }: Props): JSX.Element => {
         <div className="Experiment Result">
           <div className="header">
             <ExperimentResultHeader
+              handleCopyExperiment={(): void => {
+                if (experiment) localMutations.selectExperiment(experiment);
+              }}
               experiment={data?.experiment as Experiment}
             />
           </div>

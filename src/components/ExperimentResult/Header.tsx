@@ -22,9 +22,13 @@ const InlineDialog = styled.div`
 
 interface Props {
   experiment?: Experiment;
+  handleCopyExperiment: () => void;
 }
 
-const ExperimentResultHeader = ({ experiment }: Props): JSX.Element => {
+const ExperimentResultHeader = ({
+  experiment,
+  handleCopyExperiment
+}: Props): JSX.Element => {
   const [confirmDelete, setConfirmDelete] = React.useState<
     string | undefined
   >();
@@ -36,6 +40,7 @@ const ExperimentResultHeader = ({ experiment }: Props): JSX.Element => {
   const history = useHistory();
 
   const handleCreateNewExperiment = (): void => {
+    handleCopyExperiment();
     history.push(`/review`);
   };
 
@@ -46,7 +51,7 @@ const ExperimentResultHeader = ({ experiment }: Props): JSX.Element => {
         id: confirmDelete
       }
     });
-    if (delState.error === undefined) return history.push('/experiment');
+    if (delState.error === undefined) return history.push('/explore');
     console.log(delState.error);
   };
 
