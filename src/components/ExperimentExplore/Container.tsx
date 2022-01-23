@@ -6,8 +6,6 @@ import { RouteComponentProps } from 'react-router-dom';
 import styled from 'styled-components';
 import { APICore, APIExperiment, APIMining, APIModel, APIUser } from '../API';
 import { draftExperimentVar, selectedDomainVar } from '../API/GraphQL/cache';
-import { localMutations } from '../API/GraphQL/operations/mutations';
-import { useListDomainsQuery } from '../API/GraphQL/queries.generated';
 import { HierarchyCircularNode, ModelResponse } from '../API/Model';
 import { AppConfig } from '../App/App';
 import CirclePack, { GroupVars } from './D3CirclePackLayer';

@@ -186,11 +186,7 @@ const App = ({
                   path="/experiment/:uuid"
                   // tslint:disable-next-line jsx-no-lambda
                   render={(): JSX.Element => (
-                    <ExperimentResult
-                      apiExperiment={apiExperiment}
-                      apiModel={apiModel}
-                      apiCore={apiCore}
-                    />
+                    <ExperimentResult apiCore={apiCore} />
                   )}
                 />
                 <Route

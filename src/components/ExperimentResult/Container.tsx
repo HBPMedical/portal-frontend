@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { Card } from 'react-bootstrap';
 import { RouteComponentProps, withRouter } from 'react-router-dom';
-import { APICore, APIExperiment, APIModel } from '../API';
+import { APICore } from '../API';
 import { VariableEntity } from '../API/Core';
 import { localMutations } from '../API/GraphQL/operations/mutations';
 import { useGetExperimentQuery } from '../API/GraphQL/queries.generated';
@@ -19,8 +19,6 @@ interface RouteParams {
 }
 
 interface Props extends RouteComponentProps<RouteParams> {
-  apiExperiment: APIExperiment;
-  apiModel: APIModel;
   apiCore: APICore;
 }
 
@@ -37,7 +35,7 @@ const Container = ({ ...props }: Props): JSX.Element => {
       switch (data.experiment.status) {
         case 'pending':
           if (!isPolling) {
-            startPolling(2000);
+            startPolling(1000);
             setIsPolling(true);
           }
           break;

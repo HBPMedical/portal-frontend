@@ -9,8 +9,6 @@ import {
   AlgorithmParameter,
   AlgorithmParameterRequest
 } from '../API/Core';
-import { Exareme } from '../API/Exareme';
-import { IExperimentPrototype } from '../API/Experiment';
 import {
   draftExperimentVar,
   selectedDomainVar,
@@ -39,11 +37,6 @@ interface Props extends RouteComponentProps {
   apiModel: APIModel;
 }
 
-interface Testing {
-  name: string;
-  value: string;
-}
-
 export const ExperimentCreateContainer = ({
   apiCore,
   apiModel,
@@ -66,7 +59,7 @@ export const ExperimentCreateContainer = ({
     onError: data => {
       setAlert({
         message: data.message,
-        title: 'Error',
+        title: 'Error during creation',
         styled: 'error'
       });
     }
@@ -121,53 +114,6 @@ export const ExperimentCreateContainer = ({
         }
       }
     });
-  };
-
-  const handleSaveAndRunExperiment = async (name: string): Promise<void> => {
-    const model = apiModel.state.model;
-    if (!model) {
-      setAlert({
-        message: 'An error occured, please choose a model',
-        styled: 'error',
-        title: 'Info'
-      });
-      return;
-    }
-
-    if (!algorithm || !parameters) {
-      setAlert({ message: 'Select an algorithm' });
-      return;
-    }
-
-    const nextParameters = apiExperiment.makeParametersFromModel(
-      model,
-      parameters
-    );
-
-    const tmpexperiment: IExperimentPrototype = {
-      algorithm: {
-        name: algorithm.name,
-        label: algorithm.label,
-        parameters: nextParameters,
-        type: algorithm.type
-      },
-      name
-    };
-
-    const experiment = Exareme.handleParametersExceptions(tmpexperiment);
-
-    await apiExperiment.create({ experiment, transient: false });
-    const { experiment: e } = apiExperiment.state;
-
-    if (e.status === 'error') {
-      setAlert({ message: `${e?.result ? e?.result[0].data : ''}` });
-      return;
-    }
-
-    const uuid = apiExperiment.isExperiment(e)?.uuid;
-    if (uuid) {
-      history.push(`/experiment/${uuid}`);
-    }
   };
 
   return (
