@@ -10,6 +10,8 @@ import {
   APIUser,
   backendURL
 } from '../API';
+import { localMutations } from '../API/GraphQL/operations/mutations';
+import { useListDomainsQuery } from '../API/GraphQL/queries.generated';
 import { DescriptiveAnalysis } from '../DescriptiveAnalysis';
 import ExperimentCreate from '../ExperimentCreate/Container';
 import Explore from '../ExperimentExplore/Container';
@@ -87,6 +89,16 @@ const App = ({
   const loading = apiUser.state.loading;
   const authenticated = apiUser.state.authenticated || false;
   const isAnonymous = apiUser.state.user?.username === 'anonymous' || false;
+
+  //load domains for every page
+  useListDomainsQuery({
+    onCompleted: data => {
+      if (data.domains) {
+        localMutations.setDomains(data.domains);
+        localMutations.selectDomain(data.domains[0].id);
+      }
+    }
+  });
 
   return (
     <>

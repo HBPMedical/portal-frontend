@@ -54,15 +54,6 @@ export default ({
   const domain = useReactiveVar(selectedDomainVar);
   const draftExperiment = useReactiveVar(draftExperimentVar);
 
-  const { data } = useListDomainsQuery({
-    onCompleted: data => {
-      if (data.domains) {
-        localMutations.setDomains(data.domains);
-        localMutations.selectDomain(data.domains[0].id);
-      }
-    }
-  });
-
   // D3Model is used to expose D3 data and interact with the D3 Layout.
   const [d3Layout, setD3Layout] = useState<HierarchyCircularNode>();
   const { history } = props;
@@ -105,7 +96,7 @@ export default ({
 
     const d3layout = hierarchyNode && bubbleLayout(hierarchyNode);
     setD3Layout(d3layout);
-  }, [data, domain]);
+  }, [domain]);
 
   useEffect(() => {
     if (
