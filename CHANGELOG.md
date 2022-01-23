@@ -1,5 +1,10 @@
 # Changelog
 
+## TBD - WIP
+- Experiment Explore swaped to GraphQL
+- Apollo state management for experiment and domains selection
+- Exareme exceptions for experiment moved to Gateway
+
 ## 8.0.1 - 2021/12/22
 
 - Updated Login Page links
