@@ -1,11 +1,9 @@
 import { useReactiveVar } from '@apollo/client';
 import * as d3 from 'd3';
 import React, { useCallback, useEffect, useRef } from 'react';
-import { APICore, APIExperiment, APIMining, APIModel } from '../API';
 import { zoomNodeVar } from '../API/GraphQL/cache';
-import { D3Model, HierarchyCircularNode, ModelResponse } from '../API/Model';
+import { HierarchyCircularNode } from '../API/Model';
 import './CirclePack.css';
-import Explore from './Explore';
 
 const diameter = 800;
 const padding = 1.5;
@@ -22,17 +20,9 @@ const depth = (n: HierarchyCircularNode): number =>
   n.children ? 1 + (d3.max<number>(n.children.map(depth)) || 0) : 1;
 
 export interface Props {
-  apiCore: APICore;
-  apiModel: APIModel;
-  apiMining: APIMining;
-  apiExperiment: APIExperiment;
   selectedNode: HierarchyCircularNode | undefined;
   layout: HierarchyCircularNode;
-  histograms?: any;
-  d3Model: D3Model;
   handleSelectNode: (node: HierarchyCircularNode) => void;
-  handleSelectModel: (d3Model?: ModelResponse) => void;
-  handleGoToAnalysis: Function;
   groupVars: GroupVars[];
 }
 
@@ -143,15 +133,6 @@ export default ({ layout, ...props }: Props): JSX.Element => {
     []
   );
 
-  const zoomToNode = useCallback(
-    (id: string) => {
-      const node = layout.descendants().find(n => n.data.id === id);
-
-      if (node) zoom(node);
-    },
-    [layout, zoom]
-  );
-
   const colorCallback = useCallback(color, [layout]);
 
   useEffect(() => {
@@ -185,13 +166,6 @@ export default ({ layout, ...props }: Props): JSX.Element => {
 
   const zoomCallback = useCallback(zoom, []);
   const selectNodeCallback = useCallback(props.handleSelectNode, []);
-
-  useEffect(() => {
-    if (zoomNode) {
-      zoomToNode(zoomNode);
-      zoomNodeVar(undefined);
-    }
-  }, [zoomNode, zoomToNode]);
 
   useEffect(() => {
     d3.select(svgRef.current)
@@ -263,9 +237,24 @@ export default ({ layout, ...props }: Props): JSX.Element => {
     zoomTo([layout.x, layout.y, layout.r * 2]);
   }, [layout, colorCallback, selectNodeCallback, zoomCallback]);
 
-  return (
-    <Explore layout={layout} zoom={zoom} {...props}>
-      <svg ref={svgRef} />
-    </Explore>
+  const zoomToNode = useCallback(
+    (id: string) => {
+      const node = layout.descendants().find(n => n.data.id === id);
+
+      if (node) {
+        zoom(node);
+        selectNodeCallback(node);
+      }
+    },
+    [layout, selectNodeCallback, zoom]
   );
+
+  useEffect(() => {
+    if (zoomNode) {
+      zoomToNode(zoomNode);
+      zoomNodeVar(undefined);
+    }
+  }, [zoomNode, zoomToNode]);
+
+  return <svg ref={svgRef} />;
 };

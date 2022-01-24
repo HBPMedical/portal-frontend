@@ -1,9 +1,9 @@
 import { useReactiveVar } from '@apollo/client';
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { Button, Card, Col, Container, Row } from 'react-bootstrap';
 import { BsFillCaretRightFill, BsTrash } from 'react-icons/bs';
 import styled from 'styled-components';
-import { APICore, APIExperiment, APIMining, APIModel } from '../API';
+import { APICore, APIMining } from '../API';
 import { VariableEntity } from '../API/Core';
 import {
   draftExperimentVar,
@@ -13,11 +13,12 @@ import {
 import { localMutations } from '../API/GraphQL/operations/mutations';
 import { VarType } from '../API/GraphQL/operations/mutations/experiments/toggleVarsExperiment';
 import { Variable } from '../API/GraphQL/types.generated';
-import { D3Model, HierarchyCircularNode, ModelResponse } from '../API/Model';
 import { ONTOLOGY_URL } from '../constants';
 import AvailableAlgorithms from '../ExperimentCreate/AvailableAlgorithms';
 import DropdownExperimentList from '../UI/Experiment/DropDownList/DropdownExperimentList';
 import VariablesGroupList from '../UI/Variable/VariablesGroupList';
+import { HierarchyCircularNode } from '../utils';
+import CirclePack, { GroupVars } from './D3CirclePackLayer';
 import Histograms from './D3Histograms';
 import DataSelection from './DataSelection';
 
@@ -78,39 +79,22 @@ const Col1 = styled(Col2 as any)`
 
 export interface ExploreProps {
   apiCore: APICore;
-  apiModel: APIModel;
   apiMining: APIMining;
-  apiExperiment: APIExperiment;
-  children?: any;
-  selectedNode: HierarchyCircularNode | undefined;
   layout: HierarchyCircularNode;
-  histograms?: any;
-  d3Model: D3Model;
-  handleSelectNode: (node: HierarchyCircularNode) => void;
-  handleSelectModel: (model?: ModelResponse) => void;
   handleGoToAnalysis: any; // FIXME Promise<void>
-  zoom: (circleNode: HierarchyCircularNode) => void;
 }
 
 export default (props: ExploreProps): JSX.Element => {
-  const {
-    apiCore,
-    apiModel,
-    apiMining,
-    children,
-    layout,
-    selectedNode,
-    histograms,
-    handleSelectNode,
-    handleGoToAnalysis,
-    zoom
-  } = props;
+  const { apiCore, apiMining, layout, handleGoToAnalysis } = props;
 
   const selectedExperiment = useReactiveVar(selectedExperimentVar);
   const draftExperiment = useReactiveVar(draftExperimentVar);
   const domain = useReactiveVar(selectedDomainVar);
+  const [selectedGroupVars, setSelectedGroupVars] = useState<GroupVars[]>([]);
+  const [selectedNode, setSelectedNode] = useState<
+    HierarchyCircularNode | undefined
+  >();
 
-  const model = apiModel.state.model;
   const selectedPathology = domain?.id;
 
   const variablesForPathologyDict = apiCore.state.pathologiesVariables;
@@ -127,17 +111,41 @@ export default (props: ExploreProps): JSX.Element => {
     return domain?.variables.find(v => v.id === id);
   };
 
+  useEffect(() => {
+    if (!draftExperiment) return;
+
+    const groupVars = [
+      ['Filters', draftExperiment.filterVariables, 'slategrey'], // => item[0], item[1], item[2]
+      ['Variables', draftExperiment.variables, '#5cb85c'],
+      ['Covariates', draftExperiment.coVariables, '#f0ad4e']
+    ]
+      .filter(item => item[1] && item[1].length)
+      .map(item => ({
+        name: item[0] as string,
+        items: item[1] as string[],
+        color: item[2] as string
+      }));
+
+    setSelectedGroupVars(groupVars);
+  }, [draftExperiment]);
+
   return (
     <>
       <Grid>
         <Col1>
           <Card>
             <DataSelection
-              zoom={zoom}
               hierarchy={layout}
-              handleSelectNode={handleSelectNode}
+              handleSelectNode={setSelectedNode}
             ></DataSelection>
-            <Card.Body style={{ margin: 0, padding: 0 }}>{children}</Card.Body>
+            <Card.Body style={{ margin: 0, padding: 0 }}>
+              <CirclePack
+                layout={layout}
+                selectedNode={selectedNode}
+                groupVars={selectedGroupVars}
+                handleSelectNode={setSelectedNode}
+              />
+            </Card.Body>
           </Card>
         </Col1>
         <Col2>
@@ -284,12 +292,12 @@ export default (props: ExploreProps): JSX.Element => {
             <Card.Body>
               <Histograms
                 apiMining={apiMining}
-                histograms={histograms}
                 independantsVariables={independantsVariables}
                 selectedNode={selectedNode}
-                handleSelectedNode={handleSelectNode}
-                zoom={zoom}
-                model={model}
+                handleSelectedNode={setSelectedNode}
+                zoom={(node: HierarchyCircularNode): void =>
+                  localMutations.setZoomToNode(node.data.id)
+                }
               />
             </Card.Body>
           </Card>

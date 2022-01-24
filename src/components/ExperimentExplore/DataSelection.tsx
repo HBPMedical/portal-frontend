@@ -9,7 +9,7 @@ import DataSelect from '../UI/DataSelect';
 import Loader from '../UI/Loader';
 import Modal, { ModalComponentHandle } from '../UI/Modal';
 import { HierarchyCircularNode, uppercase } from '../utils';
-import Search from './D3Search';
+import Search from './SearchBox';
 
 const DataSelectionBox = styled(Card.Title)`
   display: flex;
@@ -43,35 +43,22 @@ const SearchBox = styled.div`
 const DataSelection = ({
   handleChangeDomain,
   hierarchy,
-  zoom,
   handleSelectNode,
-  handleChangeDataset
+  handleSelectedDataset
 }: {
   handleChangeDomain?: (domain: string) => void;
   hierarchy: HierarchyCircularNode;
-  zoom: (circleNode: HierarchyCircularNode) => void;
   handleSelectNode: (node: HierarchyCircularNode) => void;
-  handleChangeDataset?: (datasets: string[]) => void;
+  handleSelectedDataset?: (id: string) => void;
 }): JSX.Element => {
   const domain = useReactiveVar(selectedDomainVar);
   const modalRef = useRef<ModalComponentHandle>(null);
   const { data, loading } = useGetDomainListQuery();
-  const draftExp = useReactiveVar(draftExperimentVar);
+  const experiment = useReactiveVar(draftExperimentVar);
 
   const handleSelectDataset = (id: string): void => {
-    const index = draftExp?.datasets.indexOf(id);
-
-    if (index === -1) {
-      localMutations.updateDraftExperiment({
-        datasets: [...draftExp?.datasets, id]
-      });
-    } else {
-      localMutations.updateDraftExperiment({
-        datasets: draftExp?.datasets.filter(d => d !== id)
-      });
-    }
-
-    handleChangeDataset?.(draftExperimentVar().datasets);
+    localMutations.toggleDatasetExperiment(id);
+    handleSelectedDataset?.(id);
   };
 
   const showDialogDomainChange = async (id: string): Promise<void> => {
@@ -100,7 +87,7 @@ const DataSelection = ({
                   size="sm"
                   id="dropdown-pathology"
                   variant="light"
-                  title={uppercase(draftExp?.domain) || 'Domains'}
+                  title={uppercase(experiment?.domain) || 'Domains'}
                 >
                   {data.domains.map(d => (
                     <Dropdown.Item
@@ -121,15 +108,17 @@ const DataSelection = ({
               <DataSelect
                 datasets={domain?.datasets ?? []}
                 handleSelectDataset={handleSelectDataset}
-                selectedDatasets={draftExp?.datasets}
+                selectedDatasets={experiment?.datasets}
                 isDropdown
               ></DataSelect>
             </DatasetsBox>
             <SearchBox>
               <Search
-                hierarchy={hierarchy}
-                zoom={zoom}
-                handleSelectNode={handleSelectNode}
+                handleSelectNode={(id: string): void =>
+                  localMutations.setZoomToNode(id)
+                }
+                variables={domain?.variables ?? []}
+                groups={domain?.groups ?? []}
               />
             </SearchBox>
           </>

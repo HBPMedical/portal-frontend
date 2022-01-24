@@ -7,7 +7,7 @@ import { APIMining } from '../API';
 import { VariableEntity } from '../API/Core';
 import { draftExperimentVar } from '../API/GraphQL/cache';
 import { HistogramVariable } from '../API/Mining';
-import { HierarchyCircularNode, ModelResponse } from '../API/Model';
+import { HierarchyCircularNode } from '../API/Model';
 import Loading from '../UI/Loader';
 import Highchart from '../UI/Visualization/Highchart';
 import renderLifeCycle from './renderLifeCycle';
@@ -15,11 +15,9 @@ import renderLifeCycle from './renderLifeCycle';
 interface Props {
   apiMining: APIMining;
   handleSelectedNode: (node: HierarchyCircularNode) => void;
-  histograms: any;
   selectedNode?: HierarchyCircularNode;
   independantsVariables: VariableEntity[] | undefined;
   zoom: Function;
-  model: ModelResponse | undefined;
 }
 
 const breadcrumb = (
@@ -117,12 +115,28 @@ export default (props: Props): JSX.Element => {
   const {
     apiMining,
     handleSelectedNode,
-    histograms,
     independantsVariables,
     selectedNode,
-    zoom,
-    model
+    zoom
   } = props;
+  const histograms = apiMining.state.histograms;
+
+  // Load Histograms for selected variable
+  useEffect(() => {
+    if (selectedNode && selectedNode.data.isVariable) {
+      apiMining.multipleHistograms({
+        datasets: draftExperiment.datasets ?? [],
+        y: selectedNode.data,
+        pathology: draftExperiment.domain || ''
+      });
+    }
+  }, [
+    selectedNode,
+    apiMining,
+    apiMining.state.refetchAlgorithms,
+    draftExperiment.datasets,
+    draftExperiment.domain
+  ]);
 
   useEffect(() => {
     const pathology = draftExperiment.domain;
@@ -135,7 +149,7 @@ export default (props: Props): JSX.Element => {
         setChoosenVariables(choosenHistogramVariablesByPathology);
       }
     }
-  }, [apiMining, draftExperiment.domain, model]);
+  }, [apiMining, draftExperiment.domain]);
 
   const handleChooseVariable = (
     index: number,
