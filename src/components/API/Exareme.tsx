@@ -1,9 +1,6 @@
 import { Algorithm, AlgorithmParameter } from '../API/Core';
 import { IExperiment, IExperimentError, Result } from '../API/Experiment';
 import { ERRORS_OUTPUT, MIME_TYPES, UI_HIDDEN_PARAMETERS } from '../constants';
-import { APIModel } from './';
-import { VariableEntity } from './Core';
-import { IFormula, ModelResponse } from './Model';
 
 type fieldType = 'p-value' | 'p' | 'prvalue' | 'p_value';
 // TODO: in Visualisation JSONDAta
@@ -266,90 +263,89 @@ const algorithmOutputFiltering = (json: Record<string, any>): Algorithm[] => {
   return workflowParametersData;
 };
 
-const handleSelectExperimentToModel = (
-  apiModel: APIModel,
-  experiment?: IExperiment
-): void => {
-  if (!experiment) {
-    const oldModel = apiModel.state.model;
-    const newModel: ModelResponse = {
-      query: {
-        pathology: oldModel?.query.pathology,
-        trainingDatasets: oldModel?.query.trainingDatasets,
-        variables: undefined,
-        coVariables: undefined,
-        filters: undefined,
-        formula: undefined
-      }
-    };
+// const handleSelectExperimentToModel = (
+//   apiModel: APIModel,
+//   experiment?: IExperiment
+// ): void => {
+//   if (!experiment) {
+//     const oldModel = apiModel.state.model;
+//     const newModel: ModelResponse = {
+//       query: {
+//         pathology: oldModel?.query.pathology,
+//         trainingDatasets: oldModel?.query.trainingDatasets,
+//         variables: undefined,
+//         coVariables: undefined,
+//         filters: undefined,
+//         formula: undefined
+//       }
+//     };
 
-    apiModel.setModel(newModel);
+//     apiModel.setModel(newModel);
 
-    return;
-  }
+//     return;
+//   }
 
-  const parameters = experiment.algorithm?.parameters;
+//   const parameters = experiment.algorithm?.parameters;
 
-  if (!parameters) {
-    return;
-  }
+//   if (!parameters) {
+//     return;
+//   }
 
-  const isWorkflow = experiment.algorithm.type === 'workflow';
-  const paramName = isWorkflow ? 'label' : 'name';
+//   const isWorkflow = experiment.algorithm.type === 'workflow';
+//   const paramName = isWorkflow ? 'label' : 'name';
 
-  const extract = (field: string): VariableEntity[] | undefined => {
-    const p = parameters.find(p => p[paramName] === field)?.value as string;
-    const separator = /\*/.test(p)
-      ? '*'
-      : /\+/.test(p)
-      ? '+'
-      : /-/.test(p)
-      ? '-'
-      : ',';
-    const parameter = p
-      ? p.split(separator).map(m => ({ code: m, label: m }))
-      : undefined;
+//   const extract = (field: string): VariableEntity[] | undefined => {
+//     const p = parameters.find(p => p[paramName] === field)?.value as string;
+//     const separator = /\*/.test(p)
+//       ? '*'
+//       : /\+/.test(p)
+//       ? '+'
+//       : /-/.test(p)
+//       ? '-'
+//       : ',';
+//     const parameter = p
+//       ? p.split(separator).map(m => ({ code: m, label: m }))
+//       : undefined;
 
-    return parameter;
-  };
+//     return parameter;
+//   };
 
-  const formulaString =
-    (parameters.find(p => p[paramName] === 'formula')?.value as string) ||
-    undefined;
-  const formulaJSON = (formulaString && JSON.parse(formulaString)) || undefined;
+//   const formulaString =
+//     (parameters.find(p => p[paramName] === 'formula')?.value as string) ||
+//     undefined;
+//   const formulaJSON = (formulaString && JSON.parse(formulaString)) || undefined;
 
-  const formula: IFormula = formulaJSON && {
-    transformations: formulaJSON.single?.map((s: any) => ({
-      /* eslint-disable-next-line @typescript-eslint/camelcase */
-      name: s.var_name,
-      /* eslint-disable-next-line @typescript-eslint/camelcase */
-      operation: s.unary_operation
-    })),
-    interactions: formulaJSON.interactions?.map((i: any) => [i.var1, i.var2])
-  };
-  const newModel: ModelResponse = {
-    query: {
-      pathology: parameters.find(p => p[paramName] === 'pathology')
-        ?.value as string,
-      trainingDatasets: (
-        (parameters.find(p => p[paramName] === 'dataset')?.value as string) ||
-        ''
-      )
-        .split(',')
-        .map(m => ({ code: m, label: m })),
-      variables: extract('y'),
-      coVariables: extract('x'),
-      filters: parameters.find(p => p[paramName] === 'filter')?.value as string,
-      formula
-    }
-  };
+//   const formula: IFormula = formulaJSON && {
+//     transformations: formulaJSON.single?.map((s: any) => ({
+//       /* eslint-disable-next-line @typescript-eslint/camelcase */
+//       name: s.var_name,
+//       /* eslint-disable-next-line @typescript-eslint/camelcase */
+//       operation: s.unary_operation
+//     })),
+//     interactions: formulaJSON.interactions?.map((i: any) => [i.var1, i.var2])
+//   };
+//   const newModel: ModelResponse = {
+//     query: {
+//       pathology: parameters.find(p => p[paramName] === 'pathology')
+//         ?.value as string,
+//       trainingDatasets: (
+//         (parameters.find(p => p[paramName] === 'dataset')?.value as string) ||
+//         ''
+//       )
+//         .split(',')
+//         .map(m => ({ code: m, label: m })),
+//       variables: extract('y'),
+//       coVariables: extract('x'),
+//       filters: parameters.find(p => p[paramName] === 'filter')?.value as string,
+//       formula
+//     }
+//   };
 
-  apiModel.setModel(newModel);
-};
+//   apiModel.setModel(newModel);
+// };
 
 export const Exareme = {
   algorithmOutputFiltering,
   handleExperimentResponseExceptions,
-  handleSelectExperimentToModel,
   ALGORITHMS_OUTPUT
 };

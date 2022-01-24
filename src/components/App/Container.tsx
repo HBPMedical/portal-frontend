@@ -2,14 +2,7 @@ import * as React from 'react';
 import ReactGA from 'react-ga';
 import { Router } from 'react-router-dom';
 import { Provider, Subscribe } from 'unstated';
-import {
-  APICore,
-  APIExperiment,
-  APIMining,
-  APIModel,
-  APIUser,
-  webURL
-} from '../API';
+import { APICore, APIMining, APIUser, webURL } from '../API';
 import config from '../API/RequestHeaders';
 import App, { AppConfig } from '../App/App';
 import { history } from '../utils';
@@ -27,15 +20,13 @@ class AppContainer extends React.Component<any, State> {
     appConfig: {},
     showTutorial: true
   };
-  private apiExperiment = new APIExperiment(config);
-  private apiModel = new APIModel(config);
   private apiCore = new APICore(config);
   private apiMining = new APIMining(config);
   private apiUser = new APIUser(config);
 
   private intervalId: any; // FIXME: NodeJS.Timer | undefined;
 
-  async componentDidMount(): Promise<[void, void, void] | void> {
+  async componentDidMount(): Promise<void> {
     const seenTutorial = localStorage.getItem('seenTutorial') === 'true';
 
     // Conf written by dockerize
@@ -70,20 +61,14 @@ class AppContainer extends React.Component<any, State> {
       // Experiments polling and auth by interval
       this.intervalId = setInterval(() => {
         this.apiUser.user().then(() => {
-          if (this.apiUser.state.authenticated) {
-            this.apiExperiment.list({});
-          } else {
+          if (!this.apiUser.state.authenticated) {
             clearInterval(this.intervalId);
             window.location.href = '/';
           }
         });
       }, 10 * 1000);
 
-      return await Promise.all([
-        this.apiExperiment.list({}),
-        this.apiCore.fetchPathologies(),
-        this.apiCore.algorithms()
-      ]);
+      return await this.apiCore.algorithms();
     }
 
     return Promise.resolve();
@@ -108,32 +93,18 @@ class AppContainer extends React.Component<any, State> {
           toggleTutorial
         }}
       >
-        <Provider
-          inject={[
-            this.apiExperiment,
-            this.apiCore,
-            this.apiModel,
-            this.apiMining,
-            this.apiUser
-          ]}
-        >
+        <Provider inject={[this.apiCore, this.apiMining, this.apiUser]}>
           <Router history={history}>
-            <Subscribe
-              to={[APIExperiment, APICore, APIModel, APIMining, APIUser]}
-            >
+            <Subscribe to={[APICore, APIMining, APIUser]}>
               {(
-                apiExperiment: APIExperiment,
                 apiCore: APICore,
-                apiModel: APIModel,
                 apiMining: APIMining,
                 apiUser: APIUser
               ): JSX.Element => {
                 return (
                   <App
                     appConfig={this.state.appConfig}
-                    apiExperiment={apiExperiment}
                     apiCore={apiCore}
-                    apiModel={apiModel}
                     apiMining={apiMining}
                     apiUser={apiUser}
                     showTutorial={this.state.showTutorial}

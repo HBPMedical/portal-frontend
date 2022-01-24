@@ -3,7 +3,7 @@ import React, { useState } from 'react';
 import { Card, Tab, Tabs } from 'react-bootstrap';
 import { RouteComponentProps } from 'react-router-dom';
 import styled from 'styled-components';
-import { APICore, APIExperiment, APIModel } from '../API';
+import { APICore } from '../API';
 import {
   Algorithm,
   AlgorithmParameter,
@@ -32,15 +32,11 @@ const Wrapper = styled.div`
 `;
 
 interface Props extends RouteComponentProps {
-  apiExperiment: APIExperiment;
   apiCore: APICore;
-  apiModel: APIModel;
 }
 
 export const ExperimentCreateContainer = ({
   apiCore,
-  apiModel,
-  apiExperiment,
   history
 }: Props): JSX.Element => {
   const [alert, setAlert] = useState<IAlert | undefined>(undefined);

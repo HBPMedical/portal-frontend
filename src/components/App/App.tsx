@@ -2,14 +2,7 @@ import React from 'react';
 import { Spinner } from 'react-bootstrap';
 import { Route, Switch } from 'react-router-dom';
 import styled from 'styled-components';
-import {
-  APICore,
-  APIExperiment,
-  APIMining,
-  APIModel,
-  APIUser,
-  backendURL
-} from '../API';
+import { APICore, APIMining, APIUser, backendURL } from '../API';
 import { localMutations } from '../API/GraphQL/operations/mutations';
 import { useListDomainsQuery } from '../API/GraphQL/queries.generated';
 import { DescriptiveAnalysis } from '../DescriptiveAnalysis';
@@ -65,9 +58,7 @@ export interface AppConfig {
 }
 interface Props {
   appConfig: AppConfig;
-  apiExperiment: APIExperiment;
   apiCore: APICore;
-  apiModel: APIModel;
   apiMining: APIMining;
   apiUser: APIUser;
   showTutorial: boolean;
@@ -79,9 +70,7 @@ interface MainProps {
 
 const App = ({
   appConfig,
-  apiExperiment,
   apiCore,
-  apiModel,
   apiMining,
   apiUser,
   showTutorial
@@ -119,9 +108,6 @@ const App = ({
               apiUser.logout();
             window.location.href = '/';
           }}
-          experiment={apiExperiment.isExperiment(
-            apiExperiment.state.experiment
-          )}
         >
           <DropdownExperimentList
             hasDetailedView={true}
@@ -159,10 +145,8 @@ const App = ({
                     <Explore
                       apiCore={apiCore}
                       apiMining={apiMining}
-                      apiModel={apiModel}
                       appConfig={appConfig}
                       apiUser={apiUser}
-                      apiExperiment={apiExperiment}
                       {...props}
                     ></Explore>
                   )}
@@ -194,12 +178,7 @@ const App = ({
                   path="/experiment"
                   // tslint:disable-next-line jsx-no-lambda
                   render={(props): JSX.Element => (
-                    <ExperimentCreate
-                      apiExperiment={apiExperiment}
-                      apiCore={apiCore}
-                      apiModel={apiModel}
-                      {...props}
-                    />
+                    <ExperimentCreate apiCore={apiCore} {...props} />
                   )}
                 />
                 <Route
