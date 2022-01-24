@@ -81,6 +81,15 @@ class UserContainer extends Container<State> {
         });
       }
 
+      if (
+        this.state.error === undefined &&
+        this.state.loading === false &&
+        this.state.authenticated === true &&
+        JSON.stringify(this.state.user) === JSON.stringify(user) // stringify temporary solution while waiting for GraphQL
+      ) {
+        return; // prevent re-render if no changes
+      }
+      if (JSON.stringify(user) === JSON.stringify(this.state.user)) return;
       return await this.setState({
         error: undefined,
         loading: false,
