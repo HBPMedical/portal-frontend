@@ -3,11 +3,7 @@ import relativeTime from 'dayjs/plugin/relativeTime';
 import React, { useEffect, useRef, useState } from 'react';
 import { Button, Form } from 'react-bootstrap';
 import styled from 'styled-components';
-import { localMutations } from '../../../API/GraphQL/operations/mutations';
-import {
-  useGetExperimentLazyQuery,
-  useGetExperimentListLazyQuery
-} from '../../../API/GraphQL/queries.generated';
+import { useGetExperimentListLazyQuery } from '../../../API/GraphQL/queries.generated';
 import { Experiment } from '../../../API/GraphQL/types.generated';
 import { useOnClickOutside } from '../../../utils';
 import Loader from '../../Loader';
@@ -95,17 +91,18 @@ const DropdownExperimentList = ({
   const initialPage = 0;
   const [searchName, setSearchName] = useState<string>('');
   const [pageNumber, setPageNumber] = useState<number>(initialPage);
+  const [totalPages, setTotalPages] = useState<number>(0);
 
-  const [getExperiment] = useGetExperimentLazyQuery({
+  const [getExperimentList, { loading, data }] = useGetExperimentListLazyQuery({
+    fetchPolicy: 'cache-and-network',
     onCompleted: data => {
-      localMutations.selectExperiment(data.experiment as Experiment);
+      const pages = data.experimentList.totalPages ?? 0;
+      if (pageNumber >= pages) setPageNumber(pages - 1);
+      if (pages !== totalPages) {
+        setTotalPages(pages);
+      }
     }
   });
-
-  const [
-    getExperimentList,
-    { loading, data }
-  ] = useGetExperimentListLazyQuery();
 
   useEffect(() => {
     getExperimentList();
@@ -117,12 +114,6 @@ const DropdownExperimentList = ({
   const toggling = (): void => setIsOpen(!isOpen);
 
   const handleOnClick = (experimentId?: string): void => {
-    if (!hasDetailedView) {
-      if (experimentId && experimentId !== '')
-        getExperiment({ variables: { id: experimentId } });
-      else if (experimentId === undefined)
-        localMutations.resetSelectedExperiment();
-    }
     setIsOpen(false);
   };
 
@@ -177,7 +168,7 @@ const DropdownExperimentList = ({
           )}
           <PaginationContainer>
             <Pagination
-              totalPages={data?.experimentList.totalPages ?? 0}
+              totalPages={totalPages}
               currentPage={pageNumber}
               handleSetCurrentPage={handlePageChange}
             />

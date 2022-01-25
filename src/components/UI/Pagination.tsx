@@ -18,17 +18,15 @@ export default ({
           onClick={(): void => handleSetCurrentPage(currentPage - 1)}
         />
 
-        {[...Array(totalPages).keys()]
-          .map(n => n)
-          .map(n => (
-            <Pagination.Item
-              key={`page-${n}`}
-              onClick={(): void => handleSetCurrentPage(n)}
-              active={currentPage === n}
-            >
-              {n + 1}
-            </Pagination.Item>
-          ))}
+        {[...Array(totalPages).keys()].map(n => (
+          <Pagination.Item
+            key={`page-${n}`}
+            onClick={(): void => handleSetCurrentPage(n)}
+            active={currentPage === n}
+          >
+            {n + 1}
+          </Pagination.Item>
+        ))}
 
         <Pagination.Next
           onClick={(): void => handleSetCurrentPage(currentPage + 1)}

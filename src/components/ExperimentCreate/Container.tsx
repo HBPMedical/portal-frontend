@@ -15,7 +15,10 @@ import {
   selectedExperimentVar
 } from '../API/GraphQL/cache';
 import { localMutations } from '../API/GraphQL/operations/mutations';
-import { useCreateExperimentMutation } from '../API/GraphQL/queries.generated';
+import {
+  namedOperations,
+  useCreateExperimentMutation
+} from '../API/GraphQL/queries.generated';
 import { Variable } from '../API/GraphQL/types.generated';
 import { Alert, IAlert } from '../UI/Alert';
 import DropdownExperimentList from '../UI/Experiment/DropDownList/DropdownExperimentList';
@@ -46,6 +49,7 @@ export const ExperimentCreateContainer = ({
   const domain = useReactiveVar(selectedDomainVar);
   const experiment = useReactiveVar(draftExperimentVar);
   const [createExperiment] = useCreateExperimentMutation({
+    refetchQueries: [namedOperations.Query.getExperimentList],
     onCompleted: data => {
       const id = data.createExperiment.id;
       if (id) {
