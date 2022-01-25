@@ -87,9 +87,8 @@ class Filter extends React.Component<Props, State> {
     this.setState({ loading: true, rulesChanged: false });
     const rules = this.ref.queryBuilder('getRules');
     const { handleChangeFilter } = this.props;
-    handleChangeFilter(rules).then(() => {
-      this.setState({ loading: false });
-    });
+    handleChangeFilter(rules);
+    this.setState({ loading: false });
   };
 
   render = (): JSX.Element => {

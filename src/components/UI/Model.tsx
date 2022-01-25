@@ -37,14 +37,12 @@ class Model extends React.Component<Props> {
               </section>
             )}
 
-            {(experiment.coVariables && experiment.coVariables.length > 0) || (
+            {experiment.coVariables && experiment.coVariables.length > 0 && (
               <section>
                 <h4>Covariates</h4>
-                {experiment.coVariables &&
-                  experiment.coVariables.length > 0 &&
-                  this.lookup(experiment.coVariables, domain).map(v => (
-                    <p key={v.id}>{this.infoVariable(v)}</p>
-                  ))}
+                {this.lookup(experiment.coVariables, domain).map(v => (
+                  <p key={v.id}>{this.infoVariable(v)}</p>
+                ))}
               </section>
             )}
 
@@ -69,7 +67,7 @@ class Model extends React.Component<Props> {
   }
 
   private infoVariable = (v: Variable): string =>
-    `${v.label ?? v.id} ${v.type ?? ''}`;
+    `${v.label ?? v.id} ${v.type ? `(${v.type})` : ''}`;
 
   private lookup = (idVars: string[], domain: Domain): Variable[] =>
     domain.variables.filter(v => idVars.includes(v.id));

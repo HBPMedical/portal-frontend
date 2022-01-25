@@ -34,9 +34,7 @@ const handleUpdateFilter = (data: string): void => {
 };
 
 const handleUpdateFormula = (formula?: IFormula): void => {
-  localMutations.updateDraftExperiment({
-    formula
-  });
+  localMutations.updateDraftExperiment({ formula });
 };
 
 const Options = ({
