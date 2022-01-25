@@ -3,7 +3,11 @@ import relativeTime from 'dayjs/plugin/relativeTime';
 import React, { useEffect, useRef, useState } from 'react';
 import { Button, Form } from 'react-bootstrap';
 import styled from 'styled-components';
-import { useGetExperimentListLazyQuery } from '../../../API/GraphQL/queries.generated';
+import { localMutations } from '../../../API/GraphQL/operations/mutations';
+import {
+  useGetExperimentLazyQuery,
+  useGetExperimentListLazyQuery
+} from '../../../API/GraphQL/queries.generated';
 import { Experiment } from '../../../API/GraphQL/types.generated';
 import { useOnClickOutside } from '../../../utils';
 import Loader from '../../Loader';
@@ -93,6 +97,11 @@ const DropdownExperimentList = ({
   const [pageNumber, setPageNumber] = useState<number>(initialPage);
   const [totalPages, setTotalPages] = useState<number>(0);
 
+  const [
+    selectExperiment,
+    { data: selectedExpData }
+  ] = useGetExperimentLazyQuery();
+
   const [getExperimentList, { loading, data }] = useGetExperimentListLazyQuery({
     fetchPolicy: 'cache-and-network',
     onCompleted: data => {
@@ -105,6 +114,11 @@ const DropdownExperimentList = ({
   });
 
   useEffect(() => {
+    if (selectedExpData)
+      localMutations.selectExperiment(selectedExpData.experiment as Experiment);
+  }, [selectedExpData]);
+
+  useEffect(() => {
     getExperimentList();
   }, [getExperimentList]);
 
@@ -114,6 +128,13 @@ const DropdownExperimentList = ({
   const toggling = (): void => setIsOpen(!isOpen);
 
   const handleOnClick = (experimentId?: string): void => {
+    if (!hasDetailedView) {
+      if (experimentId && experimentId !== '') {
+        selectExperiment({ variables: { id: experimentId } });
+      } else if (experimentId === undefined) {
+        localMutations.resetSelectedExperiment();
+      }
+    }
     setIsOpen(false);
   };
 
