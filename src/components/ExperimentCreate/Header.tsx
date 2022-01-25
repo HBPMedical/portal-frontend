@@ -25,8 +25,9 @@ const ExperimentCreateHeader = ({
   const handleChangeExperimentName = (
     event: React.ChangeEvent<HTMLInputElement>
   ): void => {
-    setName(event.target.value);
-    handleNameChange(name);
+    const newName = event.target.value;
+    setName(newName);
+    handleNameChange(newName);
   };
 
   const handleKeyPress = (event: React.KeyboardEvent<HTMLElement>): void => {
