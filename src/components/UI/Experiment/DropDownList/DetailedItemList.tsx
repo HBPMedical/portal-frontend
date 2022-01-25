@@ -225,7 +225,7 @@ const ExperimentRow = ({
   const [status, setStatus] = useState<RowState>(RowState.DISPLAYING);
 
   const user = useReactiveVar(userVar);
-  const isOwner = user.username !== experiment.author?.username;
+  const isOwner = user.username === experiment.author?.username;
   const isEditing = status === RowState.EDITING;
   const isDeleting = status === RowState.DELETEING;
   const isDeleted = status === RowState.DELETED;
