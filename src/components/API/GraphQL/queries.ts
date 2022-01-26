@@ -68,6 +68,7 @@ export const QUERY_EXPERIMENT = gql`
       viewed
       variables
       coVariables
+      filterVariables
       shared
       status
       algorithm {
