@@ -97,10 +97,12 @@ const DropdownExperimentList = ({
   const [pageNumber, setPageNumber] = useState<number>(initialPage);
   const [totalPages, setTotalPages] = useState<number>(0);
 
-  const [
-    selectExperiment,
-    { data: selectedExpData }
-  ] = useGetExperimentLazyQuery();
+  const [selectExperiment] = useGetExperimentLazyQuery({
+    fetchPolicy: 'network-only',
+    onCompleted: data => {
+      localMutations.selectExperiment(data.experiment as Experiment);
+    }
+  });
 
   const [getExperimentList, { loading, data }] = useGetExperimentListLazyQuery({
     fetchPolicy: 'cache-and-network',
@@ -112,11 +114,6 @@ const DropdownExperimentList = ({
       }
     }
   });
-
-  useEffect(() => {
-    if (selectedExpData)
-      localMutations.selectExperiment(selectedExpData.experiment as Experiment);
-  }, [selectedExpData]);
 
   useEffect(() => {
     getExperimentList();

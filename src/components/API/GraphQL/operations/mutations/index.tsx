@@ -14,13 +14,15 @@ import createToggleDatasetExperiment from './experiments/toggleDatasetExperiment
 import createToggleVarsExperiment from './experiments/toggleVarsExperiment';
 import createUpdateExperiment from './experiments/updateExperiment';
 
+const selectDomain = createSelectDomain(
+  selectedDomainVar,
+  domainsVar,
+  draftExperimentVar
+);
+
 export const localMutations = {
   setDomains: createSetDomains(domainsVar),
-  selectDomain: createSelectDomain(
-    selectedDomainVar,
-    domainsVar,
-    draftExperimentVar
-  ),
+  selectDomain,
   toggleDatasetExperiment: createToggleDatasetExperiment(
     draftExperimentVar,
     selectedDomainVar
@@ -30,10 +32,13 @@ export const localMutations = {
   setZoomToNode: createSetZoomToNode(zoomNodeVar),
   selectExperiment: createSelectExperiment(
     selectedExperimentVar,
-    draftExperimentVar
+    draftExperimentVar,
+    selectedDomainVar,
+    selectDomain
   ),
   resetSelectedExperiment: createResetSelectedExperiment(
     selectedExperimentVar,
-    draftExperimentVar
+    draftExperimentVar,
+    selectedDomainVar
   )
 };

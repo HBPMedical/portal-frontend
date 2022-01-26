@@ -70,6 +70,7 @@ const DataSelection = ({
 
     if (reply) {
       localMutations.selectDomain(id);
+      localMutations.resetSelectedExperiment();
       handleChangeDomain?.(id);
     }
   };
@@ -87,7 +88,7 @@ const DataSelection = ({
                   size="sm"
                   id="dropdown-pathology"
                   variant="light"
-                  title={uppercase(experiment?.domain) || 'Domains'}
+                  title={uppercase(domain?.label || 'Domains')}
                 >
                   {data.domains.map(d => (
                     <Dropdown.Item
