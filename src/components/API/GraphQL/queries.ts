@@ -71,6 +71,13 @@ export const QUERY_EXPERIMENT = gql`
       filterVariables
       shared
       status
+      formula {
+        interactions
+        transformations {
+          id
+          operation
+        }
+      }
       algorithm {
         id
         description

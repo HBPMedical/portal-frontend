@@ -1,37 +1,38 @@
+import { useReactiveVar } from '@apollo/client';
 import React, { useState } from 'react';
 import { Card } from 'react-bootstrap';
 import { RouteComponentProps, withRouter } from 'react-router-dom';
-import { APICore } from '../API';
-import { VariableEntity } from '../API/Core';
+import { domainsVar } from '../API/GraphQL/cache';
 import { localMutations } from '../API/GraphQL/operations/mutations';
 import { useGetExperimentQuery } from '../API/GraphQL/queries.generated';
-import { Experiment } from '../API/GraphQL/types.generated';
-import FilterDisplay from '../UI/FilterDisplay';
+import { Domain, Experiment } from '../API/GraphQL/types.generated';
 import ListSection from '../UI/ListSection';
 import Loader from '../UI/Loader';
-import VariablesDisplay from '../UI/VariablesDisplay';
+import Model from '../UI/Model';
 import { ExperimentResult, ExperimentResultHeader } from './';
-import Algorithm from './Algorithms';
 
 interface RouteParams {
   uuid: string;
   slug: string;
 }
 
-interface Props extends RouteComponentProps<RouteParams> {
-  apiCore: APICore;
-}
+type Props = RouteComponentProps<RouteParams>;
 
 const Container = ({ ...props }: Props): JSX.Element => {
   const uuid = props.match.params.uuid;
   const [isPolling, setIsPolling] = useState<boolean>(false);
   const [experiment, setExperiment] = useState<Experiment>();
+  const [domain, setDomain] = useState<Domain>();
+  const domains = useReactiveVar<Domain[]>(domainsVar);
 
   const { loading, data, startPolling, stopPolling } = useGetExperimentQuery({
     variables: { id: uuid },
     fetchPolicy: 'network-only',
     notifyOnNetworkStatusChange: true, // needed to refire onCompleted after each poll
     onCompleted: data => {
+      const domainId = data.experiment.domain;
+      if (domainId) setDomain(domains.find(d => d.id === domainId));
+
       switch (data.experiment.status) {
         case 'pending':
           if (!isPolling) {
@@ -51,10 +52,6 @@ const Container = ({ ...props }: Props): JSX.Element => {
     }
   });
 
-  const lookup = (id: string): VariableEntity => {
-    return props.apiCore.lookup(id, data?.experiment.domain);
-  };
-
   return (
     <>
       {loading && <Loader />}
@@ -72,40 +69,32 @@ const Container = ({ ...props }: Props): JSX.Element => {
             <div className="sidebar">
               <Card>
                 <Card.Body>
-                  <ListSection
-                    title="Domain"
-                    list={[data?.experiment.domain ?? '']}
-                  />
-                  <ListSection
-                    title="Datasets"
-                    list={data?.experiment.datasets}
-                  />
-                  <section>
-                    {data?.experiment && (
-                      <Algorithm algorithm={data.experiment.algorithm} />
-                    )}
-                  </section>
-                  <VariablesDisplay
-                    title="Variables"
-                    lookup={lookup}
-                    variables={data?.experiment.variables}
-                  />
-                  <VariablesDisplay
-                    title="CoVariates"
-                    lookup={lookup}
-                    variables={
-                      data?.experiment.coVariables?.filter(v => v) ?? undefined
-                    }
-                  />
-                  <FilterDisplay
-                    filter={data?.experiment.filter ?? ''}
-                    lookup={lookup}
-                  />
+                  {experiment && (
+                    <>
+                      <ListSection
+                        title="Domain"
+                        list={[domain?.label ?? domain?.id ?? '']}
+                      />
+                      <ListSection
+                        title="Datasets"
+                        list={
+                          domain?.datasets
+                            .filter(d => experiment.datasets.includes(d.id))
+                            .map(d => d.label ?? d.id) ?? []
+                        }
+                      />
+                      <section>
+                        {domain && experiment && (
+                          <Model experiment={experiment} domain={domain} />
+                        )}
+                      </section>
+                    </>
+                  )}
                 </Card.Body>
               </Card>
             </div>
             <div className="results">
-              <ExperimentResult experiment={data?.experiment as Experiment} />
+              <ExperimentResult experiment={experiment} />
             </div>
           </div>
         </div>
