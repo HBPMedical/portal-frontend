@@ -25,15 +25,17 @@ const Container = ({ ...props }: Props): JSX.Element => {
   const [domain, setDomain] = useState<Domain>();
   const domains = useReactiveVar<Domain[]>(domainsVar);
 
-  const { loading, data, startPolling, stopPolling } = useGetExperimentQuery({
+  const { data, startPolling, stopPolling } = useGetExperimentQuery({
     variables: { id: uuid },
     fetchPolicy: 'network-only',
     notifyOnNetworkStatusChange: true, // needed to refire onCompleted after each poll
     onCompleted: data => {
       const domainId = data.experiment.domain;
-      if (domainId) setDomain(domains.find(d => d.id === domainId));
+      const newExperiment = data.experiment as Experiment;
+      if (domainId && domainId !== domain?.id)
+        setDomain(domains.find(d => d.id === domainId));
 
-      switch (data.experiment.status) {
+      switch (newExperiment.status) {
         case 'pending':
           if (!isPolling) {
             startPolling(1000);
@@ -42,19 +44,20 @@ const Container = ({ ...props }: Props): JSX.Element => {
           break;
       }
 
-      if (data.experiment.status !== 'pending' && isPolling) {
+      if (newExperiment.status !== 'pending' && isPolling) {
         stopPolling();
         setIsPolling(false);
       }
 
-      setExperiment(data.experiment as Experiment);
+      if (experiment?.status !== newExperiment.status)
+        setExperiment(newExperiment);
     }
   });
 
   return (
     <>
-      {loading && <Loader />}
-      {!loading && (
+      {!experiment && <Loader />}
+      {experiment && (
         <div className="Experiment Result">
           <div className="header">
             <ExperimentResultHeader
