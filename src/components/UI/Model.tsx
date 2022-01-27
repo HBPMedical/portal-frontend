@@ -53,13 +53,14 @@ class Model extends React.Component<Props> {
               </section>
             )}
 
-            {(experiment.formula?.interactions ||
-              experiment.formula?.transformations) && (
-              <section>
-                <h4>Formula</h4>
-                {this.formatFormula(experiment.formula)}
-              </section>
-            )}
+            {experiment.formula &&
+              ((experiment.formula.interactions ?? []).length > 0 ||
+                (experiment.formula.transformations ?? []).length > 0) && (
+                <section>
+                  <h4>Formula</h4>
+                  {this.formatFormula(experiment.formula)}
+                </section>
+              )}
           </>
         )}
       </>
