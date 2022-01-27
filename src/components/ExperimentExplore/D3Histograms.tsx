@@ -6,6 +6,7 @@ import styled from 'styled-components';
 import { APIMining } from '../API';
 import { VariableEntity } from '../API/Core';
 import { draftExperimentVar } from '../API/GraphQL/cache';
+import { useCreateExperimentMutation } from '../API/GraphQL/queries.generated';
 import { HistogramVariable } from '../API/Mining';
 import { HierarchyCircularNode } from '../API/Model';
 import Loading from '../UI/Loader';
@@ -120,6 +121,36 @@ export default (props: Props): JSX.Element => {
     zoom
   } = props;
   const histograms = apiMining.state.histograms;
+
+  //add bins
+  const [getHistrograms, { data, loading }] = useCreateExperimentMutation({
+    onCompleted: data => {
+      console.log('test', data);
+    }
+  });
+
+  if (selectedNode) {
+    getHistrograms({
+      variables: {
+        isTransient: true,
+        data: {
+          name: 'Histograms',
+          variables: [selectedNode?.data.id ?? ''],
+          domain: draftExperiment.domain,
+          datasets: draftExperiment.datasets,
+          algorithm: {
+            type: 'string',
+            id: 'MULTIPLE_HISTOGRAMS',
+            parameters: []
+          }
+        }
+      }
+    });
+  }
+
+  useEffect(() => {
+    console.log('test', data);
+  }, [data]);
 
   // Load Histograms for selected variable
   useEffect(() => {
