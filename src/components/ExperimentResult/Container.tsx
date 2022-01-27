@@ -40,15 +40,14 @@ const Container = ({ ...props }: Props): JSX.Element => {
             setIsPolling(true);
           }
           break;
-        case 'success':
-          setExperiment(data.experiment as Experiment);
-          break;
       }
 
       if (data.experiment.status !== 'pending' && isPolling) {
         stopPolling();
         setIsPolling(false);
       }
+
+      setExperiment(data.experiment as Experiment);
     }
   });
 
