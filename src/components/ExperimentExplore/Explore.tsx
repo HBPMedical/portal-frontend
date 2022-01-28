@@ -1,10 +1,9 @@
 import { useReactiveVar } from '@apollo/client';
-import React, { useState, useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import { Button, Card, Col, Container, Row } from 'react-bootstrap';
 import { BsFillCaretRightFill, BsTrash } from 'react-icons/bs';
 import styled from 'styled-components';
-import { APICore, APIMining } from '../API';
-import { VariableEntity } from '../API/Core';
+import { APICore } from '../API';
 import {
   draftExperimentVar,
   selectedDomainVar,
@@ -79,13 +78,12 @@ const Col1 = styled(Col2 as any)`
 
 export interface ExploreProps {
   apiCore: APICore;
-  apiMining: APIMining;
   layout: HierarchyCircularNode;
   handleGoToAnalysis: any; // FIXME Promise<void>
 }
 
 export default (props: ExploreProps): JSX.Element => {
-  const { apiCore, apiMining, layout, handleGoToAnalysis } = props;
+  const { apiCore, layout, handleGoToAnalysis } = props;
 
   const selectedExperiment = useReactiveVar(selectedExperimentVar);
   const draftExperiment = useReactiveVar(draftExperimentVar);
@@ -95,17 +93,8 @@ export default (props: ExploreProps): JSX.Element => {
     HierarchyCircularNode | undefined
   >();
 
-  const selectedPathology = domain?.id;
-
-  const variablesForPathologyDict = apiCore.state.pathologiesVariables;
-  const variablesForPathology: VariableEntity[] | undefined =
-    (selectedPathology &&
-      variablesForPathologyDict &&
-      variablesForPathologyDict[selectedPathology]) ||
-    undefined;
   const independantsVariables =
-    variablesForPathology &&
-    variablesForPathology.filter((v: any) => v.type === 'nominal');
+    domain?.variables.filter(v => v.type === 'nominal') ?? [];
 
   const lookup = (id: string): Variable | undefined => {
     return domain?.variables.find(v => v.id === id);
@@ -291,10 +280,9 @@ export default (props: ExploreProps): JSX.Element => {
           <Card className="statistics">
             <Card.Body>
               <Histograms
-                apiMining={apiMining}
+                domain={domain}
                 independantsVariables={independantsVariables}
                 selectedNode={selectedNode}
-                handleSelectedNode={setSelectedNode}
                 zoom={(node: HierarchyCircularNode): void =>
                   localMutations.setZoomToNode(node.data.id)
                 }

@@ -13,6 +13,7 @@ import RenderResult from './RenderResult';
 
 type Props = {
   result: ResultUnion;
+  constraint?: boolean;
 };
 
 type Switcher = {
@@ -24,7 +25,7 @@ class ResultDispatcher extends React.Component<Props> {
     const type: string = (
       this.props.result.__typename ?? 'error'
     ).toLowerCase();
-    const { result } = this.props;
+    const { result, constraint } = this.props;
     return (
       <>
         {
@@ -39,6 +40,7 @@ class ResultDispatcher extends React.Component<Props> {
               <ResultsErrorBoundary>
                 <RenderResult
                   results={[(result as RawResult)?.rawdata] as Result[]}
+                  constraint={constraint ?? true}
                 />
               </ResultsErrorBoundary>
             ),

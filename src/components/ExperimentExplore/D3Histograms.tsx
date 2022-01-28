@@ -1,25 +1,20 @@
 import { useReactiveVar } from '@apollo/client';
-import * as d3 from 'd3';
-import React, { useEffect, useRef, useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { Button, Dropdown, DropdownButton, Tab, Tabs } from 'react-bootstrap';
 import styled from 'styled-components';
-import { APIMining } from '../API';
-import { VariableEntity } from '../API/Core';
 import { draftExperimentVar } from '../API/GraphQL/cache';
 import { useCreateExperimentMutation } from '../API/GraphQL/queries.generated';
-import { HistogramVariable } from '../API/Mining';
+import {
+  AlgorithmParamInput,
+  Domain,
+  ResultUnion,
+  Variable
+} from '../API/GraphQL/types.generated';
 import { HierarchyCircularNode } from '../API/Model';
+import { HISTOGRAMS_STORAGE_KEY } from '../constants';
+import ResultDispatcher from '../ExperimentResult/ResultDispatcher';
 import Loading from '../UI/Loader';
 import Highchart from '../UI/Visualization/Highchart';
-import renderLifeCycle from './renderLifeCycle';
-
-interface Props {
-  apiMining: APIMining;
-  handleSelectedNode: (node: HierarchyCircularNode) => void;
-  selectedNode?: HierarchyCircularNode;
-  independantsVariables: VariableEntity[] | undefined;
-  zoom: Function;
-}
 
 const breadcrumb = (
   variable: HierarchyCircularNode,
@@ -28,6 +23,42 @@ const breadcrumb = (
   variable && variable.parent
     ? breadcrumb(variable.parent, [...paths, variable])
     : [...paths, variable];
+
+const overviewChart = (node: HierarchyCircularNode): any => {
+  let children = node
+    .descendants()
+    .filter(d => d.parent === node && !d.data.isVariable);
+
+  children = children.length ? children : [node];
+  return {
+    chart: {
+      type: 'column'
+    },
+    legend: {
+      enabled: false
+    },
+    series: [
+      {
+        data: children.map(c => c.descendants().length - 1),
+        dataLabels: {
+          enabled: true
+        }
+      }
+    ],
+    title: {
+      text: `Variables contained in ${node.data.label}`
+    },
+    tooltip: {
+      enabled: false
+    },
+    xAxis: {
+      categories: children.map(d => d.data.label)
+    },
+    yAxis: {
+      allowDecimals: false
+    }
+  };
+};
 
 const Histogram = styled.div`
   min-height: 440px;
@@ -44,14 +75,14 @@ const Histogram = styled.div`
     text-decoration: none !important;
   }
 
-  .card-header-tabs button {
+  .card-header-tabs .dropdown-toggle {
     font-size: 0.8rem;
     margin: 0;
     padding: 0;
     box-shadow: none;
   }
 
-  .card-header-tabs button:active {
+  .card-header-tabs .dropdown-toggle:active {
     color: black !important;
     background-color: white !important;
     border-color: white !important;
@@ -62,6 +93,14 @@ const Histogram = styled.div`
     border-bottom: 1px solid #dee2e6;
     margin-bottom: 8px;
     margin: 0 0.5em;
+
+    & .nav-item .dropdown-menu {
+      text-decoration: none;
+      & .dropdown-item {
+        padding: 2px 5px;
+        font-size: 0.8rem;
+      }
+    }
   }
 
   .dropdown-menu {
@@ -108,151 +147,97 @@ const Title = styled.p`
   display: inline;
 `;
 
-export default (props: Props): JSX.Element => {
-  const divRef = useRef(null);
-  const [choosenVariables, setChoosenVariables] = useState<HistogramVariable>();
+export interface HistogramVariable {
+  [key: number]: Variable;
+}
+interface Props {
+  selectedNode?: HierarchyCircularNode;
+  independantsVariables: Variable[] | undefined;
+  zoom: Function;
+  domain?: Domain;
+}
+
+export default ({
+  independantsVariables,
+  selectedNode,
+  zoom,
+  domain
+}: Props): JSX.Element => {
+  const keyStorage = domain
+    ? `${HISTOGRAMS_STORAGE_KEY}_${domain?.id}`
+    : undefined;
+  const [choosenVariables, setChoosenVariables] = useState<
+    HistogramVariable | undefined
+  >(() => {
+    const saved = keyStorage ? localStorage.getItem(keyStorage) : undefined;
+    return saved ? JSON.parse(saved) : {};
+  });
   const [selectedTab, setSelectedTab] = useState(0);
   const draftExperiment = useReactiveVar(draftExperimentVar);
-  const {
-    apiMining,
-    handleSelectedNode,
-    independantsVariables,
-    selectedNode,
-    zoom
-  } = props;
-  const histograms = apiMining.state.histograms;
+  const nodes = selectedNode ? breadcrumb(selectedNode).reverse() : [];
 
-  //add bins
-  const [getHistrograms, { data, loading }] = useCreateExperimentMutation({
-    onCompleted: data => {
-      console.log('test', data);
-    }
-  });
+  const [getHistrograms, { data, loading }] = useCreateExperimentMutation();
 
-  if (selectedNode) {
-    getHistrograms({
-      variables: {
-        isTransient: true,
-        data: {
-          name: 'Histograms',
-          variables: [selectedNode?.data.id ?? ''],
-          domain: draftExperiment.domain,
-          datasets: draftExperiment.datasets,
-          algorithm: {
-            type: 'string',
-            id: 'MULTIPLE_HISTOGRAMS',
-            parameters: []
+  useEffect(() => {
+    if (selectedNode && domain) {
+      const params: AlgorithmParamInput[] = [];
+
+      const variable = domain.variables.find(
+        v => v.id === selectedNode.data.id
+      );
+      const groupBy = Object.values(choosenVariables ?? {})
+        .filter(v => !variable || v.id !== variable.id)
+        .map(v => v.id);
+
+      if (groupBy && groupBy.length > 0) {
+        params.push({
+          id: 'x',
+          value: groupBy.join(',')
+        });
+      }
+
+      if (variable && variable.type !== 'nominal') {
+        params.push({
+          id: 'bins',
+          value: JSON.stringify({ [variable.id]: 20 })
+        });
+      }
+
+      getHistrograms({
+        variables: {
+          isTransient: true,
+          data: {
+            name: 'Histograms',
+            variables: [selectedNode?.data.id ?? ''],
+            domain: draftExperiment.domain,
+            datasets: draftExperiment.datasets,
+            algorithm: {
+              type: 'string',
+              id: 'MULTIPLE_HISTOGRAMS',
+              parameters: params
+            }
           }
         }
-      }
-    });
-  }
-
-  useEffect(() => {
-    console.log('test', data);
-  }, [data]);
-
-  // Load Histograms for selected variable
-  useEffect(() => {
-    if (selectedNode && selectedNode.data.isVariable) {
-      apiMining.multipleHistograms({
-        datasets: draftExperiment.datasets ?? [],
-        y: selectedNode.data,
-        pathology: draftExperiment.domain || ''
       });
     }
   }, [
-    selectedNode,
-    apiMining,
-    apiMining.state.refetchAlgorithms,
+    choosenVariables,
+    domain,
     draftExperiment.datasets,
-    draftExperiment.domain
+    draftExperiment.domain,
+    getHistrograms,
+    selectedNode
   ]);
 
-  useEffect(() => {
-    const pathology = draftExperiment.domain;
-    if (pathology) {
-      const choosenHistogramVariablesByPathology = apiMining.groupingForPathology(
-        pathology
-      );
+  const handleChooseVariable = (index: number, variable: Variable): void => {
+    if (!variable) return;
 
-      if (choosenHistogramVariablesByPathology) {
-        setChoosenVariables(choosenHistogramVariablesByPathology);
-      }
-    }
-  }, [apiMining, draftExperiment.domain]);
-
-  const handleChooseVariable = (
-    index: number,
-    variable: VariableEntity
-  ): void => {
     const nextChoosenVariables = choosenVariables
       ? { ...choosenVariables, [index]: variable }
       : { [index]: variable };
     setChoosenVariables(nextChoosenVariables);
-    const pathology = draftExperiment.domain;
-    if (pathology && choosenVariables) {
-      apiMining.setGroupingForPathology(pathology, nextChoosenVariables);
-    }
-    apiMining.refetchAlgorithms();
-  };
-
-  renderLifeCycle({
-    updateRender: () => {
-      if (selectedNode) {
-        d3.select(divRef.current)
-          .selectAll('p')
-          .remove();
-
-        d3.select(divRef.current)
-          .selectAll('p')
-          .data(breadcrumb(selectedNode).reverse())
-          .enter()
-          .append('p')
-          .text(d => d.data.label)
-          .on('click', d => {
-            handleSelectedNode(d);
-            d3.event.stopPropagation();
-            zoom(d);
-          });
-      }
-    }
-  });
-
-  const overviewChart = (node: HierarchyCircularNode): any => {
-    let children = node
-      .descendants()
-      .filter(d => d.parent === selectedNode && !d.data.isVariable);
-
-    children = children.length ? children : [node];
-    return {
-      chart: {
-        type: 'column'
-      },
-      legend: {
-        enabled: false
-      },
-      series: [
-        {
-          data: children.map(c => c.descendants().length - 1),
-          dataLabels: {
-            enabled: true
-          }
-        }
-      ],
-      title: {
-        text: `Variables contained in ${node.data.label}`
-      },
-      tooltip: {
-        enabled: false
-      },
-      xAxis: {
-        categories: children.map(d => d.data.label)
-      },
-      yAxis: {
-        allowDecimals: false
-      }
-    };
+    if (keyStorage)
+      localStorage.setItem(keyStorage, JSON.stringify(nextChoosenVariables));
   };
 
   return (
@@ -260,7 +245,17 @@ export default (props: Props): JSX.Element => {
       {selectedNode && (
         <Overview>
           <div>
-            <Title>Path</Title>: <Breadcrumb ref={divRef} />
+            <Title>Path</Title>:{' '}
+            <Breadcrumb>
+              {' '}
+              {nodes &&
+                nodes.length > 0 &&
+                nodes.map(n => (
+                  <p onClick={(): void => zoom(n)} key={n.data.id}>
+                    {n.data.label ?? n.data.id}
+                  </p>
+                ))}{' '}
+            </Breadcrumb>
           </div>
           <div>
             <Title>Description</Title>:{' '}
@@ -272,19 +267,6 @@ export default (props: Props): JSX.Element => {
       <Histogram>
         {selectedNode && selectedNode.children && (
           <Highchart options={overviewChart(selectedNode)} />
-        )}
-
-        {histograms && histograms.error && (
-          <div className="error">
-            <h3>An error has occured</h3>
-            <p>{histograms.error}</p>
-          </div>
-        )}
-
-        {histograms && histograms.warning && (
-          <div className="warning">
-            <p>{histograms.warning}</p>
-          </div>
         )}
 
         {selectedNode && !selectedNode.children && (
@@ -302,15 +284,19 @@ export default (props: Props): JSX.Element => {
                 <Tab
                   eventKey={`${i}`}
                   title={
-                    (histograms && histograms.loading && <Loading />) ||
+                    (loading && <Loading />) ||
                     `${selectedNode && selectedNode.data.label}`
                   }
                   key={i}
                 >
-                  {histograms &&
-                    histograms.data &&
-                    histograms.data.length > 0 && (
-                      <Highchart options={histograms.data[0].highchart.data} />
+                  {data &&
+                    data.createExperiment &&
+                    data.createExperiment.results &&
+                    data.createExperiment.results.length > 0 && (
+                      <ResultDispatcher
+                        result={data.createExperiment.results[0] as ResultUnion}
+                        constraint={false}
+                      />
                     )}
                 </Tab>
               ) : (
@@ -330,10 +316,10 @@ export default (props: Props): JSX.Element => {
                         }
                       >
                         {independantsVariables &&
-                          independantsVariables.map((v: VariableEntity) => (
+                          independantsVariables.map(v => (
                             <Dropdown.Item
                               as={Button}
-                              key={v.code}
+                              key={v.id}
                               onSelect={(): void => handleChooseVariable(i, v)}
                             >
                               {v.label}
@@ -349,11 +335,15 @@ export default (props: Props): JSX.Element => {
                   }
                   key={i}
                 >
-                  {histograms &&
-                    histograms.data &&
-                    histograms.data.length > i &&
-                    histograms.data[i].highchart && (
-                      <Highchart options={histograms.data[i].highchart.data} />
+                  {data &&
+                    data.createExperiment &&
+                    data.createExperiment.results &&
+                    data.createExperiment.results?.length > i && (
+                      <ResultDispatcher
+                        key={i}
+                        result={data.createExperiment.results[i] as ResultUnion}
+                        constraint={false}
+                      />
                     )}
                 </Tab>
               );
