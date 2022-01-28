@@ -73,97 +73,6 @@ const Container = ({ apiCore, ...props }: Props): JSX.Element => {
     history.push(`/explore`);
   };
 
-  const makeFilters = (): any => {
-    // FIXME: move to Filter, refactor in a pure way
-    let fields = [];
-    const buildFilter = (code: string): any => {
-      if (!domain || !domain.variables) {
-        return [];
-      }
-
-      const originalVar = domain.variables.find(v => v.id === code);
-
-      if (!originalVar) {
-        return [];
-      }
-
-      const output: any = {
-        id: originalVar.id,
-        label: originalVar.label || originalVar.id,
-        name: originalVar.id
-      };
-
-      if (originalVar && originalVar.enumerations) {
-        output.values = originalVar.enumerations.map(c => ({
-          [c.id]: c.label || c.id
-        }));
-        output.input = 'select';
-        output.operators = ['equal', 'not_equal', 'in', 'not_in'];
-      }
-
-      const type = originalVar && originalVar.type;
-      if (type === 'real') {
-        output.type = 'double';
-        output.input = 'number';
-        output.operators = [
-          'equal',
-          'not_equal',
-          'less',
-          'greater',
-          'between',
-          'not_between'
-        ];
-      }
-
-      if (type === 'integer') {
-        output.type = 'integer';
-        output.input = 'number';
-        output.operators = [
-          'equal',
-          'not_equal',
-          'less',
-          'greater',
-          'between',
-          'not_between'
-        ];
-      }
-
-      return output;
-    };
-
-    const allVariables = draftExperiment.filterVariables || [];
-
-    // add filter variables
-    const extractVariablesFromFilter = (filter: any): any =>
-      filter.rules.forEach((r: any) => {
-        if (r.rules) {
-          extractVariablesFromFilter(r);
-        }
-        if (r.id) {
-          allVariables.push(r.id);
-        }
-      });
-
-    if (draftExperiment && draftExperiment.filter) {
-      extractVariablesFromFilter(JSON.parse(draftExperiment.filter));
-    }
-
-    const allUniqVariables = Array.from(new Set(allVariables));
-    fields =
-      (domain?.variables &&
-        [...allUniqVariables.map(buildFilter)].filter((f: any) => f.id)) ||
-      [];
-    const filters =
-      (draftExperiment &&
-        draftExperiment.filter &&
-        JSON.parse(draftExperiment.filter)) ||
-      '';
-
-    return { filters, fields };
-  };
-
-  const { fields, filters } = makeFilters();
-
   return (
     <>
       <div>
@@ -173,8 +82,6 @@ const Container = ({ apiCore, ...props }: Props): JSX.Element => {
               <Wrapper
                 domain={domain}
                 apiCore={apiCore}
-                filters={filters}
-                fields={fields}
                 experiment={draftExperiment}
               />
             )
