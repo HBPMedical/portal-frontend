@@ -18,7 +18,7 @@ import DropdownExperimentList from '../UI/Experiment/DropDownList/DropdownExperi
 import VariablesGroupList from '../UI/Variable/VariablesGroupList';
 import { HierarchyCircularNode } from '../utils';
 import CirclePack, { GroupVars } from './D3CirclePackLayer';
-import Histograms from './D3Histograms';
+import Histograms from './Histograms';
 import DataSelection from './DataSelection';
 
 const MenuParametersContainer = styled.div`
