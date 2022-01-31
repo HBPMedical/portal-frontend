@@ -142,7 +142,7 @@ const DropdownExperimentList = ({
   const handleSearchChange = (text: string): void => {
     setSearchName(text);
     setPageNumber(initialPage);
-    getExperimentList({ variables: { name: text, page: pageNumber } });
+    getExperimentList({ variables: { name: text, page: initialPage } });
   };
 
   const handlePageChange = (page: number): void => {
