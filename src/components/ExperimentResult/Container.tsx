@@ -25,7 +25,7 @@ const Container = ({ ...props }: Props): JSX.Element => {
   const [domain, setDomain] = useState<Domain>();
   const domains = useReactiveVar<Domain[]>(domainsVar);
 
-  const { data, startPolling, stopPolling } = useGetExperimentQuery({
+  const { startPolling, stopPolling } = useGetExperimentQuery({
     variables: { id: uuid },
     fetchPolicy: 'network-only',
     notifyOnNetworkStatusChange: true, // needed to refire onCompleted after each poll
@@ -49,7 +49,10 @@ const Container = ({ ...props }: Props): JSX.Element => {
         setIsPolling(false);
       }
 
-      if (experiment?.status !== newExperiment.status)
+      if (
+        newExperiment.id !== experiment?.id ||
+        experiment?.status !== newExperiment.status
+      )
         setExperiment(newExperiment);
     }
   });
@@ -64,7 +67,7 @@ const Container = ({ ...props }: Props): JSX.Element => {
               handleCopyExperiment={(): void => {
                 if (experiment) localMutations.selectExperiment(experiment);
               }}
-              experiment={data?.experiment as Experiment}
+              experiment={experiment}
             />
           </div>
           <div className="content">
