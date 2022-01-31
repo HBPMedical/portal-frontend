@@ -1,13 +1,13 @@
 import { useReactiveVar } from '@apollo/client';
 import React, { useState } from 'react';
-import { Card } from 'react-bootstrap';
+import { Card, Col, Container, Row } from 'react-bootstrap';
 import { RouteComponentProps, withRouter } from 'react-router-dom';
 import { domainsVar } from '../API/GraphQL/cache';
 import { localMutations } from '../API/GraphQL/operations/mutations';
 import { useGetExperimentQuery } from '../API/GraphQL/queries.generated';
 import { Domain, Experiment } from '../API/GraphQL/types.generated';
+import ApolloErrorHandler from '../UI/ApolloErrorHandler';
 import ListSection from '../UI/ListSection';
-import Loader from '../UI/Loader';
 import Model from '../UI/Model';
 import { ExperimentResult, ExperimentResultHeader } from './';
 
@@ -18,14 +18,14 @@ interface RouteParams {
 
 type Props = RouteComponentProps<RouteParams>;
 
-const Container = ({ ...props }: Props): JSX.Element => {
+const ContainerWrap = ({ ...props }: Props): JSX.Element => {
   const uuid = props.match.params.uuid;
   const [isPolling, setIsPolling] = useState<boolean>(false);
   const [experiment, setExperiment] = useState<Experiment>();
   const [domain, setDomain] = useState<Domain>();
   const domains = useReactiveVar<Domain[]>(domainsVar);
 
-  const { startPolling, stopPolling } = useGetExperimentQuery({
+  const { startPolling, stopPolling, error } = useGetExperimentQuery({
     variables: { id: uuid },
     fetchPolicy: 'network-only',
     notifyOnNetworkStatusChange: true, // needed to refire onCompleted after each poll
@@ -59,8 +59,22 @@ const Container = ({ ...props }: Props): JSX.Element => {
 
   return (
     <>
-      {!experiment && <Loader />}
-      {experiment && (
+      {error && (
+        <Container fluid className="text-center">
+          <Row>
+            <Col>
+              <Card className="py-5">
+                <Card.Body>
+                  {error.graphQLErrors.map((e, i) => (
+                    <ApolloErrorHandler key={i} error={e} />
+                  ))}
+                </Card.Body>
+              </Card>
+            </Col>
+          </Row>
+        </Container>
+      )}
+      {!error && (
         <div className="Experiment Result">
           <div className="header">
             <ExperimentResultHeader
@@ -108,4 +122,4 @@ const Container = ({ ...props }: Props): JSX.Element => {
   );
 };
 
-export default withRouter(Container);
+export default withRouter(ContainerWrap);
