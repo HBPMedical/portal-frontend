@@ -2,9 +2,15 @@ import dayjs from 'dayjs';
 import relativeTime from 'dayjs/plugin/relativeTime';
 import * as React from 'react';
 import { Button, Card } from 'react-bootstrap';
-import styled from 'styled-components';
-import { IExperiment } from '../API/Experiment';
 import { GoCheck } from 'react-icons/go';
+import { useHistory } from 'react-router-dom';
+import styled from 'styled-components';
+import {
+  useDeleteExperimentMutation,
+  useEditExperimentMutation
+} from '../API/GraphQL/queries.generated';
+import { Experiment } from '../API/GraphQL/types.generated';
+
 dayjs.extend(relativeTime);
 dayjs().format();
 
@@ -15,21 +21,52 @@ const InlineDialog = styled.div`
 `;
 
 interface Props {
-  experiment?: IExperiment;
-  handleDeleteExperiment: (uuid: string) => void;
-  handleShareExperiment: any;
-  handleCreateNewExperiment: any;
+  experiment?: Experiment;
+  handleCopyExperiment: () => void;
 }
 
-export default ({
+const ExperimentResultHeader = ({
   experiment,
-  handleDeleteExperiment,
-  handleShareExperiment,
-  handleCreateNewExperiment
+  handleCopyExperiment
 }: Props): JSX.Element => {
   const [confirmDelete, setConfirmDelete] = React.useState<
     string | undefined
   >();
+
+  const [deleteExperimentMutation, delState] = useDeleteExperimentMutation();
+  const [editExperimentMutation, editState] = useEditExperimentMutation();
+  const id = experiment?.id ?? '';
+
+  const history = useHistory();
+
+  const handleCreateNewExperiment = (): void => {
+    handleCopyExperiment();
+    history.push(`/review`);
+  };
+
+  const handleDeleteExperiment = async (): Promise<void> => {
+    if (confirmDelete === undefined) return;
+    await deleteExperimentMutation({
+      variables: {
+        id: confirmDelete
+      }
+    });
+    if (delState.error === undefined) return history.push('/explore');
+    console.log(delState.error);
+  };
+
+  const handleShareExperiment = async (): Promise<void> => {
+    if (experiment === undefined) return;
+    await editExperimentMutation({
+      variables: {
+        id: id,
+        data: {
+          shared: !experiment?.shared
+        }
+      }
+    });
+    if (editState.error !== undefined) console.log(editState.error);
+  };
 
   return (
     <Card>
@@ -39,8 +76,8 @@ export default ({
             Results of experiment <strong>{experiment?.name}</strong>
           </h3>
           <p className="item">
-            Created {experiment && dayjs().to(dayjs(experiment.created))} by{' '}
-            {experiment?.createdBy}
+            Created {experiment && dayjs().to(dayjs(experiment?.createdAt))} by{' '}
+            {experiment?.author?.fullname ?? experiment?.author?.username}
           </p>
         </div>
 
@@ -55,7 +92,7 @@ export default ({
                   size={'sm'}
                   variant="primary"
                   onClick={(): void => {
-                    handleDeleteExperiment(experiment?.uuid || '');
+                    handleDeleteExperiment();
                     setConfirmDelete(undefined);
                   }}
                 >
@@ -77,7 +114,7 @@ export default ({
         ) : (
           experiment && (
             <Button
-              onClick={(): void => setConfirmDelete(experiment.uuid)}
+              onClick={(): void => setConfirmDelete(id)}
               style={{ marginRight: '8px' }}
               variant="outline-dark"
               type="submit"
@@ -108,3 +145,5 @@ export default ({
     </Card>
   );
 };
+
+export default ExperimentResultHeader;

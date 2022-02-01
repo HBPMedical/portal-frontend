@@ -1,22 +1,17 @@
-import React, { useCallback } from 'react';
+import React from 'react';
+import { Spinner } from 'react-bootstrap';
 import { Route, Switch } from 'react-router-dom';
 import styled from 'styled-components';
-import {
-  APICore,
-  APIExperiment,
-  APIMining,
-  APIModel,
-  APIUser,
-  backendURL
-} from '../API';
-import { ExperimentListQueryParameters, IExperiment } from '../API/Experiment';
+import { APICore, APIMining, APIUser, backendURL } from '../API';
+import { localMutations } from '../API/GraphQL/operations/mutations';
+import { useListDomainsQuery } from '../API/GraphQL/queries.generated';
 import { DescriptiveAnalysis } from '../DescriptiveAnalysis';
 import ExperimentCreate from '../ExperimentCreate/Container';
 import Explore from '../ExperimentExplore/Container';
 import ExperimentResult from '../ExperimentResult/Container';
 import Help from '../Help/Videos';
 import DataCatalog from '../UI/DataCatalog';
-import ExperimentList from '../UI/DropdownExperimentList';
+import DropdownExperimentList from '../UI/Experiment/DropDownList/DropdownExperimentList';
 import Footer from '../UI/Footer';
 import Galaxy from '../UI/Galaxy';
 import { GlobalStyles } from '../UI/GlobalStyle';
@@ -25,7 +20,6 @@ import Navigation from '../UI/Navigation';
 import NotFound from '../UI/NotFound';
 import TOS from '../UI/TOS';
 import Tutorial from '../UserGuide/Tutorial';
-import { Spinner } from 'react-bootstrap';
 
 const Main = styled.main<MainProps>`
   margin: 0 auto;
@@ -64,9 +58,7 @@ export interface AppConfig {
 }
 interface Props {
   appConfig: AppConfig;
-  apiExperiment: APIExperiment;
   apiCore: APICore;
-  apiModel: APIModel;
   apiMining: APIMining;
   apiUser: APIUser;
   showTutorial: boolean;
@@ -78,9 +70,7 @@ interface MainProps {
 
 const App = ({
   appConfig,
-  apiExperiment,
   apiCore,
-  apiModel,
   apiMining,
   apiUser,
   showTutorial
@@ -88,6 +78,16 @@ const App = ({
   const loading = apiUser.state.loading;
   const authenticated = apiUser.state.authenticated || false;
   const isAnonymous = apiUser.state.user?.username === 'anonymous' || false;
+
+  //load domains for every page
+  useListDomainsQuery({
+    onCompleted: data => {
+      if (data.domains) {
+        localMutations.setDomains(data.domains);
+        localMutations.selectDomain(data.domains[0].id);
+      }
+    }
+  });
 
   return (
     <>
@@ -108,25 +108,10 @@ const App = ({
               apiUser.logout();
             window.location.href = '/';
           }}
-          experiment={apiExperiment.isExperiment(
-            apiExperiment.state.experiment
-          )}
         >
-          <ExperimentList
-            username={apiUser.state.user?.username}
-            experimentList={apiExperiment.state.experimentList}
-            handleDelete={(uuid: string): Promise<void> =>
-              apiExperiment.delete({ uuid })
-            }
-            handleUpdate={(
-              uuid: string,
-              experiment: Partial<IExperiment>
-            ): Promise<void> => apiExperiment.update({ uuid, experiment })}
-            handleQueryParameters={useCallback(
-              ({ ...params }: ExperimentListQueryParameters): Promise<void> =>
-                apiExperiment.list({ ...params }),
-              [apiExperiment]
-            )}
+          <DropdownExperimentList
+            hasDetailedView={true}
+            label={'My Experiments'}
           />
         </Navigation>
       </header>
@@ -160,10 +145,8 @@ const App = ({
                     <Explore
                       apiCore={apiCore}
                       apiMining={apiMining}
-                      apiModel={apiModel}
                       appConfig={appConfig}
                       apiUser={apiUser}
-                      apiExperiment={apiExperiment}
                       {...props}
                     ></Explore>
                   )}
@@ -180,35 +163,20 @@ const App = ({
                   path={['/review', '/analysis']}
                   // tslint:disable-next-line jsx-no-lambda
                   render={(props): JSX.Element => (
-                    <DescriptiveAnalysis
-                      apiModel={apiModel}
-                      apiCore={apiCore}
-                      apiExperiment={apiExperiment}
-                      {...props}
-                    />
+                    <DescriptiveAnalysis apiCore={apiCore} {...props} />
                   )}
                 />
                 <Route
                   path="/experiment/:uuid"
                   // tslint:disable-next-line jsx-no-lambda
-                  render={(): JSX.Element => (
-                    <ExperimentResult
-                      apiExperiment={apiExperiment}
-                      apiModel={apiModel}
-                      apiCore={apiCore}
-                    />
-                  )}
+                  render={(): JSX.Element => <ExperimentResult />}
                 />
                 <Route
                   exact={true}
                   path="/experiment"
                   // tslint:disable-next-line jsx-no-lambda
-                  render={(): JSX.Element => (
-                    <ExperimentCreate
-                      apiExperiment={apiExperiment}
-                      apiCore={apiCore}
-                      apiModel={apiModel}
-                    />
+                  render={(props): JSX.Element => (
+                    <ExperimentCreate apiCore={apiCore} {...props} />
                   )}
                 />
                 <Route

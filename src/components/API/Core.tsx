@@ -1,15 +1,18 @@
-import { ApolloClient, InMemoryCache } from '@apollo/client';
+import { ApolloClient } from '@apollo/client';
 import request from 'request-promise-native';
 import { Container } from 'unstated';
 import { backendURL } from '../API';
 import { Exareme } from '../API/Exareme';
 import { FORBIDDEN_ACCESS_MESSAGE } from '../constants';
+import { cache } from './GraphQL/cache';
+import { QUERY_DOMAINS } from './GraphQL/queries';
 import {
   Domain,
   Group,
   Variable as VariableData
 } from './GraphQL/types.generated';
-import { QUERY_DOMAINS } from './GraphQL/queries';
+import { graphQLURL } from './RequestURLS';
+import config from './RequestHeaders';
 
 export interface Variable {
   code: string;
@@ -148,8 +151,12 @@ export interface State {
 }
 
 export const apolloClient = new ApolloClient({
-  uri: process.env.REACT_APP_GATEWAY_URL,
-  cache: new InMemoryCache()
+  uri: graphQLURL,
+  headers: {
+    ...config.options?.headers,
+    accept: 'application/json, text/plain, */*'
+  },
+  cache: cache
 });
 
 class Core extends Container<State> {

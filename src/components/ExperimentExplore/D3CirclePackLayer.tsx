@@ -1,81 +1,57 @@
-import './CirclePack.css';
-
+import { useReactiveVar } from '@apollo/client';
 import * as d3 from 'd3';
 import React, { useCallback, useEffect, useRef } from 'react';
-
-import { APICore, APIMining, APIModel, APIExperiment } from '../API';
-import { D3Model, HierarchyCircularNode, ModelResponse } from '../API/Model';
-import { ModelType } from './Container';
-import Explore from './Explore';
+import { zoomNodeVar } from '../API/GraphQL/cache';
+import { HierarchyCircularNode } from '../API/Model';
+import './CirclePack.css';
 
 const diameter = 800;
 const padding = 1.5;
 
 type IView = [number, number, number];
 
+export type GroupVars = {
+  name: string;
+  items: string[];
+  color: string;
+};
+
 const depth = (n: HierarchyCircularNode): number =>
   n.children ? 1 + (d3.max<number>(n.children.map(depth)) || 0) : 1;
 
 export interface Props {
-  apiCore: APICore;
-  apiModel: APIModel;
-  apiMining: APIMining;
-  apiExperiment: APIExperiment;
   selectedNode: HierarchyCircularNode | undefined;
   layout: HierarchyCircularNode;
-  histograms?: any;
-  d3Model: D3Model;
-  handleSelectPathology: (code: string) => void;
   handleSelectNode: (node: HierarchyCircularNode) => void;
-  handleUpdateD3Model: (type?: ModelType, node?: HierarchyCircularNode) => void;
-  handleSelectModel: (d3Model?: ModelResponse) => void;
-  handleGoToAnalysis: Function;
-  setFormulaString: (f: string) => void;
+  groupVars: GroupVars[];
 }
 
 const maxSigns = 13;
-const extractWord = (bit: string) => (bit !== undefined ? bit : '');
 
-// "Sleeping with or checking on attachment figures at night in the past 4 weeks"
-// very basic text splitting, test for 3, 2, 1 words
+// input : "Sleeping with or checking on attachment figures at night in the past 4 weeks"
+// ouput : ['Sleeping', 'with or', 'checking on', 'attachment', 'figures at', 'night in the', 'past 4 weeks']
 const splitText = (text: string): string[] => {
-  const acc: string[] = [];
-  let currentBitIndex = 0;
-  const bits = text.split(/(?=[A-Z][a-z])|[\s+]|_/g); // ["Sleeping", "with", "or", "checking", "on" ...]
+  if (!text) return [];
+  const bits = text.split(/(?=[A-Z][a-z])|[\s+]|_/g);
 
-  bits.forEach((curr, i) => {
-    if (i === currentBitIndex) {
-      const test1word = extractWord(bits[currentBitIndex]);
-      const test2word = [
-        test1word,
-        extractWord(bits[currentBitIndex + 1])
-      ].join(' ');
-      const test3word = [
-        test2word,
-        extractWord(bits[currentBitIndex + 2])
-      ].join(' ');
-
-      if (test3word.length < maxSigns) {
-        currentBitIndex = currentBitIndex + 3;
-        acc.push(test3word);
-      } else if (test2word.length < maxSigns) {
-        currentBitIndex = currentBitIndex + 2;
-        acc.push(test2word);
-      } else {
-        currentBitIndex = currentBitIndex + 1;
-        acc.push(test1word);
-      }
-    }
-  });
-
-  return acc;
+  return bits.reduce(
+    (accumulator, value) => {
+      const lastItem = accumulator.pop() ?? '';
+      const merge = [lastItem, value].join(' ').trim();
+      return merge.length >= maxSigns
+        ? [...accumulator, lastItem, value]
+        : [...accumulator, merge];
+    },
+    ['']
+  );
 };
 
 export default ({ layout, ...props }: Props): JSX.Element => {
   const svgRef = useRef(null);
   const view = useRef<IView>([diameter / 2, diameter / 2, diameter]);
   const focus = useRef(layout);
-  const { d3Model, selectedNode } = props;
+  const { selectedNode, groupVars } = props;
+  const zoomNode = useReactiveVar(zoomNodeVar);
 
   const color = d3
     .scaleLinear<string, string>()
@@ -102,117 +78,91 @@ export default ({ layout, ...props }: Props): JSX.Element => {
     node.attr('r', (d: any) => d.r * k);
   };
 
-  const zoom = (circleNode: HierarchyCircularNode | undefined) => {
-    if (!circleNode) {
-      return;
-    }
+  const zoom = useCallback(
+    (circleNode: HierarchyCircularNode | undefined): void => {
+      if (!circleNode) {
+        return;
+      }
 
-    focus.current = circleNode;
+      focus.current = circleNode;
 
-    // reduce zoom if it's a leaf node
-    const zoomFactor = circleNode.children ? 2 : 3;
-    const targetView: IView = [
-      circleNode.x,
-      circleNode.y,
-      circleNode.r * zoomFactor + padding
-    ];
-    const transition = d3
-      .transition<d3.BaseType>()
-      .duration(d3.event.altKey ? 7500 : 750)
-      .tween('zoom', () => {
-        const i = d3.interpolateZoom(view.current, targetView);
+      // reduce zoom if it's a leaf node
+      const zoomFactor = circleNode.children ? 2 : 3;
+      const targetView: IView = [
+        circleNode.x,
+        circleNode.y,
+        circleNode.r * zoomFactor + padding
+      ];
+      const transition = d3
+        .transition<d3.BaseType>()
+        .duration(d3.event?.altKey ? 7500 : 750)
+        .tween('zoom', () => {
+          const i = d3.interpolateZoom(view.current, targetView);
 
-        return (t: number) => zoomTo(i(t));
-      });
+          return (t: number) => zoomTo(i(t));
+        });
 
-    const shouldDisplay = (
-      dd: HierarchyCircularNode,
-      ffocus: HierarchyCircularNode
-    ): boolean => dd.parent === ffocus || !ffocus.children; // || !dd.children;
+      const shouldDisplay = (
+        dd: HierarchyCircularNode,
+        ffocus: HierarchyCircularNode
+      ): boolean => dd.parent === ffocus || !ffocus.children; // || !dd.children;
 
-    const svg = d3.select(svgRef.current);
-    const text = svg.selectAll('text');
+      const svg = d3.select(svgRef.current);
+      const text = svg.selectAll('text');
 
-    text
-      .filter(function(dd: any) {
-        const el = this as HTMLElement;
-        return (
-          shouldDisplay(dd, focus.current) ||
-          (el && el.style && el.style.display === 'inline')
-        );
-      })
-      .transition(transition as any)
-      .style('fill-opacity', (dd: any) =>
-        shouldDisplay(dd, focus.current) ? 1 : 0
-      )
-      .on('start', function(dd: any) {
-        const el = this as HTMLElement;
-        if (shouldDisplay(dd, focus.current)) {
-          el.style.display = 'inline';
-          shouldDisplay(dd, focus.current);
-        }
-      });
-  };
+      text
+        .filter(function(dd: any) {
+          const el = this as HTMLElement;
+          return (
+            shouldDisplay(dd, focus.current) ||
+            (el && el.style && el.style.display === 'inline')
+          );
+        })
+        .transition(transition as any)
+        .style('fill-opacity', (dd: any) =>
+          shouldDisplay(dd, focus.current) ? 1 : 0
+        )
+        .on('start', function(dd: any) {
+          const el = this as HTMLElement;
+          if (shouldDisplay(dd, focus.current)) {
+            el.style.display = 'inline';
+            shouldDisplay(dd, focus.current);
+          }
+        });
+    },
+    []
+  );
 
   const colorCallback = useCallback(color, [layout]);
 
   useEffect(() => {
     const svg = d3.select(svgRef.current);
-    const circle = svg.selectAll('circle');
+    const circle = svg.selectAll<any, HierarchyCircularNode>('circle');
     circle
       .style('fill-opacity', '1')
       .filter(
-        (d: any) =>
-          ![
-            ...(d3Model.variables || []),
-            ...(d3Model.covariables || []),
-            ...(d3Model.filters || [])
-          ].includes(d)
+        d => ![...(groupVars.flatMap(g => g.items) || [])].includes(d.data.id)
       )
-      .style('fill', (d: any) =>
+      .style('fill', d =>
         d.children ? colorCallback(d.depth) ?? 'white' : 'white'
       );
 
     if (selectedNode && selectedNode !== layout) {
       circle
-        .filter((d: any) => d.data.code === selectedNode.data.code)
+        .filter(d => d.data.id === selectedNode.data.id)
         .transition()
         .duration(80)
         .style('fill-opacity', '0.8');
     }
 
-    if (d3Model.filters && d3Model.filters.length > 0) {
+    groupVars.forEach(g => {
       circle
-        .filter(
-          (d: any) =>
-            d3Model.filters !== undefined && d3Model.filters.includes(d)
-        )
+        .filter(d => g.items.includes(d.data.id))
         .transition()
         .duration(250)
-        .style('fill', 'slategray');
-    }
-    if (d3Model.variables) {
-      circle
-        .filter(
-          (d: any) =>
-            d3Model.variables !== undefined && d3Model.variables.includes(d)
-        )
-        .transition()
-        .duration(250)
-        .style('fill', '#5cb85c');
-    }
-
-    if (d3Model.covariables && d3Model.covariables.length > 0) {
-      circle
-        .filter(
-          (d: any) =>
-            d3Model.covariables !== undefined && d3Model.covariables.includes(d)
-        )
-        .transition()
-        .duration(250)
-        .style('fill', '#f0ad4e');
-    }
-  }, [d3Model, colorCallback, selectedNode, layout]);
+        .style('fill', g.color ?? 'white');
+    });
+  }, [colorCallback, selectedNode, layout, groupVars]);
 
   const zoomCallback = useCallback(zoom, []);
   const selectNodeCallback = useCallback(props.handleSelectNode, []);
@@ -287,9 +237,24 @@ export default ({ layout, ...props }: Props): JSX.Element => {
     zoomTo([layout.x, layout.y, layout.r * 2]);
   }, [layout, colorCallback, selectNodeCallback, zoomCallback]);
 
-  return (
-    <Explore layout={layout} zoom={zoom} {...props}>
-      <svg ref={svgRef} />
-    </Explore>
+  const zoomToNode = useCallback(
+    (id: string) => {
+      const node = layout.descendants().find(n => n.data.id === id);
+
+      if (node) {
+        zoom(node);
+        selectNodeCallback(node);
+      }
+    },
+    [layout, selectNodeCallback, zoom]
   );
+
+  useEffect(() => {
+    if (zoomNode) {
+      zoomToNode(zoomNode);
+      zoomNodeVar(undefined);
+    }
+  }, [zoomNode, zoomToNode]);
+
+  return <svg ref={svgRef} />;
 };

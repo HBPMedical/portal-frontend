@@ -9,9 +9,11 @@ import BinaryTree from '../UI/Visualization/BinaryTree';
 import Warning from '../UI/Visualization/Warning';
 
 export default ({
-  results
+  results,
+  constraint
 }: {
   results: Result[] | undefined;
+  constraint: boolean;
 }): JSX.Element => {
   return (
     <>
@@ -35,7 +37,7 @@ export default ({
               <JSONData data={result.data} />
             )}
             {result.type === MIME_TYPES.HIGHCHARTS && (
-              <Highchart options={result.data} constraint={true} />
+              <Highchart options={result.data} constraint={constraint} />
             )}
             {result.type === MIME_TYPES.JSONBTREE && (
               <BinaryTree data={result.data} />

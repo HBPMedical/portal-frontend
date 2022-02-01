@@ -2,7 +2,7 @@ import * as React from 'react';
 import { Container, Jumbotron } from 'react-bootstrap';
 import { Link } from 'react-router-dom';
 import styled from 'styled-components';
-import HBPLogo from '../../images/hbp_logo_135.png';
+import HBPLogo from '../../images/logo_135.png';
 import Helpdesk from './Helpdesk';
 
 const StyledContainer = styled(Container)`
@@ -64,9 +64,9 @@ export default (): JSX.Element => {
           user management system.
         </p>
         <p className="lead">
-          For detailed information go to the MIP on the{' '}
+          For detailed information:{' '}
           <a
-            href="https://ebrains.eu/"
+            href="https://ebrains.eu/service/medical-informatics-platform/"
             target="_blank"
             rel="noopener noreferrer"
           >
@@ -79,7 +79,7 @@ export default (): JSX.Element => {
           <li>
             General introduction:{' '}
             <a
-              href="https://mip.ebrains.eu/documentation/Deployment%20Pack/1"
+              href="https://github.com/HBPMedical/mip-docs/blob/master/deployment-pack/executive-summary.md"
               target="_blank"
               rel="noopener noreferrer"
             >
@@ -99,7 +99,7 @@ export default (): JSX.Element => {
           <li>
             Available algorithms: Description of{' '}
             <a
-              href="https://mip.ebrains.eu/documentation/Technical%20Documents/11"
+              href="https://github.com/HBPMedical/mip-docs/blob/master/algorithms.md"
               target="_blank"
               rel="noopener noreferrer"
             >
@@ -111,7 +111,7 @@ export default (): JSX.Element => {
           </li>
           <li>
             <a
-              href="https://mip.ebrains.eu/documentation/Deployment%20Pack/9"
+              href="https://github.com/HBPMedical/mip-docs/blob/master/deployment-pack/faq.md"
               target="_blank"
               rel="noopener noreferrer"
             >

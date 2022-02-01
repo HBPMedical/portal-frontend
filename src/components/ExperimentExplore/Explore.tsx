@@ -1,50 +1,25 @@
-import React from 'react';
-import { Button, Card, Dropdown, DropdownButton } from 'react-bootstrap';
-import { BsFillCaretRightFill } from 'react-icons/bs';
+import { useReactiveVar } from '@apollo/client';
+import React, { useEffect, useState } from 'react';
+import { Button, Card, Col, Container, Row } from 'react-bootstrap';
+import { BsFillCaretRightFill, BsTrash } from 'react-icons/bs';
 import styled from 'styled-components';
-
-import { APICore, APIExperiment, APIMining, APIModel } from '../API';
-import { VariableEntity } from '../API/Core';
-import { IExperiment } from '../API/Experiment';
-import { D3Model, HierarchyCircularNode, ModelResponse } from '../API/Model';
+import { APICore } from '../API';
+import {
+  draftExperimentVar,
+  selectedDomainVar,
+  selectedExperimentVar
+} from '../API/GraphQL/cache';
+import { localMutations } from '../API/GraphQL/operations/mutations';
+import { VarType } from '../API/GraphQL/operations/mutations/experiments/toggleVarsExperiment';
+import { Variable } from '../API/GraphQL/types.generated';
 import { ONTOLOGY_URL } from '../constants';
 import AvailableAlgorithms from '../ExperimentCreate/AvailableAlgorithms';
-import DropdownParametersExperimentList from '../UI/DropdownParametersExperimentList';
-import LargeDatasetSelect from '../UI/LargeDatasetSelect';
-import { Exareme } from '../API/Exareme';
-import { ModelType } from './Container';
-import Histograms from './D3Histograms';
-import ModelView from './D3Model';
-import Search from './D3Search';
-
-const DataSelectionBox = styled(Card.Title)`
-  display: flex;
-  padding: 0.4em;
-  margin-bottom: 4px;
-  justify-content: space-between;
-  align-items: center;
-  background-color: #eee;
-`;
-
-const PathologiesBox = styled.div`
-  margin-top: 4px;
-  font-size: 14px;
-  flex: 0 1 1;
-`;
-
-const DatasetsBox = styled.div`
-  margin-top: 4px;
-  font-size: 14px;
-  margin-left: 8px;
-  flex: 0 1 1;
-`;
-
-const SearchBox = styled.div`
-  margin-top: 4px;
-  margin-left: 8px;
-  flex: 2;
-  /* width: 320px; */
-`;
+import DropdownExperimentList from '../UI/Experiment/DropDownList/DropdownExperimentList';
+import VariablesGroupList from '../UI/Variable/VariablesGroupList';
+import { HierarchyCircularNode } from '../utils';
+import CirclePack, { GroupVars } from './D3CirclePackLayer';
+import Histograms from './Histograms';
+import DataSelection from './DataSelection';
 
 const MenuParametersContainer = styled.div`
   display: flex;
@@ -96,120 +71,70 @@ const Col2 = styled.div`
   flex: 1;
 `;
 
-const Col1 = styled(Col2)`
+const Col1 = styled(Col2 as any)`
   margin-right: 8px;
   flex: 1;
 `;
 
 export interface ExploreProps {
   apiCore: APICore;
-  apiModel: APIModel;
-  apiMining: APIMining;
-  apiExperiment: APIExperiment;
-  children?: any;
-  selectedNode: HierarchyCircularNode | undefined;
   layout: HierarchyCircularNode;
-  histograms?: any;
-  d3Model: D3Model;
-  handleSelectPathology: (code: string) => void;
-  handleSelectNode: (node: HierarchyCircularNode) => void;
-  handleUpdateD3Model: (
-    model?: ModelType,
-    node?: HierarchyCircularNode
-  ) => void;
-  handleSelectModel: (model?: ModelResponse) => void;
   handleGoToAnalysis: any; // FIXME Promise<void>
-  zoom: (circleNode: HierarchyCircularNode) => void;
-  setFormulaString: (f: string) => void;
 }
 
 export default (props: ExploreProps): JSX.Element => {
-  const {
-    apiCore,
-    apiModel,
-    apiMining,
-    apiExperiment,
-    children,
-    layout,
-    selectedNode,
-    histograms,
-    d3Model,
-    handleSelectNode,
-    handleSelectPathology,
-    handleUpdateD3Model,
-    handleGoToAnalysis,
-    zoom
-    // setFormulaString
-  } = props;
+  const { apiCore, layout, handleGoToAnalysis } = props;
 
-  const model = apiModel.state.model;
-  const selectedDatasets = model?.query?.trainingDatasets || [];
-  const selectedPathology = model?.query?.pathology || '';
-  const datasets = apiCore.state.pathologiesDatasets[selectedPathology];
+  const selectedExperiment = useReactiveVar(selectedExperimentVar);
+  const draftExperiment = useReactiveVar(draftExperimentVar);
+  const domain = useReactiveVar(selectedDomainVar);
+  const [selectedGroupVars, setSelectedGroupVars] = useState<GroupVars[]>([]);
+  const [selectedNode, setSelectedNode] = useState<
+    HierarchyCircularNode | undefined
+  >();
 
-  const variablesForPathologyDict = apiCore.state.pathologiesVariables;
-  const variablesForPathology: VariableEntity[] | undefined =
-    (selectedPathology &&
-      variablesForPathologyDict &&
-      variablesForPathologyDict[selectedPathology]) ||
-    undefined;
   const independantsVariables =
-    variablesForPathology &&
-    variablesForPathology.filter((v: any) => v.type === 'nominal');
+    domain?.variables.filter(v => v.type === 'nominal') ?? [];
+
+  const lookup = (id: string): Variable | undefined => {
+    return domain?.variables.find(v => v.id === id);
+  };
+
+  useEffect(() => {
+    if (!draftExperiment) return;
+
+    const groupVars = [
+      ['Filters', draftExperiment.filterVariables, 'slategrey'], // => item[0], item[1], item[2]
+      ['Variables', draftExperiment.variables, '#5cb85c'],
+      ['Covariates', draftExperiment.coVariables, '#f0ad4e']
+    ]
+      .filter(item => item[1] && item[1].length)
+      .map(item => ({
+        name: item[0] as string,
+        items: item[1] as string[],
+        color: item[2] as string
+      }));
+
+    setSelectedGroupVars(groupVars);
+  }, [draftExperiment]);
 
   return (
     <>
       <Grid>
         <Col1>
           <Card>
-            <DataSelectionBox>
-              <PathologiesBox>
-                {apiCore.state.pathologies &&
-                  apiCore.state.pathologies.length > 1 && (
-                    <DropdownButton
-                      size="sm"
-                      id="dropdown-pathology"
-                      variant="light"
-                      title={
-                        `${selectedPathology
-                          ?.charAt(0)
-                          .toUpperCase()}${selectedPathology?.slice(1)}` ||
-                        'Pathology'
-                      }
-                    >
-                      {apiCore.state.pathologies.map((g, i: number) => (
-                        <Dropdown.Item
-                          onSelect={(): void => {
-                            handleSelectPathology(g.code);
-                          }}
-                          eventKey={`${i}`}
-                          key={`${g.code}`}
-                          value={g.code}
-                        >
-                          {g.label}
-                        </Dropdown.Item>
-                      ))}
-                    </DropdownButton>
-                  )}
-              </PathologiesBox>
-
-              <DatasetsBox>
-                <LargeDatasetSelect
-                  datasets={datasets}
-                  handleSelectDataset={apiModel.selectDataset}
-                  selectedDatasets={selectedDatasets}
-                  isDropdown={true}
-                ></LargeDatasetSelect>
-              </DatasetsBox>
-              <SearchBox>
-                <Search
-                  hierarchy={layout}
-                  zoom={zoom}
-                  handleSelectNode={handleSelectNode}
-                />
-              </SearchBox>
-            </DataSelectionBox>
-            <Card.Body style={{ margin: 0, padding: 0 }}>{children}</Card.Body>
+            <DataSelection
+              hierarchy={layout}
+              handleSelectNode={setSelectedNode}
+            ></DataSelection>
+            <Card.Body style={{ margin: 0, padding: 0 }}>
+              <CirclePack
+                layout={layout}
+                selectedNode={selectedNode}
+                groupVars={selectedGroupVars}
+                handleSelectNode={setSelectedNode}
+              />
+            </Card.Body>
           </Card>
         </Col1>
         <Col2>
@@ -217,20 +142,14 @@ export default (props: ExploreProps): JSX.Element => {
             <Card.Body>
               <MenuParametersContainer>
                 <ParameterContainer>
-                  <h5 style={{ marginRight: '8px', marginTop: '2px' }}>
-                    Parameters
-                  </h5>
-                  <DropdownParametersExperimentList
-                    apiExperiment={apiExperiment}
-                    handleSelectExperiment={(
-                      experiment?: IExperiment
-                    ): void => {
-                      apiExperiment.setExperiment(experiment);
-                      Exareme.handleSelectExperimentToModel(
-                        apiModel,
-                        experiment
-                      );
-                    }}
+                  <h5 style={{ marginRight: '8px' }}>Parameters</h5>
+                  <DropdownExperimentList
+                    hasDetailedView={false}
+                    label={
+                      selectedExperiment
+                        ? `from ${selectedExperiment.name}`
+                        : 'Select Parameters'
+                    }
                   />
                 </ParameterContainer>
                 <div className="item">
@@ -244,81 +163,97 @@ export default (props: ExploreProps): JSX.Element => {
                 </div>
               </MenuParametersContainer>
 
-              <ModelView
-                d3Model={d3Model}
-                handleUpdateD3Model={handleUpdateD3Model}
-                handleSelectNode={handleSelectNode}
-                zoom={zoom}
-                buttonVariable={
-                  <Button
-                    className="child"
-                    variant={'success'}
-                    size="sm"
-                    disabled={
-                      !selectedNode || selectedNode.data.code === 'root'
-                    }
-                    // tslint:disable-next-line jsx-no-lambda
-                    onClick={() =>
-                      handleUpdateD3Model(ModelType.VARIABLE, selectedNode)
-                    }
-                  >
-                    {d3Model.variables &&
-                    selectedNode &&
-                    d3Model.variables.filter(c =>
-                      selectedNode.leaves().includes(c)
-                    ).length === selectedNode.leaves().length
-                      ? '-'
-                      : '+'}{' '}
-                    As variable
-                  </Button>
-                }
-                buttonCovariable={
-                  <Button
-                    className="child"
-                    variant={'warning'}
-                    size="sm"
-                    disabled={
-                      !selectedNode || selectedNode.data.code === 'root'
-                    }
-                    // tslint:disable-next-line jsx-no-lambda
-                    onClick={() =>
-                      handleUpdateD3Model(ModelType.COVARIABLE, selectedNode)
-                    }
-                  >
-                    {d3Model.covariables &&
-                    selectedNode &&
-                    d3Model.covariables.filter(c =>
-                      selectedNode.leaves().includes(c)
-                    ).length === selectedNode.leaves().length
-                      ? '-'
-                      : '+'}{' '}
-                    As covariate
-                  </Button>
-                }
-                buttonFilter={
-                  <Button
-                    className="child"
-                    variant={'secondary'}
-                    size="sm"
-                    disabled={
-                      !selectedNode || selectedNode.data.code === 'root'
-                    }
-                    // tslint:disable-next-line jsx-no-lambda
-                    onClick={() =>
-                      handleUpdateD3Model(ModelType.FILTER, selectedNode)
-                    }
-                  >
-                    {d3Model.filters &&
-                    selectedNode &&
-                    d3Model.filters.filter(c =>
-                      selectedNode.leaves().includes(c)
-                    ).length === selectedNode.leaves().length
-                      ? '-'
-                      : '+'}{' '}
-                    As filter
-                  </Button>
-                }
-              />
+              <Container>
+                <Row>
+                  {[
+                    [
+                      'As variable',
+                      'success',
+                      [...(draftExperiment.variables || [])],
+                      VarType.VARIABLES
+                    ],
+                    [
+                      'As covariate',
+                      'warning',
+                      [...(draftExperiment.coVariables || [])],
+                      VarType.COVARIATES
+                    ],
+                    [
+                      'As filter',
+                      'secondary',
+                      [...(draftExperiment.filterVariables || [])],
+                      VarType.FILTER
+                    ]
+                  ].map(bag => (
+                    <Col className="px-1" key={bag[0] as string}>
+                      <div className="d-flex justify-content-between mb-1">
+                        <Button
+                          className="child"
+                          variant={bag[1] as string}
+                          size="sm"
+                          disabled={
+                            !selectedNode || selectedNode.data.id === 'root'
+                          }
+                          onClick={(): void => {
+                            if (!selectedNode) return;
+
+                            const vars = (selectedNode
+                              ?.leaves()
+                              .filter(node => node.data.id)
+                              .map(node => node.data.id) ?? []) as string[];
+
+                            localMutations.toggleVarsDraftExperiment(
+                              vars,
+                              bag[3] as VarType
+                            );
+                          }}
+                        >
+                          {bag[2] &&
+                          selectedNode &&
+                          selectedNode
+                            .leaves()
+                            .filter(n => bag[2]?.includes(n.data.id)).length ===
+                            selectedNode.leaves().length
+                            ? '-'
+                            : '+'}{' '}
+                          {bag[0]}
+                        </Button>
+
+                        {bag[2].length > 0 && (
+                          <Button
+                            size="sm"
+                            variant="outline-danger"
+                            onClick={() =>
+                              localMutations.toggleVarsDraftExperiment(
+                                bag[2] as string[],
+                                bag[3] as VarType
+                              )
+                            }
+                          >
+                            <BsTrash />{' '}
+                          </Button>
+                        )}
+                      </div>
+                      <VariablesGroupList
+                        variables={
+                          domain?.variables?.filter(v =>
+                            bag[2].includes(v.id)
+                          ) ?? []
+                        }
+                        handleOnDeleteItem={(id): void => {
+                          localMutations.toggleVarsDraftExperiment(
+                            [id],
+                            bag[3] as VarType
+                          );
+                        }}
+                        handleOnItemClick={(id): void => {
+                          localMutations.setZoomToNode(id);
+                        }}
+                      ></VariablesGroupList>
+                    </Col>
+                  ))}
+                </Row>
+              </Container>
               <AlgorithmTitleContainer>
                 <p>
                   <strong>Available algorithms</strong>
@@ -336,8 +271,8 @@ export default (props: ExploreProps): JSX.Element => {
               <AvailableAlgorithms
                 layout={'inline'}
                 algorithms={apiCore.state.algorithms}
-                lookup={apiCore.lookup}
-                apiModel={apiModel}
+                lookup={lookup}
+                experiment={draftExperiment}
               />
             </Card.Body>
           </Card>
@@ -345,13 +280,12 @@ export default (props: ExploreProps): JSX.Element => {
           <Card className="statistics">
             <Card.Body>
               <Histograms
-                apiMining={apiMining}
-                histograms={histograms}
+                domain={domain}
                 independantsVariables={independantsVariables}
                 selectedNode={selectedNode}
-                handleSelectedNode={handleSelectNode}
-                zoom={zoom}
-                model={model}
+                zoom={(node: HierarchyCircularNode): void =>
+                  localMutations.setZoomToNode(node.data.id)
+                }
               />
             </Card.Body>
           </Card>

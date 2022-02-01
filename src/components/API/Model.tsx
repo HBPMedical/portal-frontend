@@ -4,10 +4,10 @@ import { Container } from 'unstated';
 import { backendURL } from '../API';
 import { LONGITUDINAL_DATASET_TYPE } from '../constants';
 import { VariableEntity } from './Core';
-import { VariableDatum } from '../ExperimentExplore/d3Hierarchy';
+import { NodeData } from '../ExperimentExplore/d3Hierarchy';
 import { ExperimentCreateInput } from './GraphQL/types.generated';
 
-export type HierarchyCircularNode = d3.HierarchyCircularNode<VariableDatum>;
+export type HierarchyCircularNode = d3.HierarchyCircularNode<NodeData>;
 
 export interface D3Model {
   covariables: HierarchyCircularNode[] | undefined;
@@ -161,24 +161,23 @@ class Model extends Container<ModelState> {
         (d3Model.covariables &&
           d3Model.covariables
             .filter(v => v.data.type !== 'nominal')
-            .map(v => ({ code: v.data.code }))) ||
+            .map(v => ({ code: v.data.id }))) ||
         [],
       filters: model?.query.filters || '',
       filterVariables:
-        (d3Model.filters &&
-          d3Model.filters.map(v => ({ code: v.data.code }))) ||
+        (d3Model.filters && d3Model.filters.map(v => ({ code: v.data.id }))) ||
         [],
       formula: model?.query.formula || undefined,
       groupings:
         (d3Model.covariables &&
           d3Model.covariables
             .filter(v => v.data.type === 'nominal')
-            .map(v => ({ code: v.data.code }))) ||
+            .map(v => ({ code: v.data.id }))) ||
         [],
       trainingDatasets: datasets,
       variables:
         (d3Model.variables &&
-          d3Model.variables.map(v => ({ code: v.data.code }))) ||
+          d3Model.variables.map(v => ({ code: v.data.id }))) ||
         [],
       pathology: (model && model.query && model.query.pathology) || ''
     };

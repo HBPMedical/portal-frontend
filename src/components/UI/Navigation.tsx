@@ -2,10 +2,7 @@ import * as React from 'react';
 import { Button } from 'react-bootstrap';
 import { NavLink } from 'react-router-dom';
 import styled from 'styled-components';
-
-import logo from '../../images/hbp-logo.png';
-import { IExperiment } from '../API/Experiment';
-
+import logo from '../../images/logo.png';
 import MIPContext from '../App/MIPContext';
 import HelpButton from './HelpButton';
 
@@ -26,6 +23,18 @@ const NavBar = styled.nav`
   #experiment-dropdown,
   #help-dropdown {
     font-size: 16px;
+  }
+
+  .experiments.dropdown-list {
+    margin-right: 10px;
+
+    & > .dropdown-btn {
+      color: white;
+      &:hover {
+        color: #ccc !important;
+        text-decoration: none;
+      }
+    }
   }
 
   .experiment-nav a:link,
@@ -123,7 +132,6 @@ interface Props {
   name?: string;
   datacatalogueUrl: string | undefined;
   logout?: () => void;
-  experiment: IExperiment | undefined;
   children: JSX.Element;
 }
 
@@ -134,7 +142,6 @@ export default ({
   name,
   datacatalogueUrl,
   logout,
-  experiment,
   children
 }: Props): JSX.Element => {
   const instanceName = name || 'MIP';
@@ -156,12 +163,7 @@ export default ({
             <span> &gt; </span>
             <GroupLink to="/review">Analysis</GroupLink>
             <span> &gt; </span>
-            {experiment && (
-              <GroupLink to={`/experiment/${experiment.uuid}`}>
-                Experiment
-              </GroupLink>
-            )}
-            {!experiment && <GroupLink to="/experiment">Experiment</GroupLink>}
+            <GroupLink to="/experiment">Experiment</GroupLink>
           </Group>
           <DropdownWrapper className="links">{children}</DropdownWrapper>
           <div className="experiment-nav links">

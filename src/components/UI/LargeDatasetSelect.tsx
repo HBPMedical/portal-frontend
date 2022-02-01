@@ -1,14 +1,12 @@
-import React, { useRef, useEffect } from 'react';
+import React, { useEffect, useRef } from 'react';
 import { Button, Form } from 'react-bootstrap';
 import styled from 'styled-components';
-
-import { VariableEntity } from '../API/Core';
-import { LONGITUDINAL_DATASET_TYPE } from '../constants';
+import { Dataset } from '../API/GraphQL/types.generated';
 
 interface Props {
-  datasets?: VariableEntity[];
-  handleSelectDataset: (e: VariableEntity) => void;
-  selectedDatasets: VariableEntity[];
+  datasets?: Dataset[];
+  handleSelectDataset: (id: string) => void;
+  selectedDatasets: string[];
   isDropdown?: boolean;
 }
 
@@ -101,9 +99,8 @@ export default ({
   const node = useRef<HTMLDivElement | null>(null);
 
   // TODO: tag dataset as longitudinal
-  const r = new RegExp(LONGITUDINAL_DATASET_TYPE);
-  const ndatasets = datasets?.filter(d => !r.test(d.code));
-  const ldatasets = datasets?.filter(d => r.test(d.code));
+  const ndatasets = datasets?.filter(d => !d.isLongitudinal);
+  const ldatasets = datasets?.filter(d => d.isLongitudinal);
 
   const handleClickOutside = (event: MouseEvent): void => {
     // inside click
@@ -125,18 +122,18 @@ export default ({
     };
   }, [setVisible, visible]);
 
-  const checkboxFor = (sets: VariableEntity[]): JSX.Element[] =>
+  const checkboxFor = (sets: Dataset[]): JSX.Element[] =>
     sets.map(dataset => (
-      <span key={dataset.code}>
+      <span key={dataset.id}>
         <Form.Check
           inline={true}
           type="checkbox"
-          id={`default-${dataset.code}`}
+          id={`default-${dataset.id}`}
           label={dataset.label}
           onChange={(): void => {
-            handleSelectDataset(dataset);
+            handleSelectDataset(dataset.id);
           }}
-          checked={selectedDatasets.map(s => s.code).includes(dataset.code)}
+          checked={selectedDatasets.includes(dataset.id)}
         ></Form.Check>
       </span>
     ));

@@ -1,22 +1,11 @@
-import React, { useCallback, useEffect, useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { Form } from 'react-bootstrap';
 import Select from 'react-select';
 import styled from 'styled-components';
-import { APICore } from '../API';
-import { Algorithm, AlgorithmParameter, VariableEntity } from '../API/Core';
-import { Query } from '../API/Model';
+import { Algorithm, AlgorithmParameter } from '../API/Core';
+import { Experiment, Variable } from '../API/GraphQL/types.generated';
 import CategoryChooser from './CategoryValuesChooser';
 import LogisticCategory from './LogisticCategory';
-
-type LocalVar = { value: string; label: string }[] | undefined;
-
-interface Props {
-  apiCore: APICore;
-  algorithm?: Algorithm;
-  parameters?: AlgorithmParameter[];
-  query?: Query;
-  handleChangeParameters: (parameters: AlgorithmParameter[]) => void;
-}
 
 const Header = styled.div`
   margin-bottom: 16px;
@@ -43,42 +32,51 @@ const HelpBlock = styled.div`
   }
 `;
 
+type LocalVar = { value: string; label: string }[] | undefined;
+
+interface Props {
+  algorithm?: Algorithm;
+  parameters?: AlgorithmParameter[];
+  experiment: Experiment;
+  handleChangeParameters: (parameters: AlgorithmParameter[]) => void;
+  lookup: (id: string) => Variable | undefined;
+}
+
 const Parameters = ({
-  apiCore,
   algorithm,
   parameters,
-  query,
-  handleChangeParameters
+  experiment,
+  handleChangeParameters,
+  lookup
 }: Props): JSX.Element => {
   const [selectedOptions, setSelectedOptions] = useState<any>();
   const [modalities, setModalities] = useState<LocalVar>();
   const [validated, setValidated] = useState(false);
 
   // TODO effect in Select component
-  const lookupCallback = useCallback(apiCore.lookup, []);
   useEffect(() => {
-    const categoricalVariables: VariableEntity[] | undefined = query && [
-      ...(query.groupings || []),
-      ...(query.coVariables || []),
-      ...(query.variables || [])
+    const categoricalVariables: string[] | undefined = experiment && [
+      ...(experiment.coVariables || []),
+      ...(experiment.variables || [])
     ];
 
     const vars =
-      categoricalVariables &&
-      categoricalVariables
-        .map(v => lookupCallback(v.code, query?.pathology))
-        .filter(v => v.type === 'nominal');
+      (categoricalVariables &&
+        categoricalVariables
+          .map(v => lookup(v))
+          .filter(v => v && v.type === 'nominal')) ??
+      [];
 
     const first = (vars && vars.length && vars[0]) || undefined;
     if (first && first.enumerations) {
       setModalities(
-        first.enumerations.map((v: any) => ({
-          value: v.code,
-          label: v.label
+        first.enumerations.map(cat => ({
+          value: cat.id,
+          label: cat.label ?? cat.id
         }))
       );
     }
-  }, [query, lookupCallback]);
+  }, [experiment, lookup]);
 
   const handleChangeCategoryParameter = (
     label: string,
@@ -234,26 +232,26 @@ const Parameters = ({
 
                     {parameter.label === 'referencevalues' && (
                       <CategoryChooser
-                        apiCore={apiCore}
-                        query={query}
+                        experiment={experiment}
                         parameterName={parameter.name}
                         required={parameter.valueNotBlank === 'true'}
                         handleChangeCategoryParameter={
                           handleChangeCategoryParameter
                         }
+                        lookup={lookup}
                       />
                     )}
 
                     {(parameter.name === 'negative_level' ||
                       parameter.name === 'positive_level') && (
                       <LogisticCategory
-                        apiCore={apiCore}
-                        query={query}
+                        experiment={experiment}
                         parameterName={parameter.name}
                         required={parameter.valueNotBlank === 'true'}
                         handleChangeCategoryParameter={
                           handleChangeCategoryParameter
                         }
+                        lookup={lookup}
                       />
                     )}
 
@@ -269,17 +267,13 @@ const Parameters = ({
                           handleChangeParameter(event, parameter.label)
                         }
                       >
-                        {apiCore
-                          .lookup(
-                            query?.variables?.find((v, i) => i === 0)?.code ||
-                              '',
-                            query?.pathology
-                          )
-                          ?.enumerations?.map((v: VariableEntity) => (
-                            <option key={v.code} value={v.code}>
-                              {v.label}
-                            </option>
-                          ))}
+                        {lookup(
+                          experiment?.variables[0] || ''
+                        )?.enumerations?.map(v => (
+                          <option key={v.id} value={v.id}>
+                            {v.label}
+                          </option>
+                        ))}
                       </Form.Control>
                     )}
 

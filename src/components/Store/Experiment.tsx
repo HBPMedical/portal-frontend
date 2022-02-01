@@ -53,14 +53,6 @@ const useExperiment = (
     [experimentListQueryParameters]
   );
 
-  React.useEffect(() => {
-    console.log('mounted', selectedExperiment);
-
-    return () => {
-      console.log('unmoounted', selectedExperiment);
-    };
-  }, [selectedExperiment]);
-
   return {
     experimentList,
     list,

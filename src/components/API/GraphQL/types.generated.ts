@@ -16,35 +16,42 @@ export type Scalars = {
 export type Algorithm = {
   __typename?: 'Algorithm';
   description?: Maybe<Scalars['String']>;
+  id: Scalars['String'];
   label?: Maybe<Scalars['String']>;
-  name: Scalars['String'];
   parameters?: Maybe<Array<AlgorithmParameter>>;
   type?: Maybe<Scalars['String']>;
 };
 
 export type AlgorithmInput = {
-  name: Scalars['String'];
+  id: Scalars['String'];
   parameters?: Maybe<Array<AlgorithmParamInput>>;
   type: Scalars['String'];
 };
 
 export type AlgorithmParamInput = {
-  name: Scalars['String'];
-  value: Array<Scalars['String']>;
+  id: Scalars['String'];
+  type?: Maybe<ParamType>;
+  value: Scalars['String'];
 };
 
 export type AlgorithmParameter = {
   __typename?: 'AlgorithmParameter';
   defaultValue?: Maybe<Scalars['String']>;
   description?: Maybe<Scalars['String']>;
+  id: Scalars['String'];
   isMultiple?: Maybe<Scalars['Boolean']>;
   isRequired?: Maybe<Scalars['Boolean']>;
   label?: Maybe<Scalars['String']>;
   max?: Maybe<Scalars['String']>;
   min?: Maybe<Scalars['String']>;
-  name: Scalars['String'];
   type?: Maybe<Scalars['String']>;
-  value?: Maybe<Array<Scalars['String']>>;
+  value?: Maybe<Scalars['String']>;
+};
+
+export type Author = {
+  __typename?: 'Author';
+  fullname?: Maybe<Scalars['String']>;
+  username?: Maybe<Scalars['String']>;
 };
 
 export type Category = {
@@ -59,9 +66,16 @@ export type ChartAxis = {
   label?: Maybe<Scalars['String']>;
 };
 
+export type Dataset = {
+  __typename?: 'Dataset';
+  id: Scalars['String'];
+  isLongitudinal?: Maybe<Scalars['Boolean']>;
+  label?: Maybe<Scalars['String']>;
+};
+
 export type Domain = {
   __typename?: 'Domain';
-  datasets: Array<Category>;
+  datasets: Array<Dataset>;
   description?: Maybe<Scalars['String']>;
   groups: Array<Group>;
   id: Scalars['String'];
@@ -73,24 +87,28 @@ export type Domain = {
 export type Experiment = {
   __typename?: 'Experiment';
   algorithm: Algorithm;
-  author?: Maybe<Scalars['String']>;
+  author?: Maybe<Author>;
+  coVariables?: Maybe<Array<Scalars['String']>>;
   createdAt?: Maybe<Scalars['Float']>;
   datasets: Array<Scalars['String']>;
   domain: Scalars['String'];
   filter?: Maybe<Scalars['String']>;
+  filterVariables?: Maybe<Array<Scalars['String']>>;
   finishedAt?: Maybe<Scalars['Float']>;
+  formula?: Maybe<Formula>;
+  id: Scalars['String'];
   name: Scalars['String'];
   results?: Maybe<Array<ResultUnion>>;
   shared: Scalars['Boolean'];
   status?: Maybe<Scalars['String']>;
   updateAt?: Maybe<Scalars['Float']>;
-  uuid?: Maybe<Scalars['String']>;
   variables: Array<Scalars['String']>;
   viewed?: Maybe<Scalars['Boolean']>;
 };
 
 export type ExperimentCreateInput = {
   algorithm: AlgorithmInput;
+  coVariables?: Maybe<Array<Scalars['String']>>;
   datasets: Array<Scalars['String']>;
   domain: Scalars['String'];
   filter?: Maybe<Scalars['String']>;
@@ -102,6 +120,7 @@ export type ExperimentCreateInput = {
 
 export type ExperimentEditInput = {
   name?: Maybe<Scalars['String']>;
+  shared?: Maybe<Scalars['Boolean']>;
   viewed?: Maybe<Scalars['Boolean']>;
 };
 
@@ -111,8 +130,14 @@ export type ExtraLineInfo = {
   values: Array<Scalars['String']>;
 };
 
+export type Formula = {
+  __typename?: 'Formula';
+  interactions?: Maybe<Array<Array<Scalars['String']>>>;
+  transformations?: Maybe<Array<Transformation>>;
+};
+
 export type FormulaTransformation = {
-  name: Scalars['String'];
+  id: Scalars['String'];
   operation: Scalars['String'];
 };
 
@@ -148,8 +173,8 @@ export type HeatMapResult = {
   __typename?: 'HeatMapResult';
   matrix: Array<Array<Scalars['Float']>>;
   name: Scalars['String'];
-  xAxis: ChartAxis;
-  yAxis: ChartAxis;
+  xAxis?: Maybe<ChartAxis>;
+  yAxis?: Maybe<ChartAxis>;
 };
 
 export type LineChartResult = {
@@ -198,29 +223,37 @@ export type MutationCreateExperimentArgs = {
 
 export type MutationEditExperimentArgs = {
   data: ExperimentEditInput;
-  uuid: Scalars['String'];
+  id: Scalars['String'];
 };
 
 
 export type MutationRemoveExperimentArgs = {
-  uuid: Scalars['String'];
+  id: Scalars['String'];
 };
+
+export enum ParamType {
+  Number = 'NUMBER',
+  String = 'STRING'
+}
 
 export type PartialExperiment = {
   __typename?: 'PartialExperiment';
   algorithm?: Maybe<Algorithm>;
-  author?: Maybe<Scalars['String']>;
+  author?: Maybe<Author>;
+  coVariables?: Maybe<Array<Scalars['String']>>;
   createdAt?: Maybe<Scalars['Float']>;
   datasets?: Maybe<Array<Scalars['String']>>;
   domain?: Maybe<Scalars['String']>;
   filter?: Maybe<Scalars['String']>;
+  filterVariables?: Maybe<Array<Scalars['String']>>;
   finishedAt?: Maybe<Scalars['Float']>;
+  formula?: Maybe<Formula>;
+  id?: Maybe<Scalars['String']>;
   name?: Maybe<Scalars['String']>;
   results?: Maybe<Array<ResultUnion>>;
   shared?: Maybe<Scalars['Boolean']>;
   status?: Maybe<Scalars['String']>;
   updateAt?: Maybe<Scalars['Float']>;
-  uuid?: Maybe<Scalars['String']>;
   variables?: Maybe<Array<Scalars['String']>>;
   viewed?: Maybe<Scalars['Boolean']>;
 };
@@ -229,8 +262,8 @@ export type Query = {
   __typename?: 'Query';
   algorithms: Array<Algorithm>;
   domains: Array<Domain>;
-  experiments: ListExperiments;
-  expriment: Experiment;
+  experiment: Experiment;
+  experimentList: ListExperiments;
 };
 
 
@@ -239,19 +272,19 @@ export type QueryDomainsArgs = {
 };
 
 
-export type QueryExperimentsArgs = {
+export type QueryExperimentArgs = {
+  id: Scalars['String'];
+};
+
+
+export type QueryExperimentListArgs = {
   name?: Maybe<Scalars['String']>;
   page?: Maybe<Scalars['Float']>;
 };
 
-
-export type QueryExprimentArgs = {
-  uuid: Scalars['String'];
-};
-
 export type RawResult = {
   __typename?: 'RawResult';
-  rawdata: Scalars['JSON'];
+  rawdata?: Maybe<Scalars['JSON']>;
 };
 
 export type ResultUnion = GroupsResult | HeatMapResult | LineChartResult | RawResult | TableResult;
@@ -261,6 +294,14 @@ export type TableResult = {
   data: Array<Array<Scalars['String']>>;
   headers: Array<Header>;
   name: Scalars['String'];
+};
+
+export type Transformation = {
+  __typename?: 'Transformation';
+  /** Variable's id on which to apply the transformation */
+  id: Scalars['String'];
+  /** Transformation to apply */
+  operation: Scalars['String'];
 };
 
 export type Variable = {

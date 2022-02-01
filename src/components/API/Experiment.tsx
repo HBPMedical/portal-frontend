@@ -99,7 +99,10 @@ export interface IExperimentPrototype {
 
 export interface IExperiment extends IExperimentPrototype, IExperimentError {
   uuid: string;
-  createdBy: string;
+  createdBy: {
+    username: string;
+    fullname: string;
+  };
   created: string;
   finisehd: string;
   shared?: boolean;
@@ -197,11 +200,12 @@ class Experiment extends Container<State> {
         ...experiment,
         status: 'error',
         result: [
-          {
-            type: MIME_TYPES.ERROR,
-            data: 'An unknown error occured. Please retry in a moment'
-          },
-          ...(experiment?.result || [])
+          ...(experiment?.result ?? [
+            {
+              type: MIME_TYPES.ERROR,
+              data: 'An unknown error occured. Please retry in a moment'
+            }
+          ])
         ]
       };
     }
@@ -485,20 +489,22 @@ class Experiment extends Container<State> {
         const formula =
           (data &&
             (data.transformations || data.interactions) && {
-              single: data?.transformations?.map(t => ({
-                // eslint-disable-next-line @typescript-eslint/camelcase
-                var_name: t.name,
-                // eslint-disable-next-line @typescript-eslint/camelcase
-                unary_operation: t.operation
-              })),
-              interactions: data?.interactions?.map(v =>
-                v.reduce((a, e, i) => ({ ...a, [`var${i + 1}`]: e }), {})
-              )
+              single:
+                data?.transformations?.map(t => ({
+                  // eslint-disable-next-line @typescript-eslint/camelcase
+                  var_name: t.id,
+                  // eslint-disable-next-line @typescript-eslint/camelcase
+                  unary_operation: t.operation
+                })) ?? [],
+              interactions:
+                data?.interactions?.map(v =>
+                  v.reduce((a, e, i) => ({ ...a, [`var${i + 1}`]: e }), {})
+                ) ?? []
             }) ||
           null;
 
         if (p.label === 'formula') {
-          value = JSON.stringify(formula);
+          value = formula ? JSON.stringify(formula) : '';
         }
       }
 

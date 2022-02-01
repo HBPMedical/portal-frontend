@@ -1,191 +1,125 @@
-import * as React from 'react';
-import { Card } from 'react-bootstrap';
+import { useReactiveVar } from '@apollo/client';
+import React, { useState } from 'react';
+import { Card, Col, Container, Row } from 'react-bootstrap';
 import { RouteComponentProps, withRouter } from 'react-router-dom';
-
-import { APICore, APIExperiment, APIModel } from '../API';
-import Datasets from '../UI/Datasets';
+import { domainsVar } from '../API/GraphQL/cache';
+import { localMutations } from '../API/GraphQL/operations/mutations';
+import { useGetExperimentQuery } from '../API/GraphQL/queries.generated';
+import { Domain, Experiment } from '../API/GraphQL/types.generated';
+import ApolloErrorHandler from '../UI/ApolloErrorHandler';
+import ListSection from '../UI/ListSection';
 import Model from '../UI/Model';
-import { Exareme } from '../API/Exareme';
 import { ExperimentResult, ExperimentResultHeader } from './';
-import Algorithm from './Algorithms';
 
 interface RouteParams {
   uuid: string;
   slug: string;
 }
 
-interface Props extends RouteComponentProps<RouteParams> {
-  apiExperiment: APIExperiment;
-  apiModel: APIModel;
-  apiCore: APICore;
-}
+type Props = RouteComponentProps<RouteParams>;
 
-class Experiment extends React.Component<Props> {
-  private intervalId: any;
+const ContainerWrap = ({ ...props }: Props): JSX.Element => {
+  const uuid = props.match.params.uuid;
+  const [isPolling, setIsPolling] = useState<boolean>(false);
+  const [experiment, setExperiment] = useState<Experiment>();
+  const [domain, setDomain] = useState<Domain>();
+  const domains = useReactiveVar<Domain[]>(domainsVar);
 
-  async componentDidMount(): Promise<void> {
-    const params = this.urlParams(this.props);
-    if (!params) {
-      return;
-    }
-    const { uuid } = params;
-    const { apiExperiment, apiModel } = this.props;
+  const { startPolling, stopPolling, error } = useGetExperimentQuery({
+    variables: { id: uuid },
+    fetchPolicy: 'network-only',
+    notifyOnNetworkStatusChange: true, // needed to refire onCompleted after each poll
+    onCompleted: data => {
+      const domainId = data.experiment.domain;
+      const newExperiment = data.experiment as Experiment;
+      if (domainId && domainId !== domain?.id)
+        setDomain(domains.find(d => d.id === domainId));
 
-    const experiment = await apiExperiment.get({ uuid });
-    if (apiExperiment.state.experiment?.status === 'pending') {
-      this.pollFetchExperiment(uuid);
-    }
-
-    const e = apiExperiment.isExperiment(apiExperiment.state.experiment);
-    if (e) {
-      Exareme.handleSelectExperimentToModel(apiModel, e);
-
-      if (!e.viewed) {
-        apiExperiment.markAsViewed({ uuid });
-      }
-    }
-
-    return experiment;
-  }
-
-  async componentDidUpdate(prevProps: Props): Promise<void> {
-    const params = this.urlParams(this.props);
-    if (!params) {
-      return;
-    }
-    const { uuid } = params;
-    const previousParams = this.urlParams(prevProps);
-    const previousUUID = previousParams && previousParams.uuid;
-
-    const { apiExperiment, apiModel } = this.props;
-    if (uuid !== previousUUID) {
-      await apiExperiment.get({ uuid });
-      const e = apiExperiment.isExperiment(apiExperiment.state.experiment);
-      if (e) {
-        Exareme.handleSelectExperimentToModel(apiModel, e);
-        if (!e.viewed) {
-          apiExperiment.markAsViewed({ uuid });
-        }
+      switch (newExperiment.status) {
+        case 'pending':
+          if (!isPolling) {
+            startPolling(1000);
+            setIsPolling(true);
+          }
+          break;
       }
 
-      if (apiExperiment.state.experiment?.status === 'pending') {
-        this.pollFetchExperiment(uuid);
+      if (newExperiment.status !== 'pending' && isPolling) {
+        stopPolling();
+        setIsPolling(false);
       }
-    } else {
-      if (apiExperiment.state.experiment?.status !== 'pending') {
-        clearInterval(this.intervalId);
-      }
+
+      if (
+        newExperiment.id !== experiment?.id ||
+        experiment?.status !== newExperiment.status
+      )
+        setExperiment(newExperiment);
     }
-  }
+  });
 
-  componentWillUnmount(): void {
-    clearInterval(this.intervalId);
-  }
-
-  render(): JSX.Element {
-    const { apiExperiment, apiModel, apiCore } = this.props;
-    const model = apiModel?.state?.model;
-    const experiment = apiExperiment.state.experiment;
-
-    return (
-      <div className="Experiment Result">
-        <div className="header">
-          <ExperimentResultHeader
-            experiment={apiExperiment.isExperiment(
-              apiExperiment.state.experiment
-            )}
-            handleDeleteExperiment={this.handleDeleteExperiment}
-            handleShareExperiment={this.handleShareExperiment}
-            handleCreateNewExperiment={this.handleCreateNewExperiment}
-          />
-        </div>
-        <div className="content">
-          <div className="sidebar">
-            <Card>
-              <Card.Body>
-                {model?.query?.pathology && (
-                  <section>
-                    <h4>Pathology</h4>
-                    <p>{model?.query?.pathology || ''}</p>
-                  </section>
-                )}
-                <section>
-                  <Datasets model={model} />
-                </section>
-                <section>
-                  <Algorithm
-                    experiment={apiExperiment.isExperiment(experiment)}
-                  />
-                </section>
-                <section>
-                  <Model model={model} lookup={apiCore.lookup} />
-                </section>
-              </Card.Body>
-            </Card>
+  return (
+    <>
+      {error && (
+        <Container fluid className="text-center">
+          <Row>
+            <Col>
+              <Card className="py-5">
+                <Card.Body>
+                  {error.graphQLErrors.map((e, i) => (
+                    <ApolloErrorHandler key={i} error={e} />
+                  ))}
+                </Card.Body>
+              </Card>
+            </Col>
+          </Row>
+        </Container>
+      )}
+      {!error && (
+        <div className="Experiment Result">
+          <div className="header">
+            <ExperimentResultHeader
+              handleCopyExperiment={(): void => {
+                if (experiment) localMutations.selectExperiment(experiment);
+              }}
+              experiment={experiment}
+            />
           </div>
-          <div className="results">
-            <ExperimentResult experimentState={apiExperiment.state} />
+          <div className="content">
+            <div className="sidebar">
+              <Card>
+                <Card.Body>
+                  {experiment && (
+                    <>
+                      <ListSection
+                        title="Domain"
+                        list={[domain?.label ?? domain?.id ?? '']}
+                      />
+                      <ListSection
+                        title="Datasets"
+                        list={
+                          domain?.datasets
+                            .filter(d => experiment.datasets.includes(d.id))
+                            .map(d => d.label ?? d.id) ?? []
+                        }
+                      />
+                      <section>
+                        {domain && experiment && (
+                          <Model experiment={experiment} domain={domain} />
+                        )}
+                      </section>
+                    </>
+                  )}
+                </Card.Body>
+              </Card>
+            </div>
+            <div className="results">
+              <ExperimentResult experiment={experiment} />
+            </div>
           </div>
         </div>
-      </div>
-    );
-  }
+      )}
+    </>
+  );
+};
 
-  private urlParams = (
-    props: Props
-  ):
-    | {
-        uuid: string;
-        slug: string;
-      }
-    | undefined => {
-    const { match } = props;
-    if (!match) {
-      return;
-    }
-    return match.params;
-  };
-
-  private handleDeleteExperiment = (uuid: string): void => {
-    const { apiExperiment } = this.props;
-    apiExperiment.delete({ uuid });
-    const { history } = this.props;
-    history.push(`/experiment`);
-  };
-
-  private handleShareExperiment = async (): Promise<void> => {
-    const { apiExperiment } = this.props;
-    const experiment = apiExperiment.isExperiment(
-      apiExperiment.state.experiment
-    );
-    const shared = experiment?.shared;
-    const params = this.urlParams(this.props);
-
-    if (!params) {
-      return;
-    }
-
-    const { uuid } = params;
-    return shared
-      ? await apiExperiment.markAsUnshared({ uuid })
-      : await apiExperiment.markAsShared({ uuid });
-  };
-
-  private handleCreateNewExperiment = (): void => {
-    const { history } = this.props;
-    history.push(`/analysis`);
-  };
-
-  private pollFetchExperiment = (uuid: string): void => {
-    clearInterval(this.intervalId);
-    const { apiExperiment } = this.props;
-    this.intervalId = setInterval(async () => {
-      await apiExperiment.get({ uuid });
-      if (apiExperiment.state.experiment?.status !== 'pending') {
-        clearInterval(this.intervalId);
-      }
-    }, 10 * 1000);
-  };
-}
-
-export default withRouter(Experiment);
+export default withRouter(ContainerWrap);

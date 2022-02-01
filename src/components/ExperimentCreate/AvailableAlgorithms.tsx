@@ -1,9 +1,8 @@
 import * as React from 'react';
 import { Button, Card, OverlayTrigger, Popover } from 'react-bootstrap';
 import styled from 'styled-components';
-
-import { APIModel } from '../API';
-import { Algorithm, AlgorithmParameter, VariableEntity } from '../API/Core';
+import { Algorithm, AlgorithmParameter } from '../API/Core';
+import { Experiment, Variable } from '../API/GraphQL/types.generated';
 
 interface AvailableAlgorithm extends Algorithm {
   enabled: boolean;
@@ -33,41 +32,35 @@ const Container = styled.div`
 
 const AvailableAlgorithms = ({
   algorithms,
-  lookup,
   layout = 'default',
+  experiment,
   handleSelectMethod,
-  apiModel
+  lookup
 }: {
   algorithms: Algorithm[] | undefined;
   layout?: string;
-  lookup: (code: string, pathologyCode: string | undefined) => VariableEntity;
+  experiment: Experiment;
+  lookup: (id: string) => Variable | undefined;
   handleSelectMethod?: (method: Algorithm) => void;
-  apiModel: APIModel;
 }): JSX.Element => {
-  const query = apiModel.state.model?.query;
   const modelVariable =
-    (query &&
-      query.variables &&
-      query.variables.map(v => lookup(v.code, query.pathology))) ||
-    [];
+    (experiment.variables && experiment.variables.map(v => lookup(v))).filter(
+      (v): v is Variable => !!v
+    ) || [];
   const modelCovariables = [
-    ...((query &&
-      query.coVariables &&
-      query.coVariables.map(v => lookup(v.code, query?.pathology))) ||
-      []),
-    ...((query &&
-      query.groupings &&
-      query.groupings.map(v => lookup(v.code, query?.pathology))) ||
-      [])
+    ...(
+      (experiment.coVariables && experiment.coVariables.map(v => lookup(v))) ||
+      []
+    ).filter((v): v is Variable => !!v)
   ];
 
   const algorithmEnabled = (
     parameters: AlgorithmParameter[],
-    { x, y }: { x: VariableEntity[]; y: VariableEntity[] }
+    { x, y }: { x: Variable[]; y: Variable[] }
   ): boolean => {
     const checkSelectedVariables = (
       axis: string,
-      variables: VariableEntity[]
+      variables: Variable[]
     ): boolean => {
       const definition = parameters.find(p => p.label === axis);
       if (definition) {

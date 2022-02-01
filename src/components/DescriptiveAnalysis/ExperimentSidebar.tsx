@@ -1,60 +1,56 @@
 import React from 'react';
 import { Card } from 'react-bootstrap';
-import { APICore, APIExperiment, APIModel } from '../API';
-import DropdownParametersExperimentList from '../UI/DropdownParametersExperimentList';
+import { Domain, Experiment } from '../API/GraphQL/types.generated';
+import DropdownExperimentList from '../UI/Experiment/DropDownList/DropdownExperimentList';
 import LargeDatasetSelect from '../UI/LargeDatasetSelect';
-import { Exareme } from '../API/Exareme';
 import Model from '../UI/Model';
-import { IExperiment } from '../API/Experiment';
-import { VariableEntity } from '../API/Core';
-import { ModelResponse } from '../API/Model';
 
 interface Props {
-  apiModel: APIModel;
-  apiCore: APICore;
-  apiExperiment: APIExperiment;
-  model?: ModelResponse;
-  datasets: VariableEntity[];
+  domain?: Domain;
+  selectedExperiment: Experiment | undefined;
+  draftExperiment: Experiment;
+  handleSelectDataset: (id: string) => void;
 }
 
 const ExperimentSidebar = ({
-  apiExperiment,
-  apiModel,
-  apiCore,
-  model,
-  datasets
-}: Props) => (
-  <Card className="datasets">
-    <Card.Body>
-      <section>
-        <DropdownParametersExperimentList
-          apiExperiment={apiExperiment}
-          handleSelectExperiment={(experiment?: IExperiment): void => {
-            apiExperiment.setExperiment(experiment);
-            Exareme.handleSelectExperimentToModel(apiModel, experiment);
-          }}
-        />
-      </section>
-      {model?.query?.pathology && (
+  domain,
+  selectedExperiment,
+  draftExperiment,
+  handleSelectDataset
+}: Props): JSX.Element => {
+  return (
+    <Card className="datasets">
+      <Card.Body>
         <section>
-          <h4>Pathology</h4>
-          <p>{model?.query?.pathology}</p>
+          <DropdownExperimentList
+            hasDetailedView={false}
+            label={
+              selectedExperiment
+                ? `from ${selectedExperiment.name}`
+                : 'Select Parameters'
+            }
+          />
         </section>
-      )}
-      {model?.query?.trainingDatasets && (
+        {domain && (
+          <section>
+            <h4>{domain.label ?? domain.id}</h4>
+          </section>
+        )}
+        {draftExperiment && (
+          <section>
+            <LargeDatasetSelect
+              datasets={domain?.datasets}
+              selectedDatasets={draftExperiment.datasets}
+              handleSelectDataset={handleSelectDataset}
+            />
+          </section>
+        )}
         <section>
-          <LargeDatasetSelect
-            datasets={datasets}
-            handleSelectDataset={apiModel.selectDataset}
-            selectedDatasets={model?.query?.trainingDatasets || []}
-          ></LargeDatasetSelect>
+          {domain && <Model experiment={draftExperiment} domain={domain} />}
         </section>
-      )}
-      <section>
-        <Model model={model} lookup={apiCore.lookup} />
-      </section>
-    </Card.Body>
-  </Card>
-);
+      </Card.Body>
+    </Card>
+  );
+};
 
 export default ExperimentSidebar;
