@@ -32,7 +32,7 @@ const maxSigns = 13;
 // ouput : ['Sleeping', 'with or', 'checking on', 'attachment', 'figures at', 'night in the', 'past 4 weeks']
 const splitText = (text: string): string[] => {
   if (!text) return [];
-  const bits = text.split(/(?=[A-Z][a-z])|[\s+]|_/g);
+  const bits = text.split(/\s/);
 
   return bits.reduce(
     (accumulator, value) => {
