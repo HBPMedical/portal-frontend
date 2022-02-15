@@ -41,7 +41,7 @@ const extractWord = (bit: string) => (bit !== undefined ? bit : '');
 const splitText = (text: string): string[] => {
   const acc: string[] = [];
   let currentBitIndex = 0;
-  const bits = text.split(/(?=[A-Z][a-z])|[\s+]|_/g); // ["Sleeping", "with", "or", "checking", "on" ...]
+  const bits = text.split(/\s/g); // ["Sleeping", "with", "or", "checking", "on" ...]
 
   bits.forEach((curr, i) => {
     if (i === currentBitIndex) {
