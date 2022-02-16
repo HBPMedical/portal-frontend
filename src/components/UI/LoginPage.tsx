@@ -26,13 +26,6 @@ const StyledJumbotron = styled(Jumbotron)`
   border-right: 1px solid #ddd;
 `;
 
-const SideCard = styled.div`
-  margin: 0;
-  padding: 32px;
-  flex: 1;
-  background-color: #ffffffaa;
-`;
-
 const Logo = styled.img`
   width: 120px;
   height: 120px;
@@ -87,7 +80,7 @@ export default (): JSX.Element => {
         <hr className="my-4" />
         <h3>Get access to the MIP</h3>
         <p>
-          The access to the MIP require an EBRAINS account. If you do not have
+          To access the MIP an EBRAINS account is required. If you do not have
           one yet, you can{' '}
           <strong>
             <a
