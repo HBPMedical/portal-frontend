@@ -5,8 +5,6 @@ import { BsBook, BsFilm, BsFillEnvelopeFill } from 'react-icons/bs';
 import styled from 'styled-components';
 import { NavLink } from 'react-router-dom';
 
-import Helpdesk from './Helpdesk';
-
 const MainBox = styled.div`
   .dropdown-menu {
     right: 0;
@@ -69,21 +67,15 @@ const MainBox = styled.div`
   }
 `;
 
-const HelpdeskContainer = styled.div`
-  margin-top: 16px;
-`;
-
 export default ({ showTraining }: { showTraining?: boolean }): JSX.Element => {
   return (
     <MainBox>
       <DropdownButton variant="link" id={'help-dropdown'} title={'Help'}>
         <p>
           <a
-            href="https://mip.ebrains.eu/documentation/"
-            // tslint:disable-next-line jsx-no-lambda
-            onSelect={(): void => {
-              window.open('https://mip.ebrains.eu/documentation/');
-            }}
+            href="https://github.com/HBPMedical/mip-docs"
+            target="_blank"
+            rel="noreferrer noopener"
           >
             <BsBook /> MIP Documentation
           </a>
@@ -96,14 +88,14 @@ export default ({ showTraining }: { showTraining?: boolean }): JSX.Element => {
           </p>
         )}
         <p>
-          <a href="mailto://support@ebrains.eu">
-            <BsFillEnvelopeFill /> Email us at support@ebrains.eu
+          <a
+            href="https://ebrains.eu/support/"
+            target="_blank"
+            rel="noreferrer noopener"
+          >
+            <BsFillEnvelopeFill /> Support
           </a>
         </p>
-        <HelpdeskContainer>
-          Contact us
-          <Helpdesk />
-        </HelpdeskContainer>
       </DropdownButton>
     </MainBox>
   );

@@ -84,7 +84,7 @@ export default (): JSX.Element => {
           one yet, you can{' '}
           <strong>
             <a
-              href="https://iam.ebrains.eu/register"
+              href="https://ebrains.eu/register"
               target="_blank"
               rel="noopener noreferrer"
             >
