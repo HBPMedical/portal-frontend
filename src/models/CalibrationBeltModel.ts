@@ -1,11 +1,9 @@
-interface CalibrationBelt {
+export default interface CalibrationBelt {
   graphTitle: string;
   xLabel: string;
   yLabel: string;
   base: Array<number>;
   lower: Array<number>;
   upper: Array<number>;
-  labels?: Object;
+  labels?: Record<string, any>;
 }
-
-export default CalibrationBelt;

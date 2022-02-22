@@ -1,5 +1,6 @@
+/* eslint-disable @typescript-eslint/camelcase */
+/* eslint-disable react-hooks/exhaustive-deps */
 import React from 'react';
-import { LineChartResult } from '../../API/GraphQL/types.generated';
 
 declare let window: any;
 
@@ -31,16 +32,11 @@ const BarGraph = () => {
     }
   });
 
-  const data: LineChartResult = {
-    xAxis: fruits,
-    yAxis: counts
-  };
-
   const p = plot.figure({
     width: 900,
     height: 500,
     x_range: fruits,
-    title: `${data.name} Fruit counts`,
+    title: `Fruit counts`,
     toolbar_location: null,
     tools: ''
   });

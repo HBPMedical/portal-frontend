@@ -1,10 +1,8 @@
-interface BarChartModel {
+export default interface BarChartModel {
   graphTitle: string;
   xAxisLabel: string;
   yAxisLabel: string;
   xAxisValues: Array<string>;
   yAxisValues: Array<number>;
-  labels?: Object;
+  labels?: Record<string, any>;
 }
-
-export default BarChartModel;

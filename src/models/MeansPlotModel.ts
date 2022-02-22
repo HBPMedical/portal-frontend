@@ -1,4 +1,4 @@
-interface MeansPlotModel {
+export default interface MeansPlotModel {
   title: string;
   means: Array<number>;
   minY: number;
@@ -8,7 +8,5 @@ interface MeansPlotModel {
   categories: Array<string>;
   minPerCategory: Record<string, any>;
   maxPerCategory: Record<string, any>;
-  labels?: Object;
+  labels?: Record<string, any>;
 }
-
-export default MeansPlotModel;

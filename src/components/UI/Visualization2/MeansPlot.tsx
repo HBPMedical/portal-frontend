@@ -1,3 +1,5 @@
+/* eslint-disable @typescript-eslint/camelcase */
+/* eslint-disable react-hooks/exhaustive-deps */
 import React from 'react';
 import MeansPlotModel from '../../../models/MeansPlotModel';
 

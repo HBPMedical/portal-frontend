@@ -1,9 +1,7 @@
-interface HistogramModel {
+export default interface HistogramModel {
   title: string;
   hist: Array<number>;
   edgesLeft: Array<number>;
   edgesRight: Array<number>;
-  labels?: Object;
+  labels?: Record<string, any>;
 }
-
-export default HistogramModel;

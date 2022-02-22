@@ -1,6 +1,4 @@
-import { SeriesOrganizationDataLabelsOptionsObject } from "highcharts";
-
-interface HeatMapModel {
+export default interface HeatMapModel {
   // currently it only serves the purpose of a confusion matrix
   graphTitle: string;
   xLabels: string;
@@ -8,7 +6,5 @@ interface HeatMapModel {
   categories: Array<string>;
   index: Array<number>;
   value: Array<number>;
-  labels?: Object;
+  labels?: Record<string, any>;
 }
-
-export default HeatMapModel;

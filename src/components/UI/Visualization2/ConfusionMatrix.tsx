@@ -1,3 +1,5 @@
+/* eslint-disable @typescript-eslint/camelcase */
+/* eslint-disable react-hooks/exhaustive-deps */
 import React, { useEffect } from 'react';
 import { Card } from 'react-bootstrap';
 import { HeatMapResult } from '../../API/GraphQL/types.generated';
@@ -97,7 +99,6 @@ const ConfusionMatrix = (props: Props) => {
 
   p.add_layout(labels);
   p.add_layout(color_bar, 'right');
-
 
   useEffect(() => {
     plot.show(p, '#confusionMatrix');

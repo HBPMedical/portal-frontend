@@ -1,4 +1,4 @@
-interface ROCCurveModel {
+export default interface ROCCurveModel {
   graphTitle: string;
   xLabel: string;
   yLabel: string;
@@ -8,7 +8,5 @@ interface ROCCurveModel {
   xFprHalf: Array<number>;
   yTprHalf: Array<number>;
   thresholdHalf: Array<number>;
-  labels?: Object;
+  labels?: Record<string, any>;
 }
-
-export default ROCCurveModel;
