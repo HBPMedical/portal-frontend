@@ -11,8 +11,8 @@ import {
   Group,
   Variable as VariableData
 } from './GraphQL/types.generated';
-import { graphQLURL } from './RequestURLS';
 import config from './RequestHeaders';
+import { graphQLURL } from './RequestURLS';
 
 export interface Variable {
   code: string;
@@ -156,7 +156,8 @@ export const apolloClient = new ApolloClient({
     ...config.options?.headers,
     accept: 'application/json, text/plain, */*'
   },
-  cache: cache
+  cache: cache,
+  credentials: 'include'
 });
 
 class Core extends Container<State> {
