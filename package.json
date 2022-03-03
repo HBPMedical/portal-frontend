@@ -78,7 +78,7 @@
     "eject": "react-scripts eject",
     "lint:fix": "eslint './src/**/*.{ts,tsx}' --fix",
     "lint": "eslint './src/**/*.{ts,tsx}'",
-    "codegen": "graphql-codegen --config codegen.yml",
+    "codegen": "graphql-codegen -r dotenv/config --config codegen.yml ",
     "storybook": "start-storybook -p 6006 -s public",
     "build-storybook": "build-storybook -s public"
   },

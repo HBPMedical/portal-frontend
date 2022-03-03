@@ -66,6 +66,13 @@ export type ChartAxis = {
   label?: Maybe<Scalars['String']>;
 };
 
+export type Configuration = {
+  __typename?: 'Configuration';
+  connectorId: Scalars['String'];
+  galaxy?: Maybe<Scalars['Boolean']>;
+  version: Scalars['String'];
+};
+
 export type Dataset = {
   __typename?: 'Dataset';
   id: Scalars['String'];
@@ -261,6 +268,7 @@ export type PartialExperiment = {
 export type Query = {
   __typename?: 'Query';
   algorithms: Array<Algorithm>;
+  configuration: Configuration;
   domains: Array<Domain>;
   experiment: Experiment;
   experimentList: ListExperiments;
