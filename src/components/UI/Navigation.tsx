@@ -1,10 +1,7 @@
-import { useReactiveVar } from '@apollo/client';
 import * as React from 'react';
 import { Button } from 'react-bootstrap';
 import { NavLink } from 'react-router-dom';
 import styled from 'styled-components';
-import { configurationVar } from '../API/GraphQL/cache';
-import { Configuration } from '../API/GraphQL/types.generated';
 import { makeAssetURL } from '../API/RequestURLS';
 import MIPContext from '../App/MIPContext';
 import HelpButton from './HelpButton';
