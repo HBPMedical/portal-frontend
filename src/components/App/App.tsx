@@ -8,6 +8,7 @@ import {
   useGetConfigurationQuery,
   useListDomainsQuery
 } from '../API/GraphQL/queries.generated';
+import { makeAssetURL } from '../API/RequestURLS';
 import { DescriptiveAnalysis } from '../DescriptiveAnalysis';
 import ExperimentCreate from '../ExperimentCreate/Container';
 import Explore from '../ExperimentExplore/Container';
@@ -86,6 +87,8 @@ const App = ({
     onCompleted: data => {
       if (data.configuration) {
         localMutations.setConfiguration(data.configuration);
+        const favicon = document.getElementById('favicon') as HTMLLinkElement;
+        favicon.href = makeAssetURL('favicon.png');
       }
     }
   });
