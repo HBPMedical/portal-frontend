@@ -1,8 +1,10 @@
+import { useReactiveVar } from '@apollo/client';
 import React, { useEffect, useState } from 'react';
 import { Container, Jumbotron } from 'react-bootstrap';
 import ReactMarkdown from 'react-markdown';
 import rehypeRaw from 'rehype-raw';
 import styled from 'styled-components';
+import { configurationVar } from '../API/GraphQL/cache';
 import { makeAssetURL } from '../API/RequestURLS';
 import Loader from './Loader';
 
@@ -30,8 +32,10 @@ const StyledJumbotron = styled(Jumbotron)`
 
 export default (): JSX.Element => {
   const [text, setText] = useState<string | undefined>(undefined);
+  const config = useReactiveVar(configurationVar);
 
   useEffect(() => {
+    if (!config.version) return;
     const fetchData = async (): Promise<void> => {
       const data = await fetch(makeAssetURL('login.md'));
       const text = await data.text();
@@ -44,7 +48,8 @@ export default (): JSX.Element => {
       );
       console.log(error);
     });
-  });
+  }, [config.version]);
+
   return (
     <StyledContainer>
       <StyledJumbotron>

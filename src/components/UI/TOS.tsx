@@ -1,9 +1,11 @@
+import { useReactiveVar } from '@apollo/client';
 import React, { useEffect, useState } from 'react';
 import { Button, Form } from 'react-bootstrap';
 import ReactMarkdown from 'react-markdown';
 import { RouteComponentProps } from 'react-router-dom';
 import styled from 'styled-components';
 import { APIUser } from '../API';
+import { configurationVar } from '../API/GraphQL/cache';
 import { makeAssetURL } from '../API/RequestURLS';
 
 interface Props extends RouteComponentProps<{}> {
@@ -29,6 +31,7 @@ const ContainerBtnRight = styled.div`
 export default ({ ...props }: Props): JSX.Element => {
   const [accepted, setAccepted] = useState(false);
   const [TOS, setTOS] = useState<string | undefined>(undefined);
+  const config = useReactiveVar(configurationVar);
 
   useEffect(() => {
     const agreeNDA = props.apiUser.state.user?.agreeNDA;
@@ -38,6 +41,8 @@ export default ({ ...props }: Props): JSX.Element => {
   }, [props.apiUser.state, props.history]);
 
   useEffect(() => {
+    if (!config.version) return;
+
     const fetchData = async (): Promise<void> => {
       const data = await fetch(makeAssetURL('tos.md'));
       const text = await data.text();
@@ -48,7 +53,7 @@ export default ({ ...props }: Props): JSX.Element => {
       setTOS('TOS are not available, please contact your administrator');
       console.log(error);
     });
-  });
+  }, [config.version]);
 
   const handleAcceptTOS = (): void => {
     if (accepted) {
