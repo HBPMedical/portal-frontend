@@ -4,6 +4,11 @@ import { gql } from '@apollo/client';
 import { CoreInfoResultFragmentDoc } from './fragments.generated';
 import * as Apollo from '@apollo/client';
 const defaultOptions =  {}
+export type GetConfigurationQueryVariables = Types.Exact<{ [key: string]: never; }>;
+
+
+export type GetConfigurationQuery = { __typename?: 'Query', configuration: { __typename?: 'Configuration', connectorId: string, galaxy?: Types.Maybe<boolean>, contactLink?: Types.Maybe<string>, version: string } };
+
 export type GetVariablesFromDomainQueryVariables = Types.Exact<{
   id: Types.Scalars['String'];
 }>;
@@ -70,6 +75,43 @@ export const CoreGroupInfoFragmentDoc = gql`
   variables
 }
     `;
+export const GetConfigurationDocument = gql`
+    query getConfiguration {
+  configuration {
+    connectorId
+    galaxy
+    contactLink
+    version
+  }
+}
+    `;
+
+/**
+ * __useGetConfigurationQuery__
+ *
+ * To run a query within a React component, call `useGetConfigurationQuery` and pass it any options that fit your needs.
+ * When your component renders, `useGetConfigurationQuery` returns an object from Apollo Client that contains loading, error, and data properties
+ * you can use to render your UI.
+ *
+ * @param baseOptions options that will be passed into the query, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options;
+ *
+ * @example
+ * const { data, loading, error } = useGetConfigurationQuery({
+ *   variables: {
+ *   },
+ * });
+ */
+export function useGetConfigurationQuery(baseOptions?: Apollo.QueryHookOptions<GetConfigurationQuery, GetConfigurationQueryVariables>) {
+        const options = {...defaultOptions, ...baseOptions}
+        return Apollo.useQuery<GetConfigurationQuery, GetConfigurationQueryVariables>(GetConfigurationDocument, options);
+      }
+export function useGetConfigurationLazyQuery(baseOptions?: Apollo.LazyQueryHookOptions<GetConfigurationQuery, GetConfigurationQueryVariables>) {
+          const options = {...defaultOptions, ...baseOptions}
+          return Apollo.useLazyQuery<GetConfigurationQuery, GetConfigurationQueryVariables>(GetConfigurationDocument, options);
+        }
+export type GetConfigurationQueryHookResult = ReturnType<typeof useGetConfigurationQuery>;
+export type GetConfigurationLazyQueryHookResult = ReturnType<typeof useGetConfigurationLazyQuery>;
+export type GetConfigurationQueryResult = Apollo.QueryResult<GetConfigurationQuery, GetConfigurationQueryVariables>;
 export const GetVariablesFromDomainDocument = gql`
     query getVariablesFromDomain($id: String!) {
   domains(ids: [$id]) {
@@ -460,6 +502,7 @@ export type DeleteExperimentMutationResult = Apollo.MutationResult<DeleteExperim
 export type DeleteExperimentMutationOptions = Apollo.BaseMutationOptions<DeleteExperimentMutation, DeleteExperimentMutationVariables>;
 export const namedOperations = {
   Query: {
+    getConfiguration: 'getConfiguration',
     getVariablesFromDomain: 'getVariablesFromDomain',
     getDomainList: 'getDomainList',
     getExperimentList: 'getExperimentList',

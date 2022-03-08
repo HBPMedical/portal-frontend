@@ -1,4 +1,5 @@
 import {
+  configurationVar,
   domainsVar,
   draftExperimentVar,
   selectedDomainVar,
@@ -6,6 +7,7 @@ import {
   zoomNodeVar
 } from '../../cache';
 import createSelectDomain from './common/selectDomain';
+import createSetConfiguration from './common/setConfiguration';
 import createSetDomains from './common/setDomains';
 import createSetZoomToNode from './common/setZoomToNode';
 import createResetSelectedExperiment from './experiments/resetSelectedExperiment';
@@ -36,6 +38,7 @@ export const localMutations = {
     selectedDomainVar,
     selectDomain
   ),
+  setConfiguration: createSetConfiguration(configurationVar),
   resetSelectedExperiment: createResetSelectedExperiment(
     selectedExperimentVar,
     draftExperimentVar,

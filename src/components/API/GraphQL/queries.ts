@@ -1,6 +1,17 @@
 import { gql } from '@apollo/client';
 import { coreInfoResult } from './fragments';
 
+export const QUERY_CONFIGURATION = gql`
+  query getConfiguration {
+    configuration {
+      connectorId
+      galaxy
+      contactLink
+      version
+    }
+  }
+`;
+
 export const QUERY_VARS_FROM_DOMAIN = gql`
   query getVariablesFromDomain($id: String!) {
     domains(ids: [$id]) {

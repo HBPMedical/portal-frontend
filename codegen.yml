@@ -1,5 +1,5 @@
 overwrite: true
-schema: "http://127.0.0.1:8081/graphql"
+schema: ${REACT_APP_BACKEND_URL:"http://localhost:8081"}/graphQL
 documents: ["src/components/API/GraphQL/fragments.ts", "src/components/API/GraphQL/queries.ts"]
 generates:
   src/components/API/GraphQL/types.generated.ts:
