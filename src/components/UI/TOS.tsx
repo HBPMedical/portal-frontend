@@ -1,9 +1,10 @@
 import React, { useEffect, useState } from 'react';
 import { Button, Form } from 'react-bootstrap';
+import ReactMarkdown from 'react-markdown';
 import { RouteComponentProps } from 'react-router-dom';
 import styled from 'styled-components';
-import { APIUser, backendURL } from '../API';
-import ReactMarkdown from 'react-markdown';
+import { APIUser } from '../API';
+import { makeAssetURL } from '../API/RequestURLS';
 
 interface Props extends RouteComponentProps<{}> {
   apiUser: APIUser;
@@ -38,7 +39,7 @@ export default ({ ...props }: Props): JSX.Element => {
 
   useEffect(() => {
     const fetchData = async (): Promise<void> => {
-      const data = await fetch(`${backendURL}/assets/tos.md`);
+      const data = await fetch(makeAssetURL('tos.md'));
       const text = await data.text();
       setTOS(text);
     };

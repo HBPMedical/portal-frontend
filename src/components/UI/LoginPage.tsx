@@ -1,10 +1,10 @@
 import React, { useEffect, useState } from 'react';
 import { Container, Jumbotron } from 'react-bootstrap';
-import styled from 'styled-components';
-import { backendURL } from '../API';
 import ReactMarkdown from 'react-markdown';
-import Loader from './Loader';
 import rehypeRaw from 'rehype-raw';
+import styled from 'styled-components';
+import { makeAssetURL } from '../API/RequestURLS';
+import Loader from './Loader';
 
 const StyledContainer = styled(Container)`
   margin: 16px auto 0 auto;
@@ -33,7 +33,7 @@ export default (): JSX.Element => {
 
   useEffect(() => {
     const fetchData = async (): Promise<void> => {
-      const data = await fetch(`${backendURL}/assets/login.md`);
+      const data = await fetch(makeAssetURL('login.md'));
       const text = await data.text();
       setText(text);
     };
