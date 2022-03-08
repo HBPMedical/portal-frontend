@@ -1,10 +1,16 @@
-import React from 'react';
+import { useReactiveVar } from '@apollo/client';
+import React, { useEffect } from 'react';
 import { Spinner } from 'react-bootstrap';
 import { Route, Switch } from 'react-router-dom';
 import styled from 'styled-components';
 import { APICore, APIMining, APIUser, backendURL } from '../API';
+import { configurationVar } from '../API/GraphQL/cache';
 import { localMutations } from '../API/GraphQL/operations/mutations';
-import { useListDomainsQuery } from '../API/GraphQL/queries.generated';
+import {
+  useGetConfigurationQuery,
+  useListDomainsQuery
+} from '../API/GraphQL/queries.generated';
+import { makeAssetURL } from '../API/RequestURLS';
 import { DescriptiveAnalysis } from '../DescriptiveAnalysis';
 import ExperimentCreate from '../ExperimentCreate/Container';
 import Explore from '../ExperimentExplore/Container';
@@ -78,6 +84,17 @@ const App = ({
   const loading = apiUser.state.loading;
   const authenticated = apiUser.state.authenticated || false;
   const isAnonymous = apiUser.state.user?.username === 'anonymous' || false;
+  const config = useReactiveVar(configurationVar);
+
+  useGetConfigurationQuery({
+    onCompleted: data => {
+      if (data.configuration) {
+        localMutations.setConfiguration(data.configuration);
+        const favicon = document.getElementById('favicon') as HTMLLinkElement;
+        favicon.href = makeAssetURL('favicon.png');
+      }
+    }
+  });
 
   //load domains for every page
   useListDomainsQuery({
@@ -88,6 +105,24 @@ const App = ({
       }
     }
   });
+
+  useEffect(() => {
+    if (!config.version) return;
+
+    const cssPath = makeAssetURL('custom.css');
+    const head = document.head as HTMLHeadElement;
+    const link = document.createElement('link');
+
+    link.type = 'text/css';
+    link.rel = 'stylesheet';
+    link.href = cssPath;
+
+    head.appendChild(link);
+
+    return (): void => {
+      head.removeChild(link);
+    };
+  }, [config.version]);
 
   return (
     <>

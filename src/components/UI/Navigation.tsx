@@ -1,8 +1,10 @@
-import * as React from 'react';
+import { useReactiveVar } from '@apollo/client';
+import React, { useEffect, useState } from 'react';
 import { Button } from 'react-bootstrap';
 import { NavLink } from 'react-router-dom';
 import styled from 'styled-components';
-import logo from '../../images/logo.png';
+import { configurationVar } from '../API/GraphQL/cache';
+import { makeAssetURL } from '../API/RequestURLS';
 import MIPContext from '../App/MIPContext';
 import HelpButton from './HelpButton';
 
@@ -65,8 +67,7 @@ const Brand = styled.div`
 
   font-weight: bold;
 
-  div {
-    background: url(${logo}) left center no-repeat;
+  img {
     width: 40px;
     height: 40px;
   }
@@ -145,13 +146,18 @@ export default ({
   children
 }: Props): JSX.Element => {
   const instanceName = name || 'MIP';
+  const [imageURL, setImageURL] = useState<string | undefined>(undefined);
+  const config = useReactiveVar(configurationVar);
+
+  useEffect(() => {
+    if (!config.version) return;
+    setImageURL(makeAssetURL('logo_small.png'));
+  }, [config.version]);
 
   return (
     <NavBar>
       <Brand className="experiment-nav">
-        <Link to="/">
-          <div title="Human Brain Project"></div>
-        </Link>
+        <Link to="/">{imageURL && <img src={imageURL} alt="Logo" />}</Link>
         <Link className="logo-title" to="/">
           {instanceName}
         </Link>
