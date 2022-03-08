@@ -69,6 +69,7 @@ export type ChartAxis = {
 export type Configuration = {
   __typename?: 'Configuration';
   connectorId: Scalars['String'];
+  contactLink?: Maybe<Scalars['String']>;
   galaxy?: Maybe<Scalars['Boolean']>;
   version: Scalars['String'];
 };

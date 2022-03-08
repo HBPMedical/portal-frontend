@@ -7,7 +7,7 @@ const defaultOptions =  {}
 export type GetConfigurationQueryVariables = Types.Exact<{ [key: string]: never; }>;
 
 
-export type GetConfigurationQuery = { __typename?: 'Query', configuration: { __typename?: 'Configuration', connectorId: string, galaxy?: Types.Maybe<boolean>, version: string } };
+export type GetConfigurationQuery = { __typename?: 'Query', configuration: { __typename?: 'Configuration', connectorId: string, galaxy?: Types.Maybe<boolean>, contactLink?: Types.Maybe<string>, version: string } };
 
 export type GetVariablesFromDomainQueryVariables = Types.Exact<{
   id: Types.Scalars['String'];
@@ -80,6 +80,7 @@ export const GetConfigurationDocument = gql`
   configuration {
     connectorId
     galaxy
+    contactLink
     version
   }
 }
