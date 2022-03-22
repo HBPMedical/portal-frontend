@@ -4,8 +4,8 @@ import React, { useEffect, useState } from 'react';
 import { Alert } from 'react-bootstrap';
 import { RouteComponentProps } from 'react-router-dom';
 import styled from 'styled-components';
-import { APICore, APIMining, APIUser } from '../API';
-import { selectedDomainVar } from '../API/GraphQL/cache';
+import { APICore, APIMining } from '../API';
+import { currentUserVar, selectedDomainVar } from '../API/GraphQL/cache';
 import { HierarchyCircularNode } from '../API/Model';
 import { AppConfig } from '../App/App';
 import { d3Hierarchy, groupsToTreeView, NodeData } from './d3Hierarchy';
@@ -26,30 +26,21 @@ interface Props extends RouteComponentProps {
   apiCore: APICore;
   apiMining: APIMining;
   appConfig: AppConfig;
-  apiUser: APIUser;
 }
 
-export default ({
-  apiCore,
-  apiMining,
-  apiUser,
-  ...props
-}: Props): JSX.Element => {
+export default ({ apiCore, apiMining, ...props }: Props): JSX.Element => {
   const domain = useReactiveVar(selectedDomainVar);
 
   // D3Model is used to expose D3 data and interact with the D3 Layout.
   const [d3Layout, setD3Layout] = useState<HierarchyCircularNode>();
+  const user = useReactiveVar(currentUserVar);
   const { history } = props;
 
   useEffect(() => {
-    if (
-      apiUser.state.user &&
-      apiUser.state.authenticated &&
-      !apiUser.state.user?.agreeNDA
-    ) {
+    if (!user?.agreeNDA) {
       history.push('/tos');
     }
-  }, [apiUser.state, history]);
+  }, [history, user]);
 
   useEffect(() => {
     if (!domain) return;

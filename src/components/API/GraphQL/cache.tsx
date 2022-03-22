@@ -1,5 +1,5 @@
 import { InMemoryCache, makeVar } from '@apollo/client';
-import { Configuration, Domain, Experiment } from './types.generated';
+import { Configuration, Domain, Experiment, User } from './types.generated';
 
 export const initialExperiment: Experiment = {
   id: '',
@@ -22,13 +22,14 @@ export const initialUser = {
 
 export const initialConfig: Configuration = {
   connectorId: 'default',
-  galaxy: false,
+  hasGalaxy: false,
   version: ''
 };
 
 export const configurationVar = makeVar<Configuration>(initialConfig);
 export const zoomNodeVar = makeVar<string | undefined>(undefined);
 export const domainsVar = makeVar<Domain[]>([]);
+export const currentUserVar = makeVar<User | undefined>(undefined);
 export const selectedVariableVar = makeVar<string | undefined>(undefined);
 export const selectedDomainVar = makeVar<Domain | undefined>(undefined);
 export const selectedExperimentVar = makeVar<Experiment | undefined>(undefined);

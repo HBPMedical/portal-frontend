@@ -48,6 +48,16 @@ export type AlgorithmParameter = {
   value?: Maybe<Scalars['String']>;
 };
 
+export type AuthenticationInput = {
+  password: Scalars['String'];
+  username: Scalars['String'];
+};
+
+export type AuthenticationOutput = {
+  __typename?: 'AuthenticationOutput';
+  accessToken: Scalars['String'];
+};
+
 export type Author = {
   __typename?: 'Author';
   fullname?: Maybe<Scalars['String']>;
@@ -70,7 +80,9 @@ export type Configuration = {
   __typename?: 'Configuration';
   connectorId: Scalars['String'];
   contactLink?: Maybe<Scalars['String']>;
-  galaxy?: Maybe<Scalars['Boolean']>;
+  hasGalaxy?: Maybe<Scalars['Boolean']>;
+  skipAuth?: Maybe<Scalars['Boolean']>;
+  skipTos?: Maybe<Scalars['Boolean']>;
   version: Scalars['String'];
 };
 
@@ -219,7 +231,10 @@ export type Mutation = {
   __typename?: 'Mutation';
   createExperiment: Experiment;
   editExperiment: Experiment;
+  login: AuthenticationOutput;
+  logout: Scalars['Boolean'];
   removeExperiment: PartialExperiment;
+  updateUser: User;
 };
 
 
@@ -235,8 +250,18 @@ export type MutationEditExperimentArgs = {
 };
 
 
+export type MutationLoginArgs = {
+  variables: AuthenticationInput;
+};
+
+
 export type MutationRemoveExperimentArgs = {
   id: Scalars['String'];
+};
+
+
+export type MutationUpdateUserArgs = {
+  updateUserInput: UpdateUserInput;
 };
 
 export enum ParamType {
@@ -273,6 +298,7 @@ export type Query = {
   domains: Array<Domain>;
   experiment: Experiment;
   experimentList: ListExperiments;
+  user: User;
 };
 
 
@@ -303,7 +329,13 @@ export type TableResult = {
   data: Array<Array<Scalars['String']>>;
   headers: Array<Header>;
   name: Scalars['String'];
+  theme?: Maybe<ThemeType>;
 };
+
+export enum ThemeType {
+  Default = 'DEFAULT',
+  Normal = 'NORMAL'
+}
 
 export type Transformation = {
   __typename?: 'Transformation';
@@ -311,6 +343,19 @@ export type Transformation = {
   id: Scalars['String'];
   /** Transformation to apply */
   operation: Scalars['String'];
+};
+
+export type UpdateUserInput = {
+  agreeNDA: Scalars['Boolean'];
+};
+
+export type User = {
+  __typename?: 'User';
+  agreeNDA?: Maybe<Scalars['Boolean']>;
+  email?: Maybe<Scalars['String']>;
+  fullname?: Maybe<Scalars['String']>;
+  id: Scalars['String'];
+  username: Scalars['String'];
 };
 
 export type Variable = {

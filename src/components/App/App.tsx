@@ -3,10 +3,11 @@ import React, { useEffect } from 'react';
 import { Spinner } from 'react-bootstrap';
 import { Route, Switch } from 'react-router-dom';
 import styled from 'styled-components';
-import { APICore, APIMining, APIUser, backendURL } from '../API';
-import { configurationVar } from '../API/GraphQL/cache';
+import { APICore, APIMining, backendURL } from '../API';
+import { configurationVar, currentUserVar } from '../API/GraphQL/cache';
 import { localMutations } from '../API/GraphQL/operations/mutations';
 import {
+  useActiveUserQuery,
   useGetConfigurationQuery,
   useListDomainsQuery
 } from '../API/GraphQL/queries.generated';
@@ -16,6 +17,7 @@ import ExperimentCreate from '../ExperimentCreate/Container';
 import Explore from '../ExperimentExplore/Container';
 import ExperimentResult from '../ExperimentResult/Container';
 import Help from '../Help/Videos';
+import AccessPage from '../UI/AccessPage';
 import DataCatalog from '../UI/DataCatalog';
 import DropdownExperimentList from '../UI/Experiment/DropDownList/DropdownExperimentList';
 import Footer from '../UI/Footer';
@@ -66,7 +68,6 @@ interface Props {
   appConfig: AppConfig;
   apiCore: APICore;
   apiMining: APIMining;
-  apiUser: APIUser;
   showTutorial: boolean;
 }
 
@@ -74,19 +75,15 @@ interface MainProps {
   showTutorial: any;
 }
 
-const App = ({
-  appConfig,
-  apiCore,
-  apiMining,
-  apiUser,
-  showTutorial
-}: Props): JSX.Element => {
-  const loading = apiUser.state.loading;
-  const authenticated = apiUser.state.authenticated || false;
-  const isAnonymous = apiUser.state.user?.username === 'anonymous' || false;
-  const config = useReactiveVar(configurationVar);
+const App = ({ appConfig, apiCore, apiMining, showTutorial }: Props) => {
+  //const authenticated = apiUser.state.authenticated || false;
 
-  useGetConfigurationQuery({
+  const config = useReactiveVar(configurationVar);
+  const user = useReactiveVar(currentUserVar);
+  const isAnonymous = user?.username === 'anonymous' || false;
+  const authenticated = !!user;
+
+  const configState = useGetConfigurationQuery({
     onCompleted: data => {
       if (data.configuration) {
         localMutations.setConfiguration(data.configuration);
@@ -95,6 +92,14 @@ const App = ({
       }
     }
   });
+
+  useActiveUserQuery({
+    onCompleted: data => {
+      if (data.user) localMutations.user.select(data.user);
+    }
+  });
+
+  const loading = configState.loading;
 
   //load domains for every page
   useListDomainsQuery({
@@ -117,10 +122,10 @@ const App = ({
     link.rel = 'stylesheet';
     link.href = cssPath;
 
-    head.appendChild(link);
+    if (head) head.appendChild(link);
 
     return (): void => {
-      head.removeChild(link);
+      if (head) head.removeChild(link);
     };
   }, [config.version]);
 
@@ -133,14 +138,15 @@ const App = ({
           isAnonymous={isAnonymous}
           authenticated={authenticated}
           login={(): void => {
-            if (apiUser.state.user?.username !== 'anonymous') {
+            if (!isAnonymous) {
+              // TODO check configuration isSSO
               window.location.href = `${backendURL}/sso/login`;
             }
           }}
           datacatalogueUrl={appConfig.datacatalogueUrl || undefined}
           logout={() => {
-            (apiUser.state.user?.username !== 'anonymous' || undefined) &&
-              apiUser.logout();
+            //(!isAnonymous || undefined) apiUser.logout();
+            console.log('TODO LOGIN OR SSO LOGIN');
             window.location.href = '/';
           }}
         >
@@ -160,68 +166,52 @@ const App = ({
           <Switch>
             {showTutorial && <Tutorial />}
 
-            {!authenticated && (
-              <Route path="/" exact={true}>
-                <LoginPage />
-              </Route>
-            )}
-
             <Route path="/training" exact={true}>
               <Help />
             </Route>
 
-            {authenticated && (
+            <Route path="/access" render={() => <AccessPage />} />
+
+            <Route path="/login" render={() => <LoginPage />} />
+
+            {user && (
               <Switch>
                 <Route
                   path={['/', '/explore']}
                   exact={true}
-                  // tslint:disable-next-line jsx-no-lambda
-                  render={(props): JSX.Element => (
+                  render={props => (
                     <Explore
                       apiCore={apiCore}
                       apiMining={apiMining}
                       appConfig={appConfig}
-                      apiUser={apiUser}
                       {...props}
                     ></Explore>
                   )}
                 />
-                <Route
-                  path="/tos"
-                  // tslint:disable-next-line jsx-no-lambda
-                  render={(props): JSX.Element => (
-                    <TOS apiUser={apiUser} {...props} />
-                  )}
-                />
+                <Route path="/tos" render={() => <TOS />} />
 
                 <Route
                   path={['/review', '/analysis']}
-                  // tslint:disable-next-line jsx-no-lambda
-                  render={(props): JSX.Element => (
+                  render={props => (
                     <DescriptiveAnalysis apiCore={apiCore} {...props} />
                   )}
                 />
                 <Route
                   path="/experiment/:uuid"
-                  // tslint:disable-next-line jsx-no-lambda
-                  render={(): JSX.Element => <ExperimentResult />}
+                  render={() => <ExperimentResult />}
                 />
                 <Route
                   exact={true}
                   path="/experiment"
-                  // tslint:disable-next-line jsx-no-lambda
-                  render={(props): JSX.Element => (
+                  render={props => (
                     <ExperimentCreate apiCore={apiCore} {...props} />
                   )}
                 />
                 <Route
                   path="/galaxy"
-                  render={(): JSX.Element => <Galaxy apiCore={apiCore} />}
+                  render={() => <Galaxy apiCore={apiCore} />}
                 />
-                <Route
-                  path="/catalog"
-                  render={(): JSX.Element => <DataCatalog />}
-                />
+                <Route path="/catalog" render={() => <DataCatalog />} />
 
                 <Route component={NotFound} />
               </Switch>

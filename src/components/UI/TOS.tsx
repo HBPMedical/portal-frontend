@@ -2,15 +2,10 @@ import { useReactiveVar } from '@apollo/client';
 import React, { useEffect, useState } from 'react';
 import { Button, Form } from 'react-bootstrap';
 import ReactMarkdown from 'react-markdown';
-import { RouteComponentProps } from 'react-router-dom';
+import { useHistory } from 'react-router-dom';
 import styled from 'styled-components';
-import { APIUser } from '../API';
-import { configurationVar } from '../API/GraphQL/cache';
+import { configurationVar, currentUserVar } from '../API/GraphQL/cache';
 import { makeAssetURL } from '../API/RequestURLS';
-
-interface Props extends RouteComponentProps<{}> {
-  apiUser: APIUser;
-}
 
 const Container = styled.div`
   background-color: white;
@@ -28,17 +23,19 @@ const ContainerBtnRight = styled.div`
   }
 `;
 
-export default ({ ...props }: Props): JSX.Element => {
+export default (): JSX.Element => {
   const [accepted, setAccepted] = useState(false);
   const [TOS, setTOS] = useState<string | undefined>(undefined);
   const config = useReactiveVar(configurationVar);
+  const user = useReactiveVar(currentUserVar);
+  const history = useHistory();
 
   useEffect(() => {
-    const agreeNDA = props.apiUser.state.user?.agreeNDA;
+    const agreeNDA = user?.agreeNDA;
     if (agreeNDA) {
-      props.history.push('/');
+      history.push('/');
     }
-  }, [props.apiUser.state, props.history]);
+  }, [history, user]);
 
   useEffect(() => {
     if (!config.version) return;
@@ -57,10 +54,7 @@ export default ({ ...props }: Props): JSX.Element => {
 
   const handleAcceptTOS = (): void => {
     if (accepted) {
-      const { apiUser, history } = props;
-      apiUser.acceptTOS().then(() => {
-        history.push('/');
-      });
+      //TODO call mutation
     }
   };
 
