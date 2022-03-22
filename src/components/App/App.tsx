@@ -170,10 +170,11 @@ const App = ({ appConfig, apiCore, apiMining, showTutorial }: Props) => {
               <Help />
             </Route>
 
-            <Route path="/access" render={() => <AccessPage />} />
-
             <Route path="/login" render={() => <LoginPage />} />
 
+            {!user && (
+              <Route path="/" exact={true} render={() => <AccessPage />} />
+            )}
             {user && (
               <Switch>
                 <Route

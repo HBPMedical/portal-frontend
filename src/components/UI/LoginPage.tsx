@@ -1,65 +1,83 @@
-import { useReactiveVar } from '@apollo/client';
-import React, { useEffect, useState } from 'react';
-import { Container, Jumbotron } from 'react-bootstrap';
-import ReactMarkdown from 'react-markdown';
-import rehypeRaw from 'rehype-raw';
+import React, { useState } from 'react';
+import { Card, Button, Spinner } from 'react-bootstrap';
 import styled from 'styled-components';
-import { configurationVar } from '../API/GraphQL/cache';
-import { makeAssetURL } from '../API/RequestURLS';
-import Loader from './Loader';
+import { useLoginMutation } from '../API/GraphQL/queries.generated';
 
-const StyledContainer = styled(Container)`
-  margin: 16px auto 0 auto;
+const Container = styled.div`
   display: flex;
-  flex-direction: row;
-  padding: 0;
-  @media (min-width: 1400px) {
-    max-width: 930px;
-  }
-  @media (max-width: 768px) {
-    flex-direction: column;
-  }
+  align-items: center;
+  justify-content: center;
 `;
 
-const StyledJumbotron = styled(Jumbotron)`
-  margin-bottom: 0;
-  border-radius: 0;
-  flex: 2;
-  background-color: #ffffffaa;
-  border-right: 1px solid #ddd;
-  font-size: 1.25em;
+const CardContainer = styled(Card)`
+  margin-top: 20vh;
+  padding: 30px;
+  border-radius: 10px;
+  width: 500px;
+
+  & h3 {
+    margin-bottom: 20px;
+  }
 `;
 
 export default () => {
-  const [text, setText] = useState<string | undefined>(undefined);
-  const config = useReactiveVar(configurationVar);
+  const [username, setUsername] = useState<string>('');
+  const [passowrd, setPassword] = useState<string>('');
+  const [errorMsg, setErrorMsg] = useState<string>('');
 
-  useEffect(() => {
-    if (!config.version) return;
-    const fetchData = async (): Promise<void> => {
-      const data = await fetch(makeAssetURL('login.md'));
-      const text = await data.text();
-      setText(text);
-    };
+  const [loginMutation, { data, loading, error }] = useLoginMutation();
 
-    fetchData().catch(error => {
-      setText(
-        'Login page text is not available, please contact your administrator'
-      );
-      console.log(error);
-    });
-  }, [config.version]);
+  const handleLogin = () => {
+    // call mutation
+  };
+
+  const loginSubmit = (e: React.SyntheticEvent) => {
+    e.preventDefault();
+    handleLogin();
+  };
 
   return (
-    <StyledContainer>
-      <StyledJumbotron>
-        {text && (
-          <ReactMarkdown rehypePlugins={[rehypeRaw]} linkTarget={'_blank'}>
-            {text}
-          </ReactMarkdown>
-        )}
-        {!text && <Loader />}
-      </StyledJumbotron>
-    </StyledContainer>
+    <Container>
+      <CardContainer>
+        <form onSubmit={loginSubmit}>
+          <h3>Login In</h3>
+          <div className="form-group">
+            <label>Username</label>
+            <input
+              type="text"
+              className="form-control"
+              placeholder="Enter your username"
+              onChange={event => setUsername(event.target.value)}
+              required={true}
+            />
+          </div>
+          <div className="form-group">
+            <label>Password</label>
+            <input
+              type="password"
+              className="form-control"
+              placeholder="Enter password"
+              onChange={event => setPassword(event.target.value)}
+            />
+          </div>
+          <div className="form-group">
+            <small className="form-text text-danger">{errorMsg}</small>
+          </div>
+
+          <Button type="submit" className="btn-block">
+            {loading && (
+              <Spinner
+                as="span"
+                animation="border"
+                size="sm"
+                role="status"
+                aria-hidden="true"
+              />
+            )}
+            {!loading && 'Submit'}
+          </Button>
+        </form>
+      </CardContainer>
+    </Container>
   );
 };
