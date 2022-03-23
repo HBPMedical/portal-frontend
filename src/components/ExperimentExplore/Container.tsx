@@ -2,12 +2,11 @@ import { useReactiveVar } from '@apollo/client';
 import * as d3 from 'd3';
 import React, { useEffect, useState } from 'react';
 import { Alert } from 'react-bootstrap';
-import { RouteComponentProps } from 'react-router-dom';
+import { useHistory } from 'react-router-dom';
 import styled from 'styled-components';
 import { APICore, APIMining } from '../API';
-import { currentUserVar, selectedDomainVar } from '../API/GraphQL/cache';
+import { selectedDomainVar } from '../API/GraphQL/cache';
 import { HierarchyCircularNode } from '../API/Model';
-import { AppConfig } from '../App/App';
 import { d3Hierarchy, groupsToTreeView, NodeData } from './d3Hierarchy';
 import Explore from './Explore';
 
@@ -22,25 +21,17 @@ const AlertBox = styled(Alert)`
   max-width: 800px;
 `;
 
-interface Props extends RouteComponentProps {
+interface Props {
   apiCore: APICore;
   apiMining: APIMining;
-  appConfig: AppConfig;
 }
 
-export default ({ apiCore, apiMining, ...props }: Props): JSX.Element => {
+export default ({ apiCore, apiMining }: Props): JSX.Element => {
   const domain = useReactiveVar(selectedDomainVar);
 
   // D3Model is used to expose D3 data and interact with the D3 Layout.
   const [d3Layout, setD3Layout] = useState<HierarchyCircularNode>();
-  const user = useReactiveVar(currentUserVar);
-  const { history } = props;
-
-  useEffect(() => {
-    if (!user?.agreeNDA) {
-      history.push('/tos');
-    }
-  }, [history, user]);
+  const history = useHistory();
 
   useEffect(() => {
     if (!domain) return;

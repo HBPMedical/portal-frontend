@@ -1,7 +1,11 @@
 import React, { useState } from 'react';
-import { Card, Button, Spinner } from 'react-bootstrap';
+import { Alert, Button, Card, Spinner } from 'react-bootstrap';
+import { useHistory } from 'react-router-dom';
 import styled from 'styled-components';
-import { useLoginMutation } from '../API/GraphQL/queries.generated';
+import {
+  namedOperations,
+  useLoginMutation
+} from '../API/GraphQL/queries.generated';
 
 const Container = styled.div`
   display: flex;
@@ -22,17 +26,45 @@ const CardContainer = styled(Card)`
 
 export default () => {
   const [username, setUsername] = useState<string>('');
-  const [passowrd, setPassword] = useState<string>('');
+  const [password, setPassword] = useState<string>('');
   const [errorMsg, setErrorMsg] = useState<string>('');
+  const history = useHistory();
 
-  const [loginMutation, { data, loading, error }] = useLoginMutation();
+  const [loginMutation, { loading }] = useLoginMutation({
+    onCompleted: () => {
+      window.location.href = '/';
+      //history.replace('/');
+    },
+    refetchQueries: [
+      namedOperations.Query.activeUser,
+      namedOperations.Query.listDomains
+    ],
+    onError: data => {
+      if (data.graphQLErrors) {
+        for (const err of data.graphQLErrors) {
+          switch (err.extensions?.code || 'unknown') {
+            case 'UNAUTHENTICATED':
+              setErrorMsg('Invalid login or password.');
+              break;
+            default:
+              setErrorMsg('Error when trying to login, please try later.');
+              console.log(err.message);
+              break;
+          }
+        }
+      }
+    }
+  });
 
   const handleLogin = () => {
-    // call mutation
+    loginMutation({
+      variables: { username, password }
+    });
   };
 
   const loginSubmit = (e: React.SyntheticEvent) => {
     e.preventDefault();
+    setErrorMsg('');
     handleLogin();
   };
 
@@ -42,11 +74,21 @@ export default () => {
         <form onSubmit={loginSubmit}>
           <h3>Login In</h3>
           <div className="form-group">
-            <label>Username</label>
+            {errorMsg && (
+              <Alert
+                variant="danger"
+                onClose={() => setErrorMsg('')}
+                dismissible
+              >
+                {errorMsg}
+              </Alert>
+            )}
+          </div>
+          <div className="form-group">
+            <label>Username or email</label>
             <input
               type="text"
               className="form-control"
-              placeholder="Enter your username"
               onChange={event => setUsername(event.target.value)}
               required={true}
             />
@@ -56,12 +98,8 @@ export default () => {
             <input
               type="password"
               className="form-control"
-              placeholder="Enter password"
               onChange={event => setPassword(event.target.value)}
             />
-          </div>
-          <div className="form-group">
-            <small className="form-text text-danger">{errorMsg}</small>
           </div>
 
           <Button type="submit" className="btn-block">

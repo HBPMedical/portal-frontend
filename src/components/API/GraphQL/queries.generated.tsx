@@ -7,7 +7,7 @@ const defaultOptions =  {}
 export type GetConfigurationQueryVariables = Types.Exact<{ [key: string]: never; }>;
 
 
-export type GetConfigurationQuery = { __typename?: 'Query', configuration: { __typename?: 'Configuration', connectorId: string, hasGalaxy?: Types.Maybe<boolean>, skipAuth?: Types.Maybe<boolean>, skipTos?: Types.Maybe<boolean>, contactLink?: Types.Maybe<string>, version: string } };
+export type GetConfigurationQuery = { __typename?: 'Query', configuration: { __typename?: 'Configuration', connectorId: string, hasGalaxy?: Types.Maybe<boolean>, enableSSO?: Types.Maybe<boolean>, skipAuth?: Types.Maybe<boolean>, skipTos?: Types.Maybe<boolean>, contactLink?: Types.Maybe<string>, version: string } };
 
 export type GetVariablesFromDomainQueryVariables = Types.Exact<{
   id: Types.Scalars['String'];
@@ -98,6 +98,7 @@ export const GetConfigurationDocument = gql`
   configuration {
     connectorId
     hasGalaxy
+    enableSSO
     skipAuth
     skipTos
     contactLink

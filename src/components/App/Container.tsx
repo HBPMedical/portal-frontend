@@ -1,7 +1,6 @@
 import * as React from 'react';
 import ReactGA from 'react-ga';
 import { Router } from 'react-router-dom';
-import { Provider, Subscribe } from 'unstated';
 import { APICore, APIMining, webURL } from '../API';
 import config from '../API/RequestHeaders';
 import App, { AppConfig } from '../App/App';
@@ -54,6 +53,7 @@ class AppContainer extends React.Component<any, State> {
   }
 
   render(): JSX.Element {
+    console.log('rendered');
     const toggleTutorial = (): void => {
       localStorage.setItem('seenTutorial', 'true');
       this.setState(state => ({
@@ -68,22 +68,14 @@ class AppContainer extends React.Component<any, State> {
           toggleTutorial
         }}
       >
-        <Provider inject={[this.apiCore, this.apiMining]}>
-          <Router history={history}>
-            <Subscribe to={[APICore, APIMining]}>
-              {(apiCore: APICore, apiMining: APIMining): JSX.Element => {
-                return (
-                  <App
-                    appConfig={this.state.appConfig}
-                    apiCore={apiCore}
-                    apiMining={apiMining}
-                    showTutorial={this.state.showTutorial}
-                  />
-                );
-              }}
-            </Subscribe>
-          </Router>
-        </Provider>
+        <Router history={history}>
+          <App
+            appConfig={this.state.appConfig}
+            apiCore={this.apiCore}
+            apiMining={this.apiMining}
+            showTutorial={this.state.showTutorial}
+          />
+        </Router>
       </MIPContext.Provider>
     );
   }

@@ -15,7 +15,10 @@ const errorLink = onError(({ graphQLErrors, networkError }) => {
 });
 
 export const apolloClient = new ApolloClient({
-  link: ApolloLink.from([errorLink, new HttpLink({ uri: graphQLURL })]),
+  link: ApolloLink.from([
+    errorLink,
+    new HttpLink({ uri: graphQLURL, credentials: 'include' })
+  ]),
   headers: {
     ...config.options?.headers,
     accept: 'application/json, text/plain, */*'

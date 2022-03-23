@@ -80,6 +80,7 @@ export type Configuration = {
   __typename?: 'Configuration';
   connectorId: Scalars['String'];
   contactLink?: Maybe<Scalars['String']>;
+  enableSSO?: Maybe<Scalars['Boolean']>;
   hasGalaxy?: Maybe<Scalars['Boolean']>;
   skipAuth?: Maybe<Scalars['Boolean']>;
   skipTos?: Maybe<Scalars['Boolean']>;

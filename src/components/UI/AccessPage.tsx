@@ -1,10 +1,8 @@
-import { useReactiveVar } from '@apollo/client';
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import { Container, Jumbotron } from 'react-bootstrap';
 import ReactMarkdown from 'react-markdown';
 import rehypeRaw from 'rehype-raw';
 import styled from 'styled-components';
-import { configurationVar } from '../API/GraphQL/cache';
 import { makeAssetURL } from '../API/RequestURLS';
 import Loader from './Loader';
 
@@ -32,23 +30,27 @@ const StyledJumbotron = styled(Jumbotron)`
 
 export default () => {
   const [text, setText] = useState<string | undefined>(undefined);
-  const config = useReactiveVar(configurationVar);
+  const mountedRef = useRef(true);
 
   useEffect(() => {
-    if (!config.version) return;
     const fetchData = async (): Promise<void> => {
       const data = await fetch(makeAssetURL('login.md'));
       const text = await data.text();
-      setText(text);
+
+      if (mountedRef.current) setText(text); // check if component is still mounted before setting state
     };
 
     fetchData().catch(error => {
-      setText(
-        'Login page text is not available, please contact your administrator'
-      );
+      if (mountedRef.current)
+        setText(
+          'Login page text is not available, please contact your administrator'
+        );
       console.log(error);
     });
-  }, [config.version]);
+    return () => {
+      mountedRef.current = false;
+    };
+  }, []);
 
   return (
     <StyledContainer>
