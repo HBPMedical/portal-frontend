@@ -53,7 +53,6 @@ class AppContainer extends React.Component<any, State> {
   }
 
   render(): JSX.Element {
-    console.log('rendered');
     const toggleTutorial = (): void => {
       localStorage.setItem('seenTutorial', 'true');
       this.setState(state => ({

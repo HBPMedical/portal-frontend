@@ -1,7 +1,7 @@
 import { useReactiveVar } from '@apollo/client';
 import React, { useEffect } from 'react';
 import { Spinner } from 'react-bootstrap';
-import { Route, Switch } from 'react-router-dom';
+import { Route, Switch, useHistory } from 'react-router-dom';
 import styled from 'styled-components';
 import { APICore, APIMining, backendURL } from '../API';
 import { configurationVar, currentUserVar } from '../API/GraphQL/cache';
@@ -9,7 +9,8 @@ import { localMutations } from '../API/GraphQL/operations/mutations';
 import {
   useActiveUserQuery,
   useGetConfigurationQuery,
-  useListDomainsQuery
+  useListDomainsQuery,
+  useLogoutMutation
 } from '../API/GraphQL/queries.generated';
 import { makeAssetURL } from '../API/RequestURLS';
 import { DescriptiveAnalysis } from '../DescriptiveAnalysis';
@@ -17,6 +18,7 @@ import ExperimentCreate from '../ExperimentCreate/Container';
 import Explore from '../ExperimentExplore/Container';
 import ExperimentResult from '../ExperimentResult/Container';
 import Help from '../Help/Videos';
+import ProtectedRoute from '../router/ProtectedRoute';
 import AccessPage from '../UI/AccessPage';
 import DataCatalog from '../UI/DataCatalog';
 import DropdownExperimentList from '../UI/Experiment/DropDownList/DropdownExperimentList';
@@ -56,6 +58,7 @@ const SpinnerContainer = styled.div`
   min-height: inherit;
   justify-content: center;
   align-items: center;
+  height: 100vh;
 `;
 
 export interface AppConfig {
@@ -82,8 +85,19 @@ const App = ({ appConfig, apiCore, apiMining, showTutorial }: Props) => {
   const user = useReactiveVar(currentUserVar);
   const isAnonymous = user?.username === 'anonymous' || false;
   const authenticated = !!user;
+  const history = useHistory();
 
-  const configState = useGetConfigurationQuery({
+  const [logoutMutation] = useLogoutMutation({
+    variables: {},
+    onCompleted: () => {
+      window.location.href = '/';
+    }
+  });
+
+  const {
+    data: { configuration } = {},
+    loading: configLoading
+  } = useGetConfigurationQuery({
     onCompleted: data => {
       if (data.configuration) {
         localMutations.setConfiguration(data.configuration);
@@ -93,16 +107,14 @@ const App = ({ appConfig, apiCore, apiMining, showTutorial }: Props) => {
     }
   });
 
-  useActiveUserQuery({
+  const { loading: userLoading, data: userData } = useActiveUserQuery({
     onCompleted: data => {
       if (data.user) localMutations.user.select(data.user);
     }
   });
 
-  const loading = configState.loading;
-
   //load domains for every page
-  useListDomainsQuery({
+  const { loading: domainsLoading } = useListDomainsQuery({
     onCompleted: data => {
       if (data.domains) {
         localMutations.setDomains(data.domains);
@@ -110,6 +122,8 @@ const App = ({ appConfig, apiCore, apiMining, showTutorial }: Props) => {
       }
     }
   });
+
+  const loading = configLoading || userLoading || domainsLoading;
 
   useEffect(() => {
     if (!config.version) return;
@@ -129,100 +143,96 @@ const App = ({ appConfig, apiCore, apiMining, showTutorial }: Props) => {
     };
   }, [config.version]);
 
+  // TODO : Find out why this component is reloaded multiple times
+
   return (
     <>
       <GlobalStyles />
-      <header>
-        <Navigation
-          name={appConfig.instanceName}
-          isAnonymous={isAnonymous}
-          authenticated={authenticated}
-          login={(): void => {
-            if (!isAnonymous) {
-              // TODO check configuration isSSO
-              window.location.href = `${backendURL}/sso/login`;
-            }
-          }}
-          datacatalogueUrl={appConfig.datacatalogueUrl || undefined}
-          logout={() => {
-            //(!isAnonymous || undefined) apiUser.logout();
-            console.log('TODO LOGIN OR SSO LOGIN');
-            window.location.href = '/';
-          }}
-        >
-          <DropdownExperimentList
-            hasDetailedView={true}
-            label={'My Experiments'}
-          />
-        </Navigation>
-      </header>
-      <Main showTutorial={showTutorial}>
-        {loading && (
-          <SpinnerContainer>
-            <Spinner animation="border" variant="info" />
-          </SpinnerContainer>
-        )}
-        {!loading && (
-          <Switch>
-            {showTutorial && <Tutorial />}
+      {loading && (
+        <SpinnerContainer>
+          <Spinner animation="border" variant="info" />
+        </SpinnerContainer>
+      )}
+      {!loading && (
+        <>
+          <header>
+            <Navigation
+              name={appConfig.instanceName}
+              isAnonymous={isAnonymous}
+              authenticated={authenticated}
+              login={(): void => {
+                if (!isAnonymous) {
+                  if (configuration?.enableSSO)
+                    window.location.href = `${backendURL}/sso/login`;
+                  else {
+                    history.push('/login');
+                  }
+                }
+              }}
+              datacatalogueUrl={appConfig.datacatalogueUrl || undefined}
+              logout={() => {
+                logoutMutation();
+              }}
+            >
+              <DropdownExperimentList
+                hasDetailedView={true}
+                label={'My Experiments'}
+              />
+            </Navigation>
+          </header>
+          <Main showTutorial={showTutorial}>
+            <Switch>
+              {showTutorial && <Tutorial />}
 
-            <Route path="/training" exact={true}>
-              <Help />
-            </Route>
+              <Route path="/training" exact={true}>
+                <Help />
+              </Route>
 
-            <Route path="/login" render={() => <LoginPage />} />
+              <Route path="/login" render={() => <LoginPage />} />
 
-            {!user && (
-              <Route path="/" exact={true} render={() => <AccessPage />} />
-            )}
-            {user && (
-              <Switch>
-                <Route
-                  path={['/', '/explore']}
-                  exact={true}
-                  render={props => (
-                    <Explore
-                      apiCore={apiCore}
-                      apiMining={apiMining}
-                      appConfig={appConfig}
-                      {...props}
-                    ></Explore>
-                  )}
-                />
-                <Route path="/tos" render={() => <TOS />} />
+              <Route path="/access" exact={true}>
+                <AccessPage />
+              </Route>
 
-                <Route
-                  path={['/review', '/analysis']}
-                  render={props => (
-                    <DescriptiveAnalysis apiCore={apiCore} {...props} />
-                  )}
-                />
-                <Route
-                  path="/experiment/:uuid"
-                  render={() => <ExperimentResult />}
-                />
-                <Route
-                  exact={true}
-                  path="/experiment"
-                  render={props => (
-                    <ExperimentCreate apiCore={apiCore} {...props} />
-                  )}
-                />
-                <Route
-                  path="/galaxy"
-                  render={() => <Galaxy apiCore={apiCore} />}
-                />
-                <Route path="/catalog" render={() => <DataCatalog />} />
+              <Route path="/tos">
+                <TOS />
+              </Route>
 
-                <Route component={NotFound} />
-              </Switch>
-            )}
-          </Switch>
-        )}
-      </Main>
-      <footer>
-        <Footer appConfig={appConfig} />
-      </footer>
+              <ProtectedRoute path={['/', '/explore']} exact={true}>
+                <Explore apiCore={apiCore} apiMining={apiMining}></Explore>
+              </ProtectedRoute>
+
+              <Route
+                path={['/review', '/analysis']}
+                render={props => (
+                  <DescriptiveAnalysis apiCore={apiCore} {...props} />
+                )}
+              />
+              <Route
+                path="/experiment/:uuid"
+                render={() => <ExperimentResult />}
+              />
+              <Route
+                exact={true}
+                path="/experiment"
+                render={props => (
+                  <ExperimentCreate apiCore={apiCore} {...props} />
+                )}
+              />
+              <Route
+                path="/galaxy"
+                render={() => <Galaxy apiCore={apiCore} />}
+              />
+              <Route path="/catalog" render={() => <DataCatalog />} />
+
+              <Route component={NotFound} />
+            </Switch>
+          </Main>
+          <footer>
+            <Footer appConfig={appConfig} />
+          </footer>
+        </>
+      )}
     </>
   );
 };

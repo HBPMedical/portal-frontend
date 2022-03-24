@@ -1,7 +1,9 @@
-import { useReactiveVar } from '@apollo/client';
 import React from 'react';
 import { Redirect, Route, RouteProps } from 'react-router-dom';
-import { configurationVar, currentUserVar } from '../API/GraphQL/cache';
+import {
+  useActiveUserQuery,
+  useGetConfigurationQuery
+} from '../API/GraphQL/queries.generated';
 
 // screen if you're not yet authenticated.
 
@@ -10,35 +12,43 @@ type Props = {
 } & RouteProps;
 
 export default ({ children, ...rest }: Props) => {
-  const user = useReactiveVar(currentUserVar);
-  const config = useReactiveVar(configurationVar);
-  const isAuth = !!user;
-  const skipTOS = user?.agreeNDA || config.skipTos;
+  const { loading: userLoading, data: userData } = useActiveUserQuery();
+  const {
+    loading: configLoading,
+    data: { configuration } = {}
+  } = useGetConfigurationQuery();
+  const isAuth = !!userData?.user;
+  const skipTOS = userData?.user?.agreeNDA || configuration?.skipTos;
+  const loading = userLoading || configLoading;
 
   return (
-    <Route
-      {...rest}
-      render={({ location }) =>
-        isAuth ? (
-          skipTOS ? (
-            children
-          ) : (
-            <Redirect
-              to={{
-                pathname: '/tos',
-                state: { from: location }
-              }}
-            />
-          )
-        ) : (
-          <Redirect
-            to={{
-              pathname: '/access',
-              state: { from: location }
-            }}
-          />
-        )
-      }
-    />
+    <>
+      {!loading && (
+        <Route
+          {...rest}
+          render={({ location }) =>
+            isAuth ? (
+              skipTOS ? (
+                children
+              ) : (
+                <Redirect
+                  to={{
+                    pathname: '/tos',
+                    state: { from: location }
+                  }}
+                />
+              )
+            ) : (
+              <Redirect
+                to={{
+                  pathname: '/access',
+                  state: { from: location }
+                }}
+              />
+            )
+          }
+        />
+      )}
+    </>
   );
 };

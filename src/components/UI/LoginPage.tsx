@@ -1,11 +1,7 @@
 import React, { useState } from 'react';
 import { Alert, Button, Card, Spinner } from 'react-bootstrap';
-import { useHistory } from 'react-router-dom';
 import styled from 'styled-components';
-import {
-  namedOperations,
-  useLoginMutation
-} from '../API/GraphQL/queries.generated';
+import { useLoginMutation } from '../API/GraphQL/queries.generated';
 
 const Container = styled.div`
   display: flex;
@@ -28,17 +24,11 @@ export default () => {
   const [username, setUsername] = useState<string>('');
   const [password, setPassword] = useState<string>('');
   const [errorMsg, setErrorMsg] = useState<string>('');
-  const history = useHistory();
 
   const [loginMutation, { loading }] = useLoginMutation({
     onCompleted: () => {
       window.location.href = '/';
-      //history.replace('/');
     },
-    refetchQueries: [
-      namedOperations.Query.activeUser,
-      namedOperations.Query.listDomains
-    ],
     onError: data => {
       if (data.graphQLErrors) {
         for (const err of data.graphQLErrors) {
