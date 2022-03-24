@@ -69,6 +69,13 @@ export type LoginMutationVariables = Types.Exact<{
 
 export type LoginMutation = { __typename?: 'Mutation', login: { __typename?: 'AuthenticationOutput', accessToken: string } };
 
+export type UpdateActiveUserMutationVariables = Types.Exact<{
+  updateUserInput: Types.UpdateUserInput;
+}>;
+
+
+export type UpdateActiveUserMutation = { __typename?: 'Mutation', updateUser: { __typename?: 'User', id: string, username: string, fullname?: Types.Maybe<string>, email?: Types.Maybe<string>, agreeNDA?: Types.Maybe<boolean> } };
+
 export type EditExperimentMutationVariables = Types.Exact<{
   id: Types.Scalars['String'];
   data: Types.ExperimentEditInput;
@@ -550,6 +557,43 @@ export function useLoginMutation(baseOptions?: Apollo.MutationHookOptions<LoginM
 export type LoginMutationHookResult = ReturnType<typeof useLoginMutation>;
 export type LoginMutationResult = Apollo.MutationResult<LoginMutation>;
 export type LoginMutationOptions = Apollo.BaseMutationOptions<LoginMutation, LoginMutationVariables>;
+export const UpdateActiveUserDocument = gql`
+    mutation updateActiveUser($updateUserInput: UpdateUserInput!) {
+  updateUser(updateUserInput: $updateUserInput) {
+    id
+    username
+    fullname
+    email
+    agreeNDA
+  }
+}
+    `;
+export type UpdateActiveUserMutationFn = Apollo.MutationFunction<UpdateActiveUserMutation, UpdateActiveUserMutationVariables>;
+
+/**
+ * __useUpdateActiveUserMutation__
+ *
+ * To run a mutation, you first call `useUpdateActiveUserMutation` within a React component and pass it any options that fit your needs.
+ * When your component renders, `useUpdateActiveUserMutation` returns a tuple that includes:
+ * - A mutate function that you can call at any time to execute the mutation
+ * - An object with fields that represent the current status of the mutation's execution
+ *
+ * @param baseOptions options that will be passed into the mutation, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options-2;
+ *
+ * @example
+ * const [updateActiveUserMutation, { data, loading, error }] = useUpdateActiveUserMutation({
+ *   variables: {
+ *      updateUserInput: // value for 'updateUserInput'
+ *   },
+ * });
+ */
+export function useUpdateActiveUserMutation(baseOptions?: Apollo.MutationHookOptions<UpdateActiveUserMutation, UpdateActiveUserMutationVariables>) {
+        const options = {...defaultOptions, ...baseOptions}
+        return Apollo.useMutation<UpdateActiveUserMutation, UpdateActiveUserMutationVariables>(UpdateActiveUserDocument, options);
+      }
+export type UpdateActiveUserMutationHookResult = ReturnType<typeof useUpdateActiveUserMutation>;
+export type UpdateActiveUserMutationResult = Apollo.MutationResult<UpdateActiveUserMutation>;
+export type UpdateActiveUserMutationOptions = Apollo.BaseMutationOptions<UpdateActiveUserMutation, UpdateActiveUserMutationVariables>;
 export const EditExperimentDocument = gql`
     mutation editExperiment($id: String!, $data: ExperimentEditInput!) {
   editExperiment(id: $id, data: $data) {
@@ -637,6 +681,7 @@ export const namedOperations = {
     createExperiment: 'createExperiment',
     logout: 'logout',
     login: 'login',
+    updateActiveUser: 'updateActiveUser',
     editExperiment: 'editExperiment',
     deleteExperiment: 'deleteExperiment'
   },

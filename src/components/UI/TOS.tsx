@@ -1,10 +1,11 @@
 import { useReactiveVar } from '@apollo/client';
 import React, { useEffect, useRef, useState } from 'react';
-import { Button, Form } from 'react-bootstrap';
+import { Button, Form, Spinner } from 'react-bootstrap';
 import ReactMarkdown from 'react-markdown';
 import { useHistory } from 'react-router-dom';
 import styled from 'styled-components';
 import { currentUserVar } from '../API/GraphQL/cache';
+import { useUpdateActiveUserMutation } from '../API/GraphQL/queries.generated';
 import { makeAssetURL } from '../API/RequestURLS';
 
 const Container = styled.div`
@@ -29,6 +30,12 @@ export default (): JSX.Element => {
   const mountedRef = useRef(true);
   const user = useReactiveVar(currentUserVar);
   const history = useHistory();
+
+  const [updateActiveUser, { loading }] = useUpdateActiveUserMutation({
+    onCompleted: () => {
+      history.push('/');
+    }
+  });
 
   useEffect(() => {
     const agreeNDA = user?.agreeNDA;
@@ -56,7 +63,13 @@ export default (): JSX.Element => {
 
   const handleAcceptTOS = (): void => {
     if (accepted) {
-      //TODO call mutation
+      updateActiveUser({
+        variables: {
+          updateUserInput: {
+            agreeNDA: true
+          }
+        }
+      });
     }
   };
 
@@ -87,7 +100,16 @@ export default (): JSX.Element => {
           variant="primary"
           type="submit"
         >
-          Proceed
+          {loading && (
+            <Spinner
+              as="span"
+              animation="border"
+              size="sm"
+              role="status"
+              aria-hidden="true"
+            />
+          )}
+          {!loading && 'Proceed'}
         </Button>
       </ContainerBtnRight>
     </Container>

@@ -211,6 +211,18 @@ export const MUTATE_LOGIN = gql`
   }
 `;
 
+export const MUTATE_ACTIVE_USER = gql`
+  mutation updateActiveUser($updateUserInput: UpdateUserInput!) {
+    updateUser(updateUserInput: $updateUserInput) {
+      id
+      username
+      fullname
+      email
+      agreeNDA
+    }
+  }
+`;
+
 export const MUTATE_EXPERIMEMT = gql`
   mutation editExperiment($id: String!, $data: ExperimentEditInput!) {
     editExperiment(id: $id, data: $data) {
