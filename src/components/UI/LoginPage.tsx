@@ -1,6 +1,10 @@
 import React, { useState } from 'react';
-import { Alert, Button, Card, Spinner } from 'react-bootstrap';
+import { Button, Card, Spinner } from 'react-bootstrap';
+import { useHistory } from 'react-router-dom';
+import { toast } from 'react-toastify';
 import styled from 'styled-components';
+import { SessionState } from '../../utilities/types';
+import { localMutations } from '../API/GraphQL/operations/mutations';
 import { useLoginMutation } from '../API/GraphQL/queries.generated';
 
 const Container = styled.div`
@@ -23,22 +27,25 @@ const CardContainer = styled(Card)`
 export default () => {
   const [username, setUsername] = useState<string>('');
   const [password, setPassword] = useState<string>('');
-  const [errorMsg, setErrorMsg] = useState<string>('');
+  const history = useHistory();
 
   const [loginMutation, { loading }] = useLoginMutation({
     onCompleted: () => {
-      window.location.href = '/';
+      localMutations.user.setState(SessionState.LOGGED_IN);
+      toast.success('You successfully logged in');
+      history.push('/');
     },
+    refetchQueries: 'active',
     onError: data => {
       if (data.graphQLErrors) {
         for (const err of data.graphQLErrors) {
           switch (err.extensions?.code || 'unknown') {
             case 'UNAUTHENTICATED':
-              setErrorMsg('Invalid login or password.');
+              toast.error('Invalid login or password.');
               break;
             default:
-              setErrorMsg('Error when trying to login, please try later.');
-              console.log(err.message);
+              toast.error('Error when trying to login, please try later.');
+              console.log(err);
               break;
           }
         }
@@ -54,7 +61,6 @@ export default () => {
 
   const loginSubmit = (e: React.SyntheticEvent) => {
     e.preventDefault();
-    setErrorMsg('');
     handleLogin();
   };
 
@@ -63,17 +69,7 @@ export default () => {
       <CardContainer>
         <form onSubmit={loginSubmit}>
           <h3>Login In</h3>
-          <div className="form-group">
-            {errorMsg && (
-              <Alert
-                variant="danger"
-                onClose={() => setErrorMsg('')}
-                dismissible
-              >
-                {errorMsg}
-              </Alert>
-            )}
-          </div>
+          <div className="form-group"></div>
           <div className="form-group">
             <label>Username or email</label>
             <input

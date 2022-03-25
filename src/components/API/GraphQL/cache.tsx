@@ -1,4 +1,5 @@
 import { InMemoryCache, makeVar } from '@apollo/client';
+import { SessionState } from '../../../utilities/types';
 import { Configuration, Domain, Experiment, User } from './types.generated';
 
 export const initialExperiment: Experiment = {
@@ -26,6 +27,7 @@ export const initialConfig: Configuration = {
   version: ''
 };
 
+export const sessionStateVar = makeVar<SessionState>(SessionState.INIT);
 export const configurationVar = makeVar<Configuration>(initialConfig);
 export const zoomNodeVar = makeVar<string | undefined>(undefined);
 export const domainsVar = makeVar<Domain[]>([]);

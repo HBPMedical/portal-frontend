@@ -5,6 +5,7 @@ import {
   draftExperimentVar,
   selectedDomainVar,
   selectedExperimentVar,
+  sessionStateVar,
   zoomNodeVar
 } from '../../cache';
 import createSelectDomain from './common/selectDomain';
@@ -17,6 +18,7 @@ import createToggleDatasetExperiment from './experiments/toggleDatasetExperiment
 import createToggleVarsExperiment from './experiments/toggleVarsExperiment';
 import createUpdateExperiment from './experiments/updateExperiment';
 import createSetUser from './user/selectUser';
+import createSetSessionState from './user/setSessionState';
 
 const selectDomain = createSelectDomain(
   selectedDomainVar,
@@ -47,6 +49,7 @@ export const localMutations = {
     selectedDomainVar
   ),
   user: {
-    select: createSetUser(currentUserVar)
+    select: createSetUser(currentUserVar),
+    setState: createSetSessionState(sessionStateVar)
   }
 };

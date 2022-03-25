@@ -1,3 +1,4 @@
+import { NetworkStatus } from '@apollo/client';
 import React from 'react';
 import { Redirect, Route, RouteProps } from 'react-router-dom';
 import {
@@ -12,14 +13,23 @@ type Props = {
 } & RouteProps;
 
 export default ({ children, ...rest }: Props) => {
-  const { loading: userLoading, data: userData } = useActiveUserQuery();
+  const {
+    loading: userLoading,
+    data: userData,
+    networkStatus
+  } = useActiveUserQuery();
   const {
     loading: configLoading,
     data: { configuration } = {}
-  } = useGetConfigurationQuery();
+  } = useGetConfigurationQuery({
+    fetchPolicy: 'network-only',
+    notifyOnNetworkStatusChange: true
+  });
+
   const isAuth = !!userData?.user;
   const skipTOS = userData?.user?.agreeNDA || configuration?.skipTos;
-  const loading = userLoading || configLoading;
+  const loading =
+    userLoading || configLoading || networkStatus === NetworkStatus.refetch;
 
   return (
     <>

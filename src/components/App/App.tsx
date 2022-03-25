@@ -1,12 +1,17 @@
 import { useReactiveVar } from '@apollo/client';
-import React, { useEffect } from 'react';
+import React, { useCallback, useEffect } from 'react';
 import { Spinner } from 'react-bootstrap';
 import { Route, Switch, useHistory } from 'react-router-dom';
+import { toast, ToastContainer } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.min.css';
 import styled from 'styled-components';
+import { SessionState } from '../../utilities/types';
 import { APICore, APIMining, backendURL } from '../API';
-import { configurationVar, currentUserVar } from '../API/GraphQL/cache';
+import { apolloClient } from '../API/GraphQL/apollo.config';
+import { configurationVar, sessionStateVar } from '../API/GraphQL/cache';
 import { localMutations } from '../API/GraphQL/operations/mutations';
 import {
+  namedOperations,
   useActiveUserQuery,
   useGetConfigurationQuery,
   useListDomainsQuery,
@@ -79,20 +84,26 @@ interface MainProps {
 }
 
 const App = ({ appConfig, apiCore, apiMining, showTutorial }: Props) => {
-  //const authenticated = apiUser.state.authenticated || false;
-
   const config = useReactiveVar(configurationVar);
-  const user = useReactiveVar(currentUserVar);
-  const isAnonymous = user?.username === 'anonymous' || false;
-  const authenticated = !!user;
   const history = useHistory();
+  const userState = useReactiveVar(sessionStateVar);
+
+  const { loading: userLoading, data: userData } = useActiveUserQuery({
+    fetchPolicy: 'network-only'
+  });
 
   const [logoutMutation] = useLogoutMutation({
     variables: {},
+    refetchQueries: [namedOperations.Query.activeUser],
     onCompleted: () => {
-      window.location.href = '/';
+      history.push('/access');
     }
   });
+
+  const logoutHandle = useCallback(() => {
+    apolloClient.clearStore();
+    logoutMutation();
+  }, [logoutMutation]);
 
   const {
     data: { configuration } = {},
@@ -107,11 +118,9 @@ const App = ({ appConfig, apiCore, apiMining, showTutorial }: Props) => {
     }
   });
 
-  const { loading: userLoading, data: userData } = useActiveUserQuery({
-    onCompleted: data => {
-      if (data.user) localMutations.user.select(data.user);
-    }
-  });
+  const user = userData?.user;
+  const isAnonymous = user?.username === 'anonymous' || false;
+  const authenticated = !!user;
 
   //load domains for every page
   const { loading: domainsLoading } = useListDomainsQuery({
@@ -143,7 +152,20 @@ const App = ({ appConfig, apiCore, apiMining, showTutorial }: Props) => {
     };
   }, [config.version]);
 
+  useEffect(() => {
+    if (userState === SessionState.INVALID) {
+      localMutations.user.setState(SessionState.INIT);
+      if (user) {
+        toast.error('You session has expired.');
+      } else {
+        toast.warn('Please login before accessing the MIP');
+      }
+      logoutHandle();
+    }
+  }, [logoutHandle, user, userState]);
+
   // TODO : Find out why this component is reloaded multiple times
+  //console.log('app re-rendered'); Sus: props refreshing => apimining and apicore
 
   return (
     <>
@@ -171,7 +193,8 @@ const App = ({ appConfig, apiCore, apiMining, showTutorial }: Props) => {
               }}
               datacatalogueUrl={appConfig.datacatalogueUrl || undefined}
               logout={() => {
-                logoutMutation();
+                toast.success('you successfully logged out');
+                logoutHandle();
               }}
             >
               <DropdownExperimentList
@@ -188,7 +211,9 @@ const App = ({ appConfig, apiCore, apiMining, showTutorial }: Props) => {
                 <Help />
               </Route>
 
-              <Route path="/login" render={() => <LoginPage />} />
+              <Route path="/login">
+                <LoginPage />
+              </Route>
 
               <Route path="/access" exact={true}>
                 <AccessPage />
@@ -199,30 +224,25 @@ const App = ({ appConfig, apiCore, apiMining, showTutorial }: Props) => {
               </Route>
 
               <ProtectedRoute path={['/', '/explore']} exact={true}>
-                <Explore apiCore={apiCore} apiMining={apiMining}></Explore>
+                <Explore apiCore={apiCore} apiMining={apiMining} />
               </ProtectedRoute>
 
-              <Route
-                path={['/review', '/analysis']}
-                render={props => (
-                  <DescriptiveAnalysis apiCore={apiCore} {...props} />
-                )}
-              />
-              <Route
-                path="/experiment/:uuid"
-                render={() => <ExperimentResult />}
-              />
-              <Route
-                exact={true}
-                path="/experiment"
-                render={props => (
-                  <ExperimentCreate apiCore={apiCore} {...props} />
-                )}
-              />
-              <Route
-                path="/galaxy"
-                render={() => <Galaxy apiCore={apiCore} />}
-              />
+              <ProtectedRoute path={['/review', '/analysis']}>
+                <DescriptiveAnalysis apiCore={apiCore} />
+              </ProtectedRoute>
+
+              <ProtectedRoute path="/experiment/:uuid">
+                <ExperimentResult />
+              </ProtectedRoute>
+
+              <ProtectedRoute exact={true} path="/experiment">
+                <ExperimentCreate apiCore={apiCore} />
+              </ProtectedRoute>
+
+              <ProtectedRoute path="/galaxy">
+                <Galaxy apiCore={apiCore} />
+              </ProtectedRoute>
+
               <Route path="/catalog" render={() => <DataCatalog />} />
 
               <Route component={NotFound} />
@@ -231,6 +251,14 @@ const App = ({ appConfig, apiCore, apiMining, showTutorial }: Props) => {
           <footer>
             <Footer appConfig={appConfig} />
           </footer>
+          <ToastContainer
+            style={{ marginTop: '35px' }}
+            position="top-right"
+            closeOnClick
+            pauseOnHover
+            pauseOnFocusLoss
+            autoClose={5000}
+          />
         </>
       )}
     </>

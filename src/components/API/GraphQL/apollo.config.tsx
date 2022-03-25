@@ -1,16 +1,32 @@
 import { ApolloClient, ApolloLink, HttpLink } from '@apollo/client';
 import { onError } from '@apollo/client/link/error';
-import { graphQLURL } from '../RequestURLS';
-import { cache } from './cache';
+import { SessionState } from '../../../utilities/types';
 import config from '../RequestHeaders';
+import { graphQLURL } from '../RequestURLS';
+import { cache, sessionStateVar } from './cache';
 
-const errorLink = onError(({ graphQLErrors, networkError }) => {
+const excludedPaths = ['/login', '/access', '/tos'];
+const excludedDomains = ['login', 'logout'];
+
+const errorLink = onError(({ graphQLErrors, networkError, operation }) => {
+  if (
+    excludedDomains.includes(operation.operationName) ||
+    excludedPaths.includes(window.location.pathname)
+  )
+    return;
   if (graphQLErrors)
-    graphQLErrors.forEach(({ message, locations, path }) =>
-      console.log(
-        `[GraphQL error]: Message: ${message}, Location: ${locations}, Path: ${path}`
-      )
-    );
+    graphQLErrors.forEach(({ message, locations, path, extensions }) => {
+      switch (extensions?.status || -1) {
+        case 401:
+          sessionStateVar(SessionState.INVALID);
+          break;
+        case 403:
+          sessionStateVar(SessionState.ACCESS_DENIED);
+          break;
+      }
+
+      console.log(`[GraphQL error]: Message: ${message}, Path: ${path}`);
+    });
   if (networkError) console.log(`[Network error]: ${networkError}`);
 });
 
