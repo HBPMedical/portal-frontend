@@ -101,7 +101,14 @@ const App = ({ appConfig, apiCore, apiMining, showTutorial }: Props) => {
   const logoutHandle = useCallback(async () => {
     history.push('/access');
 
-    await logoutMutation();
+    try {
+      await logoutMutation();
+    } catch (e) {
+      console.log(
+        'Error when logging out, probably user was not authenticated. Negligible error.'
+      );
+    }
+
     await apolloClient.clearStore();
 
     localMutations.user.setState(SessionState.LOGGED_OUT);
