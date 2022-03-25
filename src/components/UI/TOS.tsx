@@ -1,16 +1,12 @@
 import { useReactiveVar } from '@apollo/client';
-import React, { useEffect, useState } from 'react';
-import { Button, Form } from 'react-bootstrap';
+import React, { useEffect, useRef, useState } from 'react';
+import { Button, Form, Spinner } from 'react-bootstrap';
 import ReactMarkdown from 'react-markdown';
-import { RouteComponentProps } from 'react-router-dom';
+import { useHistory } from 'react-router-dom';
 import styled from 'styled-components';
-import { APIUser } from '../API';
-import { configurationVar } from '../API/GraphQL/cache';
+import { currentUserVar } from '../API/GraphQL/cache';
+import { useUpdateActiveUserMutation } from '../API/GraphQL/queries.generated';
 import { makeAssetURL } from '../API/RequestURLS';
-
-interface Props extends RouteComponentProps<{}> {
-  apiUser: APIUser;
-}
 
 const Container = styled.div`
   background-color: white;
@@ -28,38 +24,51 @@ const ContainerBtnRight = styled.div`
   }
 `;
 
-export default ({ ...props }: Props): JSX.Element => {
+export default (): JSX.Element => {
   const [accepted, setAccepted] = useState(false);
   const [TOS, setTOS] = useState<string | undefined>(undefined);
-  const config = useReactiveVar(configurationVar);
+  const mountedRef = useRef(true);
+  const user = useReactiveVar(currentUserVar);
+  const history = useHistory();
 
-  useEffect(() => {
-    const agreeNDA = props.apiUser.state.user?.agreeNDA;
-    if (agreeNDA) {
-      props.history.push('/');
+  const [updateActiveUser, { loading }] = useUpdateActiveUserMutation({
+    onCompleted: () => {
+      history.push('/');
     }
-  }, [props.apiUser.state, props.history]);
+  });
 
   useEffect(() => {
-    if (!config.version) return;
+    const agreeNDA = user?.agreeNDA;
+    if (agreeNDA) {
+      history.push('/');
+    }
+  }, [history, user]);
 
+  useEffect(() => {
     const fetchData = async (): Promise<void> => {
       const data = await fetch(makeAssetURL('tos.md'));
       const text = await data.text();
-      setTOS(text);
+      if (mountedRef.current) setTOS(text);
     };
 
     fetchData().catch(error => {
-      setTOS('TOS are not available, please contact your administrator');
+      if (mountedRef.current)
+        setTOS('TOS are not available, please contact your administrator');
       console.log(error);
     });
-  }, [config.version]);
+    return () => {
+      mountedRef.current = false;
+    };
+  }, []);
 
   const handleAcceptTOS = (): void => {
     if (accepted) {
-      const { apiUser, history } = props;
-      apiUser.acceptTOS().then(() => {
-        history.push('/');
+      updateActiveUser({
+        variables: {
+          updateUserInput: {
+            agreeNDA: true
+          }
+        }
       });
     }
   };
@@ -91,7 +100,16 @@ export default ({ ...props }: Props): JSX.Element => {
           variant="primary"
           type="submit"
         >
-          Proceed
+          {loading && (
+            <Spinner
+              as="span"
+              animation="border"
+              size="sm"
+              role="status"
+              aria-hidden="true"
+            />
+          )}
+          {!loading && 'Proceed'}
         </Button>
       </ContainerBtnRight>
     </Container>

@@ -1,6 +1,7 @@
 import { useReactiveVar } from '@apollo/client';
 import React, { useEffect, useState } from 'react';
 import { Button } from 'react-bootstrap';
+import { FaSignOutAlt } from 'react-icons/fa';
 import { NavLink } from 'react-router-dom';
 import styled from 'styled-components';
 import { configurationVar } from '../API/GraphQL/cache';
@@ -116,6 +117,9 @@ const GroupLink = styled(Link)`
 
 const LogoutButton = styled(Button)`
   font-weight: bold;
+  svg {
+    vertical-align: -0.125em;
+  }
 `;
 
 const LoginButton = styled(Button)`
@@ -216,8 +220,8 @@ export default ({
           </LoginButton>
         )}
         {!isAnonymous && authenticated && (
-          <LogoutButton variant={'outline-info'} size={'sm'} onClick={logout}>
-            Logout
+          <LogoutButton variant={'outline-danger'} size={'sm'} onClick={logout}>
+            <FaSignOutAlt /> Logout
           </LogoutButton>
         )}
       </RightLinks>

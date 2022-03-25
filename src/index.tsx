@@ -5,7 +5,7 @@ import 'bootstrap/dist/css/bootstrap.min.css';
 import 'bootstrap/dist/js/bootstrap.bundle.min';
 import * as React from 'react';
 import * as ReactDOM from 'react-dom';
-import { apolloClient } from './components/API/Core';
+import { apolloClient } from './components/API/GraphQL/apollo.config';
 import { default as AppContainer } from './components/App/Container';
 import './index.css';
 import { unregister } from './registerServiceWorker';

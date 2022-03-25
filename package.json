@@ -60,6 +60,7 @@
     "react-select": "^3.0.8",
     "react-sidebar": "^3.0.2",
     "react-spinners": "^0.6.1",
+    "react-toastify": "^8.2.0",
     "react-wysiwyg-typescript": "^1.0.2",
     "rehype-raw": "^6.1.1",
     "request": "^2.88.0",

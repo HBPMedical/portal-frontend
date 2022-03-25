@@ -1,7 +1,7 @@
 import { useReactiveVar } from '@apollo/client';
 import React, { useEffect, useState } from 'react';
 import { Button, Card } from 'react-bootstrap';
-import { RouteComponentProps } from 'react-router-dom';
+import { useHistory } from 'react-router-dom';
 import Sidebar from 'react-sidebar';
 import { APICore } from '../API';
 import {
@@ -19,18 +19,18 @@ import ExperimentSidebar from './ExperimentSidebar';
 import Wrapper from './FilterFormulaWrapper';
 import Header from './Header';
 
-interface Props extends RouteComponentProps {
+interface Props {
   apiCore: APICore;
 }
 
-const Container = ({ apiCore, ...props }: Props): JSX.Element => {
+export default ({ apiCore }: Props): JSX.Element => {
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const [
     createTransientMutation,
     { data, loading, error }
   ] = useCreateExperimentMutation();
 
-  const { history } = props;
+  const history = useHistory();
   const results = data?.createExperiment.results as ResultUnion[];
   const draftExperiment = useReactiveVar(draftExperimentVar);
   const selectedExperiment = useReactiveVar(selectedExperimentVar);
@@ -133,5 +133,3 @@ const Container = ({ apiCore, ...props }: Props): JSX.Element => {
     </>
   );
 };
-
-export default Container;

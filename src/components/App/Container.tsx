@@ -1,8 +1,7 @@
 import * as React from 'react';
 import ReactGA from 'react-ga';
 import { Router } from 'react-router-dom';
-import { Provider, Subscribe } from 'unstated';
-import { APICore, APIMining, APIUser, webURL } from '../API';
+import { APICore, APIMining, webURL } from '../API';
 import config from '../API/RequestHeaders';
 import App, { AppConfig } from '../App/App';
 import { history } from '../utils';
@@ -22,9 +21,6 @@ class AppContainer extends React.Component<any, State> {
   };
   private apiCore = new APICore(config);
   private apiMining = new APIMining(config);
-  private apiUser = new APIUser(config);
-
-  private intervalId: any; // FIXME: NodeJS.Timer | undefined;
 
   async componentDidMount(): Promise<void> {
     const seenTutorial = localStorage.getItem('seenTutorial') === 'true';
@@ -53,29 +49,7 @@ class AppContainer extends React.Component<any, State> {
 
       this.setState({ appConfig, showTutorial: false });
     }
-
-    await this.apiUser.user();
-    if (this.apiUser.state.authenticated) {
-      this.setState({ showTutorial: !seenTutorial });
-
-      // Experiments polling and auth by interval
-      this.intervalId = setInterval(() => {
-        this.apiUser.user().then(() => {
-          if (!this.apiUser.state.authenticated) {
-            clearInterval(this.intervalId);
-            window.location.href = '/';
-          }
-        });
-      }, 10 * 1000);
-
-      return await this.apiCore.algorithms();
-    }
-
-    return Promise.resolve();
-  }
-
-  componentWillUnmount(): void {
-    clearInterval(this.intervalId);
+    return await this.apiCore.algorithms();
   }
 
   render(): JSX.Element {
@@ -93,27 +67,14 @@ class AppContainer extends React.Component<any, State> {
           toggleTutorial
         }}
       >
-        <Provider inject={[this.apiCore, this.apiMining, this.apiUser]}>
-          <Router history={history}>
-            <Subscribe to={[APICore, APIMining, APIUser]}>
-              {(
-                apiCore: APICore,
-                apiMining: APIMining,
-                apiUser: APIUser
-              ): JSX.Element => {
-                return (
-                  <App
-                    appConfig={this.state.appConfig}
-                    apiCore={apiCore}
-                    apiMining={apiMining}
-                    apiUser={apiUser}
-                    showTutorial={this.state.showTutorial}
-                  />
-                );
-              }}
-            </Subscribe>
-          </Router>
-        </Provider>
+        <Router history={history}>
+          <App
+            appConfig={this.state.appConfig}
+            apiCore={this.apiCore}
+            apiMining={this.apiMining}
+            showTutorial={this.state.showTutorial}
+          />
+        </Router>
       </MIPContext.Provider>
     );
   }

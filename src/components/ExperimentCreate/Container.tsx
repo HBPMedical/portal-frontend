@@ -1,7 +1,7 @@
 import { useReactiveVar } from '@apollo/client';
 import React, { useState } from 'react';
 import { Card, Tab, Tabs } from 'react-bootstrap';
-import { RouteComponentProps } from 'react-router-dom';
+import { useHistory } from 'react-router-dom';
 import styled from 'styled-components';
 import { APICore } from '../API';
 import {
@@ -34,20 +34,19 @@ const Wrapper = styled.div`
   min-height: 50vh;
 `;
 
-interface Props extends RouteComponentProps {
+interface Props {
   apiCore: APICore;
 }
 
-export const ExperimentCreateContainer = ({
-  apiCore,
-  history
-}: Props): JSX.Element => {
+export const ExperimentCreateContainer = ({ apiCore }: Props): JSX.Element => {
   const [alert, setAlert] = useState<IAlert | undefined>(undefined);
   const [parameters, setParameters] = useState<AlgorithmParameter[]>([]);
   const [algorithm, setAlgorithm] = useState<Algorithm | undefined>(undefined);
   const selectedExperiment = useReactiveVar(selectedExperimentVar);
   const domain = useReactiveVar(selectedDomainVar);
   const experiment = useReactiveVar(draftExperimentVar);
+  const history = useHistory();
+
   const [createExperiment] = useCreateExperimentMutation({
     refetchQueries: [namedOperations.Query.getExperimentList],
     onCompleted: data => {
