@@ -1,65 +1,109 @@
-import { useReactiveVar } from '@apollo/client';
-import React, { useEffect, useState } from 'react';
-import { Container, Jumbotron } from 'react-bootstrap';
-import ReactMarkdown from 'react-markdown';
-import rehypeRaw from 'rehype-raw';
+import React, { useState } from 'react';
+import { Button, Card, Spinner } from 'react-bootstrap';
+import { useHistory } from 'react-router-dom';
+import { toast } from 'react-toastify';
 import styled from 'styled-components';
-import { configurationVar } from '../API/GraphQL/cache';
-import { makeAssetURL } from '../API/RequestURLS';
-import Loader from './Loader';
+import { SessionState } from '../../utilities/types';
+import { apolloClient } from '../API/GraphQL/apollo.config';
+import { localMutations } from '../API/GraphQL/operations/mutations';
+import { useLoginMutation } from '../API/GraphQL/queries.generated';
 
-const StyledContainer = styled(Container)`
-  margin: 16px auto 0 auto;
+const Container = styled.div`
   display: flex;
-  flex-direction: row;
-  padding: 0;
-  @media (min-width: 1400px) {
-    max-width: 930px;
-  }
-  @media (max-width: 768px) {
-    flex-direction: column;
+  align-items: center;
+  justify-content: center;
+`;
+
+const CardContainer = styled(Card)`
+  margin-top: 20vh;
+  padding: 30px;
+  border-radius: 10px;
+  width: 500px;
+
+  & h3 {
+    margin-bottom: 20px;
   }
 `;
 
-const StyledJumbotron = styled(Jumbotron)`
-  margin-bottom: 0;
-  border-radius: 0;
-  flex: 2;
-  background-color: #ffffffaa;
-  border-right: 1px solid #ddd;
-  font-size: 1.25em;
-`;
+export default () => {
+  const [username, setUsername] = useState<string>('');
+  const [password, setPassword] = useState<string>('');
+  const history = useHistory();
 
-export default (): JSX.Element => {
-  const [text, setText] = useState<string | undefined>(undefined);
-  const config = useReactiveVar(configurationVar);
+  const [loginMutation, { loading }] = useLoginMutation({
+    onCompleted: async () => {
+      toast.success('You successfully logged in');
+      history.push('/');
+      await apolloClient.resetStore();
+      localMutations.user.setState(SessionState.LOGGED_IN);
+    },
+    refetchQueries: 'active',
+    onError: data => {
+      if (data.graphQLErrors) {
+        for (const err of data.graphQLErrors) {
+          switch (err.extensions?.code || 'unknown') {
+            case 'UNAUTHENTICATED':
+              toast.error('Invalid login or password.');
+              break;
+            default:
+              toast.error('Error when trying to login, please try later.');
+              console.log(err);
+              break;
+          }
+        }
+      }
+    }
+  });
 
-  useEffect(() => {
-    if (!config.version) return;
-    const fetchData = async (): Promise<void> => {
-      const data = await fetch(makeAssetURL('login.md'));
-      const text = await data.text();
-      setText(text);
-    };
-
-    fetchData().catch(error => {
-      setText(
-        'Login page text is not available, please contact your administrator'
-      );
-      console.log(error);
+  const handleLogin = () => {
+    loginMutation({
+      variables: { username, password }
     });
-  }, [config.version]);
+  };
+
+  const loginSubmit = (e: React.SyntheticEvent) => {
+    e.preventDefault();
+    handleLogin();
+  };
 
   return (
-    <StyledContainer>
-      <StyledJumbotron>
-        {text && (
-          <ReactMarkdown rehypePlugins={[rehypeRaw]} linkTarget={'_blank'}>
-            {text}
-          </ReactMarkdown>
-        )}
-        {!text && <Loader />}
-      </StyledJumbotron>
-    </StyledContainer>
+    <Container>
+      <CardContainer>
+        <form onSubmit={loginSubmit}>
+          <h3>Login In</h3>
+          <div className="form-group"></div>
+          <div className="form-group">
+            <label>Username or email</label>
+            <input
+              type="text"
+              className="form-control"
+              onChange={event => setUsername(event.target.value)}
+              required={true}
+            />
+          </div>
+          <div className="form-group">
+            <label>Password</label>
+            <input
+              type="password"
+              className="form-control"
+              onChange={event => setPassword(event.target.value)}
+            />
+          </div>
+
+          <Button type="submit" className="btn-block">
+            {loading && (
+              <Spinner
+                as="span"
+                animation="border"
+                size="sm"
+                role="status"
+                aria-hidden="true"
+              />
+            )}
+            {!loading && 'Submit'}
+          </Button>
+        </form>
+      </CardContainer>
+    </Container>
   );
 };

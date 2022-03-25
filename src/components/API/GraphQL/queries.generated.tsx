@@ -7,7 +7,7 @@ const defaultOptions =  {}
 export type GetConfigurationQueryVariables = Types.Exact<{ [key: string]: never; }>;
 
 
-export type GetConfigurationQuery = { __typename?: 'Query', configuration: { __typename?: 'Configuration', connectorId: string, galaxy?: Types.Maybe<boolean>, contactLink?: Types.Maybe<string>, version: string } };
+export type GetConfigurationQuery = { __typename?: 'Query', configuration: { __typename?: 'Configuration', connectorId: string, hasGalaxy?: Types.Maybe<boolean>, enableSSO?: Types.Maybe<boolean>, skipAuth?: Types.Maybe<boolean>, skipTos?: Types.Maybe<boolean>, contactLink?: Types.Maybe<string>, version: string } };
 
 export type GetVariablesFromDomainQueryVariables = Types.Exact<{
   id: Types.Scalars['String'];
@@ -15,6 +15,11 @@ export type GetVariablesFromDomainQueryVariables = Types.Exact<{
 
 
 export type GetVariablesFromDomainQuery = { __typename?: 'Query', domains: Array<{ __typename?: 'Domain', variables: Array<{ __typename?: 'Variable', id: string, label?: Types.Maybe<string>, type?: Types.Maybe<string> }> }> };
+
+export type ActiveUserQueryVariables = Types.Exact<{ [key: string]: never; }>;
+
+
+export type ActiveUserQuery = { __typename?: 'Query', user: { __typename?: 'User', id: string, username: string, fullname?: Types.Maybe<string>, email?: Types.Maybe<string>, agreeNDA?: Types.Maybe<boolean> } };
 
 export type GetDomainListQueryVariables = Types.Exact<{ [key: string]: never; }>;
 
@@ -51,6 +56,26 @@ export type CreateExperimentMutationVariables = Types.Exact<{
 
 export type CreateExperimentMutation = { __typename?: 'Mutation', createExperiment: { __typename?: 'Experiment', id?: Types.Maybe<string>, name: string, status?: Types.Maybe<string>, results?: Types.Maybe<Array<{ __typename?: 'GroupsResult', groups: Array<{ __typename?: 'GroupResult', name: string, description?: Types.Maybe<string>, results: Array<{ __typename?: 'GroupsResult' } | { __typename?: 'HeatMapResult', name: string, matrix: Array<Array<number>>, xAxis?: Types.Maybe<{ __typename?: 'ChartAxis', label?: Types.Maybe<string>, categories?: Types.Maybe<Array<string>> }>, yAxis?: Types.Maybe<{ __typename?: 'ChartAxis', label?: Types.Maybe<string>, categories?: Types.Maybe<Array<string>> }> } | { __typename?: 'LineChartResult', name: string, xAxis?: Types.Maybe<{ __typename?: 'ChartAxis', label?: Types.Maybe<string> }>, yAxis?: Types.Maybe<{ __typename?: 'ChartAxis', label?: Types.Maybe<string> }>, lines: Array<{ __typename?: 'LineResult', label: string, x: Array<number>, y: Array<number>, type?: Types.Maybe<Types.LineType>, extraLineInfos?: Types.Maybe<Array<{ __typename?: 'ExtraLineInfo', label: string, values: Array<string> }>> }> } | { __typename?: 'RawResult', rawdata?: Types.Maybe<any> } | { __typename?: 'TableResult', name: string, data: Array<Array<string>>, headers: Array<{ __typename?: 'Header', name: string, type: string }> }> }> } | { __typename?: 'HeatMapResult', name: string, matrix: Array<Array<number>>, xAxis?: Types.Maybe<{ __typename?: 'ChartAxis', label?: Types.Maybe<string>, categories?: Types.Maybe<Array<string>> }>, yAxis?: Types.Maybe<{ __typename?: 'ChartAxis', label?: Types.Maybe<string>, categories?: Types.Maybe<Array<string>> }> } | { __typename?: 'LineChartResult', name: string, xAxis?: Types.Maybe<{ __typename?: 'ChartAxis', label?: Types.Maybe<string> }>, yAxis?: Types.Maybe<{ __typename?: 'ChartAxis', label?: Types.Maybe<string> }>, lines: Array<{ __typename?: 'LineResult', label: string, x: Array<number>, y: Array<number>, type?: Types.Maybe<Types.LineType>, extraLineInfos?: Types.Maybe<Array<{ __typename?: 'ExtraLineInfo', label: string, values: Array<string> }>> }> } | { __typename?: 'RawResult', rawdata?: Types.Maybe<any> } | { __typename?: 'TableResult', name: string, data: Array<Array<string>>, headers: Array<{ __typename?: 'Header', name: string, type: string }> }>> } };
 
+export type LogoutMutationVariables = Types.Exact<{ [key: string]: never; }>;
+
+
+export type LogoutMutation = { __typename?: 'Mutation', logout: boolean };
+
+export type LoginMutationVariables = Types.Exact<{
+  username: Types.Scalars['String'];
+  password: Types.Scalars['String'];
+}>;
+
+
+export type LoginMutation = { __typename?: 'Mutation', login: { __typename?: 'AuthenticationOutput', accessToken: string } };
+
+export type UpdateActiveUserMutationVariables = Types.Exact<{
+  updateUserInput: Types.UpdateUserInput;
+}>;
+
+
+export type UpdateActiveUserMutation = { __typename?: 'Mutation', updateUser: { __typename?: 'User', id: string, username: string, fullname?: Types.Maybe<string>, email?: Types.Maybe<string>, agreeNDA?: Types.Maybe<boolean> } };
+
 export type EditExperimentMutationVariables = Types.Exact<{
   id: Types.Scalars['String'];
   data: Types.ExperimentEditInput;
@@ -79,7 +104,10 @@ export const GetConfigurationDocument = gql`
     query getConfiguration {
   configuration {
     connectorId
-    galaxy
+    hasGalaxy
+    enableSSO
+    skipAuth
+    skipTos
     contactLink
     version
   }
@@ -151,6 +179,44 @@ export function useGetVariablesFromDomainLazyQuery(baseOptions?: Apollo.LazyQuer
 export type GetVariablesFromDomainQueryHookResult = ReturnType<typeof useGetVariablesFromDomainQuery>;
 export type GetVariablesFromDomainLazyQueryHookResult = ReturnType<typeof useGetVariablesFromDomainLazyQuery>;
 export type GetVariablesFromDomainQueryResult = Apollo.QueryResult<GetVariablesFromDomainQuery, GetVariablesFromDomainQueryVariables>;
+export const ActiveUserDocument = gql`
+    query activeUser {
+  user {
+    id
+    username
+    fullname
+    email
+    agreeNDA
+  }
+}
+    `;
+
+/**
+ * __useActiveUserQuery__
+ *
+ * To run a query within a React component, call `useActiveUserQuery` and pass it any options that fit your needs.
+ * When your component renders, `useActiveUserQuery` returns an object from Apollo Client that contains loading, error, and data properties
+ * you can use to render your UI.
+ *
+ * @param baseOptions options that will be passed into the query, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options;
+ *
+ * @example
+ * const { data, loading, error } = useActiveUserQuery({
+ *   variables: {
+ *   },
+ * });
+ */
+export function useActiveUserQuery(baseOptions?: Apollo.QueryHookOptions<ActiveUserQuery, ActiveUserQueryVariables>) {
+        const options = {...defaultOptions, ...baseOptions}
+        return Apollo.useQuery<ActiveUserQuery, ActiveUserQueryVariables>(ActiveUserDocument, options);
+      }
+export function useActiveUserLazyQuery(baseOptions?: Apollo.LazyQueryHookOptions<ActiveUserQuery, ActiveUserQueryVariables>) {
+          const options = {...defaultOptions, ...baseOptions}
+          return Apollo.useLazyQuery<ActiveUserQuery, ActiveUserQueryVariables>(ActiveUserDocument, options);
+        }
+export type ActiveUserQueryHookResult = ReturnType<typeof useActiveUserQuery>;
+export type ActiveUserLazyQueryHookResult = ReturnType<typeof useActiveUserLazyQuery>;
+export type ActiveUserQueryResult = Apollo.QueryResult<ActiveUserQuery, ActiveUserQueryVariables>;
 export const GetDomainListDocument = gql`
     query getDomainList {
   domains {
@@ -427,6 +493,107 @@ export function useCreateExperimentMutation(baseOptions?: Apollo.MutationHookOpt
 export type CreateExperimentMutationHookResult = ReturnType<typeof useCreateExperimentMutation>;
 export type CreateExperimentMutationResult = Apollo.MutationResult<CreateExperimentMutation>;
 export type CreateExperimentMutationOptions = Apollo.BaseMutationOptions<CreateExperimentMutation, CreateExperimentMutationVariables>;
+export const LogoutDocument = gql`
+    mutation logout {
+  logout
+}
+    `;
+export type LogoutMutationFn = Apollo.MutationFunction<LogoutMutation, LogoutMutationVariables>;
+
+/**
+ * __useLogoutMutation__
+ *
+ * To run a mutation, you first call `useLogoutMutation` within a React component and pass it any options that fit your needs.
+ * When your component renders, `useLogoutMutation` returns a tuple that includes:
+ * - A mutate function that you can call at any time to execute the mutation
+ * - An object with fields that represent the current status of the mutation's execution
+ *
+ * @param baseOptions options that will be passed into the mutation, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options-2;
+ *
+ * @example
+ * const [logoutMutation, { data, loading, error }] = useLogoutMutation({
+ *   variables: {
+ *   },
+ * });
+ */
+export function useLogoutMutation(baseOptions?: Apollo.MutationHookOptions<LogoutMutation, LogoutMutationVariables>) {
+        const options = {...defaultOptions, ...baseOptions}
+        return Apollo.useMutation<LogoutMutation, LogoutMutationVariables>(LogoutDocument, options);
+      }
+export type LogoutMutationHookResult = ReturnType<typeof useLogoutMutation>;
+export type LogoutMutationResult = Apollo.MutationResult<LogoutMutation>;
+export type LogoutMutationOptions = Apollo.BaseMutationOptions<LogoutMutation, LogoutMutationVariables>;
+export const LoginDocument = gql`
+    mutation login($username: String!, $password: String!) {
+  login(variables: {username: $username, password: $password}) {
+    accessToken
+  }
+}
+    `;
+export type LoginMutationFn = Apollo.MutationFunction<LoginMutation, LoginMutationVariables>;
+
+/**
+ * __useLoginMutation__
+ *
+ * To run a mutation, you first call `useLoginMutation` within a React component and pass it any options that fit your needs.
+ * When your component renders, `useLoginMutation` returns a tuple that includes:
+ * - A mutate function that you can call at any time to execute the mutation
+ * - An object with fields that represent the current status of the mutation's execution
+ *
+ * @param baseOptions options that will be passed into the mutation, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options-2;
+ *
+ * @example
+ * const [loginMutation, { data, loading, error }] = useLoginMutation({
+ *   variables: {
+ *      username: // value for 'username'
+ *      password: // value for 'password'
+ *   },
+ * });
+ */
+export function useLoginMutation(baseOptions?: Apollo.MutationHookOptions<LoginMutation, LoginMutationVariables>) {
+        const options = {...defaultOptions, ...baseOptions}
+        return Apollo.useMutation<LoginMutation, LoginMutationVariables>(LoginDocument, options);
+      }
+export type LoginMutationHookResult = ReturnType<typeof useLoginMutation>;
+export type LoginMutationResult = Apollo.MutationResult<LoginMutation>;
+export type LoginMutationOptions = Apollo.BaseMutationOptions<LoginMutation, LoginMutationVariables>;
+export const UpdateActiveUserDocument = gql`
+    mutation updateActiveUser($updateUserInput: UpdateUserInput!) {
+  updateUser(updateUserInput: $updateUserInput) {
+    id
+    username
+    fullname
+    email
+    agreeNDA
+  }
+}
+    `;
+export type UpdateActiveUserMutationFn = Apollo.MutationFunction<UpdateActiveUserMutation, UpdateActiveUserMutationVariables>;
+
+/**
+ * __useUpdateActiveUserMutation__
+ *
+ * To run a mutation, you first call `useUpdateActiveUserMutation` within a React component and pass it any options that fit your needs.
+ * When your component renders, `useUpdateActiveUserMutation` returns a tuple that includes:
+ * - A mutate function that you can call at any time to execute the mutation
+ * - An object with fields that represent the current status of the mutation's execution
+ *
+ * @param baseOptions options that will be passed into the mutation, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options-2;
+ *
+ * @example
+ * const [updateActiveUserMutation, { data, loading, error }] = useUpdateActiveUserMutation({
+ *   variables: {
+ *      updateUserInput: // value for 'updateUserInput'
+ *   },
+ * });
+ */
+export function useUpdateActiveUserMutation(baseOptions?: Apollo.MutationHookOptions<UpdateActiveUserMutation, UpdateActiveUserMutationVariables>) {
+        const options = {...defaultOptions, ...baseOptions}
+        return Apollo.useMutation<UpdateActiveUserMutation, UpdateActiveUserMutationVariables>(UpdateActiveUserDocument, options);
+      }
+export type UpdateActiveUserMutationHookResult = ReturnType<typeof useUpdateActiveUserMutation>;
+export type UpdateActiveUserMutationResult = Apollo.MutationResult<UpdateActiveUserMutation>;
+export type UpdateActiveUserMutationOptions = Apollo.BaseMutationOptions<UpdateActiveUserMutation, UpdateActiveUserMutationVariables>;
 export const EditExperimentDocument = gql`
     mutation editExperiment($id: String!, $data: ExperimentEditInput!) {
   editExperiment(id: $id, data: $data) {
@@ -504,6 +671,7 @@ export const namedOperations = {
   Query: {
     getConfiguration: 'getConfiguration',
     getVariablesFromDomain: 'getVariablesFromDomain',
+    activeUser: 'activeUser',
     getDomainList: 'getDomainList',
     getExperimentList: 'getExperimentList',
     getExperiment: 'getExperiment',
@@ -511,6 +679,9 @@ export const namedOperations = {
   },
   Mutation: {
     createExperiment: 'createExperiment',
+    logout: 'logout',
+    login: 'login',
+    updateActiveUser: 'updateActiveUser',
     editExperiment: 'editExperiment',
     deleteExperiment: 'deleteExperiment'
   },

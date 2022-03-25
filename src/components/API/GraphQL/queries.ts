@@ -5,7 +5,10 @@ export const QUERY_CONFIGURATION = gql`
   query getConfiguration {
     configuration {
       connectorId
-      galaxy
+      hasGalaxy
+      enableSSO
+      skipAuth
+      skipTos
       contactLink
       version
     }
@@ -20,6 +23,18 @@ export const QUERY_VARS_FROM_DOMAIN = gql`
         label
         type
       }
+    }
+  }
+`;
+
+export const QUERY_ACTIVE_USER = gql`
+  query activeUser {
+    user {
+      id
+      username
+      fullname
+      email
+      agreeNDA
     }
   }
 `;
@@ -178,6 +193,32 @@ export const CREATE_EXPERIMENT = gql`
         }
         ...coreInfoResult
       }
+    }
+  }
+`;
+
+export const MUTATE_LOGOUT = gql`
+  mutation logout {
+    logout
+  }
+`;
+
+export const MUTATE_LOGIN = gql`
+  mutation login($username: String!, $password: String!) {
+    login(variables: { username: $username, password: $password }) {
+      accessToken
+    }
+  }
+`;
+
+export const MUTATE_ACTIVE_USER = gql`
+  mutation updateActiveUser($updateUserInput: UpdateUserInput!) {
+    updateUser(updateUserInput: $updateUserInput) {
+      id
+      username
+      fullname
+      email
+      agreeNDA
     }
   }
 `;

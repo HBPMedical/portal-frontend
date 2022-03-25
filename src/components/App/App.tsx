@@ -1,14 +1,20 @@
-import { useReactiveVar } from '@apollo/client';
-import React, { useEffect } from 'react';
+import { NetworkStatus, useReactiveVar } from '@apollo/client';
+import React, { useCallback, useEffect } from 'react';
 import { Spinner } from 'react-bootstrap';
-import { Route, Switch } from 'react-router-dom';
+import { Route, Switch, useHistory } from 'react-router-dom';
+import { toast, ToastContainer } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.min.css';
 import styled from 'styled-components';
-import { APICore, APIMining, APIUser, backendURL } from '../API';
-import { configurationVar } from '../API/GraphQL/cache';
+import { SessionState } from '../../utilities/types';
+import { APICore, APIMining, backendURL } from '../API';
+import { apolloClient } from '../API/GraphQL/apollo.config';
+import { configurationVar, sessionStateVar } from '../API/GraphQL/cache';
 import { localMutations } from '../API/GraphQL/operations/mutations';
 import {
+  useActiveUserQuery,
   useGetConfigurationQuery,
-  useListDomainsQuery
+  useListDomainsQuery,
+  useLogoutMutation
 } from '../API/GraphQL/queries.generated';
 import { makeAssetURL } from '../API/RequestURLS';
 import { DescriptiveAnalysis } from '../DescriptiveAnalysis';
@@ -16,6 +22,8 @@ import ExperimentCreate from '../ExperimentCreate/Container';
 import Explore from '../ExperimentExplore/Container';
 import ExperimentResult from '../ExperimentResult/Container';
 import Help from '../Help/Videos';
+import ProtectedRoute from '../router/ProtectedRoute';
+import AccessPage from '../UI/AccessPage';
 import DataCatalog from '../UI/DataCatalog';
 import DropdownExperimentList from '../UI/Experiment/DropDownList/DropdownExperimentList';
 import Footer from '../UI/Footer';
@@ -54,6 +62,7 @@ const SpinnerContainer = styled.div`
   min-height: inherit;
   justify-content: center;
   align-items: center;
+  height: 100vh;
 `;
 
 export interface AppConfig {
@@ -66,7 +75,6 @@ interface Props {
   appConfig: AppConfig;
   apiCore: APICore;
   apiMining: APIMining;
-  apiUser: APIUser;
   showTutorial: boolean;
 }
 
@@ -74,19 +82,42 @@ interface MainProps {
   showTutorial: any;
 }
 
-const App = ({
-  appConfig,
-  apiCore,
-  apiMining,
-  apiUser,
-  showTutorial
-}: Props): JSX.Element => {
-  const loading = apiUser.state.loading;
-  const authenticated = apiUser.state.authenticated || false;
-  const isAnonymous = apiUser.state.user?.username === 'anonymous' || false;
+const App = ({ appConfig, apiCore, apiMining, showTutorial }: Props) => {
   const config = useReactiveVar(configurationVar);
+  const history = useHistory();
+  const userState = useReactiveVar(sessionStateVar);
 
-  useGetConfigurationQuery({
+  const {
+    loading: userLoading,
+    data: userData,
+    networkStatus: userNetwork
+  } = useActiveUserQuery({
+    fetchPolicy: 'network-only',
+    notifyOnNetworkStatusChange: true
+  });
+
+  const [logoutMutation] = useLogoutMutation();
+
+  const logoutHandle = useCallback(async () => {
+    history.push('/access');
+
+    try {
+      await logoutMutation();
+    } catch (e) {
+      console.log(
+        'Error when logging out, probably user was not authenticated. Negligible error.'
+      );
+    }
+
+    await apolloClient.clearStore();
+
+    localMutations.user.setState(SessionState.LOGGED_OUT);
+  }, [history, logoutMutation]);
+
+  const {
+    data: { configuration } = {},
+    loading: configLoading
+  } = useGetConfigurationQuery({
     onCompleted: data => {
       if (data.configuration) {
         localMutations.setConfiguration(data.configuration);
@@ -96,8 +127,16 @@ const App = ({
     }
   });
 
+  const user = userData?.user;
+  const isAnonymous = user?.username === 'anonymous' || false;
+  const authenticated = !!user && userState !== SessionState.LOGGED_OUT;
+
   //load domains for every page
-  useListDomainsQuery({
+  const {
+    loading: domainsLoading,
+    networkStatus: domainNetwork
+  } = useListDomainsQuery({
+    notifyOnNetworkStatusChange: true,
     onCompleted: data => {
       if (data.domains) {
         localMutations.setDomains(data.domains);
@@ -105,6 +144,13 @@ const App = ({
       }
     }
   });
+
+  const loading =
+    configLoading ||
+    userLoading ||
+    domainsLoading ||
+    domainNetwork === NetworkStatus.refetch ||
+    userNetwork === NetworkStatus.refetch;
 
   useEffect(() => {
     if (!config.version) return;
@@ -117,121 +163,121 @@ const App = ({
     link.rel = 'stylesheet';
     link.href = cssPath;
 
-    head.appendChild(link);
+    if (head) head.appendChild(link);
 
     return (): void => {
-      head.removeChild(link);
+      if (head) head.removeChild(link);
     };
   }, [config.version]);
+
+  useEffect(() => {
+    if (userState === SessionState.INVALID) {
+      if (user) {
+        toast.error('You session has expired.');
+      } else {
+        toast.info('Please login before accessing the MIP');
+      }
+      logoutHandle();
+    }
+  }, [logoutHandle, user, userState]);
+
+  // TODO : Find out why this component is reloaded multiple times
+  //console.log('app re-rendered'); Sus: props refreshing => apimining and apicore
 
   return (
     <>
       <GlobalStyles />
-      <header>
-        <Navigation
-          name={appConfig.instanceName}
-          isAnonymous={isAnonymous}
-          authenticated={authenticated}
-          login={(): void => {
-            if (apiUser.state.user?.username !== 'anonymous') {
-              window.location.href = `${backendURL}/sso/login`;
-            }
-          }}
-          datacatalogueUrl={appConfig.datacatalogueUrl || undefined}
-          logout={() => {
-            (apiUser.state.user?.username !== 'anonymous' || undefined) &&
-              apiUser.logout();
-            window.location.href = '/';
-          }}
-        >
-          <DropdownExperimentList
-            hasDetailedView={true}
-            label={'My Experiments'}
-          />
-        </Navigation>
-      </header>
-      <Main showTutorial={showTutorial}>
-        {loading && (
-          <SpinnerContainer>
-            <Spinner animation="border" variant="info" />
-          </SpinnerContainer>
-        )}
-        {!loading && (
-          <Switch>
-            {showTutorial && <Tutorial />}
+      {loading && (
+        <SpinnerContainer>
+          <Spinner animation="border" variant="info" />
+        </SpinnerContainer>
+      )}
+      {!loading && (
+        <>
+          <header>
+            <Navigation
+              name={appConfig.instanceName}
+              isAnonymous={isAnonymous}
+              authenticated={authenticated}
+              login={(): void => {
+                if (!isAnonymous) {
+                  if (configuration?.enableSSO)
+                    window.location.href = `${backendURL}/sso/login`;
+                  else {
+                    history.push('/login');
+                  }
+                }
+              }}
+              datacatalogueUrl={appConfig.datacatalogueUrl || undefined}
+              logout={() => {
+                toast.success('you successfully logged out');
+                logoutHandle();
+              }}
+            >
+              <DropdownExperimentList
+                hasDetailedView={true}
+                label={'My Experiments'}
+              />
+            </Navigation>
+          </header>
+          <Main showTutorial={showTutorial}>
+            <Switch>
+              {showTutorial && <Tutorial />}
 
-            {!authenticated && (
-              <Route path="/" exact={true}>
+              <Route path="/training" exact={true}>
+                <Help />
+              </Route>
+
+              <Route path="/login">
                 <LoginPage />
               </Route>
-            )}
 
-            <Route path="/training" exact={true}>
-              <Help />
-            </Route>
+              <Route path="/access" exact={true}>
+                <AccessPage />
+              </Route>
 
-            {authenticated && (
-              <Switch>
-                <Route
-                  path={['/', '/explore']}
-                  exact={true}
-                  // tslint:disable-next-line jsx-no-lambda
-                  render={(props): JSX.Element => (
-                    <Explore
-                      apiCore={apiCore}
-                      apiMining={apiMining}
-                      appConfig={appConfig}
-                      apiUser={apiUser}
-                      {...props}
-                    ></Explore>
-                  )}
-                />
-                <Route
-                  path="/tos"
-                  // tslint:disable-next-line jsx-no-lambda
-                  render={(props): JSX.Element => (
-                    <TOS apiUser={apiUser} {...props} />
-                  )}
-                />
+              <Route path="/tos">
+                <TOS />
+              </Route>
 
-                <Route
-                  path={['/review', '/analysis']}
-                  // tslint:disable-next-line jsx-no-lambda
-                  render={(props): JSX.Element => (
-                    <DescriptiveAnalysis apiCore={apiCore} {...props} />
-                  )}
-                />
-                <Route
-                  path="/experiment/:uuid"
-                  // tslint:disable-next-line jsx-no-lambda
-                  render={(): JSX.Element => <ExperimentResult />}
-                />
-                <Route
-                  exact={true}
-                  path="/experiment"
-                  // tslint:disable-next-line jsx-no-lambda
-                  render={(props): JSX.Element => (
-                    <ExperimentCreate apiCore={apiCore} {...props} />
-                  )}
-                />
-                <Route
-                  path="/galaxy"
-                  render={(): JSX.Element => <Galaxy apiCore={apiCore} />}
-                />
-                <Route
-                  path="/catalog"
-                  render={(): JSX.Element => <DataCatalog />}
-                />
+              <ProtectedRoute path={['/', '/explore']} exact={true}>
+                <Explore apiCore={apiCore} apiMining={apiMining} />
+              </ProtectedRoute>
 
-                <Route component={NotFound} />
-              </Switch>
-            )}
-          </Switch>
-        )}
-      </Main>
-      <footer>
-        <Footer appConfig={appConfig} />
-      </footer>
+              <ProtectedRoute path={['/review', '/analysis']}>
+                <DescriptiveAnalysis apiCore={apiCore} />
+              </ProtectedRoute>
+
+              <ProtectedRoute path="/experiment/:uuid">
+                <ExperimentResult />
+              </ProtectedRoute>
+
+              <ProtectedRoute exact={true} path="/experiment">
+                <ExperimentCreate apiCore={apiCore} />
+              </ProtectedRoute>
+
+              <ProtectedRoute path="/galaxy">
+                <Galaxy apiCore={apiCore} />
+              </ProtectedRoute>
+
+              <Route path="/catalog" render={() => <DataCatalog />} />
+
+              <Route component={NotFound} />
+            </Switch>
+          </Main>
+          <footer>
+            <Footer appConfig={appConfig} />
+          </footer>
+        </>
+      )}
+      <ToastContainer
+        style={{ marginTop: '35px' }}
+        position="top-right"
+        closeOnClick
+        pauseOnHover
+        pauseOnFocusLoss
+        autoClose={5000}
+      />
     </>
   );
 };

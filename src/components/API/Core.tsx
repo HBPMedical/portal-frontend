@@ -1,18 +1,7 @@
-import { ApolloClient } from '@apollo/client';
 import request from 'request-promise-native';
 import { Container } from 'unstated';
 import { backendURL } from '../API';
 import { Exareme } from '../API/Exareme';
-import { FORBIDDEN_ACCESS_MESSAGE } from '../constants';
-import { cache } from './GraphQL/cache';
-import { QUERY_DOMAINS } from './GraphQL/queries';
-import {
-  Domain,
-  Group,
-  Variable as VariableData
-} from './GraphQL/types.generated';
-import config from './RequestHeaders';
-import { graphQLURL } from './RequestURLS';
 
 export interface Variable {
   code: string;
@@ -149,17 +138,6 @@ export interface State {
   pathologiesDatasets: PathologiesVariables;
   pathologiesHierarchies: PathologiesHierarchies;
 }
-
-export const apolloClient = new ApolloClient({
-  uri: graphQLURL,
-  headers: {
-    ...config.options?.headers,
-    accept: 'application/json, text/plain, */*'
-  },
-  cache: cache,
-  credentials: 'include'
-});
-
 class Core extends Container<State> {
   state: State = {
     pathologiesVariables: {},
@@ -209,116 +187,6 @@ class Core extends Container<State> {
     return { code, label: code, info: code };
   };
 
-  fetchPathologies = async (): Promise<void> => {
-    try {
-      const query = await apolloClient.query({ query: QUERY_DOMAINS });
-      const domains: Domain[] = query.data.domains;
-
-      const pathologies: Variable[] = domains.map(domain => ({
-        code: domain.id,
-        label: domain.label ?? ''
-      }));
-
-      if (pathologies && pathologies.length === 0) {
-        return await this.setState({
-          pathologyError: FORBIDDEN_ACCESS_MESSAGE
-        });
-      }
-
-      const pathologiesVariables: PathologiesVariables = {};
-      const pathologiesDatasets: PathologiesVariables = {};
-      const pathologiesHierarchies: PathologiesHierarchies = {};
-
-      // Variable interface should be seen as an Entity interface
-
-      domains.forEach(domain => {
-        const vars: VariableEntity[] = domain.variables.map(
-          this.dataToVariable
-        );
-
-        const datasets = domain.datasets.map(
-          (dataset): Variable => {
-            return {
-              code: dataset.id,
-              label: dataset.label ?? ''
-            };
-          }
-        );
-
-        const lookupGroups: Dictionary<Group> = {};
-
-        domain.groups.forEach(group => {
-          if (!lookupGroups[group.id]) {
-            lookupGroups[group.id] = group;
-          }
-        });
-
-        const groups: Hierarchy = this.dataToHierarchy(
-          domain.rootGroup,
-          vars,
-          lookupGroups
-        );
-
-        pathologiesVariables[domain.id] = vars;
-        pathologiesDatasets[domain.id] = datasets;
-        pathologiesHierarchies[domain.id] = groups;
-      });
-
-      return await this.setState({
-        error: undefined,
-        pathologies,
-        pathologiesVariables,
-        pathologiesDatasets,
-        pathologiesHierarchies
-      });
-    } catch (error) {
-      return await this.setState({
-        pathologyError: FORBIDDEN_ACCESS_MESSAGE
-      });
-    }
-  };
-
-  private dataToVariable = (variable: VariableData): VariableEntity => {
-    const enums = variable.enumerations
-      ? variable.enumerations.map(cat => {
-          return {
-            code: cat.id,
-            label: cat.label ?? ''
-          };
-        })
-      : [];
-
-    return {
-      code: variable.id,
-      label: variable.label ?? '',
-      description: variable.description ?? '',
-      isCategorical: enums.length !== 0,
-      enumerations: enums,
-      type: (variable.type as types) ?? undefined
-    };
-  };
-
-  private dataToHierarchy = (
-    group: Group,
-    lookupVars: VariableEntity[],
-    lookupGroup: Dictionary<Group>
-  ): Hierarchy => {
-    return {
-      code: group.id,
-      label: group.label ?? '',
-      variables: group.variables
-        ? (group.variables
-            .map(variable => lookupVars.find(item => item.code === variable))
-            .filter(item => !!item) as VariableEntity[])
-        : [], //can be optimize (time complexity over memory complexity) by doing a lookup table
-      groups: group.groups
-        ? group.groups.map(it =>
-            this.dataToHierarchy(lookupGroup[it], lookupVars, lookupGroup)
-          )
-        : []
-    };
-  };
-
   algorithms = async (all = false): Promise<void> => {
     const exaremeAlgorithms = await this.fetchAlgorithms(all);
     this.setState(state => ({
@@ -355,20 +223,6 @@ class Core extends Container<State> {
         });
       }
     }
-  };
-
-  private defaultValueFor = ({
-    label,
-    defaults = {
-      alpha: 0.1,
-      kfold: 3,
-      testSize: 0.2
-    }
-  }: {
-    label: string;
-    defaults?: any;
-  }): string => {
-    return defaults[label] ? defaults[label] : '';
   };
 
   private fetchAlgorithms = async (
