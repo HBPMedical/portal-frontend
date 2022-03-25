@@ -1,4 +1,4 @@
-import { useReactiveVar } from '@apollo/client';
+import { NetworkStatus, useReactiveVar } from '@apollo/client';
 import React, { useCallback, useEffect } from 'react';
 import { Spinner } from 'react-bootstrap';
 import { Route, Switch, useHistory } from 'react-router-dom';
@@ -11,7 +11,6 @@ import { apolloClient } from '../API/GraphQL/apollo.config';
 import { configurationVar, sessionStateVar } from '../API/GraphQL/cache';
 import { localMutations } from '../API/GraphQL/operations/mutations';
 import {
-  namedOperations,
   useActiveUserQuery,
   useGetConfigurationQuery,
   useListDomainsQuery,
@@ -88,22 +87,25 @@ const App = ({ appConfig, apiCore, apiMining, showTutorial }: Props) => {
   const history = useHistory();
   const userState = useReactiveVar(sessionStateVar);
 
-  const { loading: userLoading, data: userData } = useActiveUserQuery({
-    fetchPolicy: 'network-only'
+  const {
+    loading: userLoading,
+    data: userData,
+    networkStatus: userNetwork
+  } = useActiveUserQuery({
+    fetchPolicy: 'network-only',
+    notifyOnNetworkStatusChange: true
   });
 
-  const [logoutMutation] = useLogoutMutation({
-    variables: {},
-    refetchQueries: [namedOperations.Query.activeUser],
-    onCompleted: () => {
-      history.push('/access');
-    }
-  });
+  const [logoutMutation] = useLogoutMutation();
 
-  const logoutHandle = useCallback(() => {
-    apolloClient.clearStore();
-    logoutMutation();
-  }, [logoutMutation]);
+  const logoutHandle = useCallback(async () => {
+    history.push('/access');
+
+    await logoutMutation();
+    await apolloClient.clearStore();
+
+    localMutations.user.setState(SessionState.LOGGED_OUT);
+  }, [history, logoutMutation]);
 
   const {
     data: { configuration } = {},
@@ -120,10 +122,14 @@ const App = ({ appConfig, apiCore, apiMining, showTutorial }: Props) => {
 
   const user = userData?.user;
   const isAnonymous = user?.username === 'anonymous' || false;
-  const authenticated = !!user;
+  const authenticated = !!user && userState !== SessionState.LOGGED_OUT;
 
   //load domains for every page
-  const { loading: domainsLoading } = useListDomainsQuery({
+  const {
+    loading: domainsLoading,
+    networkStatus: domainNetwork
+  } = useListDomainsQuery({
+    notifyOnNetworkStatusChange: true,
     onCompleted: data => {
       if (data.domains) {
         localMutations.setDomains(data.domains);
@@ -132,7 +138,12 @@ const App = ({ appConfig, apiCore, apiMining, showTutorial }: Props) => {
     }
   });
 
-  const loading = configLoading || userLoading || domainsLoading;
+  const loading =
+    configLoading ||
+    userLoading ||
+    domainsLoading ||
+    domainNetwork === NetworkStatus.refetch ||
+    userNetwork === NetworkStatus.refetch;
 
   useEffect(() => {
     if (!config.version) return;
@@ -154,11 +165,10 @@ const App = ({ appConfig, apiCore, apiMining, showTutorial }: Props) => {
 
   useEffect(() => {
     if (userState === SessionState.INVALID) {
-      localMutations.user.setState(SessionState.INIT);
       if (user) {
         toast.error('You session has expired.');
       } else {
-        toast.warn('Please login before accessing the MIP');
+        toast.info('Please login before accessing the MIP');
       }
       logoutHandle();
     }
@@ -251,16 +261,16 @@ const App = ({ appConfig, apiCore, apiMining, showTutorial }: Props) => {
           <footer>
             <Footer appConfig={appConfig} />
           </footer>
-          <ToastContainer
-            style={{ marginTop: '35px' }}
-            position="top-right"
-            closeOnClick
-            pauseOnHover
-            pauseOnFocusLoss
-            autoClose={5000}
-          />
         </>
       )}
+      <ToastContainer
+        style={{ marginTop: '35px' }}
+        position="top-right"
+        closeOnClick
+        pauseOnHover
+        pauseOnFocusLoss
+        autoClose={5000}
+      />
     </>
   );
 };

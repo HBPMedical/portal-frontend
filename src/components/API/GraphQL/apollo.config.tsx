@@ -10,18 +10,20 @@ const excludedDomains = ['login', 'logout'];
 
 const errorLink = onError(({ graphQLErrors, networkError, operation }) => {
   if (
-    excludedDomains.includes(operation.operationName) ||
-    excludedPaths.includes(window.location.pathname)
+    excludedDomains.includes(operation?.operationName) ||
+    excludedPaths.includes(window?.location?.pathname)
   )
     return;
   if (graphQLErrors)
-    graphQLErrors.forEach(({ message, locations, path, extensions }) => {
+    graphQLErrors.forEach(({ message, path, extensions }) => {
       switch (extensions?.status || -1) {
         case 401:
-          sessionStateVar(SessionState.INVALID);
+          if (sessionStateVar() !== SessionState.INVALID)
+            sessionStateVar(SessionState.INVALID);
           break;
         case 403:
-          sessionStateVar(SessionState.ACCESS_DENIED);
+          if (sessionStateVar() !== SessionState.ACCESS_DENIED)
+            sessionStateVar(SessionState.ACCESS_DENIED);
           break;
       }
 

@@ -4,6 +4,7 @@ import { useHistory } from 'react-router-dom';
 import { toast } from 'react-toastify';
 import styled from 'styled-components';
 import { SessionState } from '../../utilities/types';
+import { apolloClient } from '../API/GraphQL/apollo.config';
 import { localMutations } from '../API/GraphQL/operations/mutations';
 import { useLoginMutation } from '../API/GraphQL/queries.generated';
 
@@ -30,10 +31,11 @@ export default () => {
   const history = useHistory();
 
   const [loginMutation, { loading }] = useLoginMutation({
-    onCompleted: () => {
-      localMutations.user.setState(SessionState.LOGGED_IN);
+    onCompleted: async () => {
       toast.success('You successfully logged in');
       history.push('/');
+      await apolloClient.resetStore();
+      localMutations.user.setState(SessionState.LOGGED_IN);
     },
     refetchQueries: 'active',
     onError: data => {
