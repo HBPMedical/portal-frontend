@@ -1,6 +1,7 @@
 import React, { useEffect, useRef, useState } from 'react';
 import { Container, Jumbotron } from 'react-bootstrap';
 import ReactMarkdown from 'react-markdown';
+import { toast } from 'react-toastify';
 import rehypeRaw from 'rehype-raw';
 import styled from 'styled-components';
 import { makeAssetURL } from '../API/RequestURLS';
@@ -42,9 +43,10 @@ export default () => {
 
     fetchData().catch(error => {
       if (mountedRef.current)
-        setText(
-          'Login page text is not available, please contact your administrator'
+        toast.error(
+          'A problem occurred when fetching data from the server, please contact your administrator'
         );
+      setText('A problem occurred when contacting the server.');
       console.log(error);
     });
     return () => {
