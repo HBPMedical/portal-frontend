@@ -1,6 +1,7 @@
 /* eslint-disable @typescript-eslint/camelcase */
 /* eslint-disable react-hooks/exhaustive-deps */
-import React from 'react';
+import React, { useEffect } from 'react';
+import { Card } from 'react-bootstrap';
 
 declare let window: any;
 
@@ -54,9 +55,18 @@ const BarGraph = () => {
 
   p.xgrid.grid_line_color = null;
   p.y_range.start = 0;
-  plot.show(p);
 
-  return <> </>;
+  useEffect(() => {
+    plot.show(p, '#chart-bar-graph');
+  }, [plot]);
+
+  return (
+    <>
+      <Card>
+        <div id={`chart-bar-graph`}></div>
+      </Card>
+    </>
+  );
 };
 
 export default BarGraph;

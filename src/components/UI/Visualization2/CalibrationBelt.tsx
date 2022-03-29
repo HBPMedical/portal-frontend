@@ -1,6 +1,7 @@
 /* eslint-disable @typescript-eslint/camelcase */
 /* eslint-disable react-hooks/exhaustive-deps */
-import React from 'react';
+import React, { useEffect } from 'react';
+import { Card } from 'react-bootstrap';
 
 declare let window: any;
 
@@ -38,9 +39,17 @@ const CalibrationBelt = () => {
 
   p.add_layout(band);
 
-  plot.show(p);
+  useEffect(() => {
+    plot.show(p, '#chart-calibration-belt');
+  }, [plot]);
 
-  return <> </>;
+  return (
+    <>
+      <Card>
+        <div id={`chart-calibration-belt`}></div>
+      </Card>
+    </>
+  );
 };
 
 export default CalibrationBelt;
