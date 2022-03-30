@@ -67,7 +67,7 @@ export type Author = {
 export type BarChartResult = {
   __typename?: 'BarChartResult';
   /** List of bar's value */
-  barValues: Array<Scalars['String']>;
+  barValues: Array<Scalars['Float']>;
   hasConnectedBars?: Maybe<Scalars['Boolean']>;
   name: Scalars['String'];
   xAxis?: Maybe<ChartAxis>;

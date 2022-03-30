@@ -1,7 +1,7 @@
 import * as Types from './types.generated';
 
 import { gql } from '@apollo/client';
-export type CoreInfoResult_BarChartResult_Fragment = { __typename?: 'BarChartResult', name: string, barValues: Array<string>, hasConnectedBars?: Types.Maybe<boolean>, xAxis?: Types.Maybe<{ __typename?: 'ChartAxis', label?: Types.Maybe<string> }>, yAxis?: Types.Maybe<{ __typename?: 'ChartAxis', label?: Types.Maybe<string> }> };
+export type CoreInfoResult_BarChartResult_Fragment = { __typename?: 'BarChartResult', name: string, barValues: Array<number>, hasConnectedBars?: Types.Maybe<boolean>, xAxis?: Types.Maybe<{ __typename?: 'ChartAxis', label?: Types.Maybe<string> }>, yAxis?: Types.Maybe<{ __typename?: 'ChartAxis', label?: Types.Maybe<string> }> };
 
 export type CoreInfoResult_GroupsResult_Fragment = { __typename?: 'GroupsResult' };
 
