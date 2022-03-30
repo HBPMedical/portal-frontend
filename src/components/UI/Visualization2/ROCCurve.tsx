@@ -1,6 +1,7 @@
 /* eslint-disable @typescript-eslint/camelcase */
 /* eslint-disable react-hooks/exhaustive-deps */
-import React from 'react';
+import React, { useEffect } from 'react';
+import { Card } from 'react-bootstrap';
 import ROCCurveModel from '../../../models/ROCCurveModel';
 
 declare let window: any;
@@ -345,9 +346,17 @@ const ROCCurve = () => {
   // Finishing touches
   p.legend.location = 'bottom_right';
 
-  plot.show(p);
+  useEffect(() => {
+    plot.show(p, '#chart-roc-curve');
+  }, [plot]);
 
-  return <></>;
+  return (
+    <>
+      <Card>
+        <div id={`chart-roc-curve`}></div>
+      </Card>
+    </>
+  );
 };
 
 export default ROCCurve;

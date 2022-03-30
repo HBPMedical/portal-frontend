@@ -1,6 +1,7 @@
 /* eslint-disable @typescript-eslint/camelcase */
 /* eslint-disable react-hooks/exhaustive-deps */
-import React from 'react';
+import React, { useEffect } from 'react';
+import { Card } from 'react-bootstrap';
 import HistogramModel from '../../../models/HistogramModel';
 
 declare let window: any;
@@ -205,9 +206,17 @@ const Histogram = () => {
 
   // add labels
 
-  plot.show(p);
+  useEffect(() => {
+    plot.show(p, '#chart-histogram');
+  }, [plot]);
 
-  return <> </>;
+  return (
+    <>
+      <Card>
+        <div id={`chart-histogram`}></div>
+      </Card>
+    </>
+  );
 };
 
 export default Histogram;

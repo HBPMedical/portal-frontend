@@ -1,62 +1,71 @@
 /* eslint-disable @typescript-eslint/camelcase */
-/* eslint-disable react-hooks/exhaustive-deps */
-import React from 'react';
+import React, { useEffect } from 'react';
+import { Card } from 'react-bootstrap';
+import { BarChartResult } from '../../API/GraphQL/types.generated';
 
 declare let window: any;
 
-const BarGraph = () => {
+interface Props {
+  data: BarChartResult;
+}
+
+export default (props: Props) => {
   const Bokeh = window.Bokeh;
   const plot = Bokeh.Plotting;
+  const data: BarChartResult = JSON.parse(JSON.stringify(props.data)); // copy data if manipulations needed
 
-  const fruits = [
-    'Apples',
-    'Pears',
-    'Nectarines',
-    'Plums',
-    'Grapes',
-    'Strawberries'
-  ];
-  const counts = [5, 3, 4, 2, 4, 6];
+  const categories =
+    data.xAxis?.categories ?? data.barValues.map((_, i) => i + 1).map(String);
 
   const source = new Bokeh.ColumnDataSource({
     data: {
-      fruits: [
-        'Apples',
-        'Pears',
-        'Nectarines',
-        'Plums',
-        'Grapes',
-        'Strawberries'
-      ],
-      counts: counts
+      categories,
+      counts: data.barValues
     }
   });
 
   const p = plot.figure({
-    width: 900,
-    height: 500,
-    x_range: fruits,
-    title: `Fruit counts`,
+    x_range: categories,
+    title: data.name,
     toolbar_location: null,
     tools: ''
   });
 
-  // TODO: get random colors based on categorical values
   p.vbar({
-    x: { field: 'fruits' },
+    x: { field: 'categories' },
     top: { field: 'counts' },
-    width: 0.9,
+    width: 0.8,
     line_alpha: 0.5,
     fill_alpha: 0.5,
-    fill_color: ['red', 'green', 'blue', 'yellow', 'purple', 'pink'],
     source: source
   });
 
+  if (data.hasConnectedBars) {
+    p.line({
+      x: { field: 'categories' },
+      y: { field: 'counts' },
+      source: source
+    });
+
+    p.circle({
+      x: { field: 'categories' },
+      y: { field: 'counts' },
+      source: source
+    });
+  }
+
   p.xgrid.grid_line_color = null;
   p.y_range.start = 0;
-  plot.show(p);
 
-  return <> </>;
+  useEffect(() => {
+    plot.show(p, '#chart-bar-graph');
+  }, [p, plot]);
+
+  return (
+    <>
+      <Card>
+        <div id={`chart-bar-graph`}></div>
+      </Card>
+    </>
+  );
 };
-
-export default BarGraph;
