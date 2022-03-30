@@ -26,6 +26,7 @@ export default ({ ...props }: Props) => {
   const matrixValues = data.matrix.flat();
   const indices = matrixValues.map(item => matrixValues.indexOf(item));
   const [min, max] = [Math.min(...matrixValues), Math.max(...matrixValues)];
+  const maxAbs = Math.max(...matrixValues.map(Math.abs));
   const source = new Bokeh.ColumnDataSource({
     data: {
       index: indices,
@@ -33,7 +34,7 @@ export default ({ ...props }: Props) => {
       yAxisLabels: yValues,
       value: matrixValues,
       radius: matrixValues.map(val =>
-        Math.max(val / (2.2 * max), 0.1)
+        Math.max(Math.abs(val) / (2.2 * maxAbs), 0.1)
       ) /* radius of a bubble */
     }
   });

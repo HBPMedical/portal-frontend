@@ -5,21 +5,20 @@ import {
   HeatMapResult,
   HeatMapStyle
 } from '../components/API/GraphQL/types.generated';
-
 export default {
   title: 'Charts/HeatMapChart',
   component: HeatMapChart
 } as ComponentMeta<typeof HeatMapChart>;
 
 const categories = [
-  'leftputamen',
-  'leftttgtransversetemporalgyrus',
-  'rightmfgmiddlefrontalgyrus',
-  'leftpoparietaloperculum',
-  'rightfrpfrontalpole',
-  'rightppplanumpolare',
-  'leftsmgsupramarginalgyrus',
-  'rightcocentraloperculum'
+  'Element 1',
+  'Element 2',
+  'Element 3',
+  'Element 4',
+  'Element 5',
+  'Element 6',
+  'Element 7',
+  'Element 8'
 ];
 const largeData: HeatMapResult = {
   matrix: [
@@ -106,12 +105,10 @@ const largeData: HeatMapResult = {
   ],
   name: 'Heat Map',
   xAxis: {
-    categories: categories,
-    label: 'Variables'
+    categories: ['1', '2', '3', '4', '5', '6', '7', '8']
   },
   yAxis: {
-    categories: categories.reverse(),
-    label: 'Variables'
+    categories: categories.reverse()
   },
   heatMapStyle: HeatMapStyle.Normal
 };
