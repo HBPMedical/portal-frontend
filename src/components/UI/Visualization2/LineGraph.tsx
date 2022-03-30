@@ -1,6 +1,7 @@
 /* eslint-disable @typescript-eslint/camelcase */
 /* eslint-disable react-hooks/exhaustive-deps */
-import React from 'react';
+import React, { useEffect } from 'react';
+import { Card } from 'react-bootstrap';
 
 declare let window: any;
 
@@ -61,9 +62,17 @@ const LineGraph = () => {
     source: source
   });
 
-  plot.show(p);
+  useEffect(() => {
+    plot.show(p, '#chart-line-graph');
+  }, [plot]);
 
-  return <> </>;
+  return (
+    <>
+      <Card>
+        <div id={`chart-line-graph`}></div>
+      </Card>
+    </>
+  );
 };
 
 export default LineGraph;

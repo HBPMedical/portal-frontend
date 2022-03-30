@@ -24,6 +24,18 @@ export const coreInfoResult = gql`
         label
         categories
       }
+      heatMapStyle
+    }
+    ... on BarChartResult {
+      name
+      xAxis {
+        label
+      }
+      yAxis {
+        label
+      }
+      barValues
+      hasConnectedBars
     }
     ... on LineChartResult {
       name

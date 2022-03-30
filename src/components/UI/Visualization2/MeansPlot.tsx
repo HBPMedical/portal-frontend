@@ -1,6 +1,7 @@
 /* eslint-disable @typescript-eslint/camelcase */
 /* eslint-disable react-hooks/exhaustive-deps */
-import React from 'react';
+import React, { useEffect } from 'react';
+import { Card } from 'react-bootstrap';
 import MeansPlotModel from '../../../models/MeansPlotModel';
 
 declare let window: any;
@@ -62,9 +63,17 @@ const MeansPlot = () => {
 
   p.add_layout(whisker);
 
-  plot.show(p);
+  useEffect(() => {
+    plot.show(p, '#chart-means-plot');
+  }, [plot]);
 
-  return <> </>;
+  return (
+    <>
+      <Card>
+        <div id={`chart-means-plot`}></div>
+      </Card>
+    </>
+  );
 };
 
 export default MeansPlot;
