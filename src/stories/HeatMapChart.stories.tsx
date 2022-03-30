@@ -11,6 +11,16 @@ export default {
   component: HeatMapChart
 } as ComponentMeta<typeof HeatMapChart>;
 
+const categories = [
+  'leftputamen',
+  'leftttgtransversetemporalgyrus',
+  'rightmfgmiddlefrontalgyrus',
+  'leftpoparietaloperculum',
+  'rightfrpfrontalpole',
+  'rightppplanumpolare',
+  'leftsmgsupramarginalgyrus',
+  'rightcocentraloperculum'
+];
 const largeData: HeatMapResult = {
   matrix: [
     [
@@ -96,30 +106,12 @@ const largeData: HeatMapResult = {
   ],
   name: 'Heat Map',
   xAxis: {
-    categories: [
-      'Element 1',
-      'Element 2',
-      'Element 3',
-      'Element 4',
-      'Element 5',
-      'Element 6',
-      'Element 7',
-      'Element 8 Element 8'
-    ],
-    label: 'Predicted label'
+    categories: categories,
+    label: 'Variables'
   },
   yAxis: {
-    categories: [
-      'Element 8 Element 8',
-      'Element 7',
-      'Element 6',
-      'Element 5',
-      'Element 4',
-      'Element 3',
-      'Element 2',
-      'Element 1'
-    ],
-    label: 'True label'
+    categories: categories.reverse(),
+    label: 'Variables'
   },
   heatMapStyle: HeatMapStyle.Normal
 };
