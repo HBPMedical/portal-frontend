@@ -64,6 +64,16 @@ export type Author = {
   username?: Maybe<Scalars['String']>;
 };
 
+export type BarChartResult = {
+  __typename?: 'BarChartResult';
+  /** List of bar's value */
+  barValues: Array<Scalars['String']>;
+  hasConnectedBars?: Maybe<Scalars['Boolean']>;
+  name: Scalars['String'];
+  xAxis?: Maybe<ChartAxis>;
+  yAxis?: Maybe<ChartAxis>;
+};
+
 export type Category = {
   __typename?: 'Category';
   id: Scalars['String'];
@@ -72,7 +82,9 @@ export type Category = {
 
 export type ChartAxis = {
   __typename?: 'ChartAxis';
+  /** label of each element on this Axis */
   categories?: Maybe<Array<Scalars['String']>>;
+  /** label of the Axis */
   label?: Maybe<Scalars['String']>;
 };
 
@@ -192,11 +204,18 @@ export type Header = {
 
 export type HeatMapResult = {
   __typename?: 'HeatMapResult';
+  heatMapStyle?: Maybe<HeatMapStyle>;
   matrix: Array<Array<Scalars['Float']>>;
   name: Scalars['String'];
   xAxis?: Maybe<ChartAxis>;
   yAxis?: Maybe<ChartAxis>;
 };
+
+/** Type of display. */
+export enum HeatMapStyle {
+  Bubble = 'BUBBLE',
+  Normal = 'NORMAL'
+}
 
 export type LineChartResult = {
   __typename?: 'LineChartResult';
@@ -323,7 +342,7 @@ export type RawResult = {
   rawdata?: Maybe<Scalars['JSON']>;
 };
 
-export type ResultUnion = GroupsResult | HeatMapResult | LineChartResult | RawResult | TableResult;
+export type ResultUnion = BarChartResult | GroupsResult | HeatMapResult | LineChartResult | RawResult | TableResult;
 
 export type TableResult = {
   __typename?: 'TableResult';
