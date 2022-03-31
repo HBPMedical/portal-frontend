@@ -2,44 +2,41 @@
 /* eslint-disable react-hooks/exhaustive-deps */
 import React, { useEffect } from 'react';
 import { Card } from 'react-bootstrap';
-import MeansPlotModel from '../../../models/MeansPlotModel';
+import { MeanChartResult } from '../../API/GraphQL/types.generated';
 
 declare let window: any;
 
-const MeansPlot = () => {
+interface Props {
+  data: MeanChartResult;
+}
+
+export default ({ ...props }: Props) => {
   const Bokeh = window.Bokeh;
   const plot = Bokeh.Plotting;
 
-  const data: MeansPlotModel = {
-    title: 'Means Plot: Left Hipocampus ~ PPMI Category',
-    means: [3.25, 3.2, 3.13, 3.09],
-    minY: 2.7,
-    maxY: 3.6,
-    xLabel: 'PPMI Category',
-    yLabel: '95% CI: Left Hippocampus',
-    categories: ['PD', 'HC', 'PRODROMA', 'GENPD'],
-    minPerCategory: { PD: 3.54, HC: 2.92, PRODROMA: 2.87, GENPD: 2.85 },
-    maxPerCategory: { PD: 2.96, HC: 3.49, PRODROMA: 3.39, GENPD: 3.33 }
+  const title = props.data.name;
+  const categories = props.data.xAxis?.categories ?? [];
+  const data = {
+    means: props.data.pointCIs.map(ci => ci.mean),
+    categories,
+    mins: props.data.pointCIs.map(ci => ci.min ?? ci.mean),
+    maxs: props.data.pointCIs.map(ci => ci.max ?? ci.mean)
   };
-
-  const title = data.title;
   const source = new Bokeh.ColumnDataSource({
-    data: {
-      means: data.means,
-      categories: data.categories,
-      min: Object.values(data.minPerCategory),
-      max: Object.values(data.maxPerCategory)
-    }
+    data
   });
 
+  const [min, max] = [
+    Math.min.apply(null, data.mins),
+    Math.max.apply(null, data.maxs)
+  ];
+
   const p = plot.figure({
-    hight: 600,
-    width: 800,
     title: title,
-    x_range: data.categories,
-    y_range: [data.minY, data.maxY],
-    x_axis_label: data.xLabel,
-    y_axis_label: data.yLabel
+    x_range: categories,
+    y_range: [min - min * 0.05, max + max * 0.05],
+    x_axis_label: props.data.xAxis?.label,
+    y_axis_label: props.data.yAxis?.label
   });
 
   p.scatter({
@@ -55,8 +52,8 @@ const MeansPlot = () => {
   const whisker = new Bokeh.Whisker({
     source: source,
     base: { field: 'categories' },
-    upper: { field: 'min' },
-    lower: { field: 'max' },
+    upper: { field: 'mins' },
+    lower: { field: 'maxs' },
     upper_head: new Bokeh.TeeHead({ size: 100 }),
     lower_head: new Bokeh.TeeHead({ size: 100 })
   });
@@ -75,5 +72,3 @@ const MeansPlot = () => {
     </>
   );
 };
-
-export default MeansPlot;
