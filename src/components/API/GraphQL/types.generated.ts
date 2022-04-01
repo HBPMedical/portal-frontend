@@ -247,6 +247,15 @@ export type ListExperiments = {
   totalPages?: Maybe<Scalars['Float']>;
 };
 
+export type MeanChartResult = {
+  __typename?: 'MeanChartResult';
+  name: Scalars['String'];
+  /** List of points with confidence information: min, mean, max */
+  pointCIs: Array<PointCi>;
+  xAxis?: Maybe<ChartAxis>;
+  yAxis?: Maybe<ChartAxis>;
+};
+
 export type Mutation = {
   __typename?: 'Mutation';
   createExperiment: Experiment;
@@ -311,6 +320,13 @@ export type PartialExperiment = {
   viewed?: Maybe<Scalars['Boolean']>;
 };
 
+export type PointCi = {
+  __typename?: 'PointCI';
+  max?: Maybe<Scalars['Float']>;
+  mean: Scalars['Float'];
+  min?: Maybe<Scalars['Float']>;
+};
+
 export type Query = {
   __typename?: 'Query';
   algorithms: Array<Algorithm>;
@@ -342,17 +358,17 @@ export type RawResult = {
   rawdata?: Maybe<Scalars['JSON']>;
 };
 
-export type ResultUnion = BarChartResult | GroupsResult | HeatMapResult | LineChartResult | RawResult | TableResult;
+export type ResultUnion = BarChartResult | GroupsResult | HeatMapResult | LineChartResult | MeanChartResult | RawResult | TableResult;
 
 export type TableResult = {
   __typename?: 'TableResult';
   data: Array<Array<Scalars['String']>>;
   headers: Array<Header>;
   name: Scalars['String'];
-  theme?: Maybe<ThemeType>;
+  tableStyle?: Maybe<TableStyle>;
 };
 
-export enum ThemeType {
+export enum TableStyle {
   Default = 'DEFAULT',
   Normal = 'NORMAL'
 }

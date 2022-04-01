@@ -12,6 +12,23 @@ export const coreInfoResult = gql`
         name
         type
       }
+      tableStyle
+    }
+    ... on MeanChartResult {
+      name
+      xAxis {
+        label
+        categories
+      }
+      yAxis {
+        label
+        categories
+      }
+      pointCIs {
+        min
+        mean
+        max
+      }
     }
     ... on HeatMapResult {
       name

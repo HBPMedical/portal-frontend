@@ -11,6 +11,3 @@ const Template: ComponentStory<typeof LineGraph> = args => <LineGraph />;
 
 export const Default = Template.bind({});
 Default.args = { layout: 'default' };
-
-export const Statistics = Template.bind({});
-Statistics.args = { layout: 'statistics' };
