@@ -13,6 +13,3 @@ const Template: ComponentStory<typeof CalibrationBelt> = args => (
 
 export const Default = Template.bind({});
 Default.args = { layout: 'default' };
-
-export const Statistics = Template.bind({});
-Statistics.args = { layout: 'statistics' };
