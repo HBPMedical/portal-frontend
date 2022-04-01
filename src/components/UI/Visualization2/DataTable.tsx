@@ -91,7 +91,7 @@ const Container = styled.div`
 `;
 
 export default ({ data, layout = 'default' }: TableProps): JSX.Element => {
-  const theme = (data.theme ?? layout) as Layout;
+  const theme = (data.tableStyle ?? layout) as Layout;
   const csvData = [[...data.headers.map(h => h.name)], ...data.data];
 
   return (
