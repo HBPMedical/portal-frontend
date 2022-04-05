@@ -2,7 +2,12 @@ import { useReactiveVar } from '@apollo/client';
 import React, { useRef } from 'react';
 import { Card, Dropdown, DropdownButton } from 'react-bootstrap';
 import styled from 'styled-components';
-import { draftExperimentVar, selectedDomainVar } from '../API/GraphQL/cache';
+import {
+  draftExperimentVar,
+  groupsVar,
+  selectedDomainVar,
+  variablesVar
+} from '../API/GraphQL/cache';
 import { localMutations } from '../API/GraphQL/operations/mutations';
 import { useGetDomainListQuery } from '../API/GraphQL/queries.generated';
 import DataSelect from '../UI/DataSelect';
@@ -51,6 +56,8 @@ const DataSelection = ({
   const modalRef = useRef<ModalComponentHandle>(null);
   const { data, loading } = useGetDomainListQuery();
   const experiment = useReactiveVar(draftExperimentVar);
+  const groups = useReactiveVar(groupsVar);
+  const variables = useReactiveVar(variablesVar);
 
   const handleSelectDataset = (id: string): void => {
     localMutations.toggleDatasetExperiment(id);
@@ -114,8 +121,8 @@ const DataSelection = ({
                 handleSelectNode={(id: string): void =>
                   localMutations.setZoomToNode(id)
                 }
-                variables={domain?.variables ?? []}
-                groups={domain?.groups ?? []}
+                variables={variables}
+                groups={groups}
               />
             </SearchBox>
           </>
