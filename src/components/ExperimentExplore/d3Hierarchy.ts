@@ -24,7 +24,8 @@ export const groupsToTreeView = (
       .filter(
         v =>
           v &&
-          (!v.datasets || v.datasets.map(d => datasets.includes(d)).length > 0)
+          (!v.datasets ||
+            v.datasets.filter(d => datasets.includes(d)).length > 0)
       )
       .map(v => v as Variable)
       .map(v => ({
@@ -41,7 +42,8 @@ export const groupsToTreeView = (
       .filter(
         g =>
           g &&
-          (!g.datasets || g.datasets.map(d => datasets.includes(d)).length > 0)
+          (!g?.datasets ||
+            g.datasets.filter(d => datasets.includes(d)).length > 0)
       )
       .map(g => g as Group)
       .map(g => groupsToTreeView(g, groups, vars)) ?? [];

@@ -1,11 +1,13 @@
 import { ReactiveVar } from '@apollo/client';
 import { initialExperiment } from '../../../cache';
-import { Domain, Experiment } from '../../../types.generated';
+import { Domain, Experiment, Group, Variable } from '../../../types.generated';
 
 export default function createSelectDomain(
   selectedDomainVar: ReactiveVar<Domain | undefined>,
   domainsVar: ReactiveVar<Domain[]>,
-  experimentVar: ReactiveVar<Experiment>
+  experimentVar: ReactiveVar<Experiment>,
+  variablesVar: ReactiveVar<Variable[]>,
+  groupsVar: ReactiveVar<Group[]>
 ) {
   /**
    * Select the domain and set default dataset for the experiment
@@ -26,5 +28,7 @@ export default function createSelectDomain(
           domain.datasets.filter(d => !d.isLongitudinal).map(d => d.id) ?? []
       }
     });
+    variablesVar(domain.variables);
+    groupsVar(domain.groups);
   };
 }

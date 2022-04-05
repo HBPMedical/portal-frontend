@@ -1,6 +1,6 @@
 import { useReactiveVar } from '@apollo/client';
-import React, { useEffect, useState } from 'react';
-import { Button, Card, Col, Container, Row } from 'react-bootstrap';
+import React, { useState } from 'react';
+import { Badge, Button, Card, Col, Container, Row } from 'react-bootstrap';
 import { BsFillCaretRightFill, BsTrash } from 'react-icons/bs';
 import styled from 'styled-components';
 import { APICore } from '../API';
@@ -17,7 +17,6 @@ import AvailableAlgorithms from '../ExperimentCreate/AvailableAlgorithms';
 import DropdownExperimentList from '../UI/Experiment/DropDownList/DropdownExperimentList';
 import VariablesGroupList from '../UI/Variable/VariablesGroupList';
 import { HierarchyCircularNode } from '../utils';
-import { GroupVars } from './D3CirclePackLayer';
 import D3Container from './D3Container';
 import DataSelection from './DataSelection';
 import Histograms from './Histograms';
@@ -88,7 +87,6 @@ export default (props: ExploreProps): JSX.Element => {
   const selectedExperiment = useReactiveVar(selectedExperimentVar);
   const draftExperiment = useReactiveVar(draftExperimentVar);
   const domain = useReactiveVar(selectedDomainVar);
-  const [selectedGroupVars, setSelectedGroupVars] = useState<GroupVars[]>([]);
   const [selectedNode, setSelectedNode] = useState<
     HierarchyCircularNode | undefined
   >();
@@ -100,24 +98,6 @@ export default (props: ExploreProps): JSX.Element => {
     return domain?.variables.find(v => v.id === id);
   };
 
-  useEffect(() => {
-    if (!draftExperiment) return;
-
-    const groupVars = [
-      ['Filters', draftExperiment.filterVariables, 'slategrey'], // => item[0], item[1], item[2]
-      ['Variables', draftExperiment.variables, '#5cb85c'],
-      ['Covariates', draftExperiment.coVariables, '#f0ad4e']
-    ]
-      .filter(item => item[1] && item[1].length)
-      .map(item => ({
-        name: item[0] as string,
-        items: item[1] as string[],
-        color: item[2] as string
-      }));
-
-    setSelectedGroupVars(groupVars);
-  }, [draftExperiment]);
-
   return (
     <>
       <Grid>
@@ -127,7 +107,6 @@ export default (props: ExploreProps): JSX.Element => {
             <Card.Body style={{ margin: 0, padding: 0 }}>
               <D3Container
                 selectedNode={selectedNode}
-                groupVars={selectedGroupVars}
                 handleSelectNode={setSelectedNode}
               />
             </Card.Body>
@@ -183,37 +162,42 @@ export default (props: ExploreProps): JSX.Element => {
                   ].map(bag => (
                     <Col className="px-1" key={bag[0] as string}>
                       <div className="d-flex justify-content-between mb-1">
-                        <Button
-                          className="child"
-                          variant={bag[1] as string}
-                          size="sm"
-                          disabled={
-                            !selectedNode || selectedNode.data.id === 'root'
-                          }
-                          onClick={(): void => {
-                            if (!selectedNode) return;
+                        <div>
+                          <Button
+                            className="child"
+                            variant={bag[1] as string}
+                            size="sm"
+                            disabled={
+                              !selectedNode || selectedNode.data.id === 'root'
+                            }
+                            onClick={(): void => {
+                              if (!selectedNode) return;
 
-                            const vars = (selectedNode
-                              ?.leaves()
-                              .filter(node => node.data.id)
-                              .map(node => node.data.id) ?? []) as string[];
+                              const vars = (selectedNode
+                                ?.leaves()
+                                .filter(node => node.data.id)
+                                .map(node => node.data.id) ?? []) as string[];
 
-                            localMutations.toggleVarsDraftExperiment(
-                              vars,
-                              bag[3] as VarType
-                            );
-                          }}
-                        >
-                          {bag[2] &&
-                          selectedNode &&
-                          selectedNode
-                            .leaves()
-                            .filter(n => bag[2]?.includes(n.data.id)).length ===
-                            selectedNode.leaves().length
-                            ? '-'
-                            : '+'}{' '}
-                          {bag[0]}
-                        </Button>
+                              localMutations.toggleVarsDraftExperiment(
+                                vars,
+                                bag[3] as VarType
+                              );
+                            }}
+                          >
+                            {bag[2] &&
+                            selectedNode &&
+                            selectedNode
+                              .leaves()
+                              .filter(n => bag[2]?.includes(n.data.id))
+                              .length === selectedNode.leaves().length
+                              ? '-'
+                              : '+'}{' '}
+                            {bag[0]}
+                            <Badge className="ml-2" variant="secondary">
+                              {bag[2].length}
+                            </Badge>
+                          </Button>
+                        </div>
 
                         {bag[2].length > 0 && (
                           <Button

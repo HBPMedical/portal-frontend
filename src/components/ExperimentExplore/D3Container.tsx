@@ -1,12 +1,12 @@
 import { useReactiveVar } from '@apollo/client';
+import * as d3 from 'd3';
 import React, { useEffect, useState } from 'react';
+import { Spinner } from 'react-bootstrap';
+import styled from 'styled-components';
 import { draftExperimentVar, selectedDomainVar } from '../API/GraphQL/cache';
 import { HierarchyCircularNode } from '../API/Model';
-import CirclePack, { GroupVars } from './D3CirclePackLayer';
+import CirclePack from './D3CirclePackLayer';
 import { d3Hierarchy, groupsToTreeView, NodeData } from './d3Hierarchy';
-import * as d3 from 'd3';
-import styled from 'styled-components';
-import { Spinner } from 'react-bootstrap';
 
 const diameter = 800;
 const padding = 1.5;
@@ -14,7 +14,6 @@ const padding = 1.5;
 export interface Props {
   selectedNode: HierarchyCircularNode | undefined;
   handleSelectNode: (node: HierarchyCircularNode) => void;
-  groupVars: GroupVars[];
 }
 
 const SpinnerContainer = styled.div`
@@ -24,9 +23,11 @@ const SpinnerContainer = styled.div`
   align-items: center;
 `;
 
-export default ({ selectedNode, handleSelectNode, groupVars }: Props) => {
+export default ({ selectedNode, handleSelectNode }: Props) => {
   const domain = useReactiveVar(selectedDomainVar);
-  const datasets = useReactiveVar(draftExperimentVar)?.datasets;
+  const draftExp = useReactiveVar(draftExperimentVar);
+  const datasets = draftExp?.datasets;
+
   const [d3Layout, setD3Layout] = useState<HierarchyCircularNode>();
 
   useEffect(() => {
@@ -41,15 +42,26 @@ export default ({ selectedNode, handleSelectNode, groupVars }: Props) => {
     );
 
     const hierarchyNode = d3Hierarchy(rootNode);
-
     const bubbleLayout = d3
       .pack<NodeData>()
       .size([diameter, diameter])
       .padding(padding);
 
-    const d3layout = hierarchyNode && bubbleLayout(hierarchyNode);
-    setD3Layout(d3layout);
+    const layout = hierarchyNode && bubbleLayout(hierarchyNode);
+    setD3Layout(layout);
   }, [domain, datasets]);
+
+  const groupVars = [
+    ['Filters', draftExp.filterVariables, 'slategrey'], // => item[0], item[1], item[2]
+    ['Variables', draftExp.variables, '#5cb85c'],
+    ['Covariates', draftExp.coVariables, '#f0ad4e']
+  ]
+    .filter(item => item[1] && item[1].length)
+    .map(item => ({
+      name: item[0] as string,
+      items: item[1] as string[],
+      color: item[2] as string
+    }));
 
   if (!d3Layout)
     return (
