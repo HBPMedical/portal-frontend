@@ -30,8 +30,10 @@ export default (): JSX.Element => {
   const [accepted, setAccepted] = useState(false);
   const [TOS, setTOS] = useState<string | undefined>(undefined);
   const mountedRef = useRef(true);
+
+  const { loading: userLoading, data } = useActiveUserQuery();
+
   const history = useHistory();
-  const { data: { user } = {} } = useActiveUserQuery();
 
   const [updateActiveUser, { loading }] = useUpdateActiveUserMutation({
     refetchQueries: [namedOperations.Query.activeUser],
@@ -41,11 +43,11 @@ export default (): JSX.Element => {
   });
 
   useEffect(() => {
-    const agreeNDA = user?.agreeNDA;
+    const agreeNDA = data?.user?.agreeNDA;
     if (agreeNDA) {
       history.push('/');
     }
-  }, [history, user]);
+  }, [data, history, userLoading]);
 
   useEffect(() => {
     const fetchData = async (): Promise<void> => {
