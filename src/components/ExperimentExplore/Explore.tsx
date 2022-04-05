@@ -17,9 +17,10 @@ import AvailableAlgorithms from '../ExperimentCreate/AvailableAlgorithms';
 import DropdownExperimentList from '../UI/Experiment/DropDownList/DropdownExperimentList';
 import VariablesGroupList from '../UI/Variable/VariablesGroupList';
 import { HierarchyCircularNode } from '../utils';
-import CirclePack, { GroupVars } from './D3CirclePackLayer';
-import Histograms from './Histograms';
+import { GroupVars } from './D3CirclePackLayer';
+import D3Container from './D3Container';
 import DataSelection from './DataSelection';
+import Histograms from './Histograms';
 
 const MenuParametersContainer = styled.div`
   display: flex;
@@ -78,12 +79,11 @@ const Col1 = styled(Col2 as any)`
 
 export interface ExploreProps {
   apiCore: APICore;
-  layout: HierarchyCircularNode;
   handleGoToAnalysis: any; // FIXME Promise<void>
 }
 
 export default (props: ExploreProps): JSX.Element => {
-  const { apiCore, layout, handleGoToAnalysis } = props;
+  const { apiCore, handleGoToAnalysis } = props;
 
   const selectedExperiment = useReactiveVar(selectedExperimentVar);
   const draftExperiment = useReactiveVar(draftExperimentVar);
@@ -123,13 +123,9 @@ export default (props: ExploreProps): JSX.Element => {
       <Grid>
         <Col1>
           <Card>
-            <DataSelection
-              hierarchy={layout}
-              handleSelectNode={setSelectedNode}
-            ></DataSelection>
+            <DataSelection />
             <Card.Body style={{ margin: 0, padding: 0 }}>
-              <CirclePack
-                layout={layout}
+              <D3Container
                 selectedNode={selectedNode}
                 groupVars={selectedGroupVars}
                 handleSelectNode={setSelectedNode}

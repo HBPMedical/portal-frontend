@@ -15,12 +15,17 @@ export type HierarchyNode = d3.HierarchyNode<NodeData>;
 export const groupsToTreeView = (
   group: Group,
   groups: Group[],
-  vars: Variable[]
+  vars: Variable[],
+  datasets: string[] = []
 ): NodeData => {
   const childVars =
     group.variables
       ?.map(varId => vars.find(v => v.id === varId))
-      .filter(v => v)
+      .filter(
+        v =>
+          v &&
+          (!v.datasets || v.datasets.map(d => datasets.includes(d)).length > 0)
+      )
       .map(v => v as Variable)
       .map(v => ({
         id: v.id,
@@ -33,7 +38,11 @@ export const groupsToTreeView = (
   const childGroups =
     group.groups
       ?.map(grpId => groups.find(grp => grp.id === grpId))
-      .filter(g => g)
+      .filter(
+        g =>
+          g &&
+          (!g.datasets || g.datasets.map(d => datasets.includes(d)).length > 0)
+      )
       .map(g => g as Group)
       .map(g => groupsToTreeView(g, groups, vars)) ?? [];
 

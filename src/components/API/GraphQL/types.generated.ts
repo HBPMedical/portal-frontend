@@ -177,6 +177,8 @@ export type FormulaTransformation = {
 
 export type Group = {
   __typename?: 'Group';
+  /** List of datasets avalaible, set null if all datasets allowed */
+  datasets?: Maybe<Array<Scalars['String']>>;
   description?: Maybe<Scalars['String']>;
   groups?: Maybe<Array<Scalars['String']>>;
   id: Scalars['String'];
@@ -404,6 +406,8 @@ export type User = {
 
 export type Variable = {
   __typename?: 'Variable';
+  /** List of datasets avalaible, set null if all datasets allowed */
+  datasets?: Maybe<Array<Scalars['String']>>;
   description?: Maybe<Scalars['String']>;
   enumerations?: Maybe<Array<Category>>;
   groups?: Maybe<Array<Group>>;

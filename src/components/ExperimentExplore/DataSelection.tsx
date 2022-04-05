@@ -8,7 +8,7 @@ import { useGetDomainListQuery } from '../API/GraphQL/queries.generated';
 import DataSelect from '../UI/DataSelect';
 import Loader from '../UI/Loader';
 import Modal, { ModalComponentHandle } from '../UI/Modal';
-import { HierarchyCircularNode, uppercase } from '../utils';
+import { uppercase } from '../utils';
 import Search from './SearchBox';
 
 const DataSelectionBox = styled(Card.Title)`
@@ -42,13 +42,9 @@ const SearchBox = styled.div`
 
 const DataSelection = ({
   handleChangeDomain,
-  hierarchy,
-  handleSelectNode,
   handleSelectedDataset
 }: {
   handleChangeDomain?: (domain: string) => void;
-  hierarchy: HierarchyCircularNode;
-  handleSelectNode: (node: HierarchyCircularNode) => void;
   handleSelectedDataset?: (id: string) => void;
 }): JSX.Element => {
   const domain = useReactiveVar(selectedDomainVar);
