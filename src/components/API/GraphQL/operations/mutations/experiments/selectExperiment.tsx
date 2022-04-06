@@ -5,7 +5,7 @@ export default function createSelectExperiment(
   selectedExperimentVar: ReactiveVar<Experiment | undefined>,
   draftExperimentVar: ReactiveVar<Experiment>,
   domainVar: ReactiveVar<Domain | undefined>,
-  selectedDomain: (id: string) => void
+  selectDomain: (id: string) => void
 ) {
   /**
    * This function set the experiment as the currently selected experiment
@@ -17,7 +17,7 @@ export default function createSelectExperiment(
 
     const domain = domainVar();
     if (experiment && domain && experiment?.domain !== domain.id)
-      selectedDomain(experiment?.domain);
+      selectDomain(experiment?.domain);
 
     selectedExperimentVar(experiment);
 
