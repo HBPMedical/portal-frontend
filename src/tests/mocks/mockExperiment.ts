@@ -1,5 +1,7 @@
 import { Experiment } from '../../components/API/GraphQL/types.generated';
-import { mockDomain } from './mockDomainVar';
+import { getMockDomain } from './mockDomainVar';
+
+const mockDomain = getMockDomain();
 
 export const mockExperiment: Experiment = {
   id: 'dummy-id',
@@ -7,7 +9,7 @@ export const mockExperiment: Experiment = {
   algorithm: {
     id: 'pca'
   },
-  datasets: mockDomain.datasets.map(d => d.id),
+  datasets: getMockDomain().datasets.map(d => d.id),
   variables: [mockDomain.variables[0].id],
   coVariables: [mockDomain.variables[0].id, mockDomain.variables[1].id],
   filterVariables: [mockDomain.variables[2].id],

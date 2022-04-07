@@ -1,12 +1,13 @@
 import { makeVar } from '@apollo/client';
 import {
-  initMockDomainVar,
-  mockDomain
+  getMockDomain,
+  initMockDomainVar
 } from '../../../../../../tests/mocks/mockDomainVar';
 import { mockExperiment } from '../../../../../../tests/mocks/mockExperiment';
 import { Experiment, Group, Variable } from '../../../types.generated';
 import createToggleDatasetExperiment from './toggleDatasetExperiment';
 
+let mockDomain = getMockDomain();
 const mockDraftExpVar = makeVar<Experiment>(mockExperiment);
 const mockDomainVar = initMockDomainVar();
 const mockGroups = makeVar<Group[]>(mockDomain.groups);
@@ -24,6 +25,7 @@ describe('Toggle datasets', () => {
     mockDomainVar(mockDomain);
     mockGroups(mockDomain.groups);
     mockVars(mockDomain.variables);
+    mockDomain = getMockDomain();
   });
 
   it('Test add and remove dataset to an experiment', () => {
@@ -50,7 +52,69 @@ describe('Toggle datasets', () => {
     expect(() => toggleDatasetExperiment(mockDomain.datasets[0].id)).toThrow();
   });
 
-  test.todo('Test add dataset filtered group');
+  it('Test add dataset filtered group', () => {
+    mockDomain.groups[0].datasets = [mockDomain.datasets[0].id];
+    mockDomainVar(mockDomain);
+    mockDraftExpVar({
+      ...mockExperiment,
+      datasets: mockDomain.datasets.filter((_, i) => i !== 0).map(d => d.id)
+    });
 
-  test.todo('Test add dataset filtered variables');
+    mockGroups(mockGroups().filter(g => g.id !== mockDomain.groups[0].id));
+    toggleDatasetExperiment(mockDomain.datasets[0].id);
+
+    expect(mockGroups().sort()).toEqual(mockDomain.groups.sort());
+  });
+
+  it('Test remove dataset filtered group', () => {
+    mockDomain.groups[0].datasets = [mockDomain.datasets[0].id];
+    mockDomainVar(mockDomain);
+
+    const totalVars = mockDomain.groups
+      .map(g => g.variables?.length ?? 0)
+      .reduce((p, v) => p + v, 0);
+
+    toggleDatasetExperiment(mockDomain.datasets[0].id);
+
+    expect(
+      mockGroups()
+        .map(g => g.id)
+        .sort()
+    ).toStrictEqual(
+      mockDomain.groups
+        .filter((_, i) => i !== 0)
+        .map(g => g.id)
+        .sort()
+    );
+
+    const afterNbVars =
+      totalVars -
+      mockGroups()
+        .map(g => g.variables?.length ?? 0)
+        .reduce((p, v) => p + v, 0);
+
+    expect(afterNbVars).toBeGreaterThan(0);
+  });
+
+  it('Test add dataset filtered variables', () => {
+    mockDomain.variables[0].datasets = [mockDomain.datasets[0].id];
+    mockDomainVar(mockDomain);
+    const totalVars = mockDomain.variables.length;
+
+    toggleDatasetExperiment(mockDomain.datasets[0].id);
+
+    expect(
+      mockVars()
+        .map(v => v.id)
+        .sort()
+    ).toEqual(
+      mockDomain.variables
+        .filter((_, i) => i !== 0)
+        .map(v => v.id)
+        .sort()
+    );
+
+    const afterNbVars = totalVars - mockVars().length;
+    expect(afterNbVars).toBeGreaterThan(0);
+  });
 });

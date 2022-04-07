@@ -1,7 +1,7 @@
 import { makeVar, ReactiveVar } from '@apollo/client';
 import { Domain } from '../../components/API/GraphQL/types.generated';
 
-export const mockDomain: Domain = {
+const mockDomain: Domain = {
   id: 'dom1',
   label: 'Dummy domain',
   datasets: [
@@ -72,4 +72,8 @@ export const mockDomain: Domain = {
 
 export const initMockDomainVar = (): ReactiveVar<Domain | undefined> => {
   return makeVar<Domain | undefined>(mockDomain);
+};
+
+export const getMockDomain = (): Domain => {
+  return JSON.parse(JSON.stringify(mockDomain)) as Domain;
 };

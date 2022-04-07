@@ -1,9 +1,10 @@
 import { makeVar } from '@apollo/client';
-import { mockDomain } from '../../../../../../tests/mocks/mockDomainVar';
+import { getMockDomain } from '../../../../../../tests/mocks/mockDomainVar';
 import { initialExperiment } from '../../../cache';
 import { Domain, Experiment, Group, Variable } from '../../../types.generated';
 import createSelectDomain from './selectDomain';
 
+const mockDomain = getMockDomain();
 const mockDomainsVar = makeVar<Domain[]>([mockDomain]);
 const mockDraftExpVar = makeVar<Experiment>(initialExperiment);
 const mockDomainVar = makeVar<Domain | undefined>(undefined);
