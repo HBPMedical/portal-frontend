@@ -46,7 +46,7 @@ export const groupsToTreeView = (
             g.datasets.filter(d => datasets.includes(d)).length > 0)
       )
       .map(g => g as Group)
-      .map(g => groupsToTreeView(g, groups, vars)) ?? [];
+      .map(g => groupsToTreeView(g, groups, vars, datasets)) ?? [];
 
   return {
     id: group.id,
