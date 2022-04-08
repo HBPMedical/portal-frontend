@@ -226,6 +226,24 @@ export default ({ layout, ...props }: Props): JSX.Element => {
       .attr('class', 'label')
       .style('fill-opacity', d => (d.parent === layout ? 1 : 0))
       .style('display', d => (d.parent === layout ? 'inline' : 'none'))
+      .style('font-size', (d: any) => {
+        const r = d.r;
+        const len = d.data.label.substring(0, Math.log(r)).length;
+
+        // TODO
+        /*let size = r / (3 * 2);
+        size *= 10 / len;
+        size += 2;
+        console.log(
+          d.data.label,
+          `radius : ${r},`,
+          `text length : ${d.data.label.length},`,
+          `size: ${size}px`,
+          d
+        );*/
+        const size = 11 - Math.log(d.data.label.length) + Math.log(r);
+        return Math.round(size) + 'px';
+      })
       .selectAll('tspan')
       .data(d => splitText(d.data.label))
       .join('tspan')

@@ -63,7 +63,11 @@ describe('Toggle datasets', () => {
     mockGroups(mockGroups().filter(g => g.id !== mockDomain.groups[0].id));
     toggleDatasetExperiment(mockDomain.datasets[0].id);
 
-    expect(mockGroups().sort()).toEqual(mockDomain.groups.sort());
+    expect(
+      mockGroups()
+        .map(g => g.id)
+        .sort()
+    ).toEqual(mockDomain.groups.map(g => g.id).sort());
   });
 
   it('Test remove dataset filtered group', () => {
@@ -76,16 +80,7 @@ describe('Toggle datasets', () => {
 
     toggleDatasetExperiment(mockDomain.datasets[0].id);
 
-    expect(
-      mockGroups()
-        .map(g => g.id)
-        .sort()
-    ).toStrictEqual(
-      mockDomain.groups
-        .filter((_, i) => i !== 0)
-        .map(g => g.id)
-        .sort()
-    );
+    expect(mockGroups().map(g => g.id)).toStrictEqual(['group2']);
 
     const afterNbVars =
       totalVars -
