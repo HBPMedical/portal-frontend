@@ -6,7 +6,10 @@ import styled from 'styled-components';
 import { SessionState } from '../../utilities/types';
 import { apolloClient } from '../API/GraphQL/apollo.config';
 import { localMutations } from '../API/GraphQL/operations/mutations';
-import { useLoginMutation } from '../API/GraphQL/queries.generated';
+import {
+  useActiveUserQuery,
+  useLoginMutation
+} from '../API/GraphQL/queries.generated';
 
 const Container = styled.div`
   display: flex;
@@ -29,6 +32,13 @@ export default () => {
   const [username, setUsername] = useState<string>('');
   const [password, setPassword] = useState<string>('');
   const history = useHistory();
+
+  useActiveUserQuery({
+    onCompleted: data => {
+      // Done only if user is logged in
+      history.push('/');
+    }
+  });
 
   const [loginMutation, { loading }] = useLoginMutation({
     onCompleted: async () => {
