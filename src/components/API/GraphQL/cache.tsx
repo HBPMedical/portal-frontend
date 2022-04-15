@@ -61,6 +61,15 @@ export const cache: InMemoryCache = new InMemoryCache({
           }
         }
       }
+    },
+    Query: {
+      fields: {
+        configuration: {
+          merge(existing = {}, incoming: any) {
+            return { ...existing, ...incoming };
+          }
+        }
+      }
     }
   }
 });

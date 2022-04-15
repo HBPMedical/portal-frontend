@@ -34,6 +34,7 @@ import Navigation from '../UI/Navigation';
 import NotFound from '../UI/NotFound';
 import TOS from '../UI/TOS';
 import Tutorial from '../UserGuide/Tutorial';
+import { useMatomo } from '@datapunt/matomo-tracker-react';
 
 const Main = styled.main<MainProps>`
   margin: 0 auto;
@@ -86,6 +87,16 @@ const App = ({ appConfig, apiCore, apiMining, showTutorial }: Props) => {
   const config = useReactiveVar(configurationVar);
   const history = useHistory();
   const userState = useReactiveVar(sessionStateVar);
+  const { enableLinkTracking, trackPageView } = useMatomo();
+
+  enableLinkTracking();
+
+  useEffect(() => {
+    trackPageView({});
+    history.listen(location => {
+      trackPageView({});
+    });
+  }, [history, trackPageView]);
 
   const {
     loading: userLoading,

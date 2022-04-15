@@ -9,6 +9,11 @@ export type GetConfigurationQueryVariables = Types.Exact<{ [key: string]: never;
 
 export type GetConfigurationQuery = { __typename?: 'Query', configuration: { __typename?: 'Configuration', connectorId: string, hasGalaxy?: Types.Maybe<boolean>, enableSSO?: Types.Maybe<boolean>, skipAuth?: Types.Maybe<boolean>, skipTos?: Types.Maybe<boolean>, contactLink?: Types.Maybe<string>, version: string } };
 
+export type GetMatomoQueryVariables = Types.Exact<{ [key: string]: never; }>;
+
+
+export type GetMatomoQuery = { __typename?: 'Query', configuration: { __typename?: 'Configuration', matomo?: Types.Maybe<{ __typename?: 'Matomo', enabled?: Types.Maybe<boolean>, siteId?: Types.Maybe<string>, urlBase?: Types.Maybe<string> }> } };
+
 export type GetVariablesFromDomainQueryVariables = Types.Exact<{
   id: Types.Scalars['String'];
 }>;
@@ -140,6 +145,44 @@ export function useGetConfigurationLazyQuery(baseOptions?: Apollo.LazyQueryHookO
 export type GetConfigurationQueryHookResult = ReturnType<typeof useGetConfigurationQuery>;
 export type GetConfigurationLazyQueryHookResult = ReturnType<typeof useGetConfigurationLazyQuery>;
 export type GetConfigurationQueryResult = Apollo.QueryResult<GetConfigurationQuery, GetConfigurationQueryVariables>;
+export const GetMatomoDocument = gql`
+    query getMatomo {
+  configuration {
+    matomo {
+      enabled
+      siteId
+      urlBase
+    }
+  }
+}
+    `;
+
+/**
+ * __useGetMatomoQuery__
+ *
+ * To run a query within a React component, call `useGetMatomoQuery` and pass it any options that fit your needs.
+ * When your component renders, `useGetMatomoQuery` returns an object from Apollo Client that contains loading, error, and data properties
+ * you can use to render your UI.
+ *
+ * @param baseOptions options that will be passed into the query, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options;
+ *
+ * @example
+ * const { data, loading, error } = useGetMatomoQuery({
+ *   variables: {
+ *   },
+ * });
+ */
+export function useGetMatomoQuery(baseOptions?: Apollo.QueryHookOptions<GetMatomoQuery, GetMatomoQueryVariables>) {
+        const options = {...defaultOptions, ...baseOptions}
+        return Apollo.useQuery<GetMatomoQuery, GetMatomoQueryVariables>(GetMatomoDocument, options);
+      }
+export function useGetMatomoLazyQuery(baseOptions?: Apollo.LazyQueryHookOptions<GetMatomoQuery, GetMatomoQueryVariables>) {
+          const options = {...defaultOptions, ...baseOptions}
+          return Apollo.useLazyQuery<GetMatomoQuery, GetMatomoQueryVariables>(GetMatomoDocument, options);
+        }
+export type GetMatomoQueryHookResult = ReturnType<typeof useGetMatomoQuery>;
+export type GetMatomoLazyQueryHookResult = ReturnType<typeof useGetMatomoLazyQuery>;
+export type GetMatomoQueryResult = Apollo.QueryResult<GetMatomoQuery, GetMatomoQueryVariables>;
 export const GetVariablesFromDomainDocument = gql`
     query getVariablesFromDomain($id: String!) {
   domains(ids: [$id]) {
@@ -670,6 +713,7 @@ export type DeleteExperimentMutationOptions = Apollo.BaseMutationOptions<DeleteE
 export const namedOperations = {
   Query: {
     getConfiguration: 'getConfiguration',
+    getMatomo: 'getMatomo',
     getVariablesFromDomain: 'getVariablesFromDomain',
     activeUser: 'activeUser',
     getDomainList: 'getDomainList',
