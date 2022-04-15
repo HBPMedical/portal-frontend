@@ -7,13 +7,16 @@ import * as React from 'react';
 import * as ReactDOM from 'react-dom';
 import { apolloClient } from './components/API/GraphQL/apollo.config';
 import { default as AppContainer } from './components/App/Container';
+import MatomoContainer from './components/App/MatomoContainer';
 import './index.css';
 import { unregister } from './registerServiceWorker';
 
 const commonApp = (): JSX.Element => {
   return (
     <ApolloProvider client={apolloClient}>
-      <AppContainer />
+      <MatomoContainer>
+        <AppContainer />
+      </MatomoContainer>
     </ApolloProvider>
   );
 };

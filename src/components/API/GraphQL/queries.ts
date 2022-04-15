@@ -15,6 +15,18 @@ export const QUERY_CONFIGURATION = gql`
   }
 `;
 
+export const QUERY_MATOMO = gql`
+  query getMatomo {
+    configuration {
+      matomo {
+        enabled
+        siteId
+        urlBase
+      }
+    }
+  }
+`;
+
 export const QUERY_VARS_FROM_DOMAIN = gql`
   query getVariablesFromDomain($id: String!) {
     domains(ids: [$id]) {

@@ -94,6 +94,7 @@ export type Configuration = {
   contactLink?: Maybe<Scalars['String']>;
   enableSSO?: Maybe<Scalars['Boolean']>;
   hasGalaxy?: Maybe<Scalars['Boolean']>;
+  matomo?: Maybe<Matomo>;
   skipAuth?: Maybe<Scalars['Boolean']>;
   skipTos?: Maybe<Scalars['Boolean']>;
   version: Scalars['String'];
@@ -245,6 +246,13 @@ export type ListExperiments = {
   experiments: Array<Experiment>;
   totalExperiments?: Maybe<Scalars['Float']>;
   totalPages?: Maybe<Scalars['Float']>;
+};
+
+export type Matomo = {
+  __typename?: 'Matomo';
+  enabled?: Maybe<Scalars['Boolean']>;
+  siteId?: Maybe<Scalars['String']>;
+  urlBase?: Maybe<Scalars['String']>;
 };
 
 export type MeanChartResult = {
