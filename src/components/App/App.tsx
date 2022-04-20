@@ -221,7 +221,7 @@ const App = ({ appConfig, apiCore, apiMining, showTutorial }: Props) => {
               }}
               datacatalogueUrl={appConfig.datacatalogueUrl || undefined}
               logout={() => {
-                toast.success('you successfully logged out');
+                toast.success('Logged out successfully');
                 logoutHandle();
               }}
             >

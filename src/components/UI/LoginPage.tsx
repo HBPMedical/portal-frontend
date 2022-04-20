@@ -42,7 +42,7 @@ export default () => {
 
   const [loginMutation, { loading }] = useLoginMutation({
     onCompleted: async () => {
-      toast.success('You successfully logged in');
+      toast.success('Logged in successfully');
       history.push('/');
       await apolloClient.resetStore();
       localMutations.user.setState(SessionState.LOGGED_IN);
