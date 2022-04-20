@@ -1,12 +1,22 @@
 import { NetworkStatus } from '@apollo/client';
 import React from 'react';
+import { Spinner } from 'react-bootstrap';
 import { Redirect, Route, RouteProps } from 'react-router-dom';
+import styled from 'styled-components';
 import {
   useActiveUserQuery,
   useGetConfigurationQuery
 } from '../API/GraphQL/queries.generated';
 
 // screen if you're not yet authenticated.
+
+const SpinnerContainer = styled.div`
+  display: flex;
+  min-height: inherit;
+  justify-content: center;
+  align-items: center;
+  height: 100vh;
+`;
 
 type Props = {
   children: React.ReactNode;
@@ -21,10 +31,7 @@ export default ({ children, ...rest }: Props) => {
   const {
     loading: configLoading,
     data: { configuration } = {}
-  } = useGetConfigurationQuery({
-    fetchPolicy: 'network-only',
-    notifyOnNetworkStatusChange: true
-  });
+  } = useGetConfigurationQuery();
 
   const isAuth = !!userData?.user;
   const skipTOS = userData?.user?.agreeNDA || configuration?.skipTos;
@@ -33,7 +40,7 @@ export default ({ children, ...rest }: Props) => {
 
   return (
     <>
-      {!loading && (
+      {!loading ? (
         <Route
           {...rest}
           render={({ location }) =>
@@ -58,6 +65,10 @@ export default ({ children, ...rest }: Props) => {
             )
           }
         />
+      ) : (
+        <SpinnerContainer>
+          <Spinner animation="border" variant="info" />
+        </SpinnerContainer>
       )}
     </>
   );
