@@ -93,7 +93,7 @@ const App = ({ appConfig, apiCore, apiMining, showTutorial }: Props) => {
 
   useEffect(() => {
     trackPageView({});
-    history.listen(location => {
+    history.listen(() => {
       trackPageView({});
     });
   }, [history, trackPageView]);
