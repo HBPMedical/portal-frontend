@@ -13,15 +13,15 @@ const MatomoContainer = ({ children }: React.PropsWithChildren<Props>) => {
     configuration.matomo.siteId
       ? createInstance({
           urlBase: configuration.matomo.urlBase,
-          siteId: +configuration.matomo.siteId,
+          siteId: parseInt(configuration.matomo.siteId),
           linkTracking: false,
           configurations: {
             disableCookies: true
-          },
-          disabled: process.env.NODE_ENV !== 'production'
+          }
         })
       : undefined;
-  return matomoInstance && loading ? (
+
+  return matomoInstance && !loading ? (
     <MatomoProvider value={matomoInstance}>{children}</MatomoProvider>
   ) : (
     <>{children}</>
