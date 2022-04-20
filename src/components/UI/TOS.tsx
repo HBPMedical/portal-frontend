@@ -1,11 +1,13 @@
-import { useReactiveVar } from '@apollo/client';
 import React, { useEffect, useRef, useState } from 'react';
 import { Button, Form, Spinner } from 'react-bootstrap';
 import ReactMarkdown from 'react-markdown';
 import { useHistory } from 'react-router-dom';
 import styled from 'styled-components';
-import { currentUserVar } from '../API/GraphQL/cache';
-import { useUpdateActiveUserMutation } from '../API/GraphQL/queries.generated';
+import {
+  namedOperations,
+  useActiveUserQuery,
+  useUpdateActiveUserMutation
+} from '../API/GraphQL/queries.generated';
 import { makeAssetURL } from '../API/RequestURLS';
 
 const Container = styled.div`
@@ -28,10 +30,11 @@ export default (): JSX.Element => {
   const [accepted, setAccepted] = useState(false);
   const [TOS, setTOS] = useState<string | undefined>(undefined);
   const mountedRef = useRef(true);
-  const user = useReactiveVar(currentUserVar);
   const history = useHistory();
+  const { data: { user } = {} } = useActiveUserQuery();
 
   const [updateActiveUser, { loading }] = useUpdateActiveUserMutation({
+    refetchQueries: [namedOperations.Query.activeUser],
     onCompleted: () => {
       history.push('/');
     }
