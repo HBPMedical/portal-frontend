@@ -2,7 +2,10 @@ import React from 'react';
 import { ComponentStory, ComponentMeta } from '@storybook/react';
 
 import DataTable from '../components/UI/Visualization2/DataTable';
-import { TableResult } from '../components/API/GraphQL/types.generated';
+import {
+  TableResult,
+  TableStyle
+} from '../components/API/GraphQL/types.generated';
 
 export default {
   title: 'Charts/DataTable',
@@ -46,11 +49,14 @@ const data: TableResult = {
       __typename: 'Header'
     }
   ],
-  __typename: 'TableResult'
+  __typename: 'TableResult',
+  tableStyle: TableStyle.Default
 };
 
+const data2: TableResult = { ...data, tableStyle: TableStyle.Normal };
+
 export const Default = Template.bind({});
-Default.args = { data, layout: 'default' };
+Default.args = { data };
 
 export const Statistics = Template.bind({});
-Statistics.args = { data, layout: 'statistics' };
+Statistics.args = { data: data2 };

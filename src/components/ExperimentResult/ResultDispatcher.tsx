@@ -35,9 +35,7 @@ class ResultDispatcher extends React.Component<Props> {
             groupsresult: (
               <GroupTable result={result as GroupsResult} loading={false} />
             ),
-            tableresult: (
-              <DataTable data={result as TableResult} layout="statistics" />
-            ),
+            tableresult: <DataTable data={result as TableResult} />,
             rawresult: (
               <ResultsErrorBoundary>
                 <RenderResult
