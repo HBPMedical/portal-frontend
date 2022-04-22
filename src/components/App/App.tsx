@@ -184,7 +184,7 @@ const App = ({ appConfig, apiCore, apiMining, showTutorial }: Props) => {
   useEffect(() => {
     if (userState === SessionState.INVALID) {
       if (user) {
-        toast.error('You session has expired.');
+        toast.error('Your session has expired');
       } else {
         toast.info('Please login before accessing the MIP');
       }
