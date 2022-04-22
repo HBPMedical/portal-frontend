@@ -133,7 +133,7 @@ const App = ({ appConfig, apiCore, apiMining, showTutorial }: Props) => {
       if (data.configuration) {
         localMutations.setConfiguration(data.configuration);
         const favicon = document.getElementById('favicon') as HTMLLinkElement;
-        favicon.href = makeAssetURL('favicon.png');
+        favicon.href = makeAssetURL('favicon.ico');
       }
     }
   });
