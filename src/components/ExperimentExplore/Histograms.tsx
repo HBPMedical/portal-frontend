@@ -179,7 +179,7 @@ export default ({
   const [getHistrograms, { data, loading }] = useCreateExperimentMutation();
 
   useEffect(() => {
-    if (selectedNode && domain) {
+    if (selectedNode && !selectedNode.children && domain) {
       const params: AlgorithmParamInput[] = [];
 
       const variable = domain.variables.find(

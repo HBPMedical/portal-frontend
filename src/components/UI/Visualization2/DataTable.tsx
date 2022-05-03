@@ -2,18 +2,17 @@ import * as React from 'react';
 import { CSVLink } from 'react-csv';
 import { FaFileCsv } from 'react-icons/fa';
 import styled from 'styled-components';
-import { TableResult } from '../../API/GraphQL/types.generated';
+import { TableResult, TableStyle } from '../../API/GraphQL/types.generated';
 
 const layouts = ['default', 'statistics'] as const;
 export type Layout = typeof layouts[number];
 
 interface TableProps {
   data: TableResult;
-  layout?: Layout;
 }
 
 interface LayoutProps {
-  layout: Layout;
+  layout: TableStyle;
   colsCount: number;
 }
 
@@ -51,7 +50,7 @@ const Table = styled.table<LayoutProps>`
   }
 
   ${(prop): string =>
-    prop.layout === 'default'
+    prop.layout === TableStyle.Default
       ? `
         tr:nth-child(even) {
           background: #ebebeb;
@@ -90,8 +89,7 @@ const Container = styled.div`
   }
 `;
 
-export default ({ data, layout = 'default' }: TableProps): JSX.Element => {
-  const theme = (data.tableStyle ?? layout) as Layout;
+export default ({ data }: TableProps): JSX.Element => {
   const csvData = [[...data.headers.map(h => h.name)], ...data.data];
 
   return (
@@ -105,7 +103,7 @@ export default ({ data, layout = 'default' }: TableProps): JSX.Element => {
         Export as CSV
       </CSVLink>
       <Table
-        layout={theme}
+        layout={data.tableStyle ?? TableStyle.Normal}
         colsCount={data.headers.length}
         key={`table-${data.name}`}
       >
