@@ -44,7 +44,7 @@ export const draftExperimentVar = makeVar<Experiment>(initialExperiment);
 export const variablesVar = makeVar<Variable[]>([]);
 export const groupsVar = makeVar<Group[]>([]);
 
-export const cache: InMemoryCache = new InMemoryCache({
+export const cacheConfig = {
   possibleTypes: {
     // https://github.com/apollographql/apollo-client/issues/7050
     ResultUnion: [
@@ -53,7 +53,8 @@ export const cache: InMemoryCache = new InMemoryCache({
       'TableResult',
       'HeatMapResult',
       'LineChartResult'
-    ]
+    ],
+    BaseParameter: ['StringParameter', 'NominalParameter', 'NumberParameter']
   },
   typePolicies: {
     Query: {
@@ -66,4 +67,6 @@ export const cache: InMemoryCache = new InMemoryCache({
       }
     }
   }
-});
+};
+
+export const cache: InMemoryCache = new InMemoryCache(cacheConfig);

@@ -15,7 +15,7 @@ export type Scalars = {
 
 export type Algorithm = {
   __typename?: 'Algorithm';
-  coVariable: VariableParameter;
+  coVariable?: Maybe<VariableParameter>;
   description?: Maybe<Scalars['String']>;
   id: Scalars['String'];
   label?: Maybe<Scalars['String']>;

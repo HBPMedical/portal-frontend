@@ -16,13 +16,6 @@ export const QUERY_CONFIGURATION = gql`
 `;
 
 export const QUERY_LIST_ALGORITHMS = gql`
-  fragment VarBody on VariableParameter {
-    hint
-    isRequired
-    hasMultiple
-    allowedTypes
-  }
-
   query listAlgorithms {
     algorithms {
       id
@@ -55,6 +48,13 @@ export const QUERY_LIST_ALGORITHMS = gql`
         }
       }
     }
+  }
+
+  fragment VarBody on VariableParameter {
+    hint
+    isRequired
+    hasMultiple
+    allowedTypes
   }
 `;
 
