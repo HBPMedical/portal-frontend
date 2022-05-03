@@ -1,4 +1,3 @@
-import { useReactiveVar } from '@apollo/client';
 import dayjs from 'dayjs';
 import relativeTime from 'dayjs/plugin/relativeTime';
 import React, { useRef, useState } from 'react';
@@ -17,9 +16,9 @@ import { GoCheck } from 'react-icons/go';
 import { Link } from 'react-router-dom';
 import { Transition } from 'react-transition-group';
 import styled from 'styled-components';
-import { userVar } from '../../../API/GraphQL/cache';
 import {
   EditExperimentMutationVariables,
+  useActiveUserQuery,
   useDeleteExperimentMutation,
   useEditExperimentMutation
 } from '../../../API/GraphQL/queries.generated';
@@ -224,8 +223,8 @@ const ExperimentRow = ({
   const [editExperimentMutation] = useEditExperimentMutation();
   const [status, setStatus] = useState<RowState>(RowState.DISPLAYING);
 
-  const user = useReactiveVar(userVar);
-  const isOwner = user.username === experiment.author?.username;
+  const { data } = useActiveUserQuery();
+  const isOwner = data?.user?.username === experiment.author?.username;
   const isEditing = status === RowState.EDITING;
   const isDeleting = status === RowState.DELETEING;
   const isDeleted = status === RowState.DELETED;

@@ -150,6 +150,7 @@ export const QUERY_DOMAINS = gql`
     description
     groups
     variables
+    datasets
   }
 
   query listDomains {
@@ -167,6 +168,7 @@ export const QUERY_DOMAINS = gql`
         label
         type
         description
+        datasets
         enumerations {
           id
           label

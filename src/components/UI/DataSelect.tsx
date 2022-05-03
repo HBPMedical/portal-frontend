@@ -1,4 +1,5 @@
 import React, { useRef } from 'react';
+import { Badge } from 'react-bootstrap';
 import { Button, Form } from 'react-bootstrap';
 import styled from 'styled-components';
 import { Dataset } from '../API/GraphQL/types.generated';
@@ -6,22 +7,36 @@ import { useOnClickOutside } from '../utils';
 
 const DropDownPanel = styled.div`
   position: absolute;
-  width: 320px;
   background-color: white;
-  padding: 16px;
-  border: 1px lightblue solid;
+  padding: 16px 0;
+  border: 1px grey solid;
   margin: 2px 0;
   border-radius: 4px;
+
+  .dataset {
+    user-select: none;
+    padding: 5px 15px;
+    cursor: pointer;
+    &:hover {
+      background-color: #f1f1f1;
+    }
+    label {
+      cursor: pointer;
+    }
+  }
+
+  .form-check {
+    display: flex;
+    align-items: center;
+  }
+
+  .form-check-input {
+    margin-top: 0px;
+  }
 
   label {
     margin-right: 8px;
     font-size: 1em;
-  }
-
-  .checkbox {
-    position: absolute;
-    margin-top: 4px;
-    margin-left: -8px;
   }
 
   h6 {
@@ -111,19 +126,27 @@ export default ({
 
   const container = grpDatasets.map((list, i) => {
     const elements = list.map(item => (
-      <span key={item.id}>
+      <div
+        key={item.id}
+        className="dataset"
+        onClick={(e): void => {
+          e.preventDefault();
+          e.stopPropagation();
+          handleSelectDataset(item.id);
+        }}
+      >
         <Form.Check
-          key={item.id}
-          inline={true}
+          onClick={(e): void => {
+            e.stopPropagation();
+            handleSelectDataset(item.id);
+          }}
+          readOnly={true}
           type="checkbox"
           id={`default-${item.id}`}
           label={item.label}
-          onChange={(): void => {
-            handleSelectDataset(item.id);
-          }}
           checked={selectedDatasets.includes(item.id)}
         ></Form.Check>
-      </span>
+      </div>
     ));
 
     return (
@@ -147,7 +170,7 @@ export default ({
               setVisible(!visible);
             }}
           >
-            Datasets
+            Datasets <Badge variant="info">{selectedDatasets.length}</Badge>
           </CaretButton>
           <DropDownPanel ref={node} style={style}>
             {datasets && container}

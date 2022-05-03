@@ -1,6 +1,12 @@
 import { InMemoryCache, makeVar } from '@apollo/client';
 import { SessionState } from '../../../utilities/types';
-import { Configuration, Domain, Experiment, User } from './types.generated';
+import {
+  Configuration,
+  Domain,
+  Experiment,
+  Group,
+  Variable
+} from './types.generated';
 
 export const initialExperiment: Experiment = {
   id: '',
@@ -31,12 +37,12 @@ export const sessionStateVar = makeVar<SessionState>(SessionState.INIT);
 export const configurationVar = makeVar<Configuration>(initialConfig);
 export const zoomNodeVar = makeVar<string | undefined>(undefined);
 export const domainsVar = makeVar<Domain[]>([]);
-export const currentUserVar = makeVar<User | undefined>(undefined);
 export const selectedVariableVar = makeVar<string | undefined>(undefined);
 export const selectedDomainVar = makeVar<Domain | undefined>(undefined);
 export const selectedExperimentVar = makeVar<Experiment | undefined>(undefined);
 export const draftExperimentVar = makeVar<Experiment>(initialExperiment);
-export const userVar = makeVar<typeof initialUser>(initialUser);
+export const variablesVar = makeVar<Variable[]>([]);
+export const groupsVar = makeVar<Group[]>([]);
 
 export const cache: InMemoryCache = new InMemoryCache({
   possibleTypes: {
@@ -50,18 +56,6 @@ export const cache: InMemoryCache = new InMemoryCache({
     ]
   },
   typePolicies: {
-    // see https://www.apollographql.com/docs/react/local-state/managing-state-with-field-policies/
-    // should be calculated in the gateway this is temporary as there is no session in the gateway at the moment
-    Experiment: {
-      fields: {
-        isOwner: {
-          read(_, { readField }): boolean {
-            const author = readField<Experiment['author']>('createdBy');
-            return userVar().username === author?.username;
-          }
-        }
-      }
-    },
     Query: {
       fields: {
         configuration: {

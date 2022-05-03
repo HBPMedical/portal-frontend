@@ -226,6 +226,10 @@ export default ({ layout, ...props }: Props): JSX.Element => {
       .attr('class', 'label')
       .style('fill-opacity', d => (d.parent === layout ? 1 : 0))
       .style('display', d => (d.parent === layout ? 'inline' : 'none'))
+      .style('font-size', (d: any) => {
+        const size = 12 - Math.log(d.data.label.length) + Math.log(d.r);
+        return Math.round(size) + 'px';
+      })
       .selectAll('tspan')
       .data(d => splitText(d.data.label))
       .join('tspan')
