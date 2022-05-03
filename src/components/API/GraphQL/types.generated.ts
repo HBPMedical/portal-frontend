@@ -15,11 +15,12 @@ export type Scalars = {
 
 export type Algorithm = {
   __typename?: 'Algorithm';
+  coVariable: VariableParameter;
   description?: Maybe<Scalars['String']>;
   id: Scalars['String'];
   label?: Maybe<Scalars['String']>;
-  parameters?: Maybe<Array<AlgorithmParameter>>;
-  type?: Maybe<Scalars['String']>;
+  parameters?: Maybe<Array<BaseParameter>>;
+  variable: VariableParameter;
 };
 
 export type AlgorithmInput = {
@@ -34,19 +35,17 @@ export type AlgorithmParamInput = {
   value: Scalars['String'];
 };
 
-export type AlgorithmParameter = {
-  __typename?: 'AlgorithmParameter';
-  defaultValue?: Maybe<Scalars['String']>;
-  description?: Maybe<Scalars['String']>;
+export type AlgorithmResult = {
+  __typename?: 'AlgorithmResult';
   id: Scalars['String'];
-  isMultiple?: Maybe<Scalars['Boolean']>;
-  isRequired?: Maybe<Scalars['Boolean']>;
-  label?: Maybe<Scalars['String']>;
-  max?: Maybe<Scalars['String']>;
-  min?: Maybe<Scalars['String']>;
-  type?: Maybe<Scalars['String']>;
-  value?: Maybe<Scalars['String']>;
+  parameters?: Maybe<Array<ParamValue>>;
 };
+
+/** The supported links. */
+export enum AllowedLink {
+  Covariable = 'COVARIABLE',
+  Variable = 'VARIABLE'
+}
 
 export type AuthenticationInput = {
   password: Scalars['String'];
@@ -72,6 +71,16 @@ export type BarChartResult = {
   name: Scalars['String'];
   xAxis?: Maybe<ChartAxis>;
   yAxis?: Maybe<ChartAxis>;
+};
+
+export type BaseParameter = {
+  defaultValue?: Maybe<Scalars['String']>;
+  hasMultiple?: Maybe<Scalars['Boolean']>;
+  /** Small hint (description) for the end user */
+  hint?: Maybe<Scalars['String']>;
+  id: Scalars['String'];
+  isRequired?: Maybe<Scalars['Boolean']>;
+  label?: Maybe<Scalars['String']>;
 };
 
 export type Category = {
@@ -120,7 +129,7 @@ export type Domain = {
 
 export type Experiment = {
   __typename?: 'Experiment';
-  algorithm: Algorithm;
+  algorithm: AlgorithmResult;
   author?: Maybe<Author>;
   coVariables?: Maybe<Array<Scalars['String']>>;
   createdAt?: Maybe<Scalars['Float']>;
@@ -303,14 +312,54 @@ export type MutationUpdateUserArgs = {
   updateUserInput: UpdateUserInput;
 };
 
+export type NominalParameter = BaseParameter & {
+  __typename?: 'NominalParameter';
+  allowedValues?: Maybe<Array<OptionValue>>;
+  defaultValue?: Maybe<Scalars['String']>;
+  hasMultiple?: Maybe<Scalars['Boolean']>;
+  /** Small hint (description) for the end user */
+  hint?: Maybe<Scalars['String']>;
+  id: Scalars['String'];
+  isRequired?: Maybe<Scalars['Boolean']>;
+  label?: Maybe<Scalars['String']>;
+  /** Id of the parameter */
+  linkedTo?: Maybe<AllowedLink>;
+};
+
+export type NumberParameter = BaseParameter & {
+  __typename?: 'NumberParameter';
+  defaultValue?: Maybe<Scalars['String']>;
+  hasMultiple?: Maybe<Scalars['Boolean']>;
+  /** Small hint (description) for the end user */
+  hint?: Maybe<Scalars['String']>;
+  id: Scalars['String'];
+  isReal?: Maybe<Scalars['Boolean']>;
+  isRequired?: Maybe<Scalars['Boolean']>;
+  label?: Maybe<Scalars['String']>;
+  max?: Maybe<Scalars['Float']>;
+  min?: Maybe<Scalars['Float']>;
+};
+
+export type OptionValue = {
+  __typename?: 'OptionValue';
+  id: Scalars['String'];
+  label: Scalars['String'];
+};
+
 export enum ParamType {
   Number = 'NUMBER',
   String = 'STRING'
 }
 
+export type ParamValue = {
+  __typename?: 'ParamValue';
+  id: Scalars['String'];
+  value: Scalars['String'];
+};
+
 export type PartialExperiment = {
   __typename?: 'PartialExperiment';
-  algorithm?: Maybe<Algorithm>;
+  algorithm?: Maybe<AlgorithmResult>;
   author?: Maybe<Author>;
   coVariables?: Maybe<Array<Scalars['String']>>;
   createdAt?: Maybe<Scalars['Float']>;
@@ -370,6 +419,17 @@ export type RawResult = {
 
 export type ResultUnion = BarChartResult | GroupsResult | HeatMapResult | LineChartResult | MeanChartResult | RawResult | TableResult;
 
+export type StringParameter = BaseParameter & {
+  __typename?: 'StringParameter';
+  defaultValue?: Maybe<Scalars['String']>;
+  hasMultiple?: Maybe<Scalars['Boolean']>;
+  /** Small hint (description) for the end user */
+  hint?: Maybe<Scalars['String']>;
+  id: Scalars['String'];
+  isRequired?: Maybe<Scalars['Boolean']>;
+  label?: Maybe<Scalars['String']>;
+};
+
 export type TableResult = {
   __typename?: 'TableResult';
   data: Array<Array<Scalars['String']>>;
@@ -414,4 +474,12 @@ export type Variable = {
   id: Scalars['String'];
   label?: Maybe<Scalars['String']>;
   type?: Maybe<Scalars['String']>;
+};
+
+export type VariableParameter = {
+  __typename?: 'VariableParameter';
+  allowedTypes?: Maybe<Array<Scalars['String']>>;
+  hasMultiple?: Maybe<Scalars['Boolean']>;
+  hint?: Maybe<Scalars['String']>;
+  isRequired?: Maybe<Scalars['Boolean']>;
 };

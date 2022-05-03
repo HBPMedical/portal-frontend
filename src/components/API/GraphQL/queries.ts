@@ -15,6 +15,49 @@ export const QUERY_CONFIGURATION = gql`
   }
 `;
 
+export const QUERY_LIST_ALGORITHMS = gql`
+  fragment VarBody on VariableParameter {
+    hint
+    isRequired
+    hasMultiple
+    allowedTypes
+  }
+
+  query listAlgorithms {
+    algorithms {
+      id
+      label
+      description
+      variable {
+        ...VarBody
+      }
+      coVariable {
+        ...VarBody
+      }
+      parameters {
+        id
+        label
+        hint
+        isRequired
+        hasMultiple
+        defaultValue
+        ... on NumberParameter {
+          min
+          max
+          isReal
+        }
+        ... on NominalParameter {
+          allowedValues {
+            id
+            label
+          }
+          linkedTo
+        }
+      }
+    }
+  }
+`;
+
 export const QUERY_MATOMO = gql`
   query getMatomo {
     configuration {
@@ -118,12 +161,8 @@ export const QUERY_EXPERIMENT = gql`
       }
       algorithm {
         id
-        description
-        label
-        type
         parameters {
           id
-          label
           value
         }
       }
