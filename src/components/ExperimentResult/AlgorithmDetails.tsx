@@ -42,20 +42,22 @@ const AlgorithmDetails = ({
     }) ?? [];
   return (
     <>
-      <h4>Algorithm</h4>
-      {loading && <Loader />}
-      {!loading && result && algo && (
+      {result && (
         <>
-          <p>{algo.label || algo.id}</p>
-          {params.map((param, i) => {
-            return (
-              <Param key={param.id}>
-                <Badge variant="primary">
-                  {param.label || param.id} : {param.value ?? 'not defined'}
-                </Badge>
-              </Param>
-            );
-          })}
+          <h4>Algorithm</h4>
+          {loading && <Loader />}
+          {!loading && result && (
+            <>
+              <p>{algo?.label || result.id}</p>
+              {params.map(param => (
+                <Param key={param.id}>
+                  <Badge variant="primary">
+                    {param.label || param.id}: {param.value ?? 'not defined'}
+                  </Badge>
+                </Param>
+              ))}
+            </>
+          )}
         </>
       )}
     </>
