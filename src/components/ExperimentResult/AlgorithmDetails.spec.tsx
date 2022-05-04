@@ -1,5 +1,5 @@
 import { MockedProvider } from '@apollo/client/testing';
-import { render, waitFor, screen } from '@testing-library/react';
+import { render, waitFor } from '@testing-library/react';
 import React from 'react';
 import { QUERY_LIST_ALGORITHMS } from '../API/GraphQL/queries';
 import { namedOperations } from '../API/GraphQL/queries.generated';
