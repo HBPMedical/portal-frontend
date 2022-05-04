@@ -203,12 +203,7 @@ export const ExperimentCreateContainer = ({ apiCore }: Props): JSX.Element => {
           <Card>
             <Card.Body>
               <h4>Available Algorithms</h4>
-              <AvailableAlgorithms
-                algorithms={apiCore.state.algorithms}
-                lookup={lookup}
-                handleSelectMethod={handleSelectAlgorithm}
-                experiment={experiment}
-              />
+              <AvailableAlgorithms experiment={experiment} />
             </Card.Body>
           </Card>
         </div>

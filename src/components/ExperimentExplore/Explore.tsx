@@ -249,9 +249,7 @@ export default (props: ExploreProps): JSX.Element => {
                 </p>
               </AlgorithmTitleContainer>
               <AvailableAlgorithms
-                layout={'inline'}
-                algorithms={apiCore.state.algorithms}
-                lookup={lookup}
+                direction="horizontal"
                 experiment={draftExperiment}
               />
             </Card.Body>
