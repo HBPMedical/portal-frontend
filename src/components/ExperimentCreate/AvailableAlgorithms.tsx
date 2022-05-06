@@ -1,13 +1,12 @@
-import { useReactiveVar } from '@apollo/client';
-import React from 'react';
-import { OverlayTrigger, Popover, Card } from 'react-bootstrap';
+import React, { useState } from 'react';
+import { Card, OverlayTrigger, Popover } from 'react-bootstrap';
 import styled from 'styled-components';
-import { variablesVar } from '../API/GraphQL/cache';
 import { useListAlgorithmsQuery } from '../API/GraphQL/queries.generated';
 import {
   Experiment,
   Variable,
-  VariableParameter
+  VariableParameter,
+  Algorithm
 } from '../API/GraphQL/types.generated';
 import Loader from '../UI/Loader';
 
@@ -17,20 +16,44 @@ const Container = styled.div`
   .algorithms {
     .algorithm {
       cursor: default;
-      font-size: 0.8rem;
-      font-style: italic;
       color: grey;
-      &.clickable {
+      &.selected {
+        font-weight: bold;
+      }
+    }
+    &.clickable {
+      .algorithm.enabled {
         cursor: pointer;
       }
-      &.enabled {
-        color: green;
+    }
+    &.vertical {
+      display: flex;
+      flex-direction: column;
+      .algorithm {
+        margin-bottom: 10px;
+        font-size: 0.9rem;
+        &.enabled {
+          color: #007ad9;
+          &:hover {
+            color: #0056b3;
+            text-decoration: underline;
+          }
+        }
       }
-      &::after {
-        content: ', ';
-      }
-      &:last-child::after {
-        content: '';
+    }
+    &.horizontal {
+      .algorithm {
+        font-size: 0.8rem;
+        font-style: italic;
+        &.enabled {
+          color: green;
+        }
+        &::after {
+          content: ', ';
+        }
+        &:last-child::after {
+          content: '';
+        }
       }
     }
   }
@@ -61,16 +84,18 @@ const checkValidity = (
 type Props = {
   experiment: Experiment;
   direction?: 'horizontal' | 'vertical';
-  handleSelect?: (id: string) => void;
+  handleSelect?: (algo: Algorithm) => void;
+  listVariables: Variable[];
 };
 
 export const AvailableAlgorithms = ({
   direction = 'horizontal',
   handleSelect,
-  experiment
+  experiment,
+  listVariables
 }: Props) => {
+  const [selectedId, setSelectedId] = useState<string>('');
   const isClickable = !!handleSelect;
-  const listVariables = useReactiveVar(variablesVar);
   const { data, loading } = useListAlgorithmsQuery();
   const variables = experiment.variables
     .map(id => listVariables.find(v => v.id === id))
@@ -96,13 +121,13 @@ export const AvailableAlgorithms = ({
       })
       .sort((a, b) => a.label.localeCompare(b.label)) ?? [];
 
-  console.log(algorithms);
-
   if (loading) return <Loader />;
 
   return (
-    <Container className={isClickable ? 'clickable' : ''}>
-      <div className="algorithms">
+    <Container>
+      <div
+        className={`algorithms ${direction} ${isClickable ? 'clickable' : ''}`}
+      >
         {algorithms.map(algo => (
           <OverlayTrigger
             key={algo.id}
@@ -132,10 +157,15 @@ export const AvailableAlgorithms = ({
             }
           >
             <span
-              className={`algorithm ${algo.isEnabled ? 'enabled' : 'disabled'}`}
+              className={`algorithm ${
+                algo.isEnabled ? 'enabled' : 'disabled'
+              } ${selectedId === algo.id ? 'selected' : ''}`}
               key={algo.id}
               onClick={() => {
-                handleSelect?.(algo.id);
+                if (handleSelect && algo.isEnabled) {
+                  setSelectedId(algo.id);
+                  handleSelect(algo as Algorithm);
+                }
               }}
             >
               {algo.label ?? algo.id}

@@ -17,21 +17,22 @@ export type Algorithm = {
   __typename?: 'Algorithm';
   coVariable?: Maybe<VariableParameter>;
   description?: Maybe<Scalars['String']>;
+  hasFormula?: Maybe<Scalars['Boolean']>;
   id: Scalars['String'];
   label?: Maybe<Scalars['String']>;
   parameters?: Maybe<Array<BaseParameter>>;
+  type?: Maybe<Scalars['String']>;
   variable: VariableParameter;
 };
 
 export type AlgorithmInput = {
   id: Scalars['String'];
   parameters?: Maybe<Array<AlgorithmParamInput>>;
-  type: Scalars['String'];
+  type?: Maybe<Scalars['String']>;
 };
 
 export type AlgorithmParamInput = {
   id: Scalars['String'];
-  type?: Maybe<ParamType>;
   value: Scalars['String'];
 };
 
@@ -345,11 +346,6 @@ export type OptionValue = {
   id: Scalars['String'];
   label: Scalars['String'];
 };
-
-export enum ParamType {
-  Number = 'NUMBER',
-  String = 'STRING'
-}
 
 export type ParamValue = {
   __typename?: 'ParamValue';

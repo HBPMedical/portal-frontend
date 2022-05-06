@@ -2,8 +2,12 @@ import React, { useEffect, useState } from 'react';
 import { Form } from 'react-bootstrap';
 import Select from 'react-select';
 import styled from 'styled-components';
-import { Algorithm, AlgorithmParameter } from '../API/Core';
-import { Experiment, Variable } from '../API/GraphQL/types.generated';
+import {
+  Algorithm,
+  AlgorithmParamInput,
+  Experiment,
+  Variable
+} from '../API/GraphQL/types.generated';
 import CategoryChooser from './CategoryValuesChooser';
 import LogisticCategory from './LogisticCategory';
 
@@ -36,15 +40,13 @@ type LocalVar = { value: string; label: string }[] | undefined;
 
 interface Props {
   algorithm?: Algorithm;
-  parameters?: AlgorithmParameter[];
   experiment: Experiment;
-  handleChangeParameters: (parameters: AlgorithmParameter[]) => void;
+  handleChangeParameters: (parameters: AlgorithmParamInput[]) => void;
   lookup: (id: string) => Variable | undefined;
 }
 
 const Parameters = ({
   algorithm,
-  parameters,
   experiment,
   handleChangeParameters,
   lookup

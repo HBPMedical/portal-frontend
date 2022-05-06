@@ -1,4 +1,5 @@
 import { NetworkStatus, useReactiveVar } from '@apollo/client';
+import { useMatomo } from '@datapunt/matomo-tracker-react';
 import React, { useCallback, useEffect } from 'react';
 import { Spinner } from 'react-bootstrap';
 import { Route, Switch, useHistory } from 'react-router-dom';
@@ -6,7 +7,7 @@ import { toast, ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.min.css';
 import styled from 'styled-components';
 import { SessionState } from '../../utilities/types';
-import { APICore, APIMining, backendURL } from '../API';
+import { backendURL } from '../API';
 import { apolloClient } from '../API/GraphQL/apollo.config';
 import { configurationVar, sessionStateVar } from '../API/GraphQL/cache';
 import { localMutations } from '../API/GraphQL/operations/mutations';
@@ -34,7 +35,6 @@ import Navigation from '../UI/Navigation';
 import NotFound from '../UI/NotFound';
 import TOS from '../UI/TOS';
 import Tutorial from '../UserGuide/Tutorial';
-import { useMatomo } from '@datapunt/matomo-tracker-react';
 
 const Main = styled.main<MainProps>`
   margin: 0 auto;
@@ -74,8 +74,6 @@ export interface AppConfig {
 }
 interface Props {
   appConfig: AppConfig;
-  apiCore: APICore;
-  apiMining: APIMining;
   showTutorial: boolean;
 }
 
@@ -83,7 +81,7 @@ interface MainProps {
   showTutorial: any;
 }
 
-const App = ({ appConfig, apiCore, apiMining, showTutorial }: Props) => {
+const App = ({ appConfig, showTutorial }: Props) => {
   const config = useReactiveVar(configurationVar);
   const history = useHistory();
   const userState = useReactiveVar(sessionStateVar);
@@ -252,11 +250,11 @@ const App = ({ appConfig, apiCore, apiMining, showTutorial }: Props) => {
               </Route>
 
               <ProtectedRoute path={['/', '/explore']} exact={true}>
-                <Explore apiCore={apiCore} apiMining={apiMining} />
+                <Explore />
               </ProtectedRoute>
 
               <ProtectedRoute path={['/review', '/analysis']}>
-                <DescriptiveAnalysis apiCore={apiCore} />
+                <DescriptiveAnalysis />
               </ProtectedRoute>
 
               <ProtectedRoute path="/experiment/:uuid">
@@ -264,11 +262,11 @@ const App = ({ appConfig, apiCore, apiMining, showTutorial }: Props) => {
               </ProtectedRoute>
 
               <ProtectedRoute exact={true} path="/experiment">
-                <ExperimentCreate apiCore={apiCore} />
+                <ExperimentCreate />
               </ProtectedRoute>
 
               <ProtectedRoute path="/galaxy">
-                <Galaxy apiCore={apiCore} />
+                <Galaxy />
               </ProtectedRoute>
 
               <Route path="/catalog" render={() => <DataCatalog />} />

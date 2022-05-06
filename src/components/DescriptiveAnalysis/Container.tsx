@@ -3,7 +3,6 @@ import React, { useEffect, useState } from 'react';
 import { Button, Card } from 'react-bootstrap';
 import { useHistory } from 'react-router-dom';
 import Sidebar from 'react-sidebar';
-import { APICore } from '../API';
 import {
   draftExperimentVar,
   selectedDomainVar,
@@ -16,14 +15,10 @@ import ResultDispatcher from '../ExperimentResult/ResultDispatcher';
 import Error from '../UI/Error';
 import Loader from '../UI/Loader';
 import ExperimentSidebar from './ExperimentSidebar';
-import Wrapper from './FilterFormulaWrapper';
+import FormulaWrapper from './FilterFormulaWrapper';
 import Header from './Header';
 
-interface Props {
-  apiCore: APICore;
-}
-
-export default ({ apiCore }: Props): JSX.Element => {
+export default (): JSX.Element => {
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const [
     createTransientMutation,
@@ -79,11 +74,7 @@ export default ({ apiCore }: Props): JSX.Element => {
         <Sidebar
           sidebar={
             domain && (
-              <Wrapper
-                domain={domain}
-                apiCore={apiCore}
-                experiment={draftExperiment}
-              />
+              <FormulaWrapper domain={domain} experiment={draftExperiment} />
             )
           }
           open={sidebarOpen}

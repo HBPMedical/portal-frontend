@@ -27,7 +27,9 @@ export const QUERY_LIST_ALGORITHMS = gql`
       coVariable {
         ...VarBody
       }
+      hasFormula
       parameters {
+        __typename
         id
         label
         hint

@@ -3,15 +3,14 @@ import React, { useState } from 'react';
 import { Badge, Button, Card, Col, Container, Row } from 'react-bootstrap';
 import { BsFillCaretRightFill, BsTrash } from 'react-icons/bs';
 import styled from 'styled-components';
-import { APICore } from '../API';
 import {
   draftExperimentVar,
   selectedDomainVar,
-  selectedExperimentVar
+  selectedExperimentVar,
+  variablesVar
 } from '../API/GraphQL/cache';
 import { localMutations } from '../API/GraphQL/operations/mutations';
 import { VarType } from '../API/GraphQL/operations/mutations/experiments/toggleVarsExperiment';
-import { Variable } from '../API/GraphQL/types.generated';
 import { ONTOLOGY_URL } from '../constants';
 import AvailableAlgorithms from '../ExperimentCreate/AvailableAlgorithms';
 import DropdownExperimentList from '../UI/Experiment/DropDownList/DropdownExperimentList';
@@ -77,15 +76,15 @@ const Col1 = styled(Col2 as any)`
 `;
 
 export interface ExploreProps {
-  apiCore: APICore;
   handleGoToAnalysis: any; // FIXME Promise<void>
 }
 
 export default (props: ExploreProps): JSX.Element => {
-  const { apiCore, handleGoToAnalysis } = props;
+  const { handleGoToAnalysis } = props;
 
   const selectedExperiment = useReactiveVar(selectedExperimentVar);
   const draftExperiment = useReactiveVar(draftExperimentVar);
+  const variables = useReactiveVar(variablesVar);
   const domain = useReactiveVar(selectedDomainVar);
   const [selectedNode, setSelectedNode] = useState<
     HierarchyCircularNode | undefined
@@ -93,10 +92,6 @@ export default (props: ExploreProps): JSX.Element => {
 
   const independantsVariables =
     domain?.variables.filter(v => v.type === 'nominal') ?? [];
-
-  const lookup = (id: string): Variable | undefined => {
-    return domain?.variables.find(v => v.id === id);
-  };
 
   return (
     <>
@@ -251,6 +246,7 @@ export default (props: ExploreProps): JSX.Element => {
               <AvailableAlgorithms
                 direction="horizontal"
                 experiment={draftExperiment}
+                listVariables={variables}
               />
             </Card.Body>
           </Card>

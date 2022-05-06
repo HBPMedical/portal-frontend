@@ -3,48 +3,39 @@ import React, { useState } from 'react';
 import { Card, Tab, Tabs } from 'react-bootstrap';
 import { useHistory } from 'react-router-dom';
 import styled from 'styled-components';
-import { APICore } from '../API';
-import {
-  Algorithm,
-  AlgorithmParameter,
-  AlgorithmParameterRequest
-} from '../API/Core';
 import {
   draftExperimentVar,
   selectedDomainVar,
-  selectedExperimentVar
+  selectedExperimentVar,
+  variablesVar
 } from '../API/GraphQL/cache';
 import { localMutations } from '../API/GraphQL/operations/mutations';
 import {
   namedOperations,
   useCreateExperimentMutation
 } from '../API/GraphQL/queries.generated';
-import { Variable } from '../API/GraphQL/types.generated';
+import { Variable, Algorithm } from '../API/GraphQL/types.generated';
 import { Alert, IAlert } from '../UI/Alert';
 import DropdownExperimentList from '../UI/Experiment/DropDownList/DropdownExperimentList';
 import LargeDatasetSelect from '../UI/LargeDatasetSelect';
 import Model from '../UI/Model';
+import AlgorithmParameters from './AlgorithmParameters';
 import AvailableAlgorithms from './AvailableAlgorithms';
 import ExperimentCreateHeader from './Header';
 import Help from './Help';
-import Parameters from './Parameters';
 
 const Wrapper = styled.div`
   padding: 0 1em;
   min-height: 50vh;
 `;
 
-interface Props {
-  apiCore: APICore;
-}
-
-export const ExperimentCreateContainer = ({ apiCore }: Props): JSX.Element => {
+export const ExperimentCreateContainer = (): JSX.Element => {
   const [alert, setAlert] = useState<IAlert | undefined>(undefined);
-  const [parameters, setParameters] = useState<AlgorithmParameter[]>([]);
   const [algorithm, setAlgorithm] = useState<Algorithm | undefined>(undefined);
   const selectedExperiment = useReactiveVar(selectedExperimentVar);
   const domain = useReactiveVar(selectedDomainVar);
   const experiment = useReactiveVar(draftExperimentVar);
+  const variables = useReactiveVar(variablesVar);
   const history = useHistory();
 
   const [createExperiment] = useCreateExperimentMutation({
@@ -66,15 +57,10 @@ export const ExperimentCreateContainer = ({ apiCore }: Props): JSX.Element => {
 
   const handleSelectAlgorithm = (algo: Algorithm): void => {
     setAlgorithm(algo);
-    setParameters(algo.parameters as AlgorithmParameter[]);
   };
 
   const lookup = (id: string): Variable | undefined => {
     return domain?.variables.find(v => v.id === id);
-  };
-
-  const handleChangeParameters = (parameters: AlgorithmParameter[]): void => {
-    setParameters(parameters);
   };
 
   const handleGoBackToReview = (): void => {
@@ -82,7 +68,7 @@ export const ExperimentCreateContainer = ({ apiCore }: Props): JSX.Element => {
   };
 
   const handleRunExperiment = (): void => {
-    if (!algorithm || !parameters) {
+    if (!algorithm) {
       setAlert({ message: 'Select an algorithm' });
       return;
     }
@@ -99,17 +85,7 @@ export const ExperimentCreateContainer = ({ apiCore }: Props): JSX.Element => {
           filter: experiment.filter,
           interactions: experiment.formula?.interactions,
           transformations: experiment.formula?.transformations,
-          algorithm: {
-            id: algorithm.name,
-            type: algorithm.type,
-            parameters:
-              (algorithm.parameters as AlgorithmParameterRequest[])
-                ?.filter(p => !!p.value)
-                .map(p => ({
-                  id: p.name,
-                  value: p.value
-                })) ?? []
-          }
+          algorithm: { ...experiment.algorithm, type: algorithm.type }
         }
       }
     });
@@ -183,12 +159,9 @@ export const ExperimentCreateContainer = ({ apiCore }: Props): JSX.Element => {
                   id="uncontrolled-create-experiment-tab"
                 >
                   <Tab eventKey={'1'} title="Algorithm">
-                    <Parameters
+                    <AlgorithmParameters
                       experiment={experiment}
                       algorithm={algorithm}
-                      parameters={parameters}
-                      handleChangeParameters={handleChangeParameters}
-                      lookup={lookup}
                     />
                   </Tab>
                   <Tab eventKey={'2'} title="About running experiments">
@@ -203,7 +176,20 @@ export const ExperimentCreateContainer = ({ apiCore }: Props): JSX.Element => {
           <Card>
             <Card.Body>
               <h4>Available Algorithms</h4>
-              <AvailableAlgorithms experiment={experiment} />
+              <AvailableAlgorithms
+                experiment={experiment}
+                listVariables={variables}
+                direction="vertical"
+                handleSelect={algo => {
+                  setAlgorithm(algo);
+                  localMutations.updateDraftExperiment({
+                    algorithm: {
+                      id: algo.id,
+                      parameters: []
+                    }
+                  });
+                }}
+              />
             </Card.Body>
           </Card>
         </div>
