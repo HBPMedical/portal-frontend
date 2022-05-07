@@ -162,6 +162,8 @@ export const ExperimentCreateContainer = (): JSX.Element => {
                     <AlgorithmParameters
                       experiment={experiment}
                       algorithm={algorithm}
+                      variables={variables}
+                      handleParameters={params => console.log(params)}
                     />
                   </Tab>
                   <Tab eventKey={'2'} title="About running experiments">

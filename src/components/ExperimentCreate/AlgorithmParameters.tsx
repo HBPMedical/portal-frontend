@@ -1,18 +1,16 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import { Form } from 'react-bootstrap';
 import styled from 'styled-components';
 import {
   Algorithm,
   Experiment,
+  NominalParameter,
   NumberParameter,
-  StringParameter
+  StringParameter,
+  Variable
 } from '../API/GraphQL/types.generated';
-import StringInput from './inputs/StringInput';
-import NumberInput from './inputs/NumberInput';
-
-interface Dictionary<T> {
-  [Key: string]: T;
-}
+import NominalInput from './inputs/NominalInput';
+import SimpleInput from './inputs/SimpleInput';
 
 const Header = styled.div`
   margin-bottom: 16px;
@@ -27,10 +25,45 @@ type Dict = { [key: string]: string };
 type Props = {
   experiment: Experiment;
   algorithm?: Algorithm;
-  handleParameters?: () => void;
+  variables?: Variable[];
+  handleParameters?: (params: Dict) => void;
 };
 
-const AlgorithmParameters = ({ experiment, algorithm }: Props) => {
+const AlgorithmParameters = ({
+  experiment,
+  algorithm,
+  variables = [],
+  handleParameters
+}: Props) => {
+  const [params, setParams] = useState<Dict>({});
+
+  useEffect(() => {
+    const data =
+      algorithm?.parameters?.reduce(
+        (prev, param) => ({
+          ...prev,
+          [param.id]: param.defaultValue
+        }),
+        {}
+      ) ?? {};
+    setParams(data);
+    console.log('tests');
+    //handleParameters?.(data);
+  }, [algorithm]);
+
+  const handleParamChanged = (key: string, value: string) => {
+    console.log('tests 2');
+
+    setParams(prevState => {
+      const newState = {
+        ...prevState,
+        [key]: value
+      };
+      //handleParameters?.(newState);
+      return newState;
+    });
+  };
+
   if (!algorithm)
     return (
       <Header>
@@ -51,15 +84,40 @@ const AlgorithmParameters = ({ experiment, algorithm }: Props) => {
         </h4>
         <p>{algorithm.description}</p>
 
+        {algorithm.parameters?.length === 0 && <div>No parameters needed</div>}
+
         <Form validated={true}>
           {algorithm.parameters?.map(param => {
             const type = ((param as unknown) as Dict).__typename;
 
             if (type === 'StringParameter')
-              return <StringInput parameter={param as StringParameter} />;
+              return (
+                <SimpleInput
+                  key={param.id}
+                  parameter={param as StringParameter}
+                  handleValueChanged={handleParamChanged}
+                />
+              );
 
             if (type === 'NumberParameter')
-              return <NumberInput parameter={param as NumberParameter} />;
+              return (
+                <SimpleInput
+                  key={param.id}
+                  parameter={param as NumberParameter}
+                  handleValueChanged={handleParamChanged}
+                />
+              );
+
+            if (type === 'NominalParameter')
+              return (
+                <NominalInput
+                  key={param.id}
+                  parameter={param as NominalParameter}
+                  experiment={experiment}
+                  variables={variables}
+                  handleValueChanged={handleParamChanged}
+                />
+              );
           })}
         </Form>
       </Header>
