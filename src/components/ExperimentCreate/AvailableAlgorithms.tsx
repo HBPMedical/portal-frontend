@@ -1,12 +1,12 @@
-import React, { useState } from 'react';
+import React from 'react';
 import { Card, OverlayTrigger, Popover } from 'react-bootstrap';
 import styled from 'styled-components';
 import { useListAlgorithmsQuery } from '../API/GraphQL/queries.generated';
 import {
+  Algorithm,
   Experiment,
   Variable,
-  VariableParameter,
-  Algorithm
+  VariableParameter
 } from '../API/GraphQL/types.generated';
 import Loader from '../UI/Loader';
 
@@ -83,6 +83,7 @@ const checkValidity = (
 
 type Props = {
   experiment: Experiment;
+  selectedAlgorithm?: Algorithm;
   direction?: 'horizontal' | 'vertical';
   handleSelect?: (algo: Algorithm) => void;
   listVariables: Variable[];
@@ -92,9 +93,9 @@ export const AvailableAlgorithms = ({
   direction = 'horizontal',
   handleSelect,
   experiment,
-  listVariables
+  listVariables,
+  selectedAlgorithm
 }: Props) => {
-  const [selectedId, setSelectedId] = useState<string>('');
   const isClickable = !!handleSelect;
   const { data, loading } = useListAlgorithmsQuery();
   const variables = experiment.variables
@@ -159,11 +160,14 @@ export const AvailableAlgorithms = ({
             <span
               className={`algorithm ${
                 algo.isEnabled ? 'enabled' : 'disabled'
-              } ${selectedId === algo.id ? 'selected' : ''}`}
+              } ${
+                selectedAlgorithm && selectedAlgorithm.id === algo.id
+                  ? 'selected'
+                  : ''
+              }`}
               key={algo.id}
               onClick={() => {
                 if (handleSelect && algo.isEnabled) {
-                  setSelectedId(algo.id);
                   handleSelect(algo as Algorithm);
                 }
               }}

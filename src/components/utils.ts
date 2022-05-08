@@ -5,6 +5,8 @@ import { NodeData } from './ExperimentExplore/d3Hierarchy';
 
 export type HierarchyCircularNode = d3.HierarchyCircularNode<NodeData>;
 
+export type Dict = { [key: string]: string | undefined };
+
 export const round = (num: number, decimals = 3): string =>
   // !(num % 1 === 0) checks if number is an Integer
   !isNaN(num) && !(num % 1 === 0)

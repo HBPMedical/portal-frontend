@@ -40,8 +40,6 @@ const SimpleInput = ({ parameter, handleValueChanged }: Props) => {
 
   if (parameter.isRequired) helper.push('Required');
 
-  console.log(`default :${parameter.id} ${options['defaultValue']}`);
-
   return (
     <Form.Group key={parameter.id}>
       <Form.Label htmlFor={`${parameter.id}`}>{parameter.label}</Form.Label>

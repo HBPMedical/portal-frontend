@@ -1,5 +1,5 @@
 import { useReactiveVar } from '@apollo/client';
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { Card, Tab, Tabs } from 'react-bootstrap';
 import { useHistory } from 'react-router-dom';
 import styled from 'styled-components';
@@ -14,11 +14,12 @@ import {
   namedOperations,
   useCreateExperimentMutation
 } from '../API/GraphQL/queries.generated';
-import { Variable, Algorithm } from '../API/GraphQL/types.generated';
+import { Algorithm } from '../API/GraphQL/types.generated';
 import { Alert, IAlert } from '../UI/Alert';
 import DropdownExperimentList from '../UI/Experiment/DropDownList/DropdownExperimentList';
 import LargeDatasetSelect from '../UI/LargeDatasetSelect';
 import Model from '../UI/Model';
+import { Dict } from '../utils';
 import AlgorithmParameters from './AlgorithmParameters';
 import AvailableAlgorithms from './AvailableAlgorithms';
 import ExperimentCreateHeader from './Header';
@@ -32,6 +33,7 @@ const Wrapper = styled.div`
 export const ExperimentCreateContainer = (): JSX.Element => {
   const [alert, setAlert] = useState<IAlert | undefined>(undefined);
   const [algorithm, setAlgorithm] = useState<Algorithm | undefined>(undefined);
+  const [params, setParams] = useState<Dict>({});
   const selectedExperiment = useReactiveVar(selectedExperimentVar);
   const domain = useReactiveVar(selectedDomainVar);
   const experiment = useReactiveVar(draftExperimentVar);
@@ -55,16 +57,27 @@ export const ExperimentCreateContainer = (): JSX.Element => {
     }
   });
 
-  const handleSelectAlgorithm = (algo: Algorithm): void => {
-    setAlgorithm(algo);
-  };
-
-  const lookup = (id: string): Variable | undefined => {
-    return domain?.variables.find(v => v.id === id);
-  };
-
   const handleGoBackToReview = (): void => {
     history.push(`/analysis`);
+  };
+
+  useEffect(() => {
+    setParams(
+      algorithm?.parameters?.reduce(
+        (prev, param) => ({
+          ...prev,
+          [param.id]: param.defaultValue
+        }),
+        {}
+      ) ?? {}
+    );
+  }, [algorithm]);
+
+  const handleParamChanged = (key: string, value?: string) => {
+    setParams(prevState => ({
+      ...prevState,
+      [key]: value
+    }));
   };
 
   const handleRunExperiment = (): void => {
@@ -85,7 +98,16 @@ export const ExperimentCreateContainer = (): JSX.Element => {
           filter: experiment.filter,
           interactions: experiment.formula?.interactions,
           transformations: experiment.formula?.transformations,
-          algorithm: { ...experiment.algorithm, type: algorithm.type }
+          algorithm: {
+            ...experiment.algorithm,
+            type: algorithm.type,
+            parameters: Object.entries(params)
+              .filter(([k, v]) => !!v)
+              .map(([k, v]) => ({
+                id: k,
+                value: v as string
+              }))
+          }
         }
       }
     });
@@ -111,6 +133,7 @@ export const ExperimentCreateContainer = (): JSX.Element => {
               <section>
                 <DropdownExperimentList
                   hasDetailedView={false}
+                  handleExperimentChanged={() => setAlgorithm(undefined)}
                   label={
                     selectedExperiment
                       ? `from ${selectedExperiment.name}`
@@ -163,7 +186,7 @@ export const ExperimentCreateContainer = (): JSX.Element => {
                       experiment={experiment}
                       algorithm={algorithm}
                       variables={variables}
-                      handleParameters={params => console.log(params)}
+                      handleParameterChange={handleParamChanged}
                     />
                   </Tab>
                   <Tab eventKey={'2'} title="About running experiments">
@@ -181,6 +204,7 @@ export const ExperimentCreateContainer = (): JSX.Element => {
               <AvailableAlgorithms
                 experiment={experiment}
                 listVariables={variables}
+                selectedAlgorithm={algorithm}
                 direction="vertical"
                 handleSelect={algo => {
                   setAlgorithm(algo);
