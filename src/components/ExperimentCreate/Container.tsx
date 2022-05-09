@@ -99,8 +99,7 @@ export const ExperimentCreateContainer = (): JSX.Element => {
           interactions: experiment.formula?.interactions,
           transformations: experiment.formula?.transformations,
           algorithm: {
-            ...experiment.algorithm,
-            id: experiment.name,
+            id: algorithm.id,
             type: algorithm.type,
             parameters: Object.entries(params)
               .filter(([k, v]) => !!v)
