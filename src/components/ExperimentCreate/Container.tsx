@@ -66,7 +66,7 @@ export const ExperimentCreateContainer = (): JSX.Element => {
       algorithm?.parameters?.reduce(
         (prev, param) => ({
           ...prev,
-          [param.id]: param.defaultValue
+          [param.name]: param.defaultValue
         }),
         {}
       ) ?? {}
@@ -100,6 +100,7 @@ export const ExperimentCreateContainer = (): JSX.Element => {
           transformations: experiment.formula?.transformations,
           algorithm: {
             ...experiment.algorithm,
+            id: experiment.name,
             type: algorithm.type,
             parameters: Object.entries(params)
               .filter(([k, v]) => !!v)
@@ -210,7 +211,7 @@ export const ExperimentCreateContainer = (): JSX.Element => {
                   setAlgorithm(algo);
                   localMutations.updateDraftExperiment({
                     algorithm: {
-                      id: algo.id,
+                      name: algo.id,
                       parameters: []
                     }
                   });

@@ -69,12 +69,13 @@ const checkValidity = (
   validator: VariableParameter | null | undefined,
   vars: Variable[]
 ): boolean => {
-  if (!validator || !validator.isRequired) return true;
-  if (vars.length === 0) return false;
+  if (!validator) return true;
+  if (vars.length === 0) return !validator.isRequired;
 
   const filtered = vars.filter(
     (v, i) =>
-      validator.allowedTypes?.includes(v.type ?? '') &&
+      (!validator.allowedTypes ||
+        validator.allowedTypes?.includes(v.type ?? '')) &&
       (validator.hasMultiple || i === 0)
   );
 
@@ -148,7 +149,7 @@ export const AvailableAlgorithms = ({
                     )}
                     {algo.coVariable && (
                       <p>
-                        <strong>Covariable (independant)</strong>:{' '}
+                        <strong>Covariate (independant)</strong>:{' '}
                         {algo.coVariable.hint ?? 'N/A'}
                       </p>
                     )}

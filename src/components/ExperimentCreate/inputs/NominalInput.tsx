@@ -49,7 +49,7 @@ const NominalInput = ({
   const [linkedVar, setLinkedVar] = useState<Variable | undefined>(undefined);
   const [options, setOptions] = useState<OptionValue[]>([]);
 
-  const title = `${parameter.label ?? parameter.id} ${
+  const title = `${parameter.label ?? parameter.name} ${
     isLinked ? `(${linkedVar?.label})` : ''
   }`;
   const helper = [parameter.hint];
@@ -60,8 +60,8 @@ const NominalInput = ({
     const opts: OptionValue[] =
       (parameter.linkedTo
         ? linkedVar?.enumerations?.map(e => ({
-            id: e.id,
-            label: e.label ?? e.id
+            value: e.value,
+            label: e.label ?? e.value
           }))
         : parameter.allowedValues) ?? [];
 
@@ -79,14 +79,14 @@ const NominalInput = ({
         <Form.Control
           as="select"
           custom
-          onChange={e => handleValueChanged?.(parameter.id, e.target.value)}
+          onChange={e => handleValueChanged?.(parameter.name, e.target.value)}
           defaultValue={parameter.defaultValue ?? undefined}
           multiple={parameter.hasMultiple ?? undefined}
         >
           <option value="">Select an option</option>
           {options.map(opt => {
             return (
-              <option key={opt.id} value={opt.id}>
+              <option key={opt.value} value={opt.value}>
                 {opt.label}
               </option>
             );
@@ -97,11 +97,11 @@ const NominalInput = ({
         <Select
           onChange={values =>
             handleValueChanged?.(
-              parameter.id,
+              parameter.name,
               values?.map(v => v.value).toString() ?? ''
             )
           }
-          options={options.map(opt => ({ value: opt.id, label: opt.label }))}
+          options={options.map(opt => ({ value: opt.value, label: opt.label }))}
           isMulti={true}
         />
       )}

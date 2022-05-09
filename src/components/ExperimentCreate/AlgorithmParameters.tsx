@@ -60,11 +60,12 @@ const AlgorithmParameters = ({
           <Form validated={true}>
             {algorithm.parameters?.map(param => {
               const type = ((param as unknown) as Dict).__typename;
+              const id = `${algorithm.id}-${param.name}`;
 
               if (type === 'StringParameter' || type === 'NumberParameter')
                 return (
                   <SimpleInput
-                    key={param.id}
+                    key={id}
                     parameter={
                       type === 'StringParameter'
                         ? (param as StringParameter)
@@ -77,7 +78,7 @@ const AlgorithmParameters = ({
               if (type === 'NominalParameter')
                 return (
                   <NominalInput
-                    key={param.id}
+                    key={id}
                     parameter={param as NominalParameter}
                     experiment={experiment}
                     variables={variables}

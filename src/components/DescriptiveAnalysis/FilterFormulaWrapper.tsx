@@ -67,7 +67,7 @@ const Options = ({ experiment, domain }: IOptions): JSX.Element => {
 
       if (originalVar && originalVar.enumerations) {
         output.values = originalVar.enumerations.map(c => ({
-          [c.id]: c.label || c.id
+          [c.value]: c.label || c.value
         }));
         output.input = 'select';
         output.operators = ['equal', 'not_equal', 'in', 'not_in'];

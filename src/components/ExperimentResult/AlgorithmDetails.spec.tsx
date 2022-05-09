@@ -10,6 +10,7 @@ const algo = {
   label: 'Dummy algo',
   description: 'test',
   __typename: 'Algorithm',
+  hasFormula: false,
   variable: {
     __typename: 'VariableParameter',
     hint: 'test',
@@ -27,7 +28,7 @@ const algo = {
   parameters: [
     {
       __typename: 'StringParameter',
-      id: 'id1',
+      name: 'id1',
       label: 'Variable 1',
       hint: 'test',
       isRequired: false,
@@ -36,7 +37,7 @@ const algo = {
     },
     {
       __typename: 'StringParameter',
-      id: 'id2',
+      name: 'id2',
       label: 'Variable 2',
       hint: 'test',
       isRequired: false,
@@ -61,28 +62,28 @@ const mocks = [
 ];
 
 const result = {
-  id: algo.id,
+  name: algo.id,
   parameters: [
     {
-      id: 'id1',
+      name: 'id1',
       value: 'val1'
     },
     {
-      id: 'id2',
+      name: 'id2',
       value: 'val2'
     }
   ]
 };
 
 const resultUnknownAlgo = {
-  id: 'unknown-id',
+  name: 'unknown-id',
   parameters: [
     {
-      id: 'id1',
+      name: 'id1',
       value: 'val1'
     },
     {
-      id: 'id2',
+      name: 'id2',
       value: 'val2'
     }
   ]
@@ -151,14 +152,16 @@ describe("Experiment's algorithm display details", () => {
         await new Promise(resolve => setTimeout(resolve, 100));
       });
 
-      expect(queryByText(new RegExp(resultUnknownAlgo.id, 'i'))).not.toBeNull();
-
       expect(
-        queryByText(new RegExp(resultUnknownAlgo.parameters[0].id, 'i'))
+        queryByText(new RegExp(resultUnknownAlgo.name, 'i'))
       ).not.toBeNull();
 
       expect(
-        queryByText(new RegExp(resultUnknownAlgo.parameters[0].id, 'i'))
+        queryByText(new RegExp(resultUnknownAlgo.parameters[0].name, 'i'))
+      ).not.toBeNull();
+
+      expect(
+        queryByText(new RegExp(resultUnknownAlgo.parameters[0].name, 'i'))
       ).not.toBeNull();
     });
   });

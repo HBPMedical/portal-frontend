@@ -30,7 +30,7 @@ export const QUERY_LIST_ALGORITHMS = gql`
       hasFormula
       parameters {
         __typename
-        id
+        name
         label
         hint
         isRequired
@@ -43,7 +43,7 @@ export const QUERY_LIST_ALGORITHMS = gql`
         }
         ... on NominalParameter {
           allowedValues {
-            id
+            value
             label
           }
           linkedTo
@@ -162,9 +162,9 @@ export const QUERY_EXPERIMENT = gql`
         }
       }
       algorithm {
-        id
+        name
         parameters {
-          id
+          name
           value
         }
       }
@@ -211,7 +211,7 @@ export const QUERY_DOMAINS = gql`
         description
         datasets
         enumerations {
-          id
+          value
           label
         }
       }

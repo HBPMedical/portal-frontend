@@ -11,7 +11,7 @@ import {
 export const initialExperiment: Experiment = {
   id: '',
   algorithm: {
-    id: '',
+    name: '',
     parameters: []
   },
   datasets: [],

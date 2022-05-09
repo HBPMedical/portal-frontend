@@ -38,7 +38,7 @@ export type AlgorithmParamInput = {
 
 export type AlgorithmResult = {
   __typename?: 'AlgorithmResult';
-  id: Scalars['String'];
+  name: Scalars['String'];
   parameters?: Maybe<Array<ParamValue>>;
 };
 
@@ -79,15 +79,15 @@ export type BaseParameter = {
   hasMultiple?: Maybe<Scalars['Boolean']>;
   /** Small hint (description) for the end user */
   hint?: Maybe<Scalars['String']>;
-  id: Scalars['String'];
   isRequired?: Maybe<Scalars['Boolean']>;
   label?: Maybe<Scalars['String']>;
+  name: Scalars['String'];
 };
 
 export type Category = {
   __typename?: 'Category';
-  id: Scalars['String'];
   label?: Maybe<Scalars['String']>;
+  value: Scalars['String'];
 };
 
 export type ChartAxis = {
@@ -320,11 +320,11 @@ export type NominalParameter = BaseParameter & {
   hasMultiple?: Maybe<Scalars['Boolean']>;
   /** Small hint (description) for the end user */
   hint?: Maybe<Scalars['String']>;
-  id: Scalars['String'];
   isRequired?: Maybe<Scalars['Boolean']>;
   label?: Maybe<Scalars['String']>;
   /** Id of the parameter */
   linkedTo?: Maybe<AllowedLink>;
+  name: Scalars['String'];
 };
 
 export type NumberParameter = BaseParameter & {
@@ -333,23 +333,23 @@ export type NumberParameter = BaseParameter & {
   hasMultiple?: Maybe<Scalars['Boolean']>;
   /** Small hint (description) for the end user */
   hint?: Maybe<Scalars['String']>;
-  id: Scalars['String'];
   isReal?: Maybe<Scalars['Boolean']>;
   isRequired?: Maybe<Scalars['Boolean']>;
   label?: Maybe<Scalars['String']>;
   max?: Maybe<Scalars['Float']>;
   min?: Maybe<Scalars['Float']>;
+  name: Scalars['String'];
 };
 
 export type OptionValue = {
   __typename?: 'OptionValue';
-  id: Scalars['String'];
   label: Scalars['String'];
+  value: Scalars['String'];
 };
 
 export type ParamValue = {
   __typename?: 'ParamValue';
-  id: Scalars['String'];
+  name: Scalars['String'];
   value: Scalars['String'];
 };
 
@@ -421,9 +421,9 @@ export type StringParameter = BaseParameter & {
   hasMultiple?: Maybe<Scalars['Boolean']>;
   /** Small hint (description) for the end user */
   hint?: Maybe<Scalars['String']>;
-  id: Scalars['String'];
   isRequired?: Maybe<Scalars['Boolean']>;
   label?: Maybe<Scalars['String']>;
+  name: Scalars['String'];
 };
 
 export type TableResult = {

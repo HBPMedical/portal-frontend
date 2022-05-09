@@ -34,18 +34,20 @@ const SimpleInput = ({ parameter, handleValueChanged }: Props) => {
     options.type = 'number';
     if (parameter.min || parameter.max)
       helper.push(
-        `Possible values: [${parameter.min ?? ''}, ${parameter.max ?? ''}]`
+        `${parameter.min ? `min value: ${parameter.min} ` : ''}${
+          !parameter.max ? `max value: ${parameter.max}` : ''
+        }`
       );
   }
 
   if (parameter.isRequired) helper.push('Required');
 
   return (
-    <Form.Group key={parameter.id}>
-      <Form.Label htmlFor={`${parameter.id}`}>{parameter.label}</Form.Label>
+    <Form.Group>
+      <Form.Label htmlFor={`${parameter.name}`}>{parameter.label}</Form.Label>
       <Form.Control
         {...options}
-        onChange={e => handleValueChanged?.(parameter.id, e.target.value)}
+        onChange={e => handleValueChanged?.(parameter.name, e.target.value)}
       ></Form.Control>
       {helper.map((text, i) => (
         <Form.Text key={i} className="text-muted">

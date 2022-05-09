@@ -20,6 +20,7 @@ const Param = styled.p`
     text-align: left;
     white-space: normal;
     margin-left: 5px;
+    word-break: break-word;
   }
 `;
 
@@ -29,14 +30,14 @@ const AlgorithmDetails = ({
   result?: AlgorithmResult;
 }): JSX.Element | null => {
   const { data, loading } = useListAlgorithmsQuery();
-  const algo = data?.algorithms.find(a => a.id === result?.id);
+  const algo = data?.algorithms.find(a => a.id === result?.name);
 
   const params =
     result?.parameters?.map(p => {
-      const label = algo?.parameters?.find(p2 => p2.id === p.id)?.label;
+      const label = algo?.parameters?.find(p2 => p2.name === p.name)?.label;
       return {
-        id: p.id,
-        label: label ?? p.id,
+        id: p.name,
+        label: label ?? p.name,
         value: p.value
       };
     }) ?? [];
@@ -48,7 +49,7 @@ const AlgorithmDetails = ({
           {loading && <Loader />}
           {!loading && result && (
             <>
-              <p>{algo?.label || result.id}</p>
+              <p>{algo?.label || result.name}</p>
               {params.map(param => (
                 <Param key={param.id}>
                   <Badge variant="primary">
