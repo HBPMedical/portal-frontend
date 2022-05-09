@@ -35,7 +35,7 @@ const SimpleInput = ({ parameter, handleValueChanged }: Props) => {
     if (parameter.min || parameter.max)
       helper.push(
         `${parameter.min ? `min value: ${parameter.min} ` : ''}${
-          !parameter.max ? `max value: ${parameter.max}` : ''
+          parameter.max ? `max value: ${parameter.max}` : ''
         }`
       );
   }
