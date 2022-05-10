@@ -279,27 +279,27 @@ export default ({
             }}
             id="uncontrolled-histogram-tabs"
           >
-            {[0, 1, 2, 3].map((k, i) => {
-              return i === 0 ? (
-                <Tab
-                  eventKey={`${i}`}
-                  title={
-                    (loading && <Loading />) ||
-                    `${selectedNode && selectedNode.data.label}`
-                  }
-                  key={i}
-                >
-                  {data &&
-                    data.createExperiment &&
-                    data.createExperiment.results &&
-                    data.createExperiment.results.length > 0 && (
-                      <ResultDispatcher
-                        result={data.createExperiment.results[0] as ResultUnion}
-                        constraint={false}
-                      />
-                    )}
-                </Tab>
-              ) : (
+            <Tab
+              eventKey="0"
+              title={
+                (loading && <Loading />) ||
+                `${selectedNode && selectedNode.data.label}`
+              }
+              key="0"
+            >
+              {data &&
+                data.createExperiment &&
+                data.createExperiment.results &&
+                data.createExperiment.results.length > 0 && (
+                  <ResultDispatcher
+                    result={data.createExperiment.results[0] as ResultUnion}
+                    constraint={false}
+                  />
+                )}
+            </Tab>
+            {independantsVariables &&
+              independantsVariables.length > 0 &&
+              [1, 2, 3].map(i => (
                 <Tab
                   eventKey={`${i}`}
                   title={
@@ -346,8 +346,7 @@ export default ({
                       />
                     )}
                 </Tab>
-              );
-            })}
+              ))}
           </Tabs>
         )}
       </Histogram>

@@ -1,14 +1,10 @@
+import { Base64 } from 'js-base64';
 import React, { useEffect, useRef, useState } from 'react';
 import { Alert } from 'react-bootstrap';
 import styled from 'styled-components';
-import { Base64 } from 'js-base64';
-
-import { APICore } from '../API/';
 import { GalaxyConfig } from '../API/Core';
-
-interface Props {
-  apiCore: APICore;
-}
+import headers from '../API/RequestHeaders';
+import { backendURL } from '../API/RequestURLS';
 
 const IFrameContainer = styled.div`
   width: 100%;
@@ -27,15 +23,27 @@ const AlertBox = styled(Alert)`
   margin: 16px;
 `;
 
-export default React.memo(({ apiCore }: Props) => {
+export default React.memo(() => {
   const divRef = useRef<HTMLIFrameElement>(null);
   const [error, setError] = useState<string | null>(null);
   const [config, setConfig] = useState<GalaxyConfig>();
 
   useEffect(() => {
     const fetchConfig = async (): Promise<void> => {
-      await apiCore.fetchGalaxyConfiguration();
-      const config = apiCore.state.galaxy;
+      let config = { error: { message: 'Unknow error' } };
+      try {
+        const response = await fetch(`${backendURL}/galaxy`, {
+          ...headers.options
+        });
+
+        if (response.ok) {
+          const data = await response.json();
+          config = await JSON.parse(data);
+        }
+      } catch (e) {
+        config = { error: { message: `Error: ${e}` } };
+      }
+
       if (config) {
         if (config.error) {
           setError(config.error.message || 'Access denied');
@@ -43,11 +51,11 @@ export default React.memo(({ apiCore }: Props) => {
           return;
         }
 
-        setConfig(apiCore.state.galaxy);
+        setConfig(config);
       }
     };
     fetchConfig();
-  }, [apiCore]);
+  });
 
   useEffect(() => {
     if (config) {

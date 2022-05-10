@@ -11,7 +11,53 @@ export const QUERY_CONFIGURATION = gql`
       skipTos
       contactLink
       version
+      ontologyUrl
     }
+  }
+`;
+
+export const QUERY_LIST_ALGORITHMS = gql`
+  query listAlgorithms {
+    algorithms {
+      id
+      label
+      description
+      variable {
+        ...VarBody
+      }
+      coVariable {
+        ...VarBody
+      }
+      hasFormula
+      parameters {
+        __typename
+        name
+        label
+        hint
+        isRequired
+        hasMultiple
+        defaultValue
+        ... on NumberParameter {
+          min
+          max
+          isReal
+        }
+        ... on NominalParameter {
+          allowedValues {
+            value
+            label
+          }
+          linkedTo
+        }
+      }
+    }
+  }
+
+  fragment VarBody on VariableParameter {
+    hint
+    isRequired
+    hasMultiple
+    allowedTypes
   }
 `;
 
@@ -117,13 +163,9 @@ export const QUERY_EXPERIMENT = gql`
         }
       }
       algorithm {
-        id
-        description
-        label
-        type
+        name
         parameters {
-          id
-          label
+          name
           value
         }
       }
@@ -170,7 +212,7 @@ export const QUERY_DOMAINS = gql`
         description
         datasets
         enumerations {
-          id
+          value
           label
         }
       }

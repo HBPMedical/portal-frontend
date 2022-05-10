@@ -7,7 +7,7 @@ export const mockExperiment: Experiment = {
   id: 'dummy-id',
   name: 'My Dummy Experiment',
   algorithm: {
-    id: 'pca'
+    name: 'pca'
   },
   datasets: getMockDomain().datasets.map(d => d.id),
   variables: [mockDomain.variables[0].id],
