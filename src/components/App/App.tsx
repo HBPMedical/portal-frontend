@@ -190,9 +190,6 @@ const App = ({ appConfig, showTutorial }: Props) => {
     }
   }, [logoutHandle, user, userState]);
 
-  // TODO : Find out why this component is reloaded multiple times
-  //console.log('app re-rendered'); Sus: props refreshing => apimining and apicore
-
   return (
     <>
       <GlobalStyles />
