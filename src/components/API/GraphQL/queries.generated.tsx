@@ -7,7 +7,14 @@ const defaultOptions =  {}
 export type GetConfigurationQueryVariables = Types.Exact<{ [key: string]: never; }>;
 
 
-export type GetConfigurationQuery = { __typename?: 'Query', configuration: { __typename?: 'Configuration', connectorId: string, hasGalaxy?: Types.Maybe<boolean>, enableSSO?: Types.Maybe<boolean>, skipAuth?: Types.Maybe<boolean>, skipTos?: Types.Maybe<boolean>, contactLink?: Types.Maybe<string>, version: string } };
+export type GetConfigurationQuery = { __typename?: 'Query', configuration: { __typename?: 'Configuration', connectorId: string, hasGalaxy?: Types.Maybe<boolean>, enableSSO?: Types.Maybe<boolean>, skipAuth?: Types.Maybe<boolean>, skipTos?: Types.Maybe<boolean>, contactLink?: Types.Maybe<string>, version: string, ontologyUrl?: Types.Maybe<string> } };
+
+export type ListAlgorithmsQueryVariables = Types.Exact<{ [key: string]: never; }>;
+
+
+export type ListAlgorithmsQuery = { __typename?: 'Query', algorithms: Array<{ __typename?: 'Algorithm', id: string, label?: Types.Maybe<string>, description?: Types.Maybe<string>, hasFormula?: Types.Maybe<boolean>, variable: { __typename?: 'VariableParameter', hint?: Types.Maybe<string>, isRequired?: Types.Maybe<boolean>, hasMultiple?: Types.Maybe<boolean>, allowedTypes?: Types.Maybe<Array<string>> }, coVariable?: Types.Maybe<{ __typename?: 'VariableParameter', hint?: Types.Maybe<string>, isRequired?: Types.Maybe<boolean>, hasMultiple?: Types.Maybe<boolean>, allowedTypes?: Types.Maybe<Array<string>> }>, parameters?: Types.Maybe<Array<{ __typename: 'NominalParameter', linkedTo?: Types.Maybe<Types.AllowedLink>, name: string, label?: Types.Maybe<string>, hint?: Types.Maybe<string>, isRequired?: Types.Maybe<boolean>, hasMultiple?: Types.Maybe<boolean>, defaultValue?: Types.Maybe<string>, allowedValues?: Types.Maybe<Array<{ __typename?: 'OptionValue', value: string, label: string }>> } | { __typename: 'NumberParameter', min?: Types.Maybe<number>, max?: Types.Maybe<number>, isReal?: Types.Maybe<boolean>, name: string, label?: Types.Maybe<string>, hint?: Types.Maybe<string>, isRequired?: Types.Maybe<boolean>, hasMultiple?: Types.Maybe<boolean>, defaultValue?: Types.Maybe<string> } | { __typename: 'StringParameter', name: string, label?: Types.Maybe<string>, hint?: Types.Maybe<string>, isRequired?: Types.Maybe<boolean>, hasMultiple?: Types.Maybe<boolean>, defaultValue?: Types.Maybe<string> }>> }> };
+
+export type VarBodyFragment = { __typename?: 'VariableParameter', hint?: Types.Maybe<string>, isRequired?: Types.Maybe<boolean>, hasMultiple?: Types.Maybe<boolean>, allowedTypes?: Types.Maybe<Array<string>> };
 
 export type GetMatomoQueryVariables = Types.Exact<{ [key: string]: never; }>;
 
@@ -44,14 +51,14 @@ export type GetExperimentQueryVariables = Types.Exact<{
 }>;
 
 
-export type GetExperimentQuery = { __typename?: 'Query', experiment: { __typename?: 'Experiment', name: string, id: string, domain: string, datasets: Array<string>, filter?: Types.Maybe<string>, createdAt?: Types.Maybe<number>, finishedAt?: Types.Maybe<number>, viewed?: Types.Maybe<boolean>, variables: Array<string>, coVariables?: Types.Maybe<Array<string>>, filterVariables?: Types.Maybe<Array<string>>, shared: boolean, status?: Types.Maybe<string>, author?: Types.Maybe<{ __typename?: 'Author', username?: Types.Maybe<string>, fullname?: Types.Maybe<string> }>, formula?: Types.Maybe<{ __typename?: 'Formula', interactions?: Types.Maybe<Array<Array<string>>>, transformations?: Types.Maybe<Array<{ __typename?: 'Transformation', id: string, operation: string }>> }>, algorithm: { __typename?: 'Algorithm', id: string, description?: Types.Maybe<string>, label?: Types.Maybe<string>, type?: Types.Maybe<string>, parameters?: Types.Maybe<Array<{ __typename?: 'AlgorithmParameter', id: string, label?: Types.Maybe<string>, value?: Types.Maybe<string> }>> }, results?: Types.Maybe<Array<{ __typename?: 'BarChartResult', name: string, barValues: Array<number>, hasConnectedBars?: Types.Maybe<boolean>, xAxis?: Types.Maybe<{ __typename?: 'ChartAxis', label?: Types.Maybe<string> }>, yAxis?: Types.Maybe<{ __typename?: 'ChartAxis', label?: Types.Maybe<string> }> } | { __typename?: 'GroupsResult', groups: Array<{ __typename?: 'GroupResult', name: string, description?: Types.Maybe<string>, results: Array<{ __typename?: 'BarChartResult', name: string, barValues: Array<number>, hasConnectedBars?: Types.Maybe<boolean>, xAxis?: Types.Maybe<{ __typename?: 'ChartAxis', label?: Types.Maybe<string> }>, yAxis?: Types.Maybe<{ __typename?: 'ChartAxis', label?: Types.Maybe<string> }> } | { __typename?: 'GroupsResult' } | { __typename?: 'HeatMapResult', name: string, matrix: Array<Array<number>>, heatMapStyle?: Types.Maybe<Types.HeatMapStyle>, xAxis?: Types.Maybe<{ __typename?: 'ChartAxis', label?: Types.Maybe<string>, categories?: Types.Maybe<Array<string>> }>, yAxis?: Types.Maybe<{ __typename?: 'ChartAxis', label?: Types.Maybe<string>, categories?: Types.Maybe<Array<string>> }> } | { __typename?: 'LineChartResult', name: string, xAxis?: Types.Maybe<{ __typename?: 'ChartAxis', label?: Types.Maybe<string> }>, yAxis?: Types.Maybe<{ __typename?: 'ChartAxis', label?: Types.Maybe<string> }>, lines: Array<{ __typename?: 'LineResult', label: string, x: Array<number>, y: Array<number>, type?: Types.Maybe<Types.LineType>, extraLineInfos?: Types.Maybe<Array<{ __typename?: 'ExtraLineInfo', label: string, values: Array<string> }>> }> } | { __typename?: 'MeanChartResult', name: string, xAxis?: Types.Maybe<{ __typename?: 'ChartAxis', label?: Types.Maybe<string>, categories?: Types.Maybe<Array<string>> }>, yAxis?: Types.Maybe<{ __typename?: 'ChartAxis', label?: Types.Maybe<string>, categories?: Types.Maybe<Array<string>> }>, pointCIs: Array<{ __typename?: 'PointCI', min?: Types.Maybe<number>, mean: number, max?: Types.Maybe<number> }> } | { __typename?: 'RawResult', rawdata?: Types.Maybe<any> } | { __typename?: 'TableResult', name: string, data: Array<Array<string>>, tableStyle?: Types.Maybe<Types.TableStyle>, headers: Array<{ __typename?: 'Header', name: string, type: string }> }> }> } | { __typename?: 'HeatMapResult', name: string, matrix: Array<Array<number>>, heatMapStyle?: Types.Maybe<Types.HeatMapStyle>, xAxis?: Types.Maybe<{ __typename?: 'ChartAxis', label?: Types.Maybe<string>, categories?: Types.Maybe<Array<string>> }>, yAxis?: Types.Maybe<{ __typename?: 'ChartAxis', label?: Types.Maybe<string>, categories?: Types.Maybe<Array<string>> }> } | { __typename?: 'LineChartResult', name: string, xAxis?: Types.Maybe<{ __typename?: 'ChartAxis', label?: Types.Maybe<string> }>, yAxis?: Types.Maybe<{ __typename?: 'ChartAxis', label?: Types.Maybe<string> }>, lines: Array<{ __typename?: 'LineResult', label: string, x: Array<number>, y: Array<number>, type?: Types.Maybe<Types.LineType>, extraLineInfos?: Types.Maybe<Array<{ __typename?: 'ExtraLineInfo', label: string, values: Array<string> }>> }> } | { __typename?: 'MeanChartResult', name: string, xAxis?: Types.Maybe<{ __typename?: 'ChartAxis', label?: Types.Maybe<string>, categories?: Types.Maybe<Array<string>> }>, yAxis?: Types.Maybe<{ __typename?: 'ChartAxis', label?: Types.Maybe<string>, categories?: Types.Maybe<Array<string>> }>, pointCIs: Array<{ __typename?: 'PointCI', min?: Types.Maybe<number>, mean: number, max?: Types.Maybe<number> }> } | { __typename?: 'RawResult', rawdata?: Types.Maybe<any> } | { __typename?: 'TableResult', name: string, data: Array<Array<string>>, tableStyle?: Types.Maybe<Types.TableStyle>, headers: Array<{ __typename?: 'Header', name: string, type: string }> }>> } };
+export type GetExperimentQuery = { __typename?: 'Query', experiment: { __typename?: 'Experiment', name: string, id: string, domain: string, datasets: Array<string>, filter?: Types.Maybe<string>, createdAt?: Types.Maybe<number>, finishedAt?: Types.Maybe<number>, viewed?: Types.Maybe<boolean>, variables: Array<string>, coVariables?: Types.Maybe<Array<string>>, filterVariables?: Types.Maybe<Array<string>>, shared: boolean, status?: Types.Maybe<string>, author?: Types.Maybe<{ __typename?: 'Author', username?: Types.Maybe<string>, fullname?: Types.Maybe<string> }>, formula?: Types.Maybe<{ __typename?: 'Formula', interactions?: Types.Maybe<Array<Array<string>>>, transformations?: Types.Maybe<Array<{ __typename?: 'Transformation', id: string, operation: string }>> }>, algorithm: { __typename?: 'AlgorithmResult', name: string, parameters?: Types.Maybe<Array<{ __typename?: 'ParamValue', name: string, value: string }>> }, results?: Types.Maybe<Array<{ __typename?: 'BarChartResult', name: string, barValues: Array<number>, hasConnectedBars?: Types.Maybe<boolean>, xAxis?: Types.Maybe<{ __typename?: 'ChartAxis', label?: Types.Maybe<string> }>, yAxis?: Types.Maybe<{ __typename?: 'ChartAxis', label?: Types.Maybe<string> }> } | { __typename?: 'GroupsResult', groups: Array<{ __typename?: 'GroupResult', name: string, description?: Types.Maybe<string>, results: Array<{ __typename?: 'BarChartResult', name: string, barValues: Array<number>, hasConnectedBars?: Types.Maybe<boolean>, xAxis?: Types.Maybe<{ __typename?: 'ChartAxis', label?: Types.Maybe<string> }>, yAxis?: Types.Maybe<{ __typename?: 'ChartAxis', label?: Types.Maybe<string> }> } | { __typename?: 'GroupsResult' } | { __typename?: 'HeatMapResult', name: string, matrix: Array<Array<number>>, heatMapStyle?: Types.Maybe<Types.HeatMapStyle>, xAxis?: Types.Maybe<{ __typename?: 'ChartAxis', label?: Types.Maybe<string>, categories?: Types.Maybe<Array<string>> }>, yAxis?: Types.Maybe<{ __typename?: 'ChartAxis', label?: Types.Maybe<string>, categories?: Types.Maybe<Array<string>> }> } | { __typename?: 'LineChartResult', name: string, xAxis?: Types.Maybe<{ __typename?: 'ChartAxis', label?: Types.Maybe<string> }>, yAxis?: Types.Maybe<{ __typename?: 'ChartAxis', label?: Types.Maybe<string> }>, lines: Array<{ __typename?: 'LineResult', label: string, x: Array<number>, y: Array<number>, type?: Types.Maybe<Types.LineType>, extraLineInfos?: Types.Maybe<Array<{ __typename?: 'ExtraLineInfo', label: string, values: Array<string> }>> }> } | { __typename?: 'MeanChartResult', name: string, xAxis?: Types.Maybe<{ __typename?: 'ChartAxis', label?: Types.Maybe<string>, categories?: Types.Maybe<Array<string>> }>, yAxis?: Types.Maybe<{ __typename?: 'ChartAxis', label?: Types.Maybe<string>, categories?: Types.Maybe<Array<string>> }>, pointCIs: Array<{ __typename?: 'PointCI', min?: Types.Maybe<number>, mean: number, max?: Types.Maybe<number> }> } | { __typename?: 'RawResult', rawdata?: Types.Maybe<any> } | { __typename?: 'TableResult', name: string, data: Array<Array<string>>, tableStyle?: Types.Maybe<Types.TableStyle>, headers: Array<{ __typename?: 'Header', name: string, type: string }> }> }> } | { __typename?: 'HeatMapResult', name: string, matrix: Array<Array<number>>, heatMapStyle?: Types.Maybe<Types.HeatMapStyle>, xAxis?: Types.Maybe<{ __typename?: 'ChartAxis', label?: Types.Maybe<string>, categories?: Types.Maybe<Array<string>> }>, yAxis?: Types.Maybe<{ __typename?: 'ChartAxis', label?: Types.Maybe<string>, categories?: Types.Maybe<Array<string>> }> } | { __typename?: 'LineChartResult', name: string, xAxis?: Types.Maybe<{ __typename?: 'ChartAxis', label?: Types.Maybe<string> }>, yAxis?: Types.Maybe<{ __typename?: 'ChartAxis', label?: Types.Maybe<string> }>, lines: Array<{ __typename?: 'LineResult', label: string, x: Array<number>, y: Array<number>, type?: Types.Maybe<Types.LineType>, extraLineInfos?: Types.Maybe<Array<{ __typename?: 'ExtraLineInfo', label: string, values: Array<string> }>> }> } | { __typename?: 'MeanChartResult', name: string, xAxis?: Types.Maybe<{ __typename?: 'ChartAxis', label?: Types.Maybe<string>, categories?: Types.Maybe<Array<string>> }>, yAxis?: Types.Maybe<{ __typename?: 'ChartAxis', label?: Types.Maybe<string>, categories?: Types.Maybe<Array<string>> }>, pointCIs: Array<{ __typename?: 'PointCI', min?: Types.Maybe<number>, mean: number, max?: Types.Maybe<number> }> } | { __typename?: 'RawResult', rawdata?: Types.Maybe<any> } | { __typename?: 'TableResult', name: string, data: Array<Array<string>>, tableStyle?: Types.Maybe<Types.TableStyle>, headers: Array<{ __typename?: 'Header', name: string, type: string }> }>> } };
 
 export type CoreGroupInfoFragment = { __typename?: 'Group', id: string, label?: Types.Maybe<string>, description?: Types.Maybe<string>, groups?: Types.Maybe<Array<string>>, variables?: Types.Maybe<Array<string>>, datasets?: Types.Maybe<Array<string>> };
 
 export type ListDomainsQueryVariables = Types.Exact<{ [key: string]: never; }>;
 
 
-export type ListDomainsQuery = { __typename?: 'Query', domains: Array<{ __typename?: 'Domain', id: string, label?: Types.Maybe<string>, description?: Types.Maybe<string>, datasets: Array<{ __typename?: 'Dataset', id: string, label?: Types.Maybe<string>, isLongitudinal?: Types.Maybe<boolean> }>, variables: Array<{ __typename?: 'Variable', id: string, label?: Types.Maybe<string>, type?: Types.Maybe<string>, description?: Types.Maybe<string>, datasets?: Types.Maybe<Array<string>>, enumerations?: Types.Maybe<Array<{ __typename?: 'Category', id: string, label?: Types.Maybe<string> }>> }>, rootGroup: { __typename?: 'Group', id: string, label?: Types.Maybe<string>, description?: Types.Maybe<string>, groups?: Types.Maybe<Array<string>>, variables?: Types.Maybe<Array<string>>, datasets?: Types.Maybe<Array<string>> }, groups: Array<{ __typename?: 'Group', id: string, label?: Types.Maybe<string>, description?: Types.Maybe<string>, groups?: Types.Maybe<Array<string>>, variables?: Types.Maybe<Array<string>>, datasets?: Types.Maybe<Array<string>> }> }> };
+export type ListDomainsQuery = { __typename?: 'Query', domains: Array<{ __typename?: 'Domain', id: string, label?: Types.Maybe<string>, description?: Types.Maybe<string>, datasets: Array<{ __typename?: 'Dataset', id: string, label?: Types.Maybe<string>, isLongitudinal?: Types.Maybe<boolean> }>, variables: Array<{ __typename?: 'Variable', id: string, label?: Types.Maybe<string>, type?: Types.Maybe<string>, description?: Types.Maybe<string>, datasets?: Types.Maybe<Array<string>>, enumerations?: Types.Maybe<Array<{ __typename?: 'Category', value: string, label?: Types.Maybe<string> }>> }>, rootGroup: { __typename?: 'Group', id: string, label?: Types.Maybe<string>, description?: Types.Maybe<string>, groups?: Types.Maybe<Array<string>>, variables?: Types.Maybe<Array<string>>, datasets?: Types.Maybe<Array<string>> }, groups: Array<{ __typename?: 'Group', id: string, label?: Types.Maybe<string>, description?: Types.Maybe<string>, groups?: Types.Maybe<Array<string>>, variables?: Types.Maybe<Array<string>>, datasets?: Types.Maybe<Array<string>> }> }> };
 
 export type CreateExperimentMutationVariables = Types.Exact<{
   data: Types.ExperimentCreateInput;
@@ -96,6 +103,14 @@ export type DeleteExperimentMutationVariables = Types.Exact<{
 
 export type DeleteExperimentMutation = { __typename?: 'Mutation', removeExperiment: { __typename?: 'PartialExperiment', id?: Types.Maybe<string>, status?: Types.Maybe<string> } };
 
+export const VarBodyFragmentDoc = gql`
+    fragment VarBody on VariableParameter {
+  hint
+  isRequired
+  hasMultiple
+  allowedTypes
+}
+    `;
 export const CoreGroupInfoFragmentDoc = gql`
     fragment coreGroupInfo on Group {
   id
@@ -116,6 +131,7 @@ export const GetConfigurationDocument = gql`
     skipTos
     contactLink
     version
+    ontologyUrl
   }
 }
     `;
@@ -146,6 +162,70 @@ export function useGetConfigurationLazyQuery(baseOptions?: Apollo.LazyQueryHookO
 export type GetConfigurationQueryHookResult = ReturnType<typeof useGetConfigurationQuery>;
 export type GetConfigurationLazyQueryHookResult = ReturnType<typeof useGetConfigurationLazyQuery>;
 export type GetConfigurationQueryResult = Apollo.QueryResult<GetConfigurationQuery, GetConfigurationQueryVariables>;
+export const ListAlgorithmsDocument = gql`
+    query listAlgorithms {
+  algorithms {
+    id
+    label
+    description
+    variable {
+      ...VarBody
+    }
+    coVariable {
+      ...VarBody
+    }
+    hasFormula
+    parameters {
+      __typename
+      name
+      label
+      hint
+      isRequired
+      hasMultiple
+      defaultValue
+      ... on NumberParameter {
+        min
+        max
+        isReal
+      }
+      ... on NominalParameter {
+        allowedValues {
+          value
+          label
+        }
+        linkedTo
+      }
+    }
+  }
+}
+    ${VarBodyFragmentDoc}`;
+
+/**
+ * __useListAlgorithmsQuery__
+ *
+ * To run a query within a React component, call `useListAlgorithmsQuery` and pass it any options that fit your needs.
+ * When your component renders, `useListAlgorithmsQuery` returns an object from Apollo Client that contains loading, error, and data properties
+ * you can use to render your UI.
+ *
+ * @param baseOptions options that will be passed into the query, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options;
+ *
+ * @example
+ * const { data, loading, error } = useListAlgorithmsQuery({
+ *   variables: {
+ *   },
+ * });
+ */
+export function useListAlgorithmsQuery(baseOptions?: Apollo.QueryHookOptions<ListAlgorithmsQuery, ListAlgorithmsQueryVariables>) {
+        const options = {...defaultOptions, ...baseOptions}
+        return Apollo.useQuery<ListAlgorithmsQuery, ListAlgorithmsQueryVariables>(ListAlgorithmsDocument, options);
+      }
+export function useListAlgorithmsLazyQuery(baseOptions?: Apollo.LazyQueryHookOptions<ListAlgorithmsQuery, ListAlgorithmsQueryVariables>) {
+          const options = {...defaultOptions, ...baseOptions}
+          return Apollo.useLazyQuery<ListAlgorithmsQuery, ListAlgorithmsQueryVariables>(ListAlgorithmsDocument, options);
+        }
+export type ListAlgorithmsQueryHookResult = ReturnType<typeof useListAlgorithmsQuery>;
+export type ListAlgorithmsLazyQueryHookResult = ReturnType<typeof useListAlgorithmsLazyQuery>;
+export type ListAlgorithmsQueryResult = Apollo.QueryResult<ListAlgorithmsQuery, ListAlgorithmsQueryVariables>;
 export const GetMatomoDocument = gql`
     query getMatomo {
   configuration {
@@ -379,13 +459,9 @@ export const GetExperimentDocument = gql`
       }
     }
     algorithm {
-      id
-      description
-      label
-      type
+      name
       parameters {
-        id
-        label
+        name
         value
       }
     }
@@ -450,7 +526,7 @@ export const ListDomainsDocument = gql`
       description
       datasets
       enumerations {
-        id
+        value
         label
       }
     }
@@ -715,6 +791,7 @@ export type DeleteExperimentMutationOptions = Apollo.BaseMutationOptions<DeleteE
 export const namedOperations = {
   Query: {
     getConfiguration: 'getConfiguration',
+    listAlgorithms: 'listAlgorithms',
     getMatomo: 'getMatomo',
     getVariablesFromDomain: 'getVariablesFromDomain',
     activeUser: 'activeUser',
@@ -732,6 +809,7 @@ export const namedOperations = {
     deleteExperiment: 'deleteExperiment'
   },
   Fragment: {
+    VarBody: 'VarBody',
     coreGroupInfo: 'coreGroupInfo'
   }
 }

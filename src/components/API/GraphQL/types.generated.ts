@@ -15,38 +15,38 @@ export type Scalars = {
 
 export type Algorithm = {
   __typename?: 'Algorithm';
+  coVariable?: Maybe<VariableParameter>;
   description?: Maybe<Scalars['String']>;
+  hasFormula?: Maybe<Scalars['Boolean']>;
   id: Scalars['String'];
   label?: Maybe<Scalars['String']>;
-  parameters?: Maybe<Array<AlgorithmParameter>>;
+  parameters?: Maybe<Array<BaseParameter>>;
   type?: Maybe<Scalars['String']>;
+  variable: VariableParameter;
 };
 
 export type AlgorithmInput = {
   id: Scalars['String'];
   parameters?: Maybe<Array<AlgorithmParamInput>>;
-  type: Scalars['String'];
+  type?: Maybe<Scalars['String']>;
 };
 
 export type AlgorithmParamInput = {
   id: Scalars['String'];
-  type?: Maybe<ParamType>;
   value: Scalars['String'];
 };
 
-export type AlgorithmParameter = {
-  __typename?: 'AlgorithmParameter';
-  defaultValue?: Maybe<Scalars['String']>;
-  description?: Maybe<Scalars['String']>;
-  id: Scalars['String'];
-  isMultiple?: Maybe<Scalars['Boolean']>;
-  isRequired?: Maybe<Scalars['Boolean']>;
-  label?: Maybe<Scalars['String']>;
-  max?: Maybe<Scalars['String']>;
-  min?: Maybe<Scalars['String']>;
-  type?: Maybe<Scalars['String']>;
-  value?: Maybe<Scalars['String']>;
+export type AlgorithmResult = {
+  __typename?: 'AlgorithmResult';
+  name: Scalars['String'];
+  parameters?: Maybe<Array<ParamValue>>;
 };
+
+/** The supported links. */
+export enum AllowedLink {
+  Covariable = 'COVARIABLE',
+  Variable = 'VARIABLE'
+}
 
 export type AuthenticationInput = {
   password: Scalars['String'];
@@ -74,10 +74,20 @@ export type BarChartResult = {
   yAxis?: Maybe<ChartAxis>;
 };
 
+export type BaseParameter = {
+  defaultValue?: Maybe<Scalars['String']>;
+  hasMultiple?: Maybe<Scalars['Boolean']>;
+  /** Small hint (description) for the end user */
+  hint?: Maybe<Scalars['String']>;
+  isRequired?: Maybe<Scalars['Boolean']>;
+  label?: Maybe<Scalars['String']>;
+  name: Scalars['String'];
+};
+
 export type Category = {
   __typename?: 'Category';
-  id: Scalars['String'];
   label?: Maybe<Scalars['String']>;
+  value: Scalars['String'];
 };
 
 export type ChartAxis = {
@@ -95,6 +105,7 @@ export type Configuration = {
   enableSSO?: Maybe<Scalars['Boolean']>;
   hasGalaxy?: Maybe<Scalars['Boolean']>;
   matomo?: Maybe<Matomo>;
+  ontologyUrl?: Maybe<Scalars['String']>;
   skipAuth?: Maybe<Scalars['Boolean']>;
   skipTos?: Maybe<Scalars['Boolean']>;
   version: Scalars['String'];
@@ -120,7 +131,7 @@ export type Domain = {
 
 export type Experiment = {
   __typename?: 'Experiment';
-  algorithm: Algorithm;
+  algorithm: AlgorithmResult;
   author?: Maybe<Author>;
   coVariables?: Maybe<Array<Scalars['String']>>;
   createdAt?: Maybe<Scalars['Float']>;
@@ -303,14 +314,49 @@ export type MutationUpdateUserArgs = {
   updateUserInput: UpdateUserInput;
 };
 
-export enum ParamType {
-  Number = 'NUMBER',
-  String = 'STRING'
-}
+export type NominalParameter = BaseParameter & {
+  __typename?: 'NominalParameter';
+  allowedValues?: Maybe<Array<OptionValue>>;
+  defaultValue?: Maybe<Scalars['String']>;
+  hasMultiple?: Maybe<Scalars['Boolean']>;
+  /** Small hint (description) for the end user */
+  hint?: Maybe<Scalars['String']>;
+  isRequired?: Maybe<Scalars['Boolean']>;
+  label?: Maybe<Scalars['String']>;
+  /** Id of the parameter */
+  linkedTo?: Maybe<AllowedLink>;
+  name: Scalars['String'];
+};
+
+export type NumberParameter = BaseParameter & {
+  __typename?: 'NumberParameter';
+  defaultValue?: Maybe<Scalars['String']>;
+  hasMultiple?: Maybe<Scalars['Boolean']>;
+  /** Small hint (description) for the end user */
+  hint?: Maybe<Scalars['String']>;
+  isReal?: Maybe<Scalars['Boolean']>;
+  isRequired?: Maybe<Scalars['Boolean']>;
+  label?: Maybe<Scalars['String']>;
+  max?: Maybe<Scalars['Float']>;
+  min?: Maybe<Scalars['Float']>;
+  name: Scalars['String'];
+};
+
+export type OptionValue = {
+  __typename?: 'OptionValue';
+  label: Scalars['String'];
+  value: Scalars['String'];
+};
+
+export type ParamValue = {
+  __typename?: 'ParamValue';
+  name: Scalars['String'];
+  value: Scalars['String'];
+};
 
 export type PartialExperiment = {
   __typename?: 'PartialExperiment';
-  algorithm?: Maybe<Algorithm>;
+  algorithm?: Maybe<AlgorithmResult>;
   author?: Maybe<Author>;
   coVariables?: Maybe<Array<Scalars['String']>>;
   createdAt?: Maybe<Scalars['Float']>;
@@ -370,6 +416,17 @@ export type RawResult = {
 
 export type ResultUnion = BarChartResult | GroupsResult | HeatMapResult | LineChartResult | MeanChartResult | RawResult | TableResult;
 
+export type StringParameter = BaseParameter & {
+  __typename?: 'StringParameter';
+  defaultValue?: Maybe<Scalars['String']>;
+  hasMultiple?: Maybe<Scalars['Boolean']>;
+  /** Small hint (description) for the end user */
+  hint?: Maybe<Scalars['String']>;
+  isRequired?: Maybe<Scalars['Boolean']>;
+  label?: Maybe<Scalars['String']>;
+  name: Scalars['String'];
+};
+
 export type TableResult = {
   __typename?: 'TableResult';
   data: Array<Array<Scalars['String']>>;
@@ -414,4 +471,12 @@ export type Variable = {
   id: Scalars['String'];
   label?: Maybe<Scalars['String']>;
   type?: Maybe<Scalars['String']>;
+};
+
+export type VariableParameter = {
+  __typename?: 'VariableParameter';
+  allowedTypes?: Maybe<Array<Scalars['String']>>;
+  hasMultiple?: Maybe<Scalars['Boolean']>;
+  hint?: Maybe<Scalars['String']>;
+  isRequired?: Maybe<Scalars['Boolean']>;
 };

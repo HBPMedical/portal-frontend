@@ -1,8 +1,7 @@
 import * as React from 'react';
 import ReactGA from 'react-ga';
 import { Router } from 'react-router-dom';
-import { APICore, APIMining, webURL } from '../API';
-import config from '../API/RequestHeaders';
+import { webURL } from '../API';
 import App, { AppConfig } from '../App/App';
 import { history } from '../utils';
 import MIPContext from './MIPContext';
@@ -19,8 +18,6 @@ class AppContainer extends React.Component<any, State> {
     appConfig: {},
     showTutorial: true
   };
-  private apiCore = new APICore(config);
-  private apiMining = new APIMining(config);
 
   async componentDidMount(): Promise<void> {
     const seenTutorial = localStorage.getItem('seenTutorial') === 'true';
@@ -49,7 +46,6 @@ class AppContainer extends React.Component<any, State> {
 
       this.setState({ appConfig, showTutorial: false });
     }
-    return await this.apiCore.algorithms();
   }
 
   render(): JSX.Element {
@@ -70,8 +66,6 @@ class AppContainer extends React.Component<any, State> {
         <Router history={history}>
           <App
             appConfig={this.state.appConfig}
-            apiCore={this.apiCore}
-            apiMining={this.apiMining}
             showTutorial={this.state.showTutorial}
           />
         </Router>

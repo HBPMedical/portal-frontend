@@ -10,6 +10,7 @@ import ApolloErrorHandler from '../UI/ApolloErrorHandler';
 import ListSection from '../UI/ListSection';
 import Model from '../UI/Model';
 import { ExperimentResult, ExperimentResultHeader } from './';
+import AlgorithmDetails from './AlgorithmDetails';
 
 interface RouteParams {
   uuid: string;
@@ -102,6 +103,9 @@ const ContainerWrap = ({ ...props }: Props): JSX.Element => {
                             .map(d => d.label ?? d.id) ?? []
                         }
                       />
+                      <section>
+                        <AlgorithmDetails result={experiment.algorithm} />
+                      </section>
                       <section>
                         {domain && experiment && (
                           <Model experiment={experiment} domain={domain} />

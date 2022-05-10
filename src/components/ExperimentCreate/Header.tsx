@@ -2,8 +2,7 @@ import React, { useState } from 'react';
 import { Button, Card, FormControl } from 'react-bootstrap';
 import { BsFillCaretLeftFill, BsFillCaretRightFill } from 'react-icons/bs';
 
-import { Algorithm } from '../API/Core';
-import { Experiment } from '../API/GraphQL/types.generated';
+import { Algorithm, Experiment } from '../API/GraphQL/types.generated';
 
 interface Props {
   experiment: Experiment;

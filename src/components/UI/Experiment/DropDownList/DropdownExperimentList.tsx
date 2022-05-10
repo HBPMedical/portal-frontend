@@ -87,10 +87,12 @@ const Search = ({
 
 const DropdownExperimentList = ({
   hasDetailedView = false,
-  label = 'Experiment list'
+  label = 'Experiment list',
+  handleExperimentChanged
 }: {
   hasDetailedView: boolean;
   label: string;
+  handleExperimentChanged?: (experimentId?: string) => void;
 }): JSX.Element => {
   const initialPage = 0;
   const [searchName, setSearchName] = useState<string>('');
@@ -131,6 +133,7 @@ const DropdownExperimentList = ({
       } else if (experimentId === undefined) {
         localMutations.resetSelectedExperiment();
       }
+      handleExperimentChanged?.(experimentId);
     }
     setIsOpen(false);
   };

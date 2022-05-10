@@ -1,12 +1,12 @@
 import React, { useCallback, useEffect, useState } from 'react';
 import { Button, Col, Form } from 'react-bootstrap';
 import styled from 'styled-components';
-import { Algorithm } from '../API/Core';
 import {
   Experiment,
   Formula,
   FormulaTransformation,
-  Variable
+  Variable,
+  Algorithm
 } from '../API/GraphQL/types.generated';
 import { IFormula } from '../API/Model';
 
