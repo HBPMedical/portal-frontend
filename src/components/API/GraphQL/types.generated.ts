@@ -105,6 +105,7 @@ export type Configuration = {
   enableSSO?: Maybe<Scalars['Boolean']>;
   hasGalaxy?: Maybe<Scalars['Boolean']>;
   matomo?: Maybe<Matomo>;
+  ontologyUrl?: Maybe<Scalars['String']>;
   skipAuth?: Maybe<Scalars['Boolean']>;
   skipTos?: Maybe<Scalars['Boolean']>;
   version: Scalars['String'];

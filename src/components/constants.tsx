@@ -47,6 +47,4 @@ export const UI_HIDDEN_PARAMETERS = [
   'formula'
 ];
 
-export const ONTOLOGY_URL = 'https://rohan.scai.fraunhofer.de/ols/index';
-
 export const MIN_SEARCH_CHARACTER_NUMBER = 2; //

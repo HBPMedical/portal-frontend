@@ -11,6 +11,7 @@ export const QUERY_CONFIGURATION = gql`
       skipTos
       contactLink
       version
+      ontologyUrl
     }
   }
 `;

@@ -11,7 +11,7 @@ import {
 } from '../API/GraphQL/cache';
 import { localMutations } from '../API/GraphQL/operations/mutations';
 import { VarType } from '../API/GraphQL/operations/mutations/experiments/toggleVarsExperiment';
-import { ONTOLOGY_URL } from '../constants';
+import { useGetConfigurationQuery } from '../API/GraphQL/queries.generated';
 import AvailableAlgorithms from '../ExperimentCreate/AvailableAlgorithms';
 import DropdownExperimentList from '../UI/Experiment/DropDownList/DropdownExperimentList';
 import VariablesGroupList from '../UI/Variable/VariablesGroupList';
@@ -82,6 +82,7 @@ export interface ExploreProps {
 export default (props: ExploreProps): JSX.Element => {
   const { handleGoToAnalysis } = props;
 
+  const { data: config } = useGetConfigurationQuery();
   const selectedExperiment = useReactiveVar(selectedExperimentVar);
   const draftExperiment = useReactiveVar(draftExperimentVar);
   const variables = useReactiveVar(variablesVar);
@@ -233,15 +234,17 @@ export default (props: ExploreProps): JSX.Element => {
                 <p>
                   <strong>Available algorithms</strong>
                 </p>
-                <p>
-                  <a
-                    href={`${ONTOLOGY_URL}`}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                  >
-                    <b>Access to the latest ontology and terminology</b>
-                  </a>
-                </p>
+                {config?.configuration.ontologyUrl && (
+                  <p>
+                    <a
+                      href={`${config?.configuration.ontologyUrl}`}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                    >
+                      <b>Access to the latest ontology and terminology</b>
+                    </a>
+                  </p>
+                )}
               </AlgorithmTitleContainer>
               <AvailableAlgorithms
                 direction="horizontal"
