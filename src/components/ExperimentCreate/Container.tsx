@@ -17,9 +17,6 @@ import {
 import { Algorithm } from '../API/GraphQL/types.generated';
 import ExperimentSidebar from '../DescriptiveAnalysis/ExperimentSidebar';
 import { Alert, IAlert } from '../UI/Alert';
-import DropdownExperimentList from '../UI/Experiment/DropDownList/DropdownExperimentList';
-import LargeDatasetSelect from '../UI/LargeDatasetSelect';
-import Model from '../UI/Model';
 import { Dict } from '../utils';
 import AlgorithmParameters from './AlgorithmParameters';
 import AvailableAlgorithms from './AvailableAlgorithms';
