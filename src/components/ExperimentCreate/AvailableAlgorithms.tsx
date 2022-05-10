@@ -145,12 +145,36 @@ export const AvailableAlgorithms = ({
                       <p>
                         <strong>Variable (dependant)</strong>:{' '}
                         {algo.variable.hint}
+                        {algo.variable.allowedTypes && (
+                          <>
+                            <br />
+                            <small
+                              color="grey"
+                              className="font-italic text-muted"
+                            >
+                              Allowed types :{' '}
+                              {algo.variable.allowedTypes.join(', ')}
+                            </small>
+                          </>
+                        )}
                       </p>
                     )}
                     {algo.coVariable && (
                       <p>
                         <strong>Covariate (independant)</strong>:{' '}
                         {algo.coVariable.hint ?? 'N/A'}
+                        {algo.coVariable.allowedTypes && (
+                          <>
+                            <br />
+                            <small
+                              color="grey"
+                              className="font-italic text-muted"
+                            >
+                              Allowed types :{' '}
+                              {algo.coVariable.allowedTypes.join(', ')}
+                            </small>
+                          </>
+                        )}
                       </p>
                     )}
                   </Card.Body>
