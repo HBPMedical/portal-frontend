@@ -15,6 +15,7 @@ import {
   useCreateExperimentMutation
 } from '../API/GraphQL/queries.generated';
 import { Algorithm } from '../API/GraphQL/types.generated';
+import ExperimentSidebar from '../DescriptiveAnalysis/ExperimentSidebar';
 import { Alert, IAlert } from '../UI/Alert';
 import DropdownExperimentList from '../UI/Experiment/DropDownList/DropdownExperimentList';
 import LargeDatasetSelect from '../UI/LargeDatasetSelect';
@@ -128,43 +129,15 @@ export const ExperimentCreateContainer = (): JSX.Element => {
       </div>
       <div className="content">
         <div className="sidebar">
-          <Card className="datasets">
-            <Card.Body>
-              <section>
-                <DropdownExperimentList
-                  hasDetailedView={false}
-                  handleExperimentChanged={() => setAlgorithm(undefined)}
-                  label={
-                    selectedExperiment
-                      ? `from ${selectedExperiment.name}`
-                      : 'Select Parameters'
-                  }
-                />
-              </section>
-              {domain && (
-                <section>
-                  <h4>Domain</h4>
-                  <p>{domain.label || domain.id}</p>
-                </section>
-              )}
-
-              {domain?.datasets && (
-                <section>
-                  <LargeDatasetSelect
-                    datasets={domain?.datasets}
-                    selectedDatasets={experiment.datasets}
-                    handleSelectDataset={(id: string): void =>
-                      localMutations.toggleDatasetExperiment(id)
-                    }
-                  />
-                </section>
-              )}
-
-              <section>
-                {domain && <Model experiment={experiment} domain={domain} />}
-              </section>
-            </Card.Body>
-          </Card>
+          <ExperimentSidebar
+            domain={domain}
+            selectedExperiment={selectedExperiment}
+            draftExperiment={experiment}
+            handleSelectExperiment={() => setAlgorithm(undefined)}
+            handleSelectDataset={(id: string): void => {
+              localMutations.toggleDatasetExperiment(id);
+            }}
+          />
         </div>
         <div className="parameters">
           <Card>

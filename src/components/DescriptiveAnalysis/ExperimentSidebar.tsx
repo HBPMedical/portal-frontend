@@ -10,13 +10,15 @@ interface Props {
   selectedExperiment: Experiment | undefined;
   draftExperiment: Experiment;
   handleSelectDataset: (id: string) => void;
+  handleSelectExperiment?: (id?: string) => void;
 }
 
 const ExperimentSidebar = ({
   domain,
   selectedExperiment,
   draftExperiment,
-  handleSelectDataset
+  handleSelectDataset,
+  handleSelectExperiment
 }: Props): JSX.Element => {
   return (
     <Card className="datasets">
@@ -24,6 +26,9 @@ const ExperimentSidebar = ({
         <section>
           <DropdownExperimentList
             hasDetailedView={false}
+            handleExperimentChanged={id => {
+              handleSelectExperiment?.(id);
+            }}
             label={
               selectedExperiment
                 ? `from ${selectedExperiment.name}`
@@ -33,7 +38,8 @@ const ExperimentSidebar = ({
         </section>
         {domain && (
           <section>
-            <h4>{domain.label ?? domain.id}</h4>
+            <h4>Domain</h4>
+            <p>{domain.label ?? domain.id}</p>
           </section>
         )}
         {draftExperiment && (
