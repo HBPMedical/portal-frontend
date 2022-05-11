@@ -1,5 +1,5 @@
-# This workflow is used to test build capability
-name: Build image
+# This workflow is used to release a docker image to docker registry
+name: Release (manual trigger)
 
 on:
   workflow_dispatch:
@@ -43,7 +43,7 @@ jobs:
         env:
           DOCKER_USER: ${{ secrets.DOCKER_USER }}
           DOCKER_PASSWORD: ${{ secrets.DOCKER_PASSWORD }}
-        run: docker login - u "$DOCKER_USER" -p "$DOCKER_PASSWORD"
+        run: docker login -u "$DOCKER_USER" -p "$DOCKER_PASSWORD"
 
       - name: Major release
         if: github.event.inputs.release-type == 'major'
