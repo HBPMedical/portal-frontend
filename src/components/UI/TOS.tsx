@@ -2,6 +2,7 @@ import React, { useEffect, useRef, useState } from 'react';
 import { Button, Form, Spinner } from 'react-bootstrap';
 import ReactMarkdown from 'react-markdown';
 import { useHistory } from 'react-router-dom';
+import rehypeRaw from 'rehype-raw';
 import styled from 'styled-components';
 import {
   namedOperations,
@@ -86,7 +87,11 @@ export default (): JSX.Element => {
 
   return (
     <Container>
-      {TOS && <ReactMarkdown>{TOS as string}</ReactMarkdown>}
+      {TOS && (
+        <ReactMarkdown rehypePlugins={[rehypeRaw]}>
+          {TOS as string}
+        </ReactMarkdown>
+      )}
       <ContainerBtnRight className="tos-form">
         <div>
           <Form.Check
