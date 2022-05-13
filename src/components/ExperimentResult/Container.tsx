@@ -36,13 +36,11 @@ const ContainerWrap = ({ ...props }: Props): JSX.Element => {
       if (domainId && domainId !== domain?.id)
         setDomain(domains.find(d => d.id === domainId));
 
-      switch (newExperiment.status) {
-        case 'pending':
-          if (!isPolling) {
-            startPolling(1000);
-            setIsPolling(true);
-          }
-          break;
+      if (newExperiment.status === 'pending') {
+        if (!isPolling) {
+          startPolling(1000);
+          setIsPolling(true);
+        }
       }
 
       if (newExperiment.status !== 'pending' && isPolling) {
@@ -76,7 +74,7 @@ const ContainerWrap = ({ ...props }: Props): JSX.Element => {
         </Container>
       )}
       {!error && (
-        <div className="Experiment Result">
+        <div className="experiment">
           <div className="header">
             <ExperimentResultHeader
               handleCopyExperiment={(): void => {

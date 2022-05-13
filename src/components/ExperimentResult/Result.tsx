@@ -1,7 +1,8 @@
-import * as React from 'react';
+import React from 'react';
 import { Card, ProgressBar } from 'react-bootstrap';
 import styled, { keyframes } from 'styled-components';
-import { Experiment, ResultUnion } from '../API/GraphQL/types.generated';
+import { Experiment } from '../API/GraphQL/types.generated';
+import ExperimentPDF from './Export/ExperimentPDF';
 import ResultDispatcher from './ResultDispatcher';
 
 const Body = styled(Card.Body)`
@@ -48,6 +49,7 @@ export default ({ experiment }: { experiment?: Experiment }): JSX.Element => {
   return (
     <Card>
       <Body>
+        {experiment && <ExperimentPDF experiment={experiment} />}
         <h4>
           <strong>{experiment?.name}</strong>
         </h4>
@@ -65,7 +67,7 @@ export default ({ experiment }: { experiment?: Experiment }): JSX.Element => {
         ) : null}
         {experiment &&
           experiment.results?.map((result, i) => (
-            <ResultDispatcher key={i} result={result as ResultUnion} />
+            <ResultDispatcher key={i} result={result} />
           ))}
       </Body>
     </Card>
