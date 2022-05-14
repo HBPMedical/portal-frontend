@@ -1,3 +1,4 @@
+/* eslint-disable react-hooks/exhaustive-deps */
 import {
   Document,
   Image,
@@ -11,20 +12,58 @@ import * as hmtlToImage from 'html-to-image';
 import React, { useEffect, useImperativeHandle, useRef, useState } from 'react';
 import { Button } from 'react-bootstrap';
 import { Experiment } from '../../API/GraphQL/types.generated';
+import { makeAssetURL } from '../../API/RequestURLS';
+
+const headerStyles = StyleSheet.create({
+  container: {
+    fontSize: 12,
+    marginBottom: 20,
+    textAlign: 'center',
+    position: 'absolute',
+    display: 'flex',
+    flexDirection: 'row',
+    alignContent: 'center',
+    padding: 15,
+    paddingLeft: 25,
+    paddingRight: 25,
+    height: 70,
+    top: 0,
+    left: 0,
+    right: 0
+  },
+  text: {
+    textAlign: 'right',
+    flexGrow: 1,
+    alignContent: 'center',
+    alignSelf: 'center',
+    color: '#929292',
+    fontSize: 14,
+    fontWeight: 'thin'
+  },
+  logo: {
+    height: 'auto',
+    width: 40
+  }
+});
 
 const styles = StyleSheet.create({
   body: {
     paddingTop: 35,
     paddingBottom: 65,
-    paddingHorizontal: 35
+    paddingHorizontal: 35,
+    marginTop: 100
+  },
+  smallMargin: {
+    paddingTop: 35,
+    paddingBottom: 65,
+    paddingHorizontal: 15,
+    marginTop: 100
   },
   title: {
-    fontSize: 24,
-    textAlign: 'center'
+    fontSize: 24
   },
   author: {
     fontSize: 12,
-    textAlign: 'center',
     marginBottom: 40
   },
   subtitle: {
@@ -37,24 +76,22 @@ const styles = StyleSheet.create({
     fontSize: 14,
     textAlign: 'justify'
   },
-  image: {
-    marginVertical: 15,
-    marginHorizontal: 100
-  },
-  header: {
+
+  footer: {
+    position: 'absolute',
+    bottom: 0,
+    left: 0,
+    right: 0,
+    padding: 20,
+    display: 'flex',
+    justifyContent: 'center',
+    flexDirection: 'row',
     fontSize: 12,
-    marginBottom: 20,
-    textAlign: 'center',
     color: 'grey'
   },
   pageNumber: {
-    position: 'absolute',
-    fontSize: 12,
-    bottom: 30,
-    left: 0,
-    right: 0,
-    textAlign: 'center',
-    color: 'grey'
+    flex: 1,
+    textAlign: 'center'
   }
 });
 
@@ -69,14 +106,52 @@ type DocumentPDFHandle = {
 const fetchImages = async (): Promise<string[]> => {
   return Promise.all(
     Array.from(document.getElementsByClassName('result')).map(async el => {
-      return hmtlToImage.toPng(el as HTMLElement);
+      const backupStyle = el.getAttribute('style') ?? '';
+      el.setAttribute(
+        'style',
+        'width: 1000px; height: auto; display: inline-block;'
+      );
+      const img = await hmtlToImage.toPng(el as HTMLDivElement, {
+        skipFonts: true,
+        quality: 1,
+        pixelRatio: 2,
+        style: {
+          display: 'inline-block'
+        }
+      });
+
+      el.setAttribute('style', backupStyle);
+
+      return img;
     })
   );
 };
 
+const Footer = () => (
+  <View style={styles.footer}>
+    <Text style={{ flex: 1, textAlign: 'left' }}></Text>
+    <Text
+      style={styles.pageNumber}
+      render={({ pageNumber, totalPages }) => `${pageNumber} / ${totalPages}`}
+      fixed
+    />
+    <Text style={{ flex: 1, textAlign: 'right' }}>
+      {new Date().toLocaleString()}
+    </Text>
+  </View>
+);
+
+const Header = ({ logo }: { logo: string }) => (
+  <View style={headerStyles.container} fixed>
+    <Image src={logo} style={headerStyles.logo} />
+    <Text style={headerStyles.text}>Medical Informatics Platform</Text>
+  </View>
+);
+
 const DocumentPDF = React.forwardRef<DocumentPDFHandle, Props>(
   ({ experiment }: Props, ref) => {
     const [images, SetImages] = useState<string[]>([]);
+    const logoUrl = makeAssetURL('logo.png');
 
     useImperativeHandle(ref, () => ({
       update: async (): Promise<void> => {
@@ -86,8 +161,6 @@ const DocumentPDF = React.forwardRef<DocumentPDFHandle, Props>(
     }));
 
     useEffect(() => {
-      console.log('updated 2');
-
       const fetchData = async () => {
         const imgs = await fetchImages();
         SetImages(imgs);
@@ -98,28 +171,30 @@ const DocumentPDF = React.forwardRef<DocumentPDFHandle, Props>(
     return (
       <Document>
         <Page size="A4">
-          {experiment && (
-            <View>
-              <Text style={styles.title}>{experiment.name}</Text>
-              {experiment.author && (
-                <Text style={styles.author}>
-                  Created by{' '}
-                  {experiment.author.fullname ?? experiment?.author?.username}
-                </Text>
-              )}
-            </View>
-          )}
-          <Text
-            style={styles.pageNumber}
-            render={({ pageNumber, totalPages }) =>
-              `${pageNumber} / ${totalPages}`
-            }
-            fixed
-          />
+          <Header logo={logoUrl} />
+          <View style={styles.body}>
+            {experiment && (
+              <View>
+                <Text style={styles.title}>{experiment.name}</Text>
+                <Text style={styles.title}>{experiment.name}</Text>
+                {experiment.author && (
+                  <Text style={styles.author}>
+                    Created by{' '}
+                    {experiment.author.fullname ?? experiment?.author?.username}
+                  </Text>
+                )}
+              </View>
+            )}
+          </View>
+          <Footer />
         </Page>
         {images.map((img, i) => (
           <Page size="A4" key={i} orientation="landscape">
-            <Image src={img} style={styles.image} />
+            <Header logo={logoUrl} />
+            <View style={styles.body}>
+              <Image src={img} />
+            </View>
+            <Footer />
           </Page>
         ))}
       </Document>
@@ -131,48 +206,50 @@ const ExperimentPDF = ({ experiment }: Props) => {
   const documentPDF = useRef<DocumentPDFHandle>(null);
   const linkRef = useRef<HTMLAnchorElement>(null);
   const [isEnabled, setEnabled] = useState<boolean>(false);
+  const [isLoading, setLoading] = useState<boolean>(false);
 
   const [instance, updateInstance] = usePDF({
     document: <DocumentPDF experiment={experiment} ref={documentPDF} />
   });
 
   useEffect(() => {
-    console.log('run', isEnabled, instance);
     if (isEnabled && !instance.loading) {
-      console.log('click');
-
       setEnabled(false);
+
       linkRef.current?.click();
     }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [instance.loading]);
+
+  useEffect(() => {
+    const updateDocument = async () => {
+      await documentPDF.current?.update();
+      updateInstance();
+
+      setEnabled(true);
+      setLoading(false);
+    };
+
+    if (isLoading) updateDocument();
+  }, [isLoading]);
 
   return (
     <>
       <Button
         onClick={() => {
-          linkRef.current?.click();
+          setLoading(true);
         }}
+        disabled={isLoading}
       >
-        testing
-      </Button>
-      <Button
-        onClick={async () => {
-          await documentPDF.current?.update();
-          updateInstance();
-          setEnabled(true);
-        }}
-      >
-        Download
+        {isLoading ? 'Generating...' : 'Download'}
       </Button>
       {!instance.loading && instance.url && (
         <a
           href={instance.url}
-          download="test.pdf"
+          download={`export-${new Date().toJSON().slice(0, 10)}.pdf`}
           ref={linkRef}
           className="d-none"
         >
-          test
+          link
         </a>
       )}
     </>

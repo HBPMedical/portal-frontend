@@ -165,9 +165,10 @@ const App = ({ appConfig, showTutorial }: Props) => {
     if (!config.version) return;
 
     const cssPath = makeAssetURL('custom.css');
-    const head = document.head as HTMLHeadElement;
+    const head = document.head;
     const link = document.createElement('link');
 
+    link.crossOrigin = 'anonymous';
     link.type = 'text/css';
     link.rel = 'stylesheet';
     link.href = cssPath;
