@@ -52,7 +52,12 @@ export default (): JSX.Element => {
               id: 'DESCRIPTIVE_STATS',
               type: 'string'
             },
-            transformations: draftExperiment.formula?.transformations,
+            transformations: draftExperiment.formula?.transformations?.map(
+              t => ({
+                id: t.id,
+                operation: t.operation
+              })
+            ),
             interactions: draftExperiment.formula?.interactions
           }
         }

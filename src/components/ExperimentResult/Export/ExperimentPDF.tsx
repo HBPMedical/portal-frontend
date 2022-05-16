@@ -1,6 +1,7 @@
 /* eslint-disable react-hooks/exhaustive-deps */
 import {
   Document,
+  Font,
   Image,
   Page,
   StyleSheet,
@@ -13,6 +14,21 @@ import React, { useEffect, useImperativeHandle, useRef, useState } from 'react';
 import { Button } from 'react-bootstrap';
 import { Experiment } from '../../API/GraphQL/types.generated';
 import { makeAssetURL } from '../../API/RequestURLS';
+
+Font.register({
+  family: 'Open Sans',
+  fonts: [
+    {
+      src:
+        'https://cdn.jsdelivr.net/npm/open-sans-all@0.1.3/fonts/open-sans-regular.ttf'
+    },
+    {
+      src:
+        'https://cdn.jsdelivr.net/npm/open-sans-all@0.1.3/fonts/open-sans-600.ttf',
+      fontWeight: 600
+    }
+  ]
+});
 
 const headerStyles = StyleSheet.create({
   container: {
@@ -53,6 +69,15 @@ const styles = StyleSheet.create({
     paddingHorizontal: 35,
     marginTop: 100
   },
+  bold: {
+    fontWeight: 'bold'
+  },
+  result: {
+    textAlign: 'center',
+    alignContent: 'center',
+    alignSelf: 'center',
+    alignItems: 'center'
+  },
   smallMargin: {
     paddingTop: 35,
     paddingBottom: 65,
@@ -60,16 +85,23 @@ const styles = StyleSheet.create({
     marginTop: 100
   },
   title: {
-    fontSize: 24
+    fontFamily: 'Open Sans',
+    fontSize: 32,
+    display: 'flex',
+    flexDirection: 'row',
+    alignItems: 'center'
+  },
+  subtitle: {
+    fontFamily: 'Open Sans',
+    fontSize: 13,
+    display: 'flex',
+    flexDirection: 'row',
+    alignItems: 'center',
+    marginTop: 3
   },
   author: {
     fontSize: 12,
-    marginBottom: 40
-  },
-  subtitle: {
-    fontSize: 18,
-    margin: 12,
-    fontFamily: 'Oswald'
+    color: '#969696'
   },
   text: {
     margin: 12,
@@ -105,19 +137,13 @@ type DocumentPDFHandle = {
 
 const fetchImages = async (): Promise<string[]> => {
   return Promise.all(
-    Array.from(document.getElementsByClassName('result')).map(async el => {
+    Array.from(document.getElementsByClassName('exp-result')).map(async el => {
       const backupStyle = el.getAttribute('style') ?? '';
-      el.setAttribute(
-        'style',
-        'width: 1000px; height: auto; display: inline-block;'
-      );
+      el.setAttribute('style', 'width: 1300px; height: auto;');
       const img = await hmtlToImage.toPng(el as HTMLDivElement, {
         skipFonts: true,
         quality: 1,
-        pixelRatio: 2,
-        style: {
-          display: 'inline-block'
-        }
+        pixelRatio: 2
       });
 
       el.setAttribute('style', backupStyle);
@@ -160,30 +186,61 @@ const DocumentPDF = React.forwardRef<DocumentPDFHandle, Props>(
       }
     }));
 
-    useEffect(() => {
-      const fetchData = async () => {
-        const imgs = await fetchImages();
-        SetImages(imgs);
-      };
-      fetchData();
-    }, [experiment]);
-
     return (
       <Document>
         <Page size="A4">
           <Header logo={logoUrl} />
           <View style={styles.body}>
             {experiment && (
-              <View>
-                <Text style={styles.title}>{experiment.name}</Text>
-                <Text style={styles.title}>{experiment.name}</Text>
-                {experiment.author && (
-                  <Text style={styles.author}>
-                    Created by{' '}
-                    {experiment.author.fullname ?? experiment?.author?.username}
-                  </Text>
-                )}
-              </View>
+              <>
+                <View>
+                  <View style={styles.title}>
+                    <Text>{experiment.name}</Text>
+                  </View>
+                  {experiment.author && (
+                    <View>
+                      <Text style={styles.author}>
+                        Created by{' '}
+                        {experiment.author.fullname ??
+                          experiment?.author?.username}
+                      </Text>
+                    </View>
+                  )}
+                  <View style={{ marginLeft: 5, marginTop: 15 }}>
+                    <View style={styles.subtitle}>
+                      <Text style={styles.bold}>Algorithm: </Text>
+                      <Text>{experiment.algorithm.name}</Text>
+                    </View>
+                    <View style={styles.subtitle}>
+                      <Text style={styles.bold}>Params: </Text>
+                    </View>
+                    <View style={styles.subtitle}>
+                      <Text style={styles.bold}>Domain: </Text>
+                      <Text>{experiment.domain}</Text>
+                    </View>
+                    <View style={styles.subtitle}>
+                      <Text style={styles.bold}>Datasets: </Text>
+                      <Text>{experiment.datasets.join(', ')}</Text>
+                    </View>
+                    <View style={styles.subtitle}>
+                      <Text style={styles.bold}>Variables: </Text>
+                      <Text>{experiment.variables.join(', ')}</Text>
+                    </View>
+                    <View style={styles.subtitle}>
+                      <Text style={styles.bold}>Covariates: </Text>
+                      <Text>{experiment.coVariables?.join(', ')}</Text>
+                    </View>
+                    <View style={styles.subtitle}>
+                      <Text style={styles.bold}>Filter: </Text>
+                      <Text>TODO</Text>
+                    </View>
+                    <View style={styles.subtitle}>
+                      <Text style={styles.bold}>Formula: </Text>
+                      <Text>TODO</Text>
+                    </View>
+                  </View>
+                </View>
+              </>
             )}
           </View>
           <Footer />
