@@ -81,7 +81,9 @@ export default (): JSX.Element => {
           onSetOpen={setSidebarOpen}
           styles={{ sidebar: { background: 'white' } }}
           pullRight
-        />
+        >
+          <div />
+        </Sidebar>
       </div>
       <div className="Model Review">
         <div className="header">
