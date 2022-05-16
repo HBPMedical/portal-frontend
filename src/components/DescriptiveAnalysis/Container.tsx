@@ -73,8 +73,10 @@ export default (): JSX.Element => {
       <div>
         <Sidebar
           sidebar={
-            domain && (
+            domain ? (
               <FormulaWrapper domain={domain} experiment={draftExperiment} />
+            ) : (
+              <div></div>
             )
           }
           open={sidebarOpen}
