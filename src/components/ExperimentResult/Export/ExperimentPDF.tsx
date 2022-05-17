@@ -1,4 +1,5 @@
 /* eslint-disable react-hooks/exhaustive-deps */
+import { makeVar, useReactiveVar } from '@apollo/client';
 import {
   Document,
   Font,
@@ -12,7 +13,9 @@ import {
 import * as hmtlToImage from 'html-to-image';
 import React, { useEffect, useImperativeHandle, useRef, useState } from 'react';
 import { Button } from 'react-bootstrap';
-import { Experiment } from '../../API/GraphQL/types.generated';
+import { domainsVar, variablesVar } from '../../API/GraphQL/cache';
+import { useListAlgorithmsQuery } from '../../API/GraphQL/queries.generated';
+import { Algorithm, Experiment } from '../../API/GraphQL/types.generated';
 import { makeAssetURL } from '../../API/RequestURLS';
 
 Font.register({
@@ -86,7 +89,7 @@ const styles = StyleSheet.create({
   },
   title: {
     fontFamily: 'Open Sans',
-    fontSize: 32,
+    fontSize: 26,
     display: 'flex',
     flexDirection: 'row',
     alignItems: 'center'
@@ -127,8 +130,19 @@ const styles = StyleSheet.create({
   }
 });
 
+export type ChildrenPDFExport = {
+  downloadPDF: () => void;
+  isLoading: boolean;
+};
+
 type Props = {
+  filename?: string;
   experiment?: Experiment;
+  children?: (data: ChildrenPDFExport) => JSX.Element;
+};
+
+type DocumentProps = Props & {
+  algorithm?: Algorithm;
 };
 
 type DocumentPDFHandle = {
@@ -153,9 +167,23 @@ const fetchImages = async (): Promise<string[]> => {
   );
 };
 
-const Footer = () => (
+const Result = ({ images, logo }: { images: string[]; logo: string }) => (
+  <>
+    {images.map((img, i) => (
+      <Page size="A4" key={i} orientation="landscape">
+        <Header logo={logo} />
+        <View style={styles.body}>
+          <Image src={img} />
+        </View>
+        <Footer />
+      </Page>
+    ))}
+  </>
+);
+
+const Footer = ({ id }: { id?: string }) => (
   <View style={styles.footer}>
-    <Text style={{ flex: 1, textAlign: 'left' }}></Text>
+    <Text style={{ flex: 1, textAlign: 'left' }}>{id}</Text>
     <Text
       style={styles.pageNumber}
       render={({ pageNumber, totalPages }) => `${pageNumber} / ${totalPages}`}
@@ -174,10 +202,43 @@ const Header = ({ logo }: { logo: string }) => (
   </View>
 );
 
-const DocumentPDF = React.forwardRef<DocumentPDFHandle, Props>(
-  ({ experiment }: Props, ref) => {
+const algorithmsVar = makeVar<Algorithm[]>([]);
+const DocumentPDF = React.forwardRef<DocumentPDFHandle, DocumentProps>(
+  ({ experiment }: DocumentProps, ref) => {
     const [images, SetImages] = useState<string[]>([]);
+    const variables = useReactiveVar(variablesVar);
+    const algos = useReactiveVar(algorithmsVar);
+    const emptyLabel = 'none';
+    const domain = useReactiveVar(domainsVar).find(
+      d => experiment?.domain === d.id
+    );
+    const interactions =
+      experiment?.formula?.interactions &&
+      experiment?.formula?.interactions?.length > 0
+        ? experiment?.formula?.interactions
+            ?.map(tuple => tuple.join(' ↔ '))
+            .join(', ')
+        : emptyLabel;
     const logoUrl = makeAssetURL('logo.png');
+    const algo = algos.find(a => a.id === experiment?.algorithm.name);
+
+    const transformations = experiment?.formula?.transformations
+      ?.map(t => ({
+        operation: t.operation,
+        variable: variables.find(v => v.id === t.id)
+      }))
+      .map(t => `${t.operation}: ${t.variable?.label ?? t.variable?.id}`)
+      .join(', ');
+
+    const params =
+      experiment?.algorithm.parameters?.map(p => {
+        const label = algo?.parameters?.find(p2 => p2.name === p.name)?.label;
+        return {
+          id: p.name,
+          label: label ?? p.name,
+          value: p.value
+        };
+      }) ?? [];
 
     useImperativeHandle(ref, () => ({
       update: async (): Promise<void> => {
@@ -190,80 +251,136 @@ const DocumentPDF = React.forwardRef<DocumentPDFHandle, Props>(
       <Document>
         <Page size="A4">
           <Header logo={logoUrl} />
-          <View style={styles.body}>
+          <View
+            style={{
+              display: 'flex',
+              alignContent: 'center',
+              justifyContent: 'center',
+              paddingHorizontal: 50,
+              paddingBottom: 100,
+              height: '100%'
+            }}
+          >
             {experiment && (
               <>
                 <View>
-                  <View style={styles.title}>
+                  <View style={{ ...styles.title, fontSize: 40 }}>
                     <Text>{experiment.name}</Text>
                   </View>
                   {experiment.author && (
                     <View>
                       <Text style={styles.author}>
                         Created by{' '}
-                        {experiment.author.fullname ??
+                        {experiment?.author?.fullname ??
                           experiment?.author?.username}
+                        {', '}
+                        {experiment &&
+                          experiment.createdAt &&
+                          new Date(experiment.createdAt).toLocaleDateString()}
+                        .
                       </Text>
                     </View>
                   )}
-                  <View style={{ marginLeft: 5, marginTop: 15 }}>
-                    <View style={styles.subtitle}>
-                      <Text style={styles.bold}>Algorithm: </Text>
-                      <Text>{experiment.algorithm.name}</Text>
-                    </View>
-                    <View style={styles.subtitle}>
-                      <Text style={styles.bold}>Params: </Text>
-                    </View>
-                    <View style={styles.subtitle}>
-                      <Text style={styles.bold}>Domain: </Text>
-                      <Text>{experiment.domain}</Text>
-                    </View>
-                    <View style={styles.subtitle}>
-                      <Text style={styles.bold}>Datasets: </Text>
-                      <Text>{experiment.datasets.join(', ')}</Text>
-                    </View>
-                    <View style={styles.subtitle}>
-                      <Text style={styles.bold}>Variables: </Text>
-                      <Text>{experiment.variables.join(', ')}</Text>
-                    </View>
-                    <View style={styles.subtitle}>
-                      <Text style={styles.bold}>Covariates: </Text>
-                      <Text>{experiment.coVariables?.join(', ')}</Text>
-                    </View>
-                    <View style={styles.subtitle}>
-                      <Text style={styles.bold}>Filter: </Text>
-                      <Text>TODO</Text>
-                    </View>
-                    <View style={styles.subtitle}>
-                      <Text style={styles.bold}>Formula: </Text>
-                      <Text>TODO</Text>
-                    </View>
-                  </View>
                 </View>
               </>
             )}
           </View>
           <Footer />
         </Page>
-        {images.map((img, i) => (
-          <Page size="A4" key={i} orientation="landscape">
-            <Header logo={logoUrl} />
-            <View style={styles.body}>
-              <Image src={img} />
-            </View>
-            <Footer />
-          </Page>
-        ))}
+        <Page size="A4">
+          <Header logo={logoUrl} />
+          <View style={styles.body}>
+            {experiment && (
+              <View>
+                <View style={styles.title}>
+                  <Text style={{ fontWeight: 'bold' }}>Experiment details</Text>
+                </View>
+                <View style={{ marginLeft: 5, marginTop: 15 }}>
+                  <View style={styles.subtitle} debug>
+                    <Text style={styles.bold}>Algorithm: </Text>
+                    <Text>{algo?.label ?? experiment.algorithm.name}</Text>
+                  </View>
+                  <View style={{ ...styles.subtitle, marginLeft: 10 }}>
+                    <Text style={styles.bold}>Params: </Text>
+                    <Text>
+                      {params
+                        ?.map(p => `${p.label ?? p.id}: ${p.value}`)
+                        .join(', ') ?? emptyLabel}
+                    </Text>
+                  </View>
+                  <View style={styles.subtitle}>
+                    <Text style={styles.bold}>Domain: </Text>
+                    <Text>{domain?.label ?? domain?.id}</Text>
+                  </View>
+                  <View style={styles.subtitle}>
+                    <Text style={styles.bold}>Datasets: </Text>
+                    <Text>
+                      {domain?.datasets
+                        .filter(d => experiment.datasets.includes(d.id))
+                        .map(d => d.label ?? d.id)
+                        .join(', ')}
+                    </Text>
+                  </View>
+                  <View style={styles.subtitle}>
+                    <Text style={styles.bold}>Variables: </Text>
+                    <Text>
+                      {experiment.variables
+                        .map(
+                          id => variables.find(v => v.id === id)?.label ?? id
+                        )
+                        .join(', ') ?? emptyLabel}
+                    </Text>
+                  </View>
+                  <View style={styles.subtitle}>
+                    <Text style={styles.bold}>Covariates: </Text>
+                    <Text>
+                      {experiment.coVariables
+                        ?.map(
+                          id => variables.find(v => v.id === id)?.label ?? id
+                        )
+                        .join(', ') ?? emptyLabel}
+                    </Text>
+                  </View>
+                  <View style={styles.subtitle}>
+                    <Text style={styles.bold}>Filter: </Text>
+                    <Text>{experiment.filter ?? emptyLabel}</Text>
+                  </View>
+                  <View style={styles.subtitle}>
+                    <Text style={styles.bold}>Formula </Text>
+                  </View>
+                  <View style={{ marginLeft: 10 }}>
+                    <View style={styles.subtitle}>
+                      <Text style={styles.bold}>Interactions: </Text>
+                      <Text>{interactions}</Text>
+                    </View>
+                    <View style={styles.subtitle}>
+                      <Text style={styles.bold}>Transformations: </Text>
+                      <Text>
+                        {transformations && transformations.length > 0
+                          ? transformations
+                          : emptyLabel}
+                      </Text>
+                    </View>
+                  </View>
+                </View>
+              </View>
+            )}
+          </View>
+          <Footer />
+        </Page>
+        <Result images={images} logo={logoUrl} />
       </Document>
     );
   }
 );
 
-const ExperimentPDF = ({ experiment }: Props) => {
+const ExperimentPDF = ({ experiment, children, filename }: Props) => {
   const documentPDF = useRef<DocumentPDFHandle>(null);
-  const linkRef = useRef<HTMLAnchorElement>(null);
   const [isEnabled, setEnabled] = useState<boolean>(false);
   const [isLoading, setLoading] = useState<boolean>(false);
+  useListAlgorithmsQuery({
+    onCompleted: data => algorithmsVar(data.algorithms)
+  });
 
   const [instance, updateInstance] = usePDF({
     document: <DocumentPDF experiment={experiment} ref={documentPDF} />
@@ -273,9 +390,19 @@ const ExperimentPDF = ({ experiment }: Props) => {
     if (isEnabled && !instance.loading) {
       setEnabled(false);
 
-      linkRef.current?.click();
+      const link = document.createElement('a');
+      link.href = instance.url ?? '';
+      link.download =
+        filename ?? `export-${new Date().toJSON().slice(0, 10)}.pdf`;
+
+      link.click();
+      link.remove();
     }
   }, [instance.loading]);
+
+  useEffect(() => {
+    updateInstance();
+  }, [experiment]);
 
   useEffect(() => {
     const updateDocument = async () => {
@@ -289,26 +416,22 @@ const ExperimentPDF = ({ experiment }: Props) => {
     if (isLoading) updateDocument();
   }, [isLoading]);
 
-  return (
+  const labelBtn = isLoading ? 'Generating...' : 'Download';
+
+  const reloadDocument = () => {
+    setLoading(true);
+  };
+
+  return children ? (
+    children({
+      downloadPDF: reloadDocument,
+      isLoading
+    })
+  ) : (
     <>
-      <Button
-        onClick={() => {
-          setLoading(true);
-        }}
-        disabled={isLoading}
-      >
-        {isLoading ? 'Generating...' : 'Download'}
+      <Button variant="info" onClick={reloadDocument} disabled={isLoading}>
+        {labelBtn}
       </Button>
-      {!instance.loading && instance.url && (
-        <a
-          href={instance.url}
-          download={`export-${new Date().toJSON().slice(0, 10)}.pdf`}
-          ref={linkRef}
-          className="d-none"
-        >
-          link
-        </a>
-      )}
     </>
   );
 };

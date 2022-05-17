@@ -2,7 +2,6 @@ import React from 'react';
 import { Card, ProgressBar } from 'react-bootstrap';
 import styled, { keyframes } from 'styled-components';
 import { Experiment } from '../API/GraphQL/types.generated';
-import ExperimentPDF from './Export/ExperimentPDF';
 import ResultDispatcher from './ResultDispatcher';
 
 const Body = styled(Card.Body)`
@@ -49,7 +48,6 @@ export default ({ experiment }: { experiment?: Experiment }): JSX.Element => {
   return (
     <Card>
       <Body>
-        {experiment && <ExperimentPDF experiment={experiment} />}
         <h4>
           <strong>{experiment?.name}</strong>
         </h4>
