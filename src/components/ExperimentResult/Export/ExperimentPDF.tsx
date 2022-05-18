@@ -280,10 +280,10 @@ const DocumentPDF = React.forwardRef<DocumentPDFHandle, DocumentProps>(
                         Created by{' '}
                         {experiment?.author?.fullname ??
                           experiment?.author?.username}
-                        {', '}
+                        {' on '}
                         {experiment &&
                           experiment.createdAt &&
-                          new Date(experiment.createdAt).toLocaleDateString()}
+                          new Date(experiment.createdAt).toUTCString()}
                         .
                       </Text>
                     </View>
