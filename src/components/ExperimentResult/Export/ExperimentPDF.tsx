@@ -154,6 +154,7 @@ const fetchImages = async (): Promise<string[]> => {
   return Promise.all(
     results.map(async ele => {
       const container = document.createElement('div');
+      container.setAttribute('style', 'width: 1300px; height: auto;');
       document.body.appendChild(container);
       const el = ele.cloneNode(true) as HTMLElement;
       el.setAttribute('style', 'width: 1300px; height: auto;');
