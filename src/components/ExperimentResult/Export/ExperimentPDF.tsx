@@ -150,17 +150,23 @@ type DocumentPDFHandle = {
 };
 
 const fetchImages = async (): Promise<string[]> => {
+  const results = Array.from(document.getElementsByClassName('exp-result'));
   return Promise.all(
-    Array.from(document.getElementsByClassName('exp-result')).map(async el => {
-      const backupStyle = el.getAttribute('style') ?? '';
+    results.map(async ele => {
+      const container = document.createElement('div');
+      document.body.appendChild(container);
+      const el = ele.cloneNode(true) as HTMLElement;
       el.setAttribute('style', 'width: 1300px; height: auto;');
-      const img = await hmtlToImage.toPng(el as HTMLDivElement, {
+      el.classList.remove('exp-result');
+      container.appendChild(el);
+      const img = await hmtlToImage.toPng(container, {
         skipFonts: true,
         quality: 1,
         pixelRatio: 2
       });
-
-      el.setAttribute('style', backupStyle);
+      container.removeChild(el);
+      el.remove();
+      container.remove();
 
       return img;
     })
@@ -296,7 +302,7 @@ const DocumentPDF = React.forwardRef<DocumentPDFHandle, DocumentProps>(
                   <Text style={{ fontWeight: 'bold' }}>Experiment details</Text>
                 </View>
                 <View style={{ marginLeft: 5, marginTop: 15 }}>
-                  <View style={styles.subtitle} debug>
+                  <View style={styles.subtitle}>
                     <Text style={styles.bold}>Algorithm: </Text>
                     <Text>{algo?.label ?? experiment.algorithm.name}</Text>
                   </View>
@@ -393,7 +399,7 @@ const ExperimentPDF = ({ experiment, children, filename }: Props) => {
       const link = document.createElement('a');
       link.href = instance.url ?? '';
       link.download =
-        filename ?? `export-${new Date().toJSON().slice(0, 10)}.pdf`;
+        filename ?? `export-${new Date().toJSON().slice(0, 10)}.json`;
 
       link.click();
       link.remove();

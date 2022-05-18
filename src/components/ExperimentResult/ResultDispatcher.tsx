@@ -52,7 +52,11 @@ class ResultDispatcher extends React.Component<Props> {
       error: <div> An error occured </div>
     } as Switcher)[type];
     if (!children) return <></>;
-    return <ContainerResult className="exp-result">{children}</ContainerResult>;
+    return (
+      <ContainerResult className={type !== 'groupsresult' ? 'exp-result' : ''}>
+        {children}
+      </ContainerResult>
+    );
   }
 }
 

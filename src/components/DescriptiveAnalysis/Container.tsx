@@ -95,6 +95,7 @@ export default (): JSX.Element => {
       <div className="Model Review">
         <div className="header">
           <Header
+            draftExperiment={draftExperiment}
             handleGoBackToExplore={handleGoBackToExplore}
             handleCreateExperiment={handleCreateExperiment}
           />
