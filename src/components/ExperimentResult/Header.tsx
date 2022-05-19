@@ -10,7 +10,7 @@ import {
   useEditExperimentMutation
 } from '../API/GraphQL/queries.generated';
 import { Experiment } from '../API/GraphQL/types.generated';
-import ExportExperiment from './Export/ExportExperiment';
+import ExportExperiment from '../UI/Export/ExportExperiment';
 
 dayjs.extend(relativeTime);
 dayjs().format();

@@ -1,7 +1,7 @@
 import React from 'react';
 import { useActiveUserQuery } from '../../API/GraphQL/queries.generated';
 import { Experiment } from '../../API/GraphQL/types.generated';
-import ExportExperiment from '../../ExperimentResult/Export/ExportExperiment';
+import ExportExperiment from '../../UI/Export/ExportExperiment';
 
 type Props = {
   draftExperiment: Experiment;
