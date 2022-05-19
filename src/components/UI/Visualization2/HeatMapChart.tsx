@@ -1,8 +1,12 @@
 /* eslint-disable @typescript-eslint/camelcase */
 /* eslint-disable react-hooks/exhaustive-deps */
 import React, { useEffect } from 'react';
-import { Card } from 'react-bootstrap';
 import { HeatMapResult, HeatMapStyle } from '../../API/GraphQL/types.generated';
+import styled from 'styled-components';
+
+const Container = styled.div`
+  align-self: center;
+`;
 
 declare let window: any;
 
@@ -119,11 +123,5 @@ export default ({ ...props }: Props) => {
     plot.show(p, '#chart-heatmap');
   }, [plot]);
 
-  return (
-    <>
-      <Card>
-        <div id="chart-heatmap"></div>
-      </Card>
-    </>
-  );
+  return <Container id="chart-heatmap" className="result"></Container>;
 };

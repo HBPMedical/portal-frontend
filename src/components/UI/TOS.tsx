@@ -52,8 +52,8 @@ export default (): JSX.Element => {
 
   useEffect(() => {
     const fetchData = async (): Promise<void> => {
-      const data = await fetch(makeAssetURL('tos.md'));
-      const text = await data.text();
+      const dataTos = await fetch(makeAssetURL('tos.md'));
+      const text = await dataTos.text();
       if (mountedRef.current) setTOS(text);
     };
 
@@ -87,11 +87,7 @@ export default (): JSX.Element => {
 
   return (
     <Container>
-      {TOS && (
-        <ReactMarkdown rehypePlugins={[rehypeRaw]}>
-          {TOS as string}
-        </ReactMarkdown>
-      )}
+      {TOS && <ReactMarkdown rehypePlugins={[rehypeRaw]}>{TOS}</ReactMarkdown>}
       <ContainerBtnRight className="tos-form">
         <div>
           <Form.Check

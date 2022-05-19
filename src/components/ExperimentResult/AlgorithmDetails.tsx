@@ -5,22 +5,16 @@ import { useListAlgorithmsQuery } from '../API/GraphQL/queries.generated';
 import { AlgorithmResult } from '../API/GraphQL/types.generated';
 import Loader from '../UI/Loader';
 
-const Param = styled.p`
-  overflow: wrap;
-  width: 200px;
-  word-wrap: break-word;
-  display: inline-block;
-  margin-left: 15px;
+const ParamContainer = styled.div`
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+  margin-left: 5px;
+  align-items: flex-start;
 
-  &.title {
-    font-weight: bold;
-  }
-
-  & > .badge {
+  .badge {
     text-align: left;
-    white-space: normal;
-    margin-left: 5px;
-    word-break: break-word;
+    white-space: initial;
   }
 `;
 
@@ -50,13 +44,15 @@ const AlgorithmDetails = ({
           {!loading && result && (
             <>
               <p>{algo?.label || result.name}</p>
-              {params.map(param => (
-                <Param key={param.id}>
-                  <Badge variant="primary">
-                    {param.label || param.id}: {param.value ?? 'not defined'}
-                  </Badge>
-                </Param>
-              ))}
+              {params && params.length > 0 && (
+                <ParamContainer>
+                  {params.map(p => (
+                    <Badge variant="info" key={p.id}>
+                      {p.label || p.id}: {p.value ?? 'not defined'}
+                    </Badge>
+                  ))}
+                </ParamContainer>
+              )}
             </>
           )}
         </>
