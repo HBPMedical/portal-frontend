@@ -10,6 +10,7 @@ import {
   useEditExperimentMutation
 } from '../API/GraphQL/queries.generated';
 import { Experiment } from '../API/GraphQL/types.generated';
+import ExportExperiment from './Export/ExportExperiment';
 
 dayjs.extend(relativeTime);
 dayjs().format();
@@ -18,6 +19,12 @@ const InlineDialog = styled.div`
   display: flex;
   justify-content: space-between;
   align-items: center;
+`;
+
+const ContainerActions = styled.div`
+  display: flex;
+  flex-direction: row;
+  gap: 5px;
 `;
 
 interface Props {
@@ -80,67 +87,64 @@ const ExperimentResultHeader = ({
             {experiment?.author?.fullname ?? experiment?.author?.username}
           </p>
         </div>
+        <ContainerActions>
+          {confirmDelete ? (
+            <>
+              <InlineDialog>
+                <p className="danger">Really delete this experiment?</p>
+                <div>
+                  <Button
+                    size={'sm'}
+                    variant="primary"
+                    onClick={(): void => {
+                      handleDeleteExperiment();
+                      setConfirmDelete(undefined);
+                    }}
+                  >
+                    <GoCheck />
+                  </Button>{' '}
+                  <Button
+                    size={'sm'}
+                    variant="outline-dark"
+                    onClick={(): void => {
+                      setConfirmDelete(undefined);
+                    }}
+                  >
+                    Cancel
+                  </Button>
+                </div>
+              </InlineDialog>
+            </>
+          ) : (
+            experiment && (
+              <Button
+                onClick={(): void => setConfirmDelete(id)}
+                variant="outline-dark"
+                type="submit"
+              >
+                Delete
+              </Button>
+            )
+          )}
 
-        {confirmDelete ? (
-          <>
-            <InlineDialog>
-              <p style={{ marginRight: '8px' }} className="danger">
-                Really delete this experiment?
-              </p>
-              <div>
-                <Button
-                  size={'sm'}
-                  variant="primary"
-                  onClick={(): void => {
-                    handleDeleteExperiment();
-                    setConfirmDelete(undefined);
-                  }}
-                >
-                  <GoCheck />
-                </Button>{' '}
-                <Button
-                  size={'sm'}
-                  variant="outline-dark"
-                  style={{ marginRight: '8px' }}
-                  onClick={(): void => {
-                    setConfirmDelete(undefined);
-                  }}
-                >
-                  Cancel
-                </Button>
-              </div>
-            </InlineDialog>
-          </>
-        ) : (
-          experiment && (
+          {experiment && (
             <Button
-              onClick={(): void => setConfirmDelete(id)}
-              style={{ marginRight: '8px' }}
-              variant="outline-dark"
-              type="submit"
+              variant={experiment?.shared ? 'secondary' : 'info'}
+              onClick={handleShareExperiment}
             >
-              Delete
+              {experiment?.shared ? 'Unshare' : 'Share'}
             </Button>
-          )
-        )}
+          )}
 
-        {experiment && (
           <Button
-            variant={experiment?.shared ? 'secondary' : 'info'}
-            onClick={handleShareExperiment}
-            style={{ marginRight: '8px' }}
+            onClick={handleCreateNewExperiment}
+            variant="info"
+            type="submit"
           >
-            {experiment?.shared ? 'Unshare Experiment' : 'Share Experiment'}
+            New Experiment from Parameters
           </Button>
-        )}
-
-        <Button
-          onClick={handleCreateNewExperiment}
-          variant="info"
-          type="submit"
-        >
-          New Experiment from Parameters
-        </Button>
+          {experiment && <ExportExperiment experiment={experiment} />}
+        </ContainerActions>
       </Card.Body>
     </Card>
   );

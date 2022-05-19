@@ -1,4 +1,5 @@
 import React from 'react';
+import styled from 'styled-components';
 import { Result } from '../API/Experiment';
 import {
   GroupsResult,
@@ -22,35 +23,39 @@ type Switcher = {
   [key: string]: JSX.Element;
 };
 
-class ResultDispatcher extends React.Component<Props> {
-  render(): JSX.Element {
-    const type: string = (
-      this.props.result.__typename ?? 'error'
-    ).toLowerCase();
-    const { result, constraint } = this.props;
-    return (
-      <>
-        {
-          ({
-            groupsresult: (
-              <GroupTable result={result as GroupsResult} loading={false} />
-            ),
-            tableresult: <DataTable data={result as TableResult} />,
-            rawresult: (
-              <ResultsErrorBoundary>
-                <RenderResult
-                  results={[(result as RawResult)?.rawdata] as Result[]}
-                  constraint={constraint ?? true}
-                />
-              </ResultsErrorBoundary>
-            ),
-            heatmapresult: <HeatMapChart data={result as HeatMapResult} />,
-            error: <div> An error occured </div>
-          } as Switcher)[type]
-        }
-      </>
-    );
-  }
-}
+const ContainerResult = styled.div`
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+`;
+
+const ResultDispatcher = ({ result, constraint }: Props) => {
+  const type: string = (result.__typename ?? 'error').toLowerCase();
+  const children = ({
+    groupsresult: (
+      <GroupTable result={result as GroupsResult} loading={false} />
+    ),
+    tableresult: <DataTable data={result as TableResult} />,
+    rawresult: (
+      <ResultsErrorBoundary>
+        <RenderResult
+          results={[(result as RawResult)?.rawdata] as Result[]}
+          constraint={constraint ?? true}
+        />
+      </ResultsErrorBoundary>
+    ),
+    heatmapresult: <HeatMapChart data={result as HeatMapResult} />,
+    error: <div> An error occured </div>
+  } as Switcher)[type];
+  if (!children) return <></>;
+  return (
+    <ContainerResult
+      className={type !== 'groupsresult' ? 'exp-result' : ''}
+      data-export={type === 'tableresult' ? 'container' : 'inplace'}
+    >
+      {children}
+    </ContainerResult>
+  );
+};
 
 export default ResultDispatcher;
