@@ -32,12 +32,12 @@ const ExportExperiment = ({ experiment }: Props) => {
       <Dropdown.Menu>
         <ExperimentPDF experiment={experiment} filename={`${filename}.pdf`}>
           {({ downloadPDF, isLoading }: ChildrenPDFExport) => (
-            <Dropdown.Item href="#/action-2" onClick={downloadPDF}>
+            <Dropdown.Item onClick={downloadPDF}>
               <FaFilePdf /> {isLoading ? 'Generating...' : 'PDF'}
             </Dropdown.Item>
           )}
         </ExperimentPDF>
-        <Dropdown.Item href="#/action-2" onClick={exportJSON}>
+        <Dropdown.Item onClick={exportJSON}>
           <BsFileCode /> Raw (JSON)
         </Dropdown.Item>
       </Dropdown.Menu>

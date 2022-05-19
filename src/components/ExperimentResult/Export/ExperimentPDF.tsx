@@ -73,7 +73,13 @@ const styles = StyleSheet.create({
     marginTop: 100
   },
   bold: {
-    fontWeight: 'bold'
+    fontWeight: 'bold',
+    alignSelf: 'flex-start'
+  },
+  flexCol: {
+    display: 'flex',
+    flexDirection: 'column',
+    alignItems: 'flex-start'
   },
   result: {
     textAlign: 'center',
@@ -100,7 +106,8 @@ const styles = StyleSheet.create({
     display: 'flex',
     flexDirection: 'row',
     alignItems: 'center',
-    marginTop: 3
+    marginTop: 3,
+    flexWrap: 'wrap'
   },
   author: {
     fontSize: 12,
@@ -152,22 +159,29 @@ type DocumentPDFHandle = {
 const fetchImages = async (): Promise<string[]> => {
   const results = Array.from(document.getElementsByClassName('exp-result'));
   return Promise.all(
-    results.map(async ele => {
+    results.map(async elem => {
       const container = document.createElement('div');
       container.setAttribute('style', 'width: 1300px; height: auto;');
       document.body.appendChild(container);
-      const el = ele.cloneNode(true) as HTMLElement;
-      el.setAttribute('style', 'width: 1300px; height: auto;');
-      el.classList.remove('exp-result');
-      container.appendChild(el);
-      const img = await hmtlToImage.toPng(container, {
+      const hasContainer = elem.getAttribute('data-export') === 'container';
+      const el = (!hasContainer ? elem : elem.cloneNode(true)) as HTMLElement;
+
+      if (hasContainer) {
+        el.classList.remove('exp-result');
+        container.appendChild(el);
+      }
+
+      const img = await hmtlToImage.toPng(el, {
         skipFonts: true,
         quality: 1,
         pixelRatio: 2
       });
-      container.removeChild(el);
-      el.remove();
-      container.remove();
+
+      if (hasContainer) {
+        container.removeChild(el);
+        el.remove();
+        container.remove();
+      }
 
       return img;
     })
@@ -309,11 +323,13 @@ const DocumentPDF = React.forwardRef<DocumentPDFHandle, DocumentProps>(
                   </View>
                   <View style={{ ...styles.subtitle, marginLeft: 10 }}>
                     <Text style={styles.bold}>Params: </Text>
-                    <Text>
+                    <View style={styles.flexCol}>
+                      {params.length === 0 && <Text>{emptyLabel}</Text>}
                       {params
                         ?.map(p => `${p.label ?? p.id}: ${p.value}`)
-                        .join(', ') ?? emptyLabel}
-                    </Text>
+                        .map((text, i) => <Text key={i}>{text}</Text>) ??
+                        emptyLabel}
+                    </View>
                   </View>
                   <View style={styles.subtitle}>
                     <Text style={styles.bold}>Domain: </Text>

@@ -3,6 +3,7 @@ import React, { useEffect, useState } from 'react';
 import { Button, Card } from 'react-bootstrap';
 import { useHistory } from 'react-router-dom';
 import Sidebar from 'react-sidebar';
+import styled from 'styled-components';
 import {
   draftExperimentVar,
   selectedDomainVar,
@@ -15,8 +16,13 @@ import ResultDispatcher from '../ExperimentResult/ResultDispatcher';
 import Error from '../UI/Error';
 import Loader from '../UI/Loader';
 import ExperimentSidebar from './ExperimentSidebar';
+import ExportDescriptive from './Export/ExportDescriptive';
 import FormulaWrapper from './FilterFormulaWrapper';
 import Header from './Header';
+
+const ExportButton = styled.div`
+  float: right;
+`;
 
 export default (): JSX.Element => {
   const [sidebarOpen, setSidebarOpen] = useState(false);
@@ -95,7 +101,6 @@ export default (): JSX.Element => {
       <div className="Model Review">
         <div className="header">
           <Header
-            draftExperiment={draftExperiment}
             handleGoBackToExplore={handleGoBackToExplore}
             handleCreateExperiment={handleCreateExperiment}
           />
@@ -117,6 +122,11 @@ export default (): JSX.Element => {
                 <Button variant="info" onClick={() => setSidebarOpen(true)}>
                   Filters &amp; Formula
                 </Button>
+                {!loading && (
+                  <ExportButton>
+                    <ExportDescriptive draftExperiment={draftExperiment} />
+                  </ExportButton>
+                )}
               </Card.Header>
               <Card.Body>
                 {loading && <Loader />}

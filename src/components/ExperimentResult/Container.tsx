@@ -36,11 +36,9 @@ const ContainerWrap = ({ ...props }: Props): JSX.Element => {
       if (domainId && domainId !== domain?.id)
         setDomain(domains.find(d => d.id === domainId));
 
-      if (newExperiment.status === 'pending') {
-        if (!isPolling) {
-          startPolling(1000);
-          setIsPolling(true);
-        }
+      if (newExperiment.status === 'pending' && !isPolling) {
+        startPolling(1000);
+        setIsPolling(true);
       }
 
       if (newExperiment.status !== 'pending' && isPolling) {

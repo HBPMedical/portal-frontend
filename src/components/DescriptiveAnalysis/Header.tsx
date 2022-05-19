@@ -1,29 +1,13 @@
 import * as React from 'react';
 import { Button, Card } from 'react-bootstrap';
 import { BsFillCaretLeftFill, BsFillCaretRightFill } from 'react-icons/bs';
-import { Experiment } from '../API/GraphQL/types.generated';
-import ExportExperiment from '../ExperimentResult/Export/ExportExperiment';
 
 interface Props {
-  draftExperiment: Experiment;
   handleGoBackToExplore: () => void;
   handleCreateExperiment: () => void;
 }
 
-const Header = ({
-  handleCreateExperiment,
-  handleGoBackToExplore,
-  draftExperiment
-}: Props) => {
-  const experiment: Experiment = {
-    ...draftExperiment,
-    name: 'Descriptive analysis',
-    createdAt: new Date().getMilliseconds(),
-    algorithm: {
-      name: 'DESCRIPTIVE_STATS',
-      parameters: []
-    }
-  };
+const Header = ({ handleCreateExperiment, handleGoBackToExplore }: Props) => {
   return (
     <Card>
       <Card.Body>
@@ -32,7 +16,6 @@ const Header = ({
         </Button>
         <h3>Descriptive Analysis</h3>
         <div className="item">
-          {experiment && <ExportExperiment experiment={experiment} />}
           <Button onClick={handleCreateExperiment} variant="info" type="submit">
             Create Experiment <BsFillCaretRightFill />{' '}
           </Button>
