@@ -13,6 +13,7 @@ import DataTable from '../UI/Visualization2/DataTable';
 import GroupTable from '../UI/Visualization2/GroupResult';
 import HeatMapChart from '../UI/Visualization2/HeatMapChart';
 import RenderResult from './RenderResult';
+import ExportResult from '../UI/Export/ExportResult';
 
 type Props = {
   result: ResultUnion;
@@ -44,7 +45,11 @@ const ResultDispatcher = ({ result, constraint }: Props) => {
         />
       </ResultsErrorBoundary>
     ),
-    heatmapresult: <HeatMapChart data={result as HeatMapResult} />,
+    heatmapresult: (
+      <ExportResult>
+        <HeatMapChart data={result as HeatMapResult} />
+      </ExportResult>
+    ),
     error: <div> An error occured </div>
   } as Switcher)[type];
   if (!children) return <></>;
