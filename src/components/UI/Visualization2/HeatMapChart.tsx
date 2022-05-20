@@ -6,6 +6,7 @@ import styled from 'styled-components';
 
 const Container = styled.div`
   align-self: center;
+  display: inline-block;
 `;
 
 declare let window: any;

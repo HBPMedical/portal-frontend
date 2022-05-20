@@ -63,10 +63,12 @@ export default ({ experiment }: { experiment?: Experiment }): JSX.Element => {
             </p>
           </div>
         ) : null}
-        {experiment &&
-          experiment.results?.map((result, i) => (
-            <ResultDispatcher key={i} result={result} />
-          ))}
+        <div className="result-list">
+          {experiment &&
+            experiment.results?.map((result, i) => (
+              <ResultDispatcher key={i} result={result} />
+            ))}
+        </div>
       </Body>
     </Card>
   );

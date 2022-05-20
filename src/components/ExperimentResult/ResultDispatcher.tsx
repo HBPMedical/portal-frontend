@@ -21,7 +21,7 @@ type Props = {
 };
 
 type Switcher = {
-  [key: string]: JSX.Element;
+  [key: string]: (data?: ResultUnion) => React.ReactNode;
 };
 
 const ContainerResult = styled.div`
@@ -33,33 +33,35 @@ const ContainerResult = styled.div`
 const ResultDispatcher = ({ result, constraint }: Props) => {
   const type: string = (result.__typename ?? 'error').toLowerCase();
   const children = ({
-    groupsresult: (
-      <GroupTable result={result as GroupsResult} loading={false} />
-    ),
-    tableresult: <DataTable data={result as TableResult} />,
-    rawresult: (
+    tableresult: data => <DataTable data={data as TableResult} />,
+    rawresult: data => (
       <ResultsErrorBoundary>
         <RenderResult
-          results={[(result as RawResult)?.rawdata] as Result[]}
+          results={[(data as RawResult)?.rawdata] as Result[]}
           constraint={constraint ?? true}
         />
       </ResultsErrorBoundary>
     ),
-    heatmapresult: (
-      <ExportResult>
-        <HeatMapChart data={result as HeatMapResult} />
-      </ExportResult>
-    ),
-    error: <div> An error occured </div>
+    heatmapresult: data => <HeatMapChart data={data as HeatMapResult} />,
+    error: () => <div> An error occured </div>
   } as Switcher)[type];
+
+  if (type === 'groupsresult')
+    return <GroupTable result={result as GroupsResult} loading={false} />;
+
   if (!children) return <></>;
+
   return (
-    <ContainerResult
-      className={type !== 'groupsresult' ? 'exp-result' : ''}
-      data-export={type === 'tableresult' ? 'container' : 'inplace'}
-    >
-      {children}
-    </ContainerResult>
+    <ExportResult result={result}>
+      {data => (
+        <ContainerResult
+          className="exp-result"
+          data-export={type === 'tableresult' ? 'container' : 'inplace'}
+        >
+          {children(data)}
+        </ContainerResult>
+      )}
+    </ExportResult>
   );
 };
 

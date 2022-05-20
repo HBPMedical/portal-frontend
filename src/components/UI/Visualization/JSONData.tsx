@@ -4,7 +4,6 @@ import styled from 'styled-components';
 import { round } from '../../utils';
 
 const Table = styled.table`
-  margin-bottom: 32px;
   table-layout: fixed;
   white-space: nowrap;
   min-width: 100%;
