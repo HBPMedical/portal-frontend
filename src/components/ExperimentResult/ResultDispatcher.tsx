@@ -4,6 +4,7 @@ import { Result } from '../API/Experiment';
 import {
   GroupsResult,
   HeatMapResult,
+  LineChartResult,
   RawResult,
   ResultUnion,
   TableResult
@@ -14,6 +15,7 @@ import GroupTable from '../UI/Visualization2/GroupResult';
 import HeatMapChart from '../UI/Visualization2/HeatMapChart';
 import RenderResult from './RenderResult';
 import ExportResult from '../UI/Export/ExportResult';
+import LineGraph from '../UI/Visualization2/LineGraph';
 
 type Props = {
   result: ResultUnion;
@@ -53,6 +55,7 @@ const ResultDispatcher = ({
       </ResultsErrorBoundary>
     ),
     heatmapresult: data => <HeatMapChart data={data as HeatMapResult} />,
+    linechartresult: data => <LineGraph data={data as LineChartResult} />,
     error: () => <div> An error occured </div>
   } as Switcher)[type];
 

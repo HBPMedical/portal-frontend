@@ -1,8 +1,13 @@
 /* eslint-disable @typescript-eslint/camelcase */
 /* eslint-disable react-hooks/exhaustive-deps */
 import React, { useEffect } from 'react';
-import { Card } from 'react-bootstrap';
+import styled from 'styled-components';
 import { LineChartResult } from '../../API/GraphQL/types.generated';
+
+const Container = styled.div`
+  align-self: center;
+  display: inline-block;
+`;
 
 const colors = [
   'blue',
@@ -31,7 +36,7 @@ const LineGraph = ({ data }: Props) => {
 
   const p = plot.figure({
     height: 500,
-    width: 800,
+    width: 600,
     x_axis_label: data.xAxis?.label ?? '',
     y_axis_label: data.yAxis?.label ?? '',
     grid_line_color: 'white',
@@ -89,13 +94,7 @@ const LineGraph = ({ data }: Props) => {
     plot.show(p, '#chart-line-graph');
   }, [plot]);
 
-  return (
-    <>
-      <Card>
-        <div id={`chart-line-graph`}></div>
-      </Card>
-    </>
-  );
+  return <Container id="chart-line-graph" className="result"></Container>;
 };
 
 export default LineGraph;
