@@ -18,19 +18,29 @@ import ExportResult from '../UI/Export/ExportResult';
 type Props = {
   result: ResultUnion;
   constraint?: boolean;
+  allowExport?: boolean;
 };
 
 type Switcher = {
   [key: string]: (data?: ResultUnion) => React.ReactNode;
 };
 
-const ContainerResult = styled.div`
+type ContainerProps = {
+  hasExport: boolean;
+};
+
+const ContainerResult = styled.div<ContainerProps>`
   display: flex;
   flex-direction: column;
   justify-content: center;
+  padding-top: ${p => (p.hasExport ? '20px' : '0')};
 `;
 
-const ResultDispatcher = ({ result, constraint }: Props) => {
+const ResultDispatcher = ({
+  result,
+  constraint,
+  allowExport = true
+}: Props) => {
   const type: string = (result.__typename ?? 'error').toLowerCase();
   const children = ({
     tableresult: data => <DataTable data={data as TableResult} />,
@@ -51,18 +61,31 @@ const ResultDispatcher = ({ result, constraint }: Props) => {
 
   if (!children) return <></>;
 
-  return (
-    <ExportResult result={result}>
-      {data => (
-        <ContainerResult
-          className="exp-result"
-          data-export={type === 'tableresult' ? 'container' : 'inplace'}
-        >
-          {children(data)}
-        </ContainerResult>
-      )}
-    </ExportResult>
-  );
+  if (allowExport) {
+    return (
+      <ExportResult result={result}>
+        {data => (
+          <ContainerResult
+            hasExport={allowExport}
+            className="exp-result"
+            data-export={type === 'tableresult' ? 'container' : 'inplace'}
+          >
+            {children(data)}
+          </ContainerResult>
+        )}
+      </ExportResult>
+    );
+  } else {
+    return (
+      <ContainerResult
+        className="exp-result"
+        hasExport={allowExport}
+        data-export={type === 'tableresult' ? 'container' : 'inplace'}
+      >
+        {children(result)}
+      </ContainerResult>
+    );
+  }
 };
 
 export default ResultDispatcher;

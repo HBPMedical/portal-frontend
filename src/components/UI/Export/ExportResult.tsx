@@ -18,6 +18,10 @@ const ToolBox = styled.div`
   position: absolute;
   top: 0;
   right: 0;
+
+  .btn-link {
+    padding: 1px 5px;
+  }
 `;
 type Props = {
   result: ResultUnion;
