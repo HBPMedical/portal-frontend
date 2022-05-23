@@ -233,6 +233,7 @@ export enum HeatMapStyle {
 
 export type LineChartResult = {
   __typename?: 'LineChartResult';
+  hasBisector?: Maybe<Scalars['Boolean']>;
   lines: Array<LineResult>;
   name: Scalars['String'];
   xAxis?: Maybe<ChartAxis>;

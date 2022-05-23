@@ -56,6 +56,7 @@ export const coreInfoResult = gql`
     }
     ... on LineChartResult {
       name
+      hasBisector
       xAxis {
         label
       }
