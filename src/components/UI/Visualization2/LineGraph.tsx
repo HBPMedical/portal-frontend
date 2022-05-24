@@ -35,6 +35,7 @@ const LineGraph = ({ data }: Props) => {
   const p_tools = ['hover', 'pan', 'zoom_in', 'zoom_out', 'reset', 'box_zoom'];
 
   const p = plot.figure({
+    title: data.name,
     height: 500,
     width: 600,
     x_axis_label: data.xAxis?.label ?? '',
