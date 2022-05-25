@@ -12,7 +12,7 @@ const ExportDescriptive = ({ draftExperiment }: Props) => {
   const experiment: Experiment = {
     ...draftExperiment,
     name: 'Descriptive analysis',
-    createdAt: Date.now(),
+    createdAt: new Date().toISOString(),
     author: {
       fullname: data?.user.fullname,
       username: data?.user.username

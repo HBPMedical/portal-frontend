@@ -1,7 +1,7 @@
 import React from 'react';
 import { Card, ProgressBar } from 'react-bootstrap';
 import styled, { keyframes } from 'styled-components';
-import { Experiment } from '../API/GraphQL/types.generated';
+import { Experiment, ExperimentStatus } from '../API/GraphQL/types.generated';
 import ResultDispatcher from './ResultDispatcher';
 
 const Body = styled(Card.Body)`
@@ -43,7 +43,7 @@ const ProgressBarStyled = styled.div`
 `;
 
 export default ({ experiment }: { experiment?: Experiment }): JSX.Element => {
-  const loading = experiment?.status === 'pending';
+  const loading = experiment?.status === ExperimentStatus.Pending;
 
   return (
     <Card>
