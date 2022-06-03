@@ -171,7 +171,7 @@ export default ({
           <Group className="experiment-nav">
             <GroupLink to="/explore">Variables</GroupLink>
             <span> &gt; </span>
-            <GroupLink to="/review">Analysis</GroupLink>
+            <GroupLink to="/analysis">Analysis</GroupLink>
             <span> &gt; </span>
             <GroupLink to="/experiment">Experiment</GroupLink>
           </Group>
