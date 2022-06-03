@@ -3,8 +3,6 @@ import * as React from 'react';
 import { Card, ProgressBar } from 'react-bootstrap';
 import styled, { keyframes } from 'styled-components';
 import { Experiment, ResultUnion } from '../API/GraphQL/types.generated';
-import Error from '../UI/Error';
-import Loader from '../UI/Loader';
 import ResultsErrorBoundary from '../UI/ResultsErrorBoundary';
 import ResultDispatcher from './ResultDispatcher';
 
