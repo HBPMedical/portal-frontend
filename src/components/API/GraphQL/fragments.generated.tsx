@@ -7,7 +7,7 @@ export type CoreInfoResult_GroupsResult_Fragment = { __typename?: 'GroupsResult'
 
 export type CoreInfoResult_HeatMapResult_Fragment = { __typename?: 'HeatMapResult', name: string, matrix: Array<Array<number>>, heatMapStyle?: Types.Maybe<Types.HeatMapStyle>, xAxis?: Types.Maybe<{ __typename?: 'ChartAxis', label?: Types.Maybe<string>, categories?: Types.Maybe<Array<string>> }>, yAxis?: Types.Maybe<{ __typename?: 'ChartAxis', label?: Types.Maybe<string>, categories?: Types.Maybe<Array<string>> }> };
 
-export type CoreInfoResult_LineChartResult_Fragment = { __typename?: 'LineChartResult', name: string, xAxis?: Types.Maybe<{ __typename?: 'ChartAxis', label?: Types.Maybe<string> }>, yAxis?: Types.Maybe<{ __typename?: 'ChartAxis', label?: Types.Maybe<string> }>, lines: Array<{ __typename?: 'LineResult', label: string, x: Array<number>, y: Array<number>, type?: Types.Maybe<Types.LineType>, extraLineInfos?: Types.Maybe<Array<{ __typename?: 'ExtraLineInfo', label: string, values: Array<string> }>> }> };
+export type CoreInfoResult_LineChartResult_Fragment = { __typename?: 'LineChartResult', name: string, hasBisector?: Types.Maybe<boolean>, xAxis?: Types.Maybe<{ __typename?: 'ChartAxis', label?: Types.Maybe<string> }>, yAxis?: Types.Maybe<{ __typename?: 'ChartAxis', label?: Types.Maybe<string> }>, lines: Array<{ __typename?: 'LineResult', label: string, x: Array<number>, y: Array<number>, type?: Types.Maybe<Types.LineType>, extraLineInfos?: Types.Maybe<Array<{ __typename?: 'ExtraLineInfo', label: string, values: Array<string> }>> }> };
 
 export type CoreInfoResult_MeanChartResult_Fragment = { __typename?: 'MeanChartResult', name: string, xAxis?: Types.Maybe<{ __typename?: 'ChartAxis', label?: Types.Maybe<string>, categories?: Types.Maybe<Array<string>> }>, yAxis?: Types.Maybe<{ __typename?: 'ChartAxis', label?: Types.Maybe<string>, categories?: Types.Maybe<Array<string>> }>, pointCIs: Array<{ __typename?: 'PointCI', min?: Types.Maybe<number>, mean: number, max?: Types.Maybe<number> }> };
 
@@ -73,6 +73,7 @@ export const CoreInfoResultFragmentDoc = gql`
   }
   ... on LineChartResult {
     name
+    hasBisector
     xAxis {
       label
     }

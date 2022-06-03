@@ -1,77 +1,104 @@
 /* eslint-disable @typescript-eslint/camelcase */
 /* eslint-disable react-hooks/exhaustive-deps */
-import React, { useEffect } from 'react';
-import { Card } from 'react-bootstrap';
+import React, { useEffect, useRef } from 'react';
+import styled from 'styled-components';
+import { LineChartResult } from '../../API/GraphQL/types.generated';
+
+const Container = styled.div`
+  align-self: center;
+  display: inline-block;
+`;
+
+const colors = [
+  'blue',
+  'red',
+  'green',
+  'yellow',
+  'cyan',
+  'darkgrey',
+  'black',
+  'brown',
+  'orange'
+];
 
 declare let window: any;
 
-const LineGraph = () => {
+type Props = {
+  data: LineChartResult;
+};
+
+const LineGraph = ({ data }: Props) => {
+  const containerRef = useRef<HTMLDivElement>(null);
   const Bokeh = window.Bokeh;
   const plot = Bokeh.Plotting;
 
-  // TODO: find appropriate number of lines and create dynamically
-  const x = [1, 2, 3, 4, 5];
-  const y1 = [6, 7, 2, 4, 5];
-  const y2 = [2, 3, 4, 5, 6];
-  const y3 = [4, 5, 5, 7, 2];
-
-  const source = new Bokeh.ColumnDataSource({
-    data: {
-      x: x,
-      y1: y1,
-      y2: y2,
-      y3: y3
-    }
-  });
+  // Create your toolbox
+  const p_tools = ['hover', 'pan', 'zoom_in', 'zoom_out', 'reset', 'box_zoom'];
 
   const p = plot.figure({
+    title: data.name,
     height: 500,
-    width: 800,
-    x_axis_label: 'x',
-    y_axis_label: 'Pr(x)',
-    grid_line_color: 'white'
+    width: 600,
+    x_axis_label: data.xAxis?.label ?? '',
+    y_axis_label: data.yAxis?.label ?? '',
+    grid_line_color: 'white',
+    tools: p_tools
   });
 
-  p.line({
-    x: { field: 'x' },
-    y: { field: 'y1' },
-    // line_color: "ff8888",
-    line_width: 4,
-    // alpha: 0.7,
-    // legend_label: "PDF",
-    source: source
-  });
+  const hover = p.toolbar.select_one(Bokeh.HoverTool);
+  hover.tooltips = (_source: any, info: any) => {
+    const div = document.createElement('div');
+    div.innerHTML = `x: ${info.data_x}</br> y: ${info.data_y}`;
+    return div;
+  };
 
-  p.line({
-    x: { field: 'x' },
-    y: { field: 'y2' },
-    line_color: 'red',
-    line_width: 4,
-    // alpha: 0.7,
-    // legend_label: "PDF",
-    source: source
-  });
+  for (const [i, line] of data.lines.entries()) {
+    const color = colors[i % colors.length];
 
-  p.line({
-    x: { field: 'x' },
-    y: { field: 'y3' },
-    line_color: 'green',
-    line_width: 4,
-    // alpha: 0.7,
-    // legend_label: "PDF",
-    source: source
-  });
+    p.line({
+      x: line.x,
+      y: line.y,
+      line_color: color,
+      line_width: 2,
+      legend: line.label,
+      line_dash: line.type?.toLocaleLowerCase()
+    });
+
+    p.circle({
+      x: line.x,
+      y: line.y,
+      size: 6,
+      color: color,
+      line_color: 'white',
+      legend: line.label,
+      name: 'ROC'
+    });
+  }
+
+  if (data.hasBisector) {
+    const values = data.lines.flatMap(line => line.x);
+    const max = Math.max(...values);
+    const min = Math.min(...values);
+
+    p.line({
+      x: [min, max],
+      y: [min, max],
+      line_color: 'grey',
+      line_width: 2,
+      line_dash: 'dashed',
+      alpha: 0.5
+    });
+  }
+
+  p.legend.location = 'bottom_right';
 
   useEffect(() => {
+    if (containerRef.current) containerRef.current.innerHTML = '';
     plot.show(p, '#chart-line-graph');
   }, [plot]);
 
   return (
-    <>
-      <Card>
-        <div id={`chart-line-graph`}></div>
-      </Card>
-    </>
+    <Container id="chart-line-graph" className="result" ref={containerRef} />
   );
 };
 

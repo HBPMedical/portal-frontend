@@ -5,7 +5,11 @@ import { RouteComponentProps, withRouter } from 'react-router-dom';
 import { domainsVar } from '../API/GraphQL/cache';
 import { localMutations } from '../API/GraphQL/operations/mutations';
 import { useGetExperimentQuery } from '../API/GraphQL/queries.generated';
-import { Domain, Experiment } from '../API/GraphQL/types.generated';
+import {
+  Domain,
+  Experiment,
+  ExperimentStatus
+} from '../API/GraphQL/types.generated';
 import ApolloErrorHandler from '../UI/ApolloErrorHandler';
 import ListSection from '../UI/ListSection';
 import Model from '../UI/Model';
@@ -36,19 +40,20 @@ const ContainerWrap = ({ ...props }: Props): JSX.Element => {
       if (domainId && domainId !== domain?.id)
         setDomain(domains.find(d => d.id === domainId));
 
-      if (newExperiment.status === 'pending' && !isPolling) {
+      if (newExperiment.status === ExperimentStatus.Pending && !isPolling) {
         startPolling(1000);
         setIsPolling(true);
       }
 
-      if (newExperiment.status !== 'pending' && isPolling) {
+      if (newExperiment.status !== ExperimentStatus.Pending && isPolling) {
         stopPolling();
         setIsPolling(false);
       }
 
       if (
         newExperiment.id !== experiment?.id ||
-        experiment?.status !== newExperiment.status
+        experiment?.status !== newExperiment.status ||
+        newExperiment.status !== ExperimentStatus.Pending
       )
         setExperiment(newExperiment);
     }

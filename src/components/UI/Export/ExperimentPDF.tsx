@@ -366,7 +366,11 @@ const DocumentPDF = React.forwardRef<DocumentPDFHandle, DocumentProps>(
                   </View>
                   <View style={styles.subtitle}>
                     <Text style={styles.bold}>Filter: </Text>
-                    <Text>{experiment.filter ?? emptyLabel}</Text>
+                    <Text>
+                      {!experiment.filter || experiment.filter === ''
+                        ? emptyLabel
+                        : experiment.filter}
+                    </Text>
                   </View>
                   <View style={styles.subtitle}>
                     <Text style={styles.bold}>Formula </Text>

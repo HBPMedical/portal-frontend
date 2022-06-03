@@ -4,6 +4,7 @@ import { Result } from '../API/Experiment';
 import {
   GroupsResult,
   HeatMapResult,
+  LineChartResult,
   RawResult,
   ResultUnion,
   TableResult
@@ -13,49 +14,81 @@ import DataTable from '../UI/Visualization2/DataTable';
 import GroupTable from '../UI/Visualization2/GroupResult';
 import HeatMapChart from '../UI/Visualization2/HeatMapChart';
 import RenderResult from './RenderResult';
+import ExportResult from '../UI/Export/ExportResult';
+import LineGraph from '../UI/Visualization2/LineGraph';
 
 type Props = {
   result: ResultUnion;
   constraint?: boolean;
+  allowExport?: boolean;
 };
 
 type Switcher = {
-  [key: string]: JSX.Element;
+  [key: string]: (data?: ResultUnion) => React.ReactNode;
 };
 
-const ContainerResult = styled.div`
+type ContainerProps = {
+  hasExport: boolean;
+};
+
+const ContainerResult = styled.div<ContainerProps>`
   display: flex;
   flex-direction: column;
   justify-content: center;
+  padding-top: ${p => (p.hasExport ? '20px' : '0')};
 `;
 
-const ResultDispatcher = ({ result, constraint }: Props) => {
+const ResultDispatcher = ({
+  result,
+  constraint,
+  allowExport = true
+}: Props) => {
   const type: string = (result.__typename ?? 'error').toLowerCase();
   const children = ({
-    groupsresult: (
-      <GroupTable result={result as GroupsResult} loading={false} />
-    ),
-    tableresult: <DataTable data={result as TableResult} />,
-    rawresult: (
+    tableresult: data => <DataTable data={data as TableResult} />,
+    rawresult: data => (
       <ResultsErrorBoundary>
         <RenderResult
-          results={[(result as RawResult)?.rawdata] as Result[]}
+          results={[(data as RawResult)?.rawdata] as Result[]}
           constraint={constraint ?? true}
         />
       </ResultsErrorBoundary>
     ),
-    heatmapresult: <HeatMapChart data={result as HeatMapResult} />,
-    error: <div> An error occured </div>
+    heatmapresult: data => <HeatMapChart data={data as HeatMapResult} />,
+    linechartresult: data => <LineGraph data={data as LineChartResult} />,
+    error: () => <div> An error occured </div>
   } as Switcher)[type];
+
+  if (type === 'groupsresult')
+    return <GroupTable result={result as GroupsResult} loading={false} />;
+
   if (!children) return <></>;
-  return (
-    <ContainerResult
-      className={type !== 'groupsresult' ? 'exp-result' : ''}
-      data-export={type === 'tableresult' ? 'container' : 'inplace'}
-    >
-      {children}
-    </ContainerResult>
-  );
+
+  if (allowExport) {
+    return (
+      <ExportResult result={result}>
+        {data => (
+          <ContainerResult
+            hasExport={allowExport}
+            className="exp-result"
+            data-export={type === 'tableresult' ? 'container' : 'inplace'}
+          >
+            {children(data)}
+          </ContainerResult>
+        )}
+      </ExportResult>
+    );
+  } else {
+    return (
+      <ContainerResult
+        className="exp-result"
+        hasExport={allowExport}
+        data-export={type === 'tableresult' ? 'container' : 'inplace'}
+      >
+        {children(result)}
+      </ContainerResult>
+    );
+  }
 };
 
 export default ResultDispatcher;

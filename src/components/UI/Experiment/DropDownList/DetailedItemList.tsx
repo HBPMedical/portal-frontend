@@ -22,7 +22,10 @@ import {
   useDeleteExperimentMutation,
   useEditExperimentMutation
 } from '../../../API/GraphQL/queries.generated';
-import { Experiment } from '../../../API/GraphQL/types.generated';
+import {
+  Experiment,
+  ExperimentStatus
+} from '../../../API/GraphQL/types.generated';
 import { useKeyPressed } from '../../../utils';
 
 dayjs.extend(relativeTime);
@@ -85,7 +88,7 @@ const ExperimentIcon = ({
   viewed,
   shared
 }: Partial<Experiment>): JSX.Element => {
-  if (status === 'error') {
+  if (status === ExperimentStatus.Error) {
     return (
       <BsFillExclamationCircleFill
         title="Experiment has errors"
@@ -94,7 +97,7 @@ const ExperimentIcon = ({
     );
   }
 
-  if (status === 'pending') {
+  if (status === ExperimentStatus.Pending) {
     return <BsWatch title="pending experiment" className="secondary" />;
   }
 
@@ -106,7 +109,7 @@ const ExperimentIcon = ({
     return <BsFillEyeFill title="viewed" className="success" />;
   }
 
-  if (!viewed && status === 'success') {
+  if (!viewed && status === ExperimentStatus.Success) {
     return <BsFillEyeSlashFill title="Not viewed" className="info" />;
   }
 

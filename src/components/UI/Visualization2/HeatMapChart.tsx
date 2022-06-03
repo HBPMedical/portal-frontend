@@ -1,11 +1,12 @@
 /* eslint-disable @typescript-eslint/camelcase */
 /* eslint-disable react-hooks/exhaustive-deps */
-import React, { useEffect } from 'react';
+import React, { useEffect, useRef } from 'react';
 import { HeatMapResult, HeatMapStyle } from '../../API/GraphQL/types.generated';
 import styled from 'styled-components';
 
 const Container = styled.div`
   align-self: center;
+  display: inline-block;
 `;
 
 declare let window: any;
@@ -15,6 +16,7 @@ interface Props {
 }
 
 export default ({ ...props }: Props) => {
+  const containerRef = useRef<HTMLDivElement>(null);
   const Bokeh = window.Bokeh;
   const plot = Bokeh.Plotting;
   const data: HeatMapResult = JSON.parse(JSON.stringify(props.data)); // copy data for manipulations
@@ -120,8 +122,9 @@ export default ({ ...props }: Props) => {
   p.add_layout(color_bar, 'right');
 
   useEffect(() => {
+    if (containerRef.current) containerRef.current.innerHTML = '';
     plot.show(p, '#chart-heatmap');
-  }, [plot]);
+  }, [plot, props.data]);
 
-  return <Container id="chart-heatmap" className="result"></Container>;
+  return <Container id="chart-heatmap" className="result" ref={containerRef} />;
 };
