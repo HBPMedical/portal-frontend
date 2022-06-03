@@ -13,22 +13,24 @@ export type ModalComponentHandle = {
    * @param message the modal body message
    * @returns true if user accepted, false otherwise.
    */
-  open: (title: string, message: string) => Promise<boolean>;
+  open: (title: string, message?: string) => Promise<boolean>;
 };
 
-type Props = {};
+type Props = {
+  children?: React.ReactNode;
+};
 
 const ModalComponent = React.forwardRef<ModalComponentHandle, Props>(
-  (props, ref): JSX.Element => {
+  ({ children }: Props, ref): JSX.Element => {
     const [isOpen, setIsOpen] = useState(false);
     const [title, setTitle] = useState('');
-    const [message, setMessage] = useState('');
+    const [message, setMessage] = useState<string | undefined>(undefined);
     const [promiseRes, setPromiseRes] = useState<PromiseResponse>();
 
     useImperativeHandle(ref, () => ({
-      open: async (title: string, message: string): Promise<boolean> => {
+      open: async (title: string, message?: string): Promise<boolean> => {
         setTitle(title);
-        setMessage(message);
+        if (message) setMessage(message);
         setIsOpen(true);
         return new Promise<boolean>((resolve, reject) => {
           setPromiseRes({ resolve, reject });
@@ -42,7 +44,7 @@ const ModalComponent = React.forwardRef<ModalComponentHandle, Props>(
           <Modal.Title>{title}</Modal.Title>
         </Modal.Header>
 
-        <Modal.Body>{message}</Modal.Body>
+        <Modal.Body>{message ?? children}</Modal.Body>
 
         <Modal.Footer>
           <Button

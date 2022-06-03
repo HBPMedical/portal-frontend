@@ -52,7 +52,8 @@ const ContainerWrap = ({ ...props }: Props): JSX.Element => {
 
       if (
         newExperiment.id !== experiment?.id ||
-        experiment?.status !== newExperiment.status
+        experiment?.status !== newExperiment.status ||
+        newExperiment.status !== ExperimentStatus.Pending
       )
         setExperiment(newExperiment);
     }

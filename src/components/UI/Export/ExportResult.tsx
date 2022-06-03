@@ -1,9 +1,10 @@
-import React, { useRef } from 'react';
-import { Button } from 'react-bootstrap';
 import * as hmtlToImage from 'html-to-image';
-import styled from 'styled-components';
+import React, { useEffect, useRef, useState } from 'react';
+import { Button } from 'react-bootstrap';
 import { BsFileCode, BsFillImageFill } from 'react-icons/bs';
+import styled from 'styled-components';
 import { ResultUnion } from '../../API/GraphQL/types.generated';
+import EditChart from './EditChart';
 
 const NeutralContainer = styled.div`
   display: contents;
@@ -28,7 +29,7 @@ type Props = {
   children: (wrapResult: ResultUnion) => React.ReactNode;
 };
 
-const downloadThat = (data: string, filename: string) => {
+const downloadThis = (data: string, filename: string) => {
   const link = document.createElement('a');
   link.href = data;
   link.download = filename;
@@ -38,6 +39,7 @@ const downloadThat = (data: string, filename: string) => {
 
 const ExportResult = ({ children, result }: Props): JSX.Element => {
   const childRef = useRef<HTMLDivElement>(null);
+  const [chart, setChart] = useState<ResultUnion>(result);
 
   const saveImage = async () => {
     if (!childRef.current) return;
@@ -51,7 +53,7 @@ const ExportResult = ({ children, result }: Props): JSX.Element => {
       }
     });
 
-    downloadThat(img, 'export-result.png');
+    downloadThis(img, 'export-result.png');
   };
 
   const saveRaw = () => {
@@ -61,13 +63,23 @@ const ExportResult = ({ children, result }: Props): JSX.Element => {
       'data:text/json;charset=utf-8,' +
       encodeURIComponent(JSON.stringify(result));
 
-    downloadThat(resultData, 'export-result.json');
+    downloadThis(resultData, 'export-result.json');
   };
+
+  useEffect(() => {
+    setChart(result);
+  }, [result]);
 
   return (
     <ExportContainer>
-      <NeutralContainer ref={childRef}>{children(result)}</NeutralContainer>
+      <NeutralContainer ref={childRef}>{children(chart)}</NeutralContainer>
       <ToolBox className="tool-actions">
+        <EditChart
+          value={result}
+          onChange={val => {
+            setChart(val);
+          }}
+        />
         <Button
           variant="link"
           size="sm"

@@ -1,6 +1,5 @@
-import React from 'react';
-
 declare module 'jsoneditor-react' {
+  import React from 'react';
   export class JsonEditor extends React.Component<JsonEditorProps> {
     jsonEditor: any;
   }
