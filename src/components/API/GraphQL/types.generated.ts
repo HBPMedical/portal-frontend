@@ -134,19 +134,19 @@ export type Experiment = {
   algorithm: AlgorithmResult;
   author?: Maybe<Author>;
   coVariables?: Maybe<Array<Scalars['String']>>;
-  createdAt?: Maybe<Scalars['Float']>;
+  createdAt?: Maybe<Scalars['String']>;
   datasets: Array<Scalars['String']>;
   domain: Scalars['String'];
   filter?: Maybe<Scalars['String']>;
   filterVariables?: Maybe<Array<Scalars['String']>>;
-  finishedAt?: Maybe<Scalars['Float']>;
+  finishedAt?: Maybe<Scalars['String']>;
   formula?: Maybe<Formula>;
   id: Scalars['String'];
   name: Scalars['String'];
   results?: Maybe<Array<ResultUnion>>;
   shared: Scalars['Boolean'];
-  status?: Maybe<Scalars['String']>;
-  updateAt?: Maybe<Scalars['Float']>;
+  status?: Maybe<ExperimentStatus>;
+  updateAt?: Maybe<Scalars['String']>;
   variables: Array<Scalars['String']>;
   viewed?: Maybe<Scalars['Boolean']>;
 };
@@ -168,6 +168,14 @@ export type ExperimentEditInput = {
   shared?: Maybe<Scalars['Boolean']>;
   viewed?: Maybe<Scalars['Boolean']>;
 };
+
+export enum ExperimentStatus {
+  Error = 'ERROR',
+  Init = 'INIT',
+  Pending = 'PENDING',
+  Success = 'SUCCESS',
+  Warn = 'WARN'
+}
 
 export type ExtraLineInfo = {
   __typename?: 'ExtraLineInfo';
@@ -233,6 +241,7 @@ export enum HeatMapStyle {
 
 export type LineChartResult = {
   __typename?: 'LineChartResult';
+  hasBisector?: Maybe<Scalars['Boolean']>;
   lines: Array<LineResult>;
   name: Scalars['String'];
   xAxis?: Maybe<ChartAxis>;
@@ -359,19 +368,19 @@ export type PartialExperiment = {
   algorithm?: Maybe<AlgorithmResult>;
   author?: Maybe<Author>;
   coVariables?: Maybe<Array<Scalars['String']>>;
-  createdAt?: Maybe<Scalars['Float']>;
+  createdAt?: Maybe<Scalars['String']>;
   datasets?: Maybe<Array<Scalars['String']>>;
   domain?: Maybe<Scalars['String']>;
   filter?: Maybe<Scalars['String']>;
   filterVariables?: Maybe<Array<Scalars['String']>>;
-  finishedAt?: Maybe<Scalars['Float']>;
+  finishedAt?: Maybe<Scalars['String']>;
   formula?: Maybe<Formula>;
   id?: Maybe<Scalars['String']>;
   name?: Maybe<Scalars['String']>;
   results?: Maybe<Array<ResultUnion>>;
   shared?: Maybe<Scalars['Boolean']>;
-  status?: Maybe<Scalars['String']>;
-  updateAt?: Maybe<Scalars['Float']>;
+  status?: Maybe<ExperimentStatus>;
+  updateAt?: Maybe<Scalars['String']>;
   variables?: Maybe<Array<Scalars['String']>>;
   viewed?: Maybe<Scalars['Boolean']>;
 };

@@ -1,15 +1,21 @@
 /* eslint-disable @typescript-eslint/camelcase */
-import React, { useEffect } from 'react';
-import { Card } from 'react-bootstrap';
+import React, { useEffect, useRef } from 'react';
+import styled from 'styled-components';
 import { BarChartResult } from '../../API/GraphQL/types.generated';
 
 declare let window: any;
+
+const Container = styled.div`
+  align-self: center;
+  display: inline-block;
+`;
 
 interface Props {
   data: BarChartResult;
 }
 
 export default (props: Props) => {
+  const containerRef = useRef<HTMLDivElement>(null);
   const Bokeh = window.Bokeh;
   const plot = Bokeh.Plotting;
   const data: BarChartResult = JSON.parse(JSON.stringify(props.data)); // copy data if manipulations needed
@@ -58,14 +64,11 @@ export default (props: Props) => {
   p.y_range.start = 0;
 
   useEffect(() => {
+    if (containerRef.current) containerRef.current.innerHTML = '';
     plot.show(p, '#chart-bar-graph');
   }, [p, plot]);
 
   return (
-    <>
-      <Card>
-        <div id={`chart-bar-graph`}></div>
-      </Card>
-    </>
+    <Container ref={containerRef} id={`chart-bar-graph`} className="result" />
   );
 };

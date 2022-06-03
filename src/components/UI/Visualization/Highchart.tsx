@@ -18,7 +18,7 @@ SeriesLabel(Highcharts);
 Annotations(Highcharts);
 
 export const StyledMyChart = styled.div`
-  margin: 1rem auto;
+  margin: 0rem auto;
   width: 600px;
 `;
 

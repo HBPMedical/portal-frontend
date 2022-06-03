@@ -151,8 +151,10 @@ export const GlobalStyles = createGlobalStyle`
     flex: 1 auto;
   }
 
-  .content .result {
-     margin-top: 1rem;
+  .content .results .result-list {
+    display: flex;
+    flex-direction: column;
+    gap: 35px;
   }
 
   .panel {

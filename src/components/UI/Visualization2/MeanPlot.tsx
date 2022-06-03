@@ -1,16 +1,22 @@
 /* eslint-disable @typescript-eslint/camelcase */
 /* eslint-disable react-hooks/exhaustive-deps */
-import React, { useEffect } from 'react';
-import { Card } from 'react-bootstrap';
+import React, { useEffect, useRef } from 'react';
+import styled from 'styled-components';
 import { MeanChartResult } from '../../API/GraphQL/types.generated';
 
 declare let window: any;
+
+const Container = styled.div`
+  align-self: center;
+  display: inline-block;
+`;
 
 interface Props {
   data: MeanChartResult;
 }
 
 export default ({ ...props }: Props) => {
+  const containerRef = useRef<HTMLDivElement>(null);
   const Bokeh = window.Bokeh;
   const plot = Bokeh.Plotting;
 
@@ -61,14 +67,11 @@ export default ({ ...props }: Props) => {
   p.add_layout(whisker);
 
   useEffect(() => {
+    if (containerRef.current) containerRef.current.innerHTML = '';
     plot.show(p, '#chart-means-plot');
   }, [plot]);
 
   return (
-    <>
-      <Card>
-        <div id={`chart-means-plot`}></div>
-      </Card>
-    </>
+    <Container id="chart-means-plot" className="result" ref={containerRef} />
   );
 };

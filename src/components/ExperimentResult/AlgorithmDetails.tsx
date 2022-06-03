@@ -15,6 +15,7 @@ const ParamContainer = styled.div`
   .badge {
     text-align: left;
     white-space: initial;
+    word-break: break-all;
   }
 `;
 
