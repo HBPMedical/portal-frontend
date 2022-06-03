@@ -1,6 +1,6 @@
 /* eslint-disable @typescript-eslint/camelcase */
 /* eslint-disable react-hooks/exhaustive-deps */
-import React, { useEffect } from 'react';
+import React, { useEffect, useRef } from 'react';
 import styled from 'styled-components';
 import { LineChartResult } from '../../API/GraphQL/types.generated';
 
@@ -28,6 +28,7 @@ type Props = {
 };
 
 const LineGraph = ({ data }: Props) => {
+  const containerRef = useRef<HTMLDivElement>(null);
   const Bokeh = window.Bokeh;
   const plot = Bokeh.Plotting;
 
@@ -92,10 +93,13 @@ const LineGraph = ({ data }: Props) => {
   p.legend.location = 'bottom_right';
 
   useEffect(() => {
+    if (containerRef.current) containerRef.current.innerHTML = '';
     plot.show(p, '#chart-line-graph');
   }, [plot]);
 
-  return <Container id="chart-line-graph" className="result"></Container>;
+  return (
+    <Container id="chart-line-graph" className="result" ref={containerRef} />
+  );
 };
 
 export default LineGraph;
