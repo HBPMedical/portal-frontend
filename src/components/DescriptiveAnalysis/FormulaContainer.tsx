@@ -23,7 +23,7 @@ type SelectedInteraction = string[];
 const variableDefault = 'Variable...';
 const operationDefault = 'Operation...';
 
-// TODO: expose in backend
+//TODO: expose in backend
 const operations = {
   real: ['log', 'exp', 'center', 'standardize'],
   nominal: ['dummy', 'poly', 'contrast', 'additive']
@@ -86,7 +86,7 @@ const InteractionRow = ({
           value={var2}
           onChange={(event: React.FormEvent<any>): void => {
             event.preventDefault();
-            const nextvar2 = (event.target as HTMLInputElement).value as string;
+            const nextvar2 = (event.target as HTMLInputElement).value;
             setSelectedInteraction([selectedInteraction[0], nextvar2]);
           }}
         >

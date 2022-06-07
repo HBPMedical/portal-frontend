@@ -56,7 +56,6 @@ class Filter extends React.Component<Props, State> {
         nextFilters.map((n: any) => n.id)
       )
     ) {
-      // console.log('Filters changed');
       this.ref.queryBuilder('destroy');
 
       const changed = this.compareKeys(

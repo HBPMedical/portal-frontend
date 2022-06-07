@@ -5,7 +5,7 @@ import { useListAlgorithmsQuery } from '../API/GraphQL/queries.generated';
 import { Domain, Experiment, Variable } from '../API/GraphQL/types.generated';
 import { IFormula } from '../API/Model';
 import Filter from './Filter';
-import Formula from './Formula';
+import Formula from './FormulaContainer';
 
 interface IOptions {
   domain: Domain;
@@ -31,7 +31,10 @@ const handleUpdateFormula = (formula?: IFormula): void => {
   localMutations.updateDraftExperiment({ formula });
 };
 
-const Options = ({ experiment, domain }: IOptions): JSX.Element => {
+const FilterFormulaWrapper = ({
+  experiment,
+  domain
+}: IOptions): JSX.Element => {
   const lookup = useCallback(
     (id: string): Variable | undefined =>
       domain.variables.find(v => v.id === id),
@@ -62,10 +65,18 @@ const Options = ({ experiment, domain }: IOptions): JSX.Element => {
       const output: any = {
         id: originalVar.id,
         label: originalVar.label || originalVar.id,
-        name: originalVar.id
+        name: originalVar.id,
+        //default input type: text
+        type: 'string',
+        output: 'text',
+        operators: ['equal', 'not_equal']
       };
 
-      if (originalVar && originalVar.enumerations) {
+      if (
+        originalVar &&
+        originalVar.enumerations &&
+        originalVar.enumerations.length > 0
+      ) {
         output.values = originalVar.enumerations.map(c => ({
           [c.value]: c.label || c.value
         }));
@@ -74,21 +85,8 @@ const Options = ({ experiment, domain }: IOptions): JSX.Element => {
       }
 
       const type = originalVar && originalVar.type;
-      if (type === 'real') {
+      if (type && ['real', 'integer'].includes(type)) {
         output.type = 'double';
-        output.input = 'number';
-        output.operators = [
-          'equal',
-          'not_equal',
-          'less',
-          'greater',
-          'between',
-          'not_between'
-        ];
-      }
-
-      if (type === 'integer') {
-        output.type = 'integer';
         output.input = 'number';
         output.operators = [
           'equal',
@@ -159,4 +157,4 @@ const Options = ({ experiment, domain }: IOptions): JSX.Element => {
   );
 };
 
-export default Options;
+export default FilterFormulaWrapper;
