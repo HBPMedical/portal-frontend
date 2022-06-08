@@ -4,11 +4,12 @@ import styled from 'styled-components';
 import {
   Experiment,
   Formula,
+  FormulaOperation,
   FormulaTransformation,
-  Variable,
-  Algorithm
+  Variable
 } from '../API/GraphQL/types.generated';
 import { IFormula } from '../API/Model';
+import { Dict } from '../utils';
 
 type Modify<T, R> = Omit<T, keyof R> & R;
 type SelectedTransformation = Modify<
@@ -22,12 +23,6 @@ type SelectedInteraction = string[];
 
 const variableDefault = 'Variable...';
 const operationDefault = 'Operation...';
-
-// TODO: expose in backend
-const operations = {
-  real: ['log', 'exp', 'center', 'standardize'],
-  nominal: ['dummy', 'poly', 'contrast', 'additive']
-};
 
 const Wrapper = styled.div`
   padding: 1em;
@@ -86,7 +81,7 @@ const InteractionRow = ({
           value={var2}
           onChange={(event: React.FormEvent<any>): void => {
             event.preventDefault();
-            const nextvar2 = (event.target as HTMLInputElement).value as string;
+            const nextvar2 = (event.target as HTMLInputElement).value;
             setSelectedInteraction([selectedInteraction[0], nextvar2]);
           }}
         >
@@ -126,6 +121,7 @@ const InteractionRow = ({
 const TransformRow = ({
   transformation,
   variables,
+  operations,
   selectedTransform,
   formula,
   setSelectedTransform,
@@ -134,6 +130,7 @@ const TransformRow = ({
 }: {
   transformation?: FormulaTransformation;
   variables: Variable[];
+  operations: FormulaOperation[];
   selectedTransform: SelectedTransformation | null | undefined;
   formula?: Formula;
   setSelectedTransform: React.Dispatch<
@@ -144,6 +141,13 @@ const TransformRow = ({
 }): JSX.Element => {
   const name = transformation?.id || selectedTransform?.id;
   const operation = transformation?.operation || selectedTransform?.operation;
+  const dictOperations: Dict<string[]> = operations.reduce(
+    (p: Dict<string[]>, c) => {
+      p[c.variableType] = c.operationTypes;
+      return p;
+    },
+    {}
+  );
 
   return (
     <Form.Row>
@@ -190,10 +194,9 @@ const TransformRow = ({
           }}
         >
           <option>{operationDefault}</option>
-          {operations[
-            variables?.find(v => v.id === name)?.type === 'nominal'
-              ? 'nominal'
-              : 'real'
+          {dictOperations[
+            variables?.find(v => v.id === name)?.type?.toLowerCase() ??
+              'default'
           ]?.map(f => (
             <option key={`tranform-${f}`} value={f}>
               {f}
@@ -227,11 +230,13 @@ const FormulaContainer = ({
   handleUpdateFormula,
   lookup,
   availableAlgorithms,
-  experiment
+  experiment,
+  operations
 }: {
   handleUpdateFormula: (formula?: IFormula) => void;
   lookup: (id: string) => Variable | undefined;
-  availableAlgorithms?: Algorithm[];
+  operations: FormulaOperation[];
+  availableAlgorithms?: string[];
   experiment: Experiment;
 }): JSX.Element => {
   const [variables, setVariables] = useState<Variable[]>();
@@ -333,7 +338,7 @@ const FormulaContainer = ({
       <h4>Formula</h4>
       <p>
         The formula is available for the following algorithms:{' '}
-        {availableAlgorithms?.map(a => a.label).toString()}
+        {availableAlgorithms?.join(', ')}
       </p>
       {variables && variables.length > 0 && (
         <Form>
@@ -349,6 +354,7 @@ const FormulaContainer = ({
 
           {transformationVariables.map(transformation => (
             <TransformRow
+              operations={operations}
               transformation={transformation}
               formula={formula ?? undefined}
               handleSetTransform={handleSetTransform}
@@ -362,6 +368,7 @@ const FormulaContainer = ({
 
           {transformationVariables.length < (variables?.length || 0) && (
             <TransformRow
+              operations={operations}
               formula={formula ?? undefined}
               handleSetTransform={handleSetTransform}
               handleUnsetTransform={handleUnsetTransform}

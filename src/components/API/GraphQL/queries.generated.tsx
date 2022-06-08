@@ -16,6 +16,11 @@ export type ListAlgorithmsQuery = { __typename?: 'Query', algorithms: Array<{ __
 
 export type VarBodyFragment = { __typename?: 'VariableParameter', hint?: Types.Maybe<string>, isRequired?: Types.Maybe<boolean>, hasMultiple?: Types.Maybe<boolean>, allowedTypes?: Types.Maybe<Array<string>> };
 
+export type GetFilterFormulaDataQueryVariables = Types.Exact<{ [key: string]: never; }>;
+
+
+export type GetFilterFormulaDataQuery = { __typename?: 'Query', algorithms: Array<{ __typename?: 'Algorithm', id: string, label?: Types.Maybe<string>, hasFormula?: Types.Maybe<boolean> }>, filter: { __typename?: 'FilterConfiguration', numberTypes?: Types.Maybe<Array<string>> }, formula: Array<{ __typename?: 'FormulaOperation', variableType: string, operationTypes: Array<string> }> };
+
 export type GetMatomoQueryVariables = Types.Exact<{ [key: string]: never; }>;
 
 
@@ -44,7 +49,7 @@ export type GetExperimentListQueryVariables = Types.Exact<{
 }>;
 
 
-export type GetExperimentListQuery = { __typename?: 'Query', experimentList: { __typename?: 'ListExperiments', totalPages?: Types.Maybe<number>, currentPage?: Types.Maybe<number>, totalExperiments?: Types.Maybe<number>, experiments: Array<{ __typename?: 'Experiment', id: string, name: string, createdAt?: Types.Maybe<string>, viewed?: Types.Maybe<boolean>, shared: boolean, status?: Types.Maybe<Types.ExperimentStatus>, author?: Types.Maybe<{ __typename?: 'Author', username?: Types.Maybe<string>, fullname?: Types.Maybe<string> }> }> } };
+export type GetExperimentListQuery = { __typename?: 'Query', experimentList: { __typename?: 'ListExperiments', totalPages?: Types.Maybe<number>, currentPage?: Types.Maybe<number>, totalExperiments?: Types.Maybe<number>, experiments?: Types.Maybe<Array<{ __typename?: 'Experiment', id: string, name: string, createdAt?: Types.Maybe<string>, viewed?: Types.Maybe<boolean>, shared: boolean, status?: Types.Maybe<Types.ExperimentStatus>, author?: Types.Maybe<{ __typename?: 'Author', username?: Types.Maybe<string>, fullname?: Types.Maybe<string> }> }>> } };
 
 export type GetExperimentQueryVariables = Types.Exact<{
   id: Types.Scalars['String'];
@@ -226,6 +231,49 @@ export function useListAlgorithmsLazyQuery(baseOptions?: Apollo.LazyQueryHookOpt
 export type ListAlgorithmsQueryHookResult = ReturnType<typeof useListAlgorithmsQuery>;
 export type ListAlgorithmsLazyQueryHookResult = ReturnType<typeof useListAlgorithmsLazyQuery>;
 export type ListAlgorithmsQueryResult = Apollo.QueryResult<ListAlgorithmsQuery, ListAlgorithmsQueryVariables>;
+export const GetFilterFormulaDataDocument = gql`
+    query getFilterFormulaData {
+  algorithms {
+    id
+    label
+    hasFormula
+  }
+  filter {
+    numberTypes
+  }
+  formula {
+    variableType
+    operationTypes
+  }
+}
+    `;
+
+/**
+ * __useGetFilterFormulaDataQuery__
+ *
+ * To run a query within a React component, call `useGetFilterFormulaDataQuery` and pass it any options that fit your needs.
+ * When your component renders, `useGetFilterFormulaDataQuery` returns an object from Apollo Client that contains loading, error, and data properties
+ * you can use to render your UI.
+ *
+ * @param baseOptions options that will be passed into the query, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options;
+ *
+ * @example
+ * const { data, loading, error } = useGetFilterFormulaDataQuery({
+ *   variables: {
+ *   },
+ * });
+ */
+export function useGetFilterFormulaDataQuery(baseOptions?: Apollo.QueryHookOptions<GetFilterFormulaDataQuery, GetFilterFormulaDataQueryVariables>) {
+        const options = {...defaultOptions, ...baseOptions}
+        return Apollo.useQuery<GetFilterFormulaDataQuery, GetFilterFormulaDataQueryVariables>(GetFilterFormulaDataDocument, options);
+      }
+export function useGetFilterFormulaDataLazyQuery(baseOptions?: Apollo.LazyQueryHookOptions<GetFilterFormulaDataQuery, GetFilterFormulaDataQueryVariables>) {
+          const options = {...defaultOptions, ...baseOptions}
+          return Apollo.useLazyQuery<GetFilterFormulaDataQuery, GetFilterFormulaDataQueryVariables>(GetFilterFormulaDataDocument, options);
+        }
+export type GetFilterFormulaDataQueryHookResult = ReturnType<typeof useGetFilterFormulaDataQuery>;
+export type GetFilterFormulaDataLazyQueryHookResult = ReturnType<typeof useGetFilterFormulaDataLazyQuery>;
+export type GetFilterFormulaDataQueryResult = Apollo.QueryResult<GetFilterFormulaDataQuery, GetFilterFormulaDataQueryVariables>;
 export const GetMatomoDocument = gql`
     query getMatomo {
   configuration {
@@ -792,6 +840,7 @@ export const namedOperations = {
   Query: {
     getConfiguration: 'getConfiguration',
     listAlgorithms: 'listAlgorithms',
+    getFilterFormulaData: 'getFilterFormulaData',
     getMatomo: 'getMatomo',
     getVariablesFromDomain: 'getVariablesFromDomain',
     activeUser: 'activeUser',
