@@ -1,7 +1,7 @@
 import React, { useCallback } from 'react';
 import { Card, Container, Navbar } from 'react-bootstrap';
 import { localMutations } from '../API/GraphQL/operations/mutations';
-import { useListAlgorithmsQuery } from '../API/GraphQL/queries.generated';
+import { useGetFilterFormulaDataQuery } from '../API/GraphQL/queries.generated';
 import { Domain, Experiment, Variable } from '../API/GraphQL/types.generated';
 import { IFormula } from '../API/Model';
 import Filter from './Filter';
@@ -41,8 +41,10 @@ const FilterFormulaWrapper = ({
     [domain]
   );
 
-  const { data } = useListAlgorithmsQuery();
-  const availableAlgorithms = data?.algorithms.filter(a => a.hasFormula) ?? [];
+  const { data } = useGetFilterFormulaDataQuery();
+  const availableAlgorithms =
+    data?.algorithms.filter(a => a.hasFormula).map(a => a.label ?? a.id) ?? [];
+  const numberTypes = data?.filter?.numberTypes ?? [];
 
   const handleUpdateFormulaCallback = React.useCallback(handleUpdateFormula, [
     experiment.formula // hacky way to force re-render on formula changes
@@ -50,8 +52,8 @@ const FilterFormulaWrapper = ({
 
   const makeFilters = (): any => {
     // FIXME: move to Filter, refactor in a pure way
-    let fields = [];
-    const buildFilter = (code: string): any => {
+    let varFields = [];
+    const buildFilter = (code: string) => {
       if (!domain || !domain.variables) {
         return [];
       }
@@ -68,7 +70,7 @@ const FilterFormulaWrapper = ({
         name: originalVar.id,
         //default input type: text
         type: 'string',
-        output: 'text',
+        input: 'text',
         operators: ['equal', 'not_equal']
       };
 
@@ -85,7 +87,7 @@ const FilterFormulaWrapper = ({
       }
 
       const type = originalVar && originalVar.type;
-      if (type && ['real', 'integer'].includes(type)) {
+      if (type && numberTypes.includes(type)) {
         output.type = 'double';
         output.input = 'number';
         output.operators = [
@@ -101,32 +103,14 @@ const FilterFormulaWrapper = ({
       return output;
     };
 
-    const allVariables = experiment.filterVariables || [];
-
-    // add filter variables
-    const extractVariablesFromFilter = (filter: any): any =>
-      filter.rules.forEach((r: any) => {
-        if (r.rules) {
-          extractVariablesFromFilter(r);
-        }
-        if (r.id) {
-          allVariables.push(r.id);
-        }
-      });
-
-    if (experiment && experiment.filter) {
-      extractVariablesFromFilter(JSON.parse(experiment.filter));
-    }
-
-    const allUniqVariables = Array.from(new Set(allVariables));
-    fields =
-      (domain?.variables &&
-        [...allUniqVariables.map(buildFilter)].filter((f: any) => f.id)) ||
+    varFields =
+      (experiment.filterVariables &&
+        [...experiment.filterVariables.map(buildFilter)].filter(f => f.id)) ||
       [];
-    const filters =
+    const expFilters =
       (experiment && experiment.filter && JSON.parse(experiment.filter)) || '';
 
-    return { filters, fields };
+    return { expFilters, varFields };
   };
 
   const { fields, filters } = makeFilters();
@@ -146,6 +130,7 @@ const FilterFormulaWrapper = ({
       <Card>
         <Card.Body>
           <Formula
+            operations={data?.formula ?? []}
             experiment={experiment}
             lookup={lookup}
             availableAlgorithms={availableAlgorithms}

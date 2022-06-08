@@ -61,6 +61,23 @@ export const QUERY_LIST_ALGORITHMS = gql`
   }
 `;
 
+export const QUERY_FILTER_FORMULA = gql`
+  query getFilterFormulaData {
+    algorithms {
+      id
+      label
+      hasFormula
+    }
+    filter {
+      numberTypes
+    }
+    formula {
+      variableType
+      operationTypes
+    }
+  }
+`;
+
 export const QUERY_MATOMO = gql`
   query getMatomo {
     configuration {
