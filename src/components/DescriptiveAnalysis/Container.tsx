@@ -17,7 +17,7 @@ import Error from '../UI/Error';
 import Loader from '../UI/Loader';
 import ExperimentSidebar from './ExperimentSidebar';
 import ExportDescriptive from './Export/ExportDescriptive';
-import FormulaWrapper from './FilterFormulaWrapper';
+import FilterFormulaWrapper from './FilterFormulaWrapper';
 import Header from './Header';
 
 const ExportButton = styled.div`
@@ -85,7 +85,10 @@ export default (): JSX.Element => {
         <Sidebar
           sidebar={
             domain ? (
-              <FormulaWrapper domain={domain} experiment={draftExperiment} />
+              <FilterFormulaWrapper
+                domain={domain}
+                experiment={draftExperiment}
+              />
             ) : (
               <div></div>
             )

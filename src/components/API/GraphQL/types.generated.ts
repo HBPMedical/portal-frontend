@@ -183,10 +183,24 @@ export type ExtraLineInfo = {
   values: Array<Scalars['String']>;
 };
 
+export type FilterConfiguration = {
+  __typename?: 'FilterConfiguration';
+  /** List of types that can considered as number */
+  numberTypes?: Maybe<Array<Scalars['String']>>;
+};
+
 export type Formula = {
   __typename?: 'Formula';
   interactions?: Maybe<Array<Array<Scalars['String']>>>;
   transformations?: Maybe<Array<Transformation>>;
+};
+
+export type FormulaOperation = {
+  __typename?: 'FormulaOperation';
+  /** List of operation available for this type */
+  operationTypes: Array<Scalars['String']>;
+  /** Type name of the variable */
+  variableType: Scalars['String'];
 };
 
 export type FormulaTransformation = {
@@ -265,7 +279,7 @@ export enum LineType {
 export type ListExperiments = {
   __typename?: 'ListExperiments';
   currentPage?: Maybe<Scalars['Float']>;
-  experiments: Array<Experiment>;
+  experiments?: Maybe<Array<Experiment>>;
   totalExperiments?: Maybe<Scalars['Float']>;
   totalPages?: Maybe<Scalars['Float']>;
 };
@@ -399,6 +413,8 @@ export type Query = {
   domains: Array<Domain>;
   experiment: Experiment;
   experimentList: ListExperiments;
+  filter: FilterConfiguration;
+  formula: Array<FormulaOperation>;
   user: User;
 };
 
