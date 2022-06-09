@@ -60,6 +60,10 @@ const EditChart = ({ value, onChange }: Props): JSX.Element => {
     }
   }, [hasChanged, internalVal, onChange]);
 
+  useEffect(() => {
+    setInternalVal(JSON.parse(JSON.stringify(value)));
+  }, [value]);
+
   if (!hasData) return <></>;
 
   return (
