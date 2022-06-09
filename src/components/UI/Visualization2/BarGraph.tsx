@@ -66,7 +66,7 @@ export default (props: Props) => {
   useEffect(() => {
     if (containerRef.current) containerRef.current.innerHTML = '';
     plot.show(p, '#chart-bar-graph');
-  }, [p, plot]);
+  }, [p, plot, props.data]);
 
   return (
     <Container ref={containerRef} id={`chart-bar-graph`} className="result" />

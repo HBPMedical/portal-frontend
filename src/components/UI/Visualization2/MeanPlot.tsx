@@ -69,7 +69,7 @@ export default ({ ...props }: Props) => {
   useEffect(() => {
     if (containerRef.current) containerRef.current.innerHTML = '';
     plot.show(p, '#chart-means-plot');
-  }, [plot]);
+  }, [plot, props.data]);
 
   return (
     <Container id="chart-means-plot" className="result" ref={containerRef} />

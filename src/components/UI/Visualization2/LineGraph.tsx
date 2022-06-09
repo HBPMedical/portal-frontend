@@ -95,7 +95,7 @@ const LineGraph = ({ data }: Props) => {
   useEffect(() => {
     if (containerRef.current) containerRef.current.innerHTML = '';
     plot.show(p, '#chart-line-graph');
-  }, [plot]);
+  }, [plot, data]);
 
   return (
     <Container id="chart-line-graph" className="result" ref={containerRef} />
