@@ -15,8 +15,6 @@ export default ({
   results: Result[] | undefined;
   constraint: boolean;
 }): JSX.Element => {
-  console.log(results);
-
   return (
     <>
       {results &&

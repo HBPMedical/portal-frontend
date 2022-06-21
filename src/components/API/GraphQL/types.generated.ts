@@ -104,6 +104,8 @@ export type Configuration = {
   contactLink?: Maybe<Scalars['String']>;
   enableSSO?: Maybe<Scalars['Boolean']>;
   hasGalaxy?: Maybe<Scalars['Boolean']>;
+  /** Indicates if histograms can handle grouping */
+  hasGrouping?: Maybe<Scalars['Boolean']>;
   matomo?: Maybe<Matomo>;
   ontologyUrl?: Maybe<Scalars['String']>;
   skipAuth?: Maybe<Scalars['Boolean']>;

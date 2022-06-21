@@ -92,7 +92,9 @@ export default (props: ExploreProps): JSX.Element => {
   >();
 
   const independantsVariables =
-    domain?.variables.filter(v => v.type === 'nominal') ?? [];
+    config?.configuration.hasGrouping && domain
+      ? domain?.variables.filter(v => v.type === 'nominal')
+      : [];
 
   return (
     <>
