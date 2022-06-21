@@ -110,10 +110,10 @@ const FilterFormulaWrapper = ({
     const expFilters =
       (experiment && experiment.filter && JSON.parse(experiment.filter)) || '';
 
-    return { expFilters, varFields };
+    return { filters: expFilters, fields: varFields };
   };
 
-  const { fields, filters } = makeFilters();
+  const { filters, fields } = makeFilters();
 
   return (
     <>
