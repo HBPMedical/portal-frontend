@@ -157,7 +157,10 @@ export const apolloClient = new ApolloClient({
         keyFields: false
       },
       Group: {
-        keyFields: false
+        keyFields: ['id', 'variables', 'groups']
+      },
+      Variable: {
+        keyFields: ['id', 'enumerations']
       }
     }
   }),
