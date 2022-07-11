@@ -57,12 +57,24 @@ export const cacheConfig = {
     BaseParameter: ['StringParameter', 'NominalParameter', 'NumberParameter']
   },
   typePolicies: {
+    Configuration: {
+      keyFields: ['connectorId']
+    },
+    //Group, Variable and Dataset are weak entities, closely related to a domain (pathology)
+    //We need to disable the cache system for them to avoid conflicts
+    Group: {
+      keyFields: false as false
+    },
+    Variable: {
+      keyFields: false as false
+    },
+    Dataset: {
+      keyFields: false as false
+    },
     Query: {
       fields: {
         configuration: {
-          merge(existing = {}, incoming: any) {
-            return { ...existing, ...incoming };
-          }
+          merge: true
         }
       }
     }
