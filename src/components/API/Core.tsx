@@ -151,7 +151,16 @@ export interface State {
 
 export const apolloClient = new ApolloClient({
   uri: graphQLURL,
-  cache: new InMemoryCache(),
+  cache: new InMemoryCache({
+    typePolicies: {
+      Category: {
+        keyFields: false
+      },
+      Group: {
+        keyFields: false
+      }
+    }
+  }),
   headers: {
     ...config.options?.headers,
     accept: 'application/json, text/plain, */*'
