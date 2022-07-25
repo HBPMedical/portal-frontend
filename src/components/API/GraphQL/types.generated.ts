@@ -103,7 +103,10 @@ export type Configuration = {
   connectorId: Scalars['String'];
   contactLink?: Maybe<Scalars['String']>;
   enableSSO?: Maybe<Scalars['Boolean']>;
+  /** @deprecated Only used for legacy reason should be avoided */
   hasGalaxy?: Maybe<Scalars['Boolean']>;
+  /** Indicates if histograms can handle grouping */
+  hasGrouping?: Maybe<Scalars['Boolean']>;
   matomo?: Maybe<Matomo>;
   ontologyUrl?: Maybe<Scalars['String']>;
   skipAuth?: Maybe<Scalars['Boolean']>;
@@ -419,11 +422,6 @@ export type Query = {
 };
 
 
-export type QueryDomainsArgs = {
-  ids?: Maybe<Array<Scalars['String']>>;
-};
-
-
 export type QueryExperimentArgs = {
   id: Scalars['String'];
 };
@@ -500,6 +498,7 @@ export type Variable = {
 
 export type VariableParameter = {
   __typename?: 'VariableParameter';
+  /** If undefined, all types are allowed */
   allowedTypes?: Maybe<Array<Scalars['String']>>;
   hasMultiple?: Maybe<Scalars['Boolean']>;
   hint?: Maybe<Scalars['String']>;

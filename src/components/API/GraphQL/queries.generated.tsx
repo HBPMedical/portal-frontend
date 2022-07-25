@@ -12,7 +12,7 @@ export type GetConfigurationQuery = { __typename?: 'Query', configuration: { __t
 export type ListAlgorithmsQueryVariables = Types.Exact<{ [key: string]: never; }>;
 
 
-export type ListAlgorithmsQuery = { __typename?: 'Query', algorithms: Array<{ __typename?: 'Algorithm', id: string, label?: Types.Maybe<string>, description?: Types.Maybe<string>, hasFormula?: Types.Maybe<boolean>, variable: { __typename?: 'VariableParameter', hint?: Types.Maybe<string>, isRequired?: Types.Maybe<boolean>, hasMultiple?: Types.Maybe<boolean>, allowedTypes?: Types.Maybe<Array<string>> }, coVariable?: Types.Maybe<{ __typename?: 'VariableParameter', hint?: Types.Maybe<string>, isRequired?: Types.Maybe<boolean>, hasMultiple?: Types.Maybe<boolean>, allowedTypes?: Types.Maybe<Array<string>> }>, parameters?: Types.Maybe<Array<{ __typename: 'NominalParameter', linkedTo?: Types.Maybe<Types.AllowedLink>, name: string, label?: Types.Maybe<string>, hint?: Types.Maybe<string>, isRequired?: Types.Maybe<boolean>, hasMultiple?: Types.Maybe<boolean>, defaultValue?: Types.Maybe<string>, allowedValues?: Types.Maybe<Array<{ __typename?: 'OptionValue', value: string, label: string }>> } | { __typename: 'NumberParameter', min?: Types.Maybe<number>, max?: Types.Maybe<number>, isReal?: Types.Maybe<boolean>, name: string, label?: Types.Maybe<string>, hint?: Types.Maybe<string>, isRequired?: Types.Maybe<boolean>, hasMultiple?: Types.Maybe<boolean>, defaultValue?: Types.Maybe<string> } | { __typename: 'StringParameter', name: string, label?: Types.Maybe<string>, hint?: Types.Maybe<string>, isRequired?: Types.Maybe<boolean>, hasMultiple?: Types.Maybe<boolean>, defaultValue?: Types.Maybe<string> }>> }> };
+export type ListAlgorithmsQuery = { __typename?: 'Query', algorithms: Array<{ __typename?: 'Algorithm', id: string, label?: Types.Maybe<string>, type?: Types.Maybe<string>, description?: Types.Maybe<string>, hasFormula?: Types.Maybe<boolean>, variable: { __typename?: 'VariableParameter', hint?: Types.Maybe<string>, isRequired?: Types.Maybe<boolean>, hasMultiple?: Types.Maybe<boolean>, allowedTypes?: Types.Maybe<Array<string>> }, coVariable?: Types.Maybe<{ __typename?: 'VariableParameter', hint?: Types.Maybe<string>, isRequired?: Types.Maybe<boolean>, hasMultiple?: Types.Maybe<boolean>, allowedTypes?: Types.Maybe<Array<string>> }>, parameters?: Types.Maybe<Array<{ __typename: 'NominalParameter', linkedTo?: Types.Maybe<Types.AllowedLink>, name: string, label?: Types.Maybe<string>, hint?: Types.Maybe<string>, isRequired?: Types.Maybe<boolean>, hasMultiple?: Types.Maybe<boolean>, defaultValue?: Types.Maybe<string>, allowedValues?: Types.Maybe<Array<{ __typename?: 'OptionValue', value: string, label: string }>> } | { __typename: 'NumberParameter', min?: Types.Maybe<number>, max?: Types.Maybe<number>, isReal?: Types.Maybe<boolean>, name: string, label?: Types.Maybe<string>, hint?: Types.Maybe<string>, isRequired?: Types.Maybe<boolean>, hasMultiple?: Types.Maybe<boolean>, defaultValue?: Types.Maybe<string> } | { __typename: 'StringParameter', name: string, label?: Types.Maybe<string>, hint?: Types.Maybe<string>, isRequired?: Types.Maybe<boolean>, hasMultiple?: Types.Maybe<boolean>, defaultValue?: Types.Maybe<string> }>> }> };
 
 export type VarBodyFragment = { __typename?: 'VariableParameter', hint?: Types.Maybe<string>, isRequired?: Types.Maybe<boolean>, hasMultiple?: Types.Maybe<boolean>, allowedTypes?: Types.Maybe<Array<string>> };
 
@@ -26,9 +26,7 @@ export type GetMatomoQueryVariables = Types.Exact<{ [key: string]: never; }>;
 
 export type GetMatomoQuery = { __typename?: 'Query', configuration: { __typename?: 'Configuration', matomo?: Types.Maybe<{ __typename?: 'Matomo', enabled?: Types.Maybe<boolean>, siteId?: Types.Maybe<string>, urlBase?: Types.Maybe<string> }> } };
 
-export type GetVariablesFromDomainQueryVariables = Types.Exact<{
-  id: Types.Scalars['String'];
-}>;
+export type GetVariablesFromDomainQueryVariables = Types.Exact<{ [key: string]: never; }>;
 
 
 export type GetVariablesFromDomainQuery = { __typename?: 'Query', domains: Array<{ __typename?: 'Domain', variables: Array<{ __typename?: 'Variable', id: string, label?: Types.Maybe<string>, type?: Types.Maybe<string> }> }> };
@@ -172,6 +170,7 @@ export const ListAlgorithmsDocument = gql`
   algorithms {
     id
     label
+    type
     description
     variable {
       ...VarBody
@@ -313,8 +312,8 @@ export type GetMatomoQueryHookResult = ReturnType<typeof useGetMatomoQuery>;
 export type GetMatomoLazyQueryHookResult = ReturnType<typeof useGetMatomoLazyQuery>;
 export type GetMatomoQueryResult = Apollo.QueryResult<GetMatomoQuery, GetMatomoQueryVariables>;
 export const GetVariablesFromDomainDocument = gql`
-    query getVariablesFromDomain($id: String!) {
-  domains(ids: [$id]) {
+    query getVariablesFromDomain {
+  domains {
     variables {
       id
       label
@@ -336,11 +335,10 @@ export const GetVariablesFromDomainDocument = gql`
  * @example
  * const { data, loading, error } = useGetVariablesFromDomainQuery({
  *   variables: {
- *      id: // value for 'id'
  *   },
  * });
  */
-export function useGetVariablesFromDomainQuery(baseOptions: Apollo.QueryHookOptions<GetVariablesFromDomainQuery, GetVariablesFromDomainQueryVariables>) {
+export function useGetVariablesFromDomainQuery(baseOptions?: Apollo.QueryHookOptions<GetVariablesFromDomainQuery, GetVariablesFromDomainQueryVariables>) {
         const options = {...defaultOptions, ...baseOptions}
         return Apollo.useQuery<GetVariablesFromDomainQuery, GetVariablesFromDomainQueryVariables>(GetVariablesFromDomainDocument, options);
       }

@@ -52,7 +52,9 @@ export const cacheConfig = {
       'GroupsResult',
       'TableResult',
       'HeatMapResult',
-      'LineChartResult'
+      'LineChartResult',
+      'MeanChartResult',
+      'BarChartResult'
     ],
     BaseParameter: ['StringParameter', 'NominalParameter', 'NumberParameter']
   },
