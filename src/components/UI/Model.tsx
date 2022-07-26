@@ -1,7 +1,7 @@
 import * as React from 'react';
 import styled from 'styled-components';
 import { Domain, Experiment, Variable } from '../API/GraphQL/types.generated';
-import { IFormula } from '../API/Model';
+import { IFormula } from '../utils';
 
 const FormulaStyle = styled.div`
   h6 {

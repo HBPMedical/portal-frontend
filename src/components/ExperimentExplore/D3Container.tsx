@@ -4,7 +4,7 @@ import React, { useEffect, useState } from 'react';
 import { Spinner } from 'react-bootstrap';
 import styled from 'styled-components';
 import { draftExperimentVar, selectedDomainVar } from '../API/GraphQL/cache';
-import { HierarchyCircularNode } from '../API/Model';
+import { HierarchyCircularNode } from '../utils';
 import CirclePack from './D3CirclePackLayer';
 import { d3Hierarchy, groupsToTreeView, NodeData } from './d3Hierarchy';
 

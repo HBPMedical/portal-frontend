@@ -1,6 +1,5 @@
 import React from 'react';
 import styled from 'styled-components';
-import { Result } from '../API/Experiment';
 import {
   BarChartResult,
   GroupsResult,
@@ -20,6 +19,7 @@ import HeatMapChart from '../UI/Visualization2/HeatMapChart';
 import LineGraph from '../UI/Visualization2/LineGraph';
 import MeanPlot from '../UI/Visualization2/MeanPlot';
 import RenderResult from './RenderResult';
+import { Result } from '../utils';
 
 type Props = {
   result: ResultUnion;

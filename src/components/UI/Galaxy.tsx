@@ -2,9 +2,9 @@ import { Base64 } from 'js-base64';
 import React, { useEffect, useRef, useState } from 'react';
 import { Alert } from 'react-bootstrap';
 import styled from 'styled-components';
-import { GalaxyConfig } from '../API/Core';
 import headers from '../API/RequestHeaders';
 import { backendURL } from '../API/RequestURLS';
+import { GalaxyConfig } from '../utils';
 
 const IFrameContainer = styled.div`
   width: 100%;

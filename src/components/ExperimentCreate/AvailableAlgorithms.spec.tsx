@@ -18,6 +18,7 @@ const exp: Experiment = {
 
 const algo: Algorithm = {
   id: 'dummy-id',
+  type: 'dummy-type',
   label: 'Dummy algo',
   description: 'test',
   __typename: 'Algorithm',
@@ -41,6 +42,7 @@ const algo: Algorithm = {
 
 const algoOneVar: Algorithm = {
   id: 'dummy-id2',
+  type: 'dummy-type',
   label: 'Dummy algo2',
   description: 'test2',
   __typename: 'Algorithm',

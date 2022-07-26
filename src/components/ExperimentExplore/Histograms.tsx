@@ -10,11 +10,11 @@ import {
   ResultUnion,
   Variable
 } from '../API/GraphQL/types.generated';
-import { HierarchyCircularNode } from '../API/Model';
 import { HISTOGRAMS_STORAGE_KEY } from '../constants';
 import ResultDispatcher from '../ExperimentResult/ResultDispatcher';
 import Loading from '../UI/Loader';
 import Highchart from '../UI/Visualization/Highchart';
+import { HierarchyCircularNode } from '../utils';
 
 const breadcrumb = (
   variable: HierarchyCircularNode,

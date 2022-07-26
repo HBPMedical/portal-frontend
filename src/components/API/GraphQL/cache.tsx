@@ -22,11 +22,6 @@ export const initialExperiment: Experiment = {
   variables: []
 };
 
-export const initialUser = {
-  id: '',
-  username: 'anonymous'
-};
-
 export const initialConfig: Configuration = {
   connectorId: 'default',
   hasGalaxy: false,
