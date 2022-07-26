@@ -19,6 +19,12 @@ export default ({ ...props }: Props) => {
   const containerRef = useRef<HTMLDivElement>(null);
   const Bokeh = window.Bokeh;
   const plot = Bokeh.Plotting;
+  const slug =
+    'mean-plot-' +
+    props.data.name
+      .toLowerCase()
+      .replace(/\s/g, '-')
+      .replace(/[^\w-]+/g, '');
 
   const title = props.data.name;
   const categories = props.data.xAxis?.categories ?? [];
@@ -68,10 +74,8 @@ export default ({ ...props }: Props) => {
 
   useEffect(() => {
     if (containerRef.current) containerRef.current.innerHTML = '';
-    plot.show(p, '#chart-means-plot');
+    plot.show(p, `#${slug}`);
   }, [plot, props.data]);
 
-  return (
-    <Container id="chart-means-plot" className="result" ref={containerRef} />
-  );
+  return <Container id={slug} className="result" ref={containerRef} />;
 };

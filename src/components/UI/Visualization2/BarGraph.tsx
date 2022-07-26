@@ -1,4 +1,5 @@
 /* eslint-disable @typescript-eslint/camelcase */
+/* eslint-disable react-hooks/exhaustive-deps */
 import React, { useEffect, useRef } from 'react';
 import styled from 'styled-components';
 import { BarChartResult } from '../../API/GraphQL/types.generated';
@@ -19,6 +20,12 @@ export default (props: Props) => {
   const Bokeh = window.Bokeh;
   const plot = Bokeh.Plotting;
   const data: BarChartResult = JSON.parse(JSON.stringify(props.data)); // copy data if manipulations needed
+  const slug =
+    'bar-graph-' +
+    data.name
+      .toLowerCase()
+      .replace(/\s/g, '-')
+      .replace(/[^\w-]+/g, '');
 
   const categories =
     data.xAxis?.categories ?? data.barValues.map((_, i) => i + 1).map(String);
@@ -65,10 +72,8 @@ export default (props: Props) => {
 
   useEffect(() => {
     if (containerRef.current) containerRef.current.innerHTML = '';
-    plot.show(p, '#chart-bar-graph');
-  }, [p, plot, props.data]);
+    plot.show(p, `#${slug}`);
+  }, [plot, props.data]);
 
-  return (
-    <Container ref={containerRef} id={`chart-bar-graph`} className="result" />
-  );
+  return <Container id={slug} className="result" ref={containerRef} />;
 };
