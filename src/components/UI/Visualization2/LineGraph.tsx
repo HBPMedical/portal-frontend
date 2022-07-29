@@ -31,6 +31,12 @@ const LineGraph = ({ data }: Props) => {
   const containerRef = useRef<HTMLDivElement>(null);
   const Bokeh = window.Bokeh;
   const plot = Bokeh.Plotting;
+  const slug =
+    'line-graph-' +
+    data.name
+      .toLowerCase()
+      .replace(/\s/g, '-')
+      .replace(/[^\w-]+/g, '');
 
   // Create your toolbox
   const p_tools = ['hover', 'pan', 'zoom_in', 'zoom_out', 'reset', 'box_zoom'];
@@ -94,12 +100,10 @@ const LineGraph = ({ data }: Props) => {
 
   useEffect(() => {
     if (containerRef.current) containerRef.current.innerHTML = '';
-    plot.show(p, '#chart-line-graph');
+    plot.show(p, `#${slug}`);
   }, [plot, data]);
 
-  return (
-    <Container id="chart-line-graph" className="result" ref={containerRef} />
-  );
+  return <Container id={slug} className="result" ref={containerRef} />;
 };
 
 export default LineGraph;

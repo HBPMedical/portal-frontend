@@ -3,7 +3,7 @@ import { Card, Container, Navbar } from 'react-bootstrap';
 import { localMutations } from '../API/GraphQL/operations/mutations';
 import { useGetFilterFormulaDataQuery } from '../API/GraphQL/queries.generated';
 import { Domain, Experiment, Variable } from '../API/GraphQL/types.generated';
-import { IFormula } from '../API/Model';
+import { IFormula } from '../utils';
 import Filter from './Filter';
 import Formula from './FormulaContainer';
 

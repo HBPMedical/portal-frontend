@@ -19,9 +19,9 @@ The interface runs on [React.js](https://reactjs.org), a JavaScript library for 
 It embed several libraries, among them are:
 
 - [TypeScript](https://www.typescriptlang.org), a typed superset of JavaScript
-- [D3.js](https://d3js.org) and [Highcharts](https://www.highcharts.com), visualizations and interactive charts libraries
+- [D3.js](https://d3js.org), [Bokeh.js](https://bokeh.org) and [Highcharts](https://www.highcharts.com), visualizations and interactive charts libraries
 - [Bootstrap](https://getbootstrap.com/), a frontend component library
-- [Unstated](https://github.com/jamiebuilds/unstated), a state library
+- [Apollo](https://www.apollographql.com/docs/react/), a state library
 
 Here is the setup to do frontend development in this project:
 

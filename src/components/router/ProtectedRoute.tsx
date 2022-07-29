@@ -8,8 +8,6 @@ import {
   useGetConfigurationQuery
 } from '../API/GraphQL/queries.generated';
 
-// screen if you're not yet authenticated.
-
 const SpinnerContainer = styled.div`
   display: flex;
   min-height: inherit;

@@ -32,7 +32,7 @@ export default ({ appConfig }: { appConfig: AppConfig }): JSX.Element => (
   <FooterBox>
     <div title="CHUV Lausanne"></div>
     <h6>
-      © 2015-2021{' '}
+      © 2015-2022{' '}
       <a
         href="https://www.humanbrainproject.eu/en/"
         title="The Human Brain Project Website"

@@ -21,6 +21,7 @@ export const QUERY_LIST_ALGORITHMS = gql`
     algorithms {
       id
       label
+      type
       description
       variable {
         ...VarBody
@@ -91,8 +92,8 @@ export const QUERY_MATOMO = gql`
 `;
 
 export const QUERY_VARS_FROM_DOMAIN = gql`
-  query getVariablesFromDomain($id: String!) {
-    domains(ids: [$id]) {
+  query getVariablesFromDomain {
+    domains {
       variables {
         id
         label
