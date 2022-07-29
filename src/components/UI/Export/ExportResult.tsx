@@ -26,7 +26,8 @@ const ToolBox = styled.div`
 `;
 type Props = {
   result: ResultUnion;
-  children: (wrapResult: ResultUnion) => React.ReactNode;
+  allowExport?: boolean;
+  children: (wrapResult: ResultUnion, type: string) => React.ReactNode;
 };
 
 const downloadThis = (data: string, filename: string) => {
@@ -37,9 +38,25 @@ const downloadThis = (data: string, filename: string) => {
   link.remove();
 };
 
-const ExportResult = ({ children, result }: Props): JSX.Element => {
+const ExportResult = ({
+  children,
+  result,
+  allowExport = true
+}: Props): JSX.Element => {
   const childRef = useRef<HTMLDivElement>(null);
   const [chart, setChart] = useState<ResultUnion>(result);
+  const [type, setType] = useState<string>(
+    (result.__typename ?? 'error').toLowerCase()
+  );
+
+  useEffect(() => {
+    setChart(result);
+    setType((result.__typename ?? 'error').toLowerCase());
+  }, [result]);
+
+  if (!allowExport || type === 'groupsresult') {
+    return <NeutralContainer>{children(chart, type)}</NeutralContainer>;
+  }
 
   const saveImage = async () => {
     if (!childRef.current) return;
@@ -66,13 +83,11 @@ const ExportResult = ({ children, result }: Props): JSX.Element => {
     downloadThis(resultData, 'export-result.json');
   };
 
-  useEffect(() => {
-    setChart(result);
-  }, [result]);
-
   return (
     <ExportContainer>
-      <NeutralContainer ref={childRef}>{children(chart)}</NeutralContainer>
+      <NeutralContainer ref={childRef}>
+        {children(chart, type)}
+      </NeutralContainer>
       <ToolBox className="tool-actions">
         <EditChart
           value={result}

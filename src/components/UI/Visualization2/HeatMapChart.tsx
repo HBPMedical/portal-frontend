@@ -21,6 +21,12 @@ export default ({ ...props }: Props) => {
   const plot = Bokeh.Plotting;
   const data: HeatMapResult = JSON.parse(JSON.stringify(props.data)); // copy data for manipulations
   data.matrix = data.matrix.map(row => row.map(i => Math.round(i * 100) / 100));
+  const slug =
+    'chart-heatmap-' +
+    data.name
+      .toLowerCase()
+      .replace(/\s/g, '-')
+      .replace(/[^\w-]+/g, '');
   const isBubble = data.heatMapStyle === HeatMapStyle.Bubble;
   const xValues = data.matrix
     .map(row => row.map((_, x) => (data.xAxis?.categories || [])[x] ?? `${x}`))
@@ -69,6 +75,8 @@ export default ({ ...props }: Props) => {
     y_range: data.yAxis?.categories
   });
 
+  p.xaxis[0].major_label_orientation = Math.PI / 6;
+
   const mapper = new Bokeh.LinearColorMapper({
     palette: colors,
     low: min,
@@ -78,7 +86,9 @@ export default ({ ...props }: Props) => {
   const color_bar = new Bokeh.ColorBar({
     color_mapper: mapper,
     ticker: new Bokeh.BasicTicker({ desired_num_ticks: colors.length }),
-    formatter: new Bokeh.PrintfTickFormatter({ format: '%f' })
+    formatter: new Bokeh.BasicTickFormatter({
+      use_scientific: true
+    })
   });
 
   p.rect({
@@ -97,11 +107,12 @@ export default ({ ...props }: Props) => {
       y: { field: 'yAxisLabels' },
       source: source,
       radius: { field: 'radius' },
-      name: 'Bubble Chart!',
+      name: 'Bubble Chart',
       line_color: { field: 'value', transform: mapper },
       fill_color: { field: 'value', transform: mapper }
     });
   }
+
   if (matrixValues.length < 40) {
     const labels = new Bokeh.LabelSet({
       x: { field: 'xAxisLabels' },
@@ -123,8 +134,8 @@ export default ({ ...props }: Props) => {
 
   useEffect(() => {
     if (containerRef.current) containerRef.current.innerHTML = '';
-    plot.show(p, '#chart-heatmap');
+    plot.show(p, `#${slug}`);
   }, [plot, props.data]);
 
-  return <Container id="chart-heatmap" className="result" ref={containerRef} />;
+  return <Container id={slug} className="result" ref={containerRef} />;
 };

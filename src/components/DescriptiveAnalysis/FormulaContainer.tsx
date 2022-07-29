@@ -8,8 +8,7 @@ import {
   FormulaTransformation,
   Variable
 } from '../API/GraphQL/types.generated';
-import { IFormula } from '../API/Model';
-import { Dict } from '../utils';
+import { Dict, IFormula } from '../utils';
 
 type Modify<T, R> = Omit<T, keyof R> & R;
 type SelectedTransformation = Modify<

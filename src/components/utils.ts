@@ -2,10 +2,28 @@ import numbro from 'numbro';
 import { createBrowserHistory } from 'history';
 import { useEffect, RefObject, useState } from 'react';
 import { NodeData } from './ExperimentExplore/d3Hierarchy';
+import { ExperimentCreateInput } from './API/GraphQL/types.generated';
+import { MIME_TYPES } from './constants';
 
 export type HierarchyCircularNode = d3.HierarchyCircularNode<NodeData>;
 
 export type Dict<T = string | undefined> = { [key: string]: T };
+
+export interface Result {
+  type: MIME_TYPES;
+  data: any;
+}
+
+export interface GalaxyConfig {
+  authorization?: string;
+  context?: string;
+  error?: { error?: string; message: string };
+}
+
+export type IFormula = Pick<
+  ExperimentCreateInput,
+  'interactions' | 'transformations'
+>;
 
 export const round = (num: number, decimals = 3): string =>
   // !(num % 1 === 0) checks if number is an Integer

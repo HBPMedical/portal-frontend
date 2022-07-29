@@ -1,12 +1,12 @@
 import * as React from 'react';
 
-import { Result } from '../API/Experiment';
 import { MIME_TYPES } from '../constants';
 import Error from '../UI/Error';
 import { Highchart, JSONData } from '../UI/Visualization';
 import Dendogram from '../UI/Visualization/Dendogram';
 import BinaryTree from '../UI/Visualization/BinaryTree';
 import Warning from '../UI/Visualization/Warning';
+import { Result } from '../utils';
 
 export default ({
   results,
@@ -15,8 +15,6 @@ export default ({
   results: Result[] | undefined;
   constraint: boolean;
 }): JSX.Element => {
-  console.log(results);
-
   return (
     <>
       {results &&

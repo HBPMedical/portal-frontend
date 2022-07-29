@@ -2,7 +2,7 @@ import { useReactiveVar } from '@apollo/client';
 import * as d3 from 'd3';
 import React, { useCallback, useEffect, useRef } from 'react';
 import { zoomNodeVar } from '../API/GraphQL/cache';
-import { HierarchyCircularNode } from '../API/Model';
+import { HierarchyCircularNode } from '../utils';
 import './CirclePack.css';
 
 const diameter = 800;
