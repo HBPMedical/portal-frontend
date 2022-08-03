@@ -281,6 +281,7 @@ export const MUTATE_LOGIN = gql`
   mutation login($username: String!, $password: String!) {
     login(variables: { username: $username, password: $password }) {
       accessToken
+      refreshToken
     }
   }
 `;

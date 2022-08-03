@@ -56,6 +56,7 @@ export type AuthenticationInput = {
 export type AuthenticationOutput = {
   __typename?: 'AuthenticationOutput';
   accessToken: Scalars['String'];
+  refreshToken: Scalars['String'];
 };
 
 export type Author = {
@@ -130,6 +131,7 @@ export type Domain = {
   label?: Maybe<Scalars['String']>;
   rootGroup: Group;
   variables: Array<Variable>;
+  version?: Maybe<Scalars['String']>;
 };
 
 export type Experiment = {
@@ -309,6 +311,7 @@ export type Mutation = {
   editExperiment: Experiment;
   login: AuthenticationOutput;
   logout: Scalars['Boolean'];
+  refresh: AuthenticationOutput;
   removeExperiment: PartialExperiment;
   updateUser: User;
 };
@@ -328,6 +331,11 @@ export type MutationEditExperimentArgs = {
 
 export type MutationLoginArgs = {
   variables: AuthenticationInput;
+};
+
+
+export type MutationRefreshArgs = {
+  refreshToken: Scalars['String'];
 };
 
 
