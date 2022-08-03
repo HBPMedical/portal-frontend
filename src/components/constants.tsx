@@ -23,3 +23,5 @@ export const ERRORS_OUTPUT = [
 ];
 
 export const MIN_SEARCH_CHARACTER_NUMBER = 2; //
+
+export const REFRESH_TOKEN_KEY_NAME = 'refreshToken';

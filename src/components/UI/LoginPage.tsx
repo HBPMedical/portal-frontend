@@ -10,6 +10,7 @@ import {
   useActiveUserQuery,
   useLoginMutation
 } from '../API/GraphQL/queries.generated';
+import { REFRESH_TOKEN_KEY_NAME } from '../constants';
 
 const Container = styled.div`
   display: flex;
@@ -34,19 +35,20 @@ export default () => {
   const history = useHistory();
 
   useActiveUserQuery({
-    onCompleted: data => {
+    onCompleted: () => {
       // Done only if user is logged in
       history.push('/');
     }
   });
 
   const [loginMutation, { loading }] = useLoginMutation({
-    onCompleted: async () => {
+    onCompleted: async data => {
       toast.success('Logged in successfully');
 
       localMutations.resetStore();
       await apolloClient.resetStore();
       localMutations.user.setState(SessionState.LOGGED_IN);
+      localStorage.setItem(REFRESH_TOKEN_KEY_NAME, data.login.refreshToken);
 
       history.push('/');
     },
