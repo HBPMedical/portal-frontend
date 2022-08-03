@@ -25,7 +25,8 @@ const AlgorithmDetails = ({
   result?: AlgorithmResult;
 }): JSX.Element | null => {
   const { data, loading } = useListAlgorithmsQuery();
-  const algo = data?.algorithms.find(a => a.id === result?.name);
+  const nameLowerCase = result?.name.toLowerCase();
+  const algo = data?.algorithms.find(a => a.id.toLowerCase() === nameLowerCase);
 
   const params =
     result?.parameters?.map(p => {
