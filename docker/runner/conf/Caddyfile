@@ -1,22 +1,4 @@
-(rp-proxied) {
-	reverse_proxy {args.0} {
-		header_up Host {header.X-Forwarded-Host}
-		header_up X-Real-IP {header.X-Forwarded-For}
-		header_up X-Forwarded-For {header.X-Forwarded-For}
-		header_up X-Forwarded-Proto {$EXTERNAL_MIP_PROTOCOL:https}
-	}
-}
-
-(rp-direct) {
-	reverse_proxy {args.0} {
-		header_up Host {hostport}
-		header_up X-Real-IP {remote_host}
-		header_up X-Forwarded-For {remote_host}
-		header_up X-Forwarded-Proto {$EXTERNAL_MIP_PROTOCOL:https}
-	}
-}
-
-{$PUBLIC_MIP_PROTOCOL:https}://{$PUBLIC_MIP_HOST} {
+:3000 {
 
 	encode gzip zstd
 
@@ -29,32 +11,6 @@
 		try_files {path} /index.html
 		file_server
 	}
-
-	redir {$GALAXY_PATH} {$GALAXY_PATH}/
-	handle {$GALAXY_PATH}/* {
-		import rp-{$MIP_LINK:direct} {$GALAXY_HOST}
-	}
-
-	redir {$KEYCLOAK_AUTH_PATH:/dummyauth} {$KEYCLOAK_AUTH_PATH:/dummyauth}/
-	handle {$KEYCLOAK_AUTH_PATH:/dummyauth}/* {
-		redir /dummyauth/* /
-		import rp-{$MIP_LINK:direct} {$KEYCLOAK_HOST}
-	}
-
-	handle /services/sso/* {
-		uri replace /services/ /{$PORTAL_BACKEND_CONTEXT:services}/
-		import rp-{$MIP_LINK:direct} {$PORTAL_BACKEND_SERVER}
-	}
-
-	handle_path /services/* {
-		import rp-{$MIP_LINK:direct} {$GATEWAY_SERVER}
-	}
-
-	# keycloak redirect on /services/ after login. In that case, redirect to /
-	redir /services/ / permanent
-  
-  # hotfix for whitelabel error after login
-  redir /services/error / temporary
 
 	handle_errors {
 		@4xx expression `{http.error.status_code} == 401 || {http.error.status_code} == 404`
