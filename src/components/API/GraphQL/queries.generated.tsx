@@ -21,11 +21,6 @@ export type GetFilterFormulaDataQueryVariables = Types.Exact<{ [key: string]: ne
 
 export type GetFilterFormulaDataQuery = { __typename?: 'Query', algorithms: Array<{ __typename?: 'Algorithm', id: string, label?: Types.Maybe<string>, hasFormula?: Types.Maybe<boolean> }>, filter: { __typename?: 'FilterConfiguration', numberTypes?: Types.Maybe<Array<string>> }, formula: Array<{ __typename?: 'FormulaOperation', variableType: string, operationTypes: Array<string> }> };
 
-export type GetMatomoQueryVariables = Types.Exact<{ [key: string]: never; }>;
-
-
-export type GetMatomoQuery = { __typename?: 'Query', configuration: { __typename?: 'Configuration', matomo?: Types.Maybe<{ __typename?: 'Matomo', enabled?: Types.Maybe<boolean>, siteId?: Types.Maybe<string>, urlBase?: Types.Maybe<string> }> } };
-
 export type GetVariablesFromDomainQueryVariables = Types.Exact<{ [key: string]: never; }>;
 
 
@@ -273,44 +268,6 @@ export function useGetFilterFormulaDataLazyQuery(baseOptions?: Apollo.LazyQueryH
 export type GetFilterFormulaDataQueryHookResult = ReturnType<typeof useGetFilterFormulaDataQuery>;
 export type GetFilterFormulaDataLazyQueryHookResult = ReturnType<typeof useGetFilterFormulaDataLazyQuery>;
 export type GetFilterFormulaDataQueryResult = Apollo.QueryResult<GetFilterFormulaDataQuery, GetFilterFormulaDataQueryVariables>;
-export const GetMatomoDocument = gql`
-    query getMatomo {
-  configuration {
-    matomo {
-      enabled
-      siteId
-      urlBase
-    }
-  }
-}
-    `;
-
-/**
- * __useGetMatomoQuery__
- *
- * To run a query within a React component, call `useGetMatomoQuery` and pass it any options that fit your needs.
- * When your component renders, `useGetMatomoQuery` returns an object from Apollo Client that contains loading, error, and data properties
- * you can use to render your UI.
- *
- * @param baseOptions options that will be passed into the query, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options;
- *
- * @example
- * const { data, loading, error } = useGetMatomoQuery({
- *   variables: {
- *   },
- * });
- */
-export function useGetMatomoQuery(baseOptions?: Apollo.QueryHookOptions<GetMatomoQuery, GetMatomoQueryVariables>) {
-        const options = {...defaultOptions, ...baseOptions}
-        return Apollo.useQuery<GetMatomoQuery, GetMatomoQueryVariables>(GetMatomoDocument, options);
-      }
-export function useGetMatomoLazyQuery(baseOptions?: Apollo.LazyQueryHookOptions<GetMatomoQuery, GetMatomoQueryVariables>) {
-          const options = {...defaultOptions, ...baseOptions}
-          return Apollo.useLazyQuery<GetMatomoQuery, GetMatomoQueryVariables>(GetMatomoDocument, options);
-        }
-export type GetMatomoQueryHookResult = ReturnType<typeof useGetMatomoQuery>;
-export type GetMatomoLazyQueryHookResult = ReturnType<typeof useGetMatomoLazyQuery>;
-export type GetMatomoQueryResult = Apollo.QueryResult<GetMatomoQuery, GetMatomoQueryVariables>;
 export const GetVariablesFromDomainDocument = gql`
     query getVariablesFromDomain {
   domains {
@@ -840,7 +797,6 @@ export const namedOperations = {
     getConfiguration: 'getConfiguration',
     listAlgorithms: 'listAlgorithms',
     getFilterFormulaData: 'getFilterFormulaData',
-    getMatomo: 'getMatomo',
     getVariablesFromDomain: 'getVariablesFromDomain',
     activeUser: 'activeUser',
     getDomainList: 'getDomainList',

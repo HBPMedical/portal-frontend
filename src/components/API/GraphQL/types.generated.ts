@@ -108,7 +108,6 @@ export type Configuration = {
   hasGalaxy?: Maybe<Scalars['Boolean']>;
   /** Indicates if histograms can handle grouping */
   hasGrouping?: Maybe<Scalars['Boolean']>;
-  matomo?: Maybe<Matomo>;
   ontologyUrl?: Maybe<Scalars['String']>;
   skipAuth?: Maybe<Scalars['Boolean']>;
   skipTos?: Maybe<Scalars['Boolean']>;
@@ -287,13 +286,6 @@ export type ListExperiments = {
   experiments?: Maybe<Array<Experiment>>;
   totalExperiments?: Maybe<Scalars['Float']>;
   totalPages?: Maybe<Scalars['Float']>;
-};
-
-export type Matomo = {
-  __typename?: 'Matomo';
-  enabled?: Maybe<Scalars['Boolean']>;
-  siteId?: Maybe<Scalars['String']>;
-  urlBase?: Maybe<Scalars['String']>;
 };
 
 export type MeanChartResult = {
