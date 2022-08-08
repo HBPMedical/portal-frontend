@@ -1,5 +1,6 @@
 import { InMemoryCache, makeVar } from '@apollo/client';
 import { SessionState } from '../../../utilities/types';
+import { AppConfig } from '../../utils';
 import {
   Configuration,
   Domain,
@@ -38,6 +39,7 @@ export const selectedExperimentVar = makeVar<Experiment | undefined>(undefined);
 export const draftExperimentVar = makeVar<Experiment>(initialExperiment);
 export const variablesVar = makeVar<Variable[]>([]);
 export const groupsVar = makeVar<Group[]>([]);
+export const appConfigVar = makeVar<AppConfig>({});
 
 export const cacheConfig = {
   possibleTypes: {

@@ -35,6 +35,7 @@ import Navigation from '../UI/Navigation';
 import NotFound from '../UI/NotFound';
 import TOS from '../UI/TOS';
 import Tutorial from '../UserGuide/Tutorial';
+import { AppConfig } from '../utils';
 
 const Main = styled.main<MainProps>`
   margin: 0 auto;
@@ -66,12 +67,6 @@ const SpinnerContainer = styled.div`
   height: 100vh;
 `;
 
-export interface AppConfig {
-  version?: string;
-  instanceName?: string;
-  ga?: string;
-  datacatalogueUrl?: string | undefined;
-}
 interface Props {
   appConfig: AppConfig;
   showTutorial: boolean;

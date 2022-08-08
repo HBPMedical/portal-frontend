@@ -79,18 +79,6 @@ export const QUERY_FILTER_FORMULA = gql`
   }
 `;
 
-export const QUERY_MATOMO = gql`
-  query getMatomo {
-    configuration {
-      matomo {
-        enabled
-        siteId
-        urlBase
-      }
-    }
-  }
-`;
-
 export const QUERY_VARS_FROM_DOMAIN = gql`
   query getVariablesFromDomain {
     domains {

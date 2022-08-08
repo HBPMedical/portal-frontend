@@ -14,6 +14,17 @@ export interface Result {
   data: any;
 }
 
+export interface AppConfig {
+  version?: string;
+  instanceName?: string;
+  datacatalogueUrl?: string;
+  matomo?: {
+    enabled: boolean;
+    urlBase?: string;
+    siteId?: string;
+  };
+}
+
 export interface GalaxyConfig {
   authorization?: string;
   context?: string;

@@ -1,19 +1,18 @@
+import { useReactiveVar } from '@apollo/client';
 import { createInstance, MatomoProvider } from '@datapunt/matomo-tracker-react';
 import React from 'react';
-import { useGetMatomoQuery } from '../API/GraphQL/queries.generated';
+import { appConfigVar } from '../API/GraphQL/cache';
 
 type Props = {};
 
 const MatomoContainer = ({ children }: React.PropsWithChildren<Props>) => {
-  const { data: { configuration } = {}, loading } = useGetMatomoQuery();
+  const appConfig = useReactiveVar(appConfigVar);
+  const config = appConfig.matomo;
   const matomoInstance =
-    configuration?.matomo &&
-    configuration.matomo.enabled &&
-    configuration.matomo.urlBase &&
-    configuration.matomo.siteId
+    config && config.enabled && config.urlBase && config.siteId
       ? createInstance({
-          urlBase: configuration.matomo.urlBase,
-          siteId: parseInt(configuration.matomo.siteId),
+          urlBase: config.urlBase,
+          siteId: parseInt(config.siteId),
           linkTracking: false,
           configurations: {
             disableCookies: true
@@ -21,11 +20,10 @@ const MatomoContainer = ({ children }: React.PropsWithChildren<Props>) => {
         })
       : undefined;
 
-  return matomoInstance && !loading ? (
-    <MatomoProvider value={matomoInstance}>{children}</MatomoProvider>
-  ) : (
-    <>{children}</>
-  );
+  if (matomoInstance)
+    return <MatomoProvider value={matomoInstance}>{children}</MatomoProvider>;
+
+  return <>{children}</>;
 };
 
 export default MatomoContainer;

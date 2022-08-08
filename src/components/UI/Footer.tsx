@@ -1,7 +1,7 @@
 import * as React from 'react';
-import { AppConfig } from '../App/App';
 import styled from 'styled-components';
 import ChuvLogo from '../../images/logo_chuv.png';
+import { AppConfig } from '../utils';
 
 const FooterBox = styled.div`
   display: flex;
