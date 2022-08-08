@@ -13,7 +13,7 @@ const AppContainer = (): JSX.Element => {
 
   const toggleTutorial = (): void => {
     localStorage.setItem('seenTutorial', 'true');
-    setShowTutorial(false);
+    setShowTutorial(!showTutorial);
   };
 
   useEffect(() => {
