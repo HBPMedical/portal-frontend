@@ -91,6 +91,30 @@ export default (props: ExploreProps): JSX.Element => {
     HierarchyCircularNode | undefined
   >();
 
+  const containers = [
+    [
+      'As variable',
+      'success',
+      [...(draftExperiment.variables || [])],
+      VarType.VARIABLES
+    ],
+    [
+      'As covariate',
+      'warning',
+      [...(draftExperiment.coVariables || [])],
+      VarType.COVARIATES
+    ]
+  ];
+
+  if (config?.configuration.hasFilters) {
+    containers.push([
+      'As filter',
+      'secondary',
+      [...(draftExperiment.filterVariables || [])],
+      VarType.FILTER
+    ]);
+  }
+
   const independantsVariables =
     domain?.variables.filter(v => v.type === 'nominal') ?? [];
 
@@ -136,26 +160,7 @@ export default (props: ExploreProps): JSX.Element => {
 
               <Container>
                 <Row>
-                  {[
-                    [
-                      'As variable',
-                      'success',
-                      [...(draftExperiment.variables || [])],
-                      VarType.VARIABLES
-                    ],
-                    [
-                      'As covariate',
-                      'warning',
-                      [...(draftExperiment.coVariables || [])],
-                      VarType.COVARIATES
-                    ],
-                    [
-                      'As filter',
-                      'secondary',
-                      [...(draftExperiment.filterVariables || [])],
-                      VarType.FILTER
-                    ]
-                  ].map(bag => (
+                  {containers.map(bag => (
                     <Col className="px-1" key={bag[0] as string}>
                       <div className="d-flex justify-content-between mb-1">
                         <div>
@@ -169,10 +174,11 @@ export default (props: ExploreProps): JSX.Element => {
                             onClick={(): void => {
                               if (!selectedNode) return;
 
-                              const vars = (selectedNode
-                                ?.leaves()
-                                .filter(node => node.data.id)
-                                .map(node => node.data.id) ?? []) as string[];
+                              const vars =
+                                selectedNode
+                                  ?.leaves()
+                                  .filter(node => node.data.id)
+                                  .map(node => node.data.id) ?? [];
 
                               localMutations.toggleVarsDraftExperiment(
                                 vars,

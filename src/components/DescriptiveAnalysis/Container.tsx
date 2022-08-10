@@ -10,7 +10,10 @@ import {
   selectedExperimentVar
 } from '../API/GraphQL/cache';
 import { localMutations } from '../API/GraphQL/operations/mutations';
-import { useCreateExperimentMutation } from '../API/GraphQL/queries.generated';
+import {
+  useCreateExperimentMutation,
+  useGetConfigurationQuery
+} from '../API/GraphQL/queries.generated';
 import { ResultUnion } from '../API/GraphQL/types.generated';
 import ResultDispatcher from '../ExperimentResult/ResultDispatcher';
 import Error from '../UI/Error';
@@ -36,6 +39,8 @@ export default (): JSX.Element => {
   const draftExperiment = useReactiveVar(draftExperimentVar);
   const selectedExperiment = useReactiveVar(selectedExperimentVar);
   const domain = useReactiveVar(selectedDomainVar);
+  const { data: configQuery } = useGetConfigurationQuery();
+  const hasFilters = configQuery?.configuration.hasFilters ?? true;
 
   useEffect(() => {
     const datasets = draftExperiment.datasets;
@@ -81,26 +86,28 @@ export default (): JSX.Element => {
 
   return (
     <>
-      <div>
-        <Sidebar
-          sidebar={
-            domain ? (
-              <FilterFormulaWrapper
-                domain={domain}
-                experiment={draftExperiment}
-              />
-            ) : (
-              <div></div>
-            )
-          }
-          open={sidebarOpen}
-          onSetOpen={setSidebarOpen}
-          styles={{ sidebar: { background: 'white' } }}
-          pullRight
-        >
-          <div />
-        </Sidebar>
-      </div>
+      {hasFilters && (
+        <div>
+          <Sidebar
+            sidebar={
+              domain ? (
+                <FilterFormulaWrapper
+                  domain={domain}
+                  experiment={draftExperiment}
+                />
+              ) : (
+                <div></div>
+              )
+            }
+            open={sidebarOpen}
+            onSetOpen={setSidebarOpen}
+            styles={{ sidebar: { background: 'white' } }}
+            pullRight
+          >
+            <div />
+          </Sidebar>
+        </div>
+      )}
       <div className="Model Review">
         <div className="header">
           <Header
@@ -122,9 +129,12 @@ export default (): JSX.Element => {
           <div className="results">
             <Card>
               <Card.Header>
-                <Button variant="info" onClick={() => setSidebarOpen(true)}>
-                  Filters &amp; Formula
-                </Button>
+                {hasFilters && (
+                  <Button variant="info" onClick={() => setSidebarOpen(true)}>
+                    Filters &amp; Formula
+                  </Button>
+                )}
+
                 {!loading && (
                   <ExportButton>
                     <ExportDescriptive draftExperiment={draftExperiment} />
