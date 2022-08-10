@@ -104,6 +104,7 @@ export type Configuration = {
   connectorId: Scalars['String'];
   contactLink?: Maybe<Scalars['String']>;
   enableSSO?: Maybe<Scalars['Boolean']>;
+  hasFilters?: Maybe<Scalars['Boolean']>;
   /** @deprecated Only used for legacy reason should be avoided */
   hasGalaxy?: Maybe<Scalars['Boolean']>;
   /** Indicates if histograms can handle grouping */
