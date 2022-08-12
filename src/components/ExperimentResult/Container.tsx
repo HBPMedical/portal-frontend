@@ -10,7 +10,6 @@ import {
   Experiment,
   ExperimentStatus
 } from '../API/GraphQL/types.generated';
-import ApolloErrorHandler from '../UI/ApolloErrorHandler';
 import ListSection from '../UI/ListSection';
 import Model from '../UI/Model';
 import { ExperimentResult, ExperimentResultHeader } from './';
@@ -67,9 +66,14 @@ const ContainerWrap = ({ ...props }: Props): JSX.Element => {
             <Col>
               <Card className="py-5">
                 <Card.Body>
-                  {error.graphQLErrors.map((e, i) => (
-                    <ApolloErrorHandler key={i} error={e} />
-                  ))}
+                  {error.graphQLErrors.map((e, i) => {
+                    const statusCode = e.extensions?.exception?.status;
+                    if (statusCode === 404) {
+                      return <h3 key={i}>Experiment not found</h3>;
+                    }
+
+                    return <span key={i}>{e.message}</span>;
+                  })}
                 </Card.Body>
               </Card>
             </Col>
