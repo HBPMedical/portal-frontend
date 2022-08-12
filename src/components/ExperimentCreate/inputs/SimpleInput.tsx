@@ -35,8 +35,8 @@ const SimpleInput = ({ parameter, handleValueChanged }: Props) => {
     options.max = parameter.max ?? undefined;
     options.step = parameter.isReal ? 0.01 : 1;
     options.type = 'number';
-    if (parameter.min) helpLine.push(`min value: ${parameter.min}`);
-    if (parameter.max) helpLine.push(`max value: ${parameter.max}`);
+    if (options.min != null) helpLine.push(`min value: ${options.min}`);
+    if (options.max != null) helpLine.push(`max value: ${options.max}`);
   }
 
   if (helpLine.length > 0) helper.push(helpLine.join(', '));
