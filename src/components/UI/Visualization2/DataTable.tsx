@@ -81,11 +81,17 @@ const Table = styled.table<LayoutProps>`
 const Container = styled.div`
   margin-bottom: 30px;
 
+  .title {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-end;
+  }
   .actions {
-    font-size: 0.8em;
+    font-size: 0.6em;
     display: flex;
     align-items: center;
     margin-bottom: 2px;
+    font-weight: normal;
   }
 `;
 
@@ -94,14 +100,19 @@ export default ({ data }: TableProps): JSX.Element => {
 
   return (
     <Container className="table-result">
-      <CSVLink
-        filename={`table-export-${new Date().toJSON().slice(0, 10)}.csv`}
-        data={csvData}
-        className="float-right actions"
-      >
-        <FaFileCsv />
-        Export as CSV
-      </CSVLink>
+      <h5 className="title">
+        {data.name}
+
+        <CSVLink
+          filename={`table-export-${new Date().toJSON().slice(0, 10)}.csv`}
+          data={csvData}
+          className="float-right actions"
+        >
+          <FaFileCsv />
+          Export as CSV
+        </CSVLink>
+      </h5>
+
       <Table
         layout={data.tableStyle ?? TableStyle.Normal}
         colsCount={data.headers.length}
