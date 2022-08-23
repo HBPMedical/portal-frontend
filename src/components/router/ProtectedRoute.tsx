@@ -41,27 +41,25 @@ export default ({ children, ...rest }: Props) => {
       {!loading ? (
         <Route
           {...rest}
-          render={({ location }) =>
-            isAuth ? (
-              skipTOS ? (
-                children
-              ) : (
+          render={({ location }) => {
+            if (!isAuth) {
+              return (
                 <Redirect
-                  to={{
-                    pathname: '/tos',
-                    state: { from: location }
-                  }}
+                  to={{ pathname: '/access', state: { from: location } }}
                 />
-              )
-            ) : (
-              <Redirect
-                to={{
-                  pathname: '/access',
-                  state: { from: location }
-                }}
-              />
-            )
-          }
+              );
+            }
+
+            if (!skipTOS) {
+              return (
+                <Redirect
+                  to={{ pathname: '/tos', state: { from: location } }}
+                />
+              );
+            }
+
+            return children;
+          }}
         />
       ) : (
         <SpinnerContainer>
