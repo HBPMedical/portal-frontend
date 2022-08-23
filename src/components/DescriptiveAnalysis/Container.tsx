@@ -1,3 +1,4 @@
+/* eslint-disable react-hooks/exhaustive-deps */
 import { useReactiveVar } from '@apollo/client';
 import React, { useEffect, useState } from 'react';
 import { Button, Card } from 'react-bootstrap';
@@ -74,7 +75,7 @@ export default (): JSX.Element => {
         }
       });
     }
-  }, [createTransientMutation, draftExperiment]);
+  }, []);
 
   const handleCreateExperiment = async (): Promise<void> => {
     history.push(`/experiment`);
