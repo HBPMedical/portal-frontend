@@ -3,6 +3,7 @@
     "instanceName": "{{ default .Env.INSTANCE_NAME "HBP MIP" }}",
     "ga": "{{ default .Env.TRACKER_ID "UA-80660232-1" }}",
     "datacatalogueUrl": {{if .Env.DATACATALOGUE_SERVER}}"{{ .Env.DATACATALOGUE_SERVER }}"{{else}}undefined{{end}},
+    "experimentsListRefresh": "{{ default .Env.EXPERIMENTS_LIST_REFRESH "300000" }}",
     "matomo": {
         "enabled": {{ isTrue (default .Env.MATOMO_ENABLED "false") }},
         "urlBase": {{if .Env.MATOMO_URL}}"{{ .Env.MATOMO_URL }}"{{else}}undefined{{end}},

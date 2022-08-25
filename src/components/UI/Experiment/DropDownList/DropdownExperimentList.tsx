@@ -1,8 +1,10 @@
+import { useReactiveVar } from '@apollo/client';
 import dayjs from 'dayjs';
 import relativeTime from 'dayjs/plugin/relativeTime';
 import React, { useEffect, useRef, useState } from 'react';
 import { Button, Form } from 'react-bootstrap';
 import styled from 'styled-components';
+import { appConfigVar } from '../../../API/GraphQL/cache';
 import { localMutations } from '../../../API/GraphQL/operations/mutations';
 import {
   useGetExperimentLazyQuery,
@@ -98,6 +100,7 @@ const DropdownExperimentList = ({
   const [searchName, setSearchName] = useState<string>('');
   const [pageNumber, setPageNumber] = useState<number>(initialPage);
   const [totalPages, setTotalPages] = useState<number>(0);
+  const appConfig = useReactiveVar(appConfigVar);
 
   const [selectExperiment] = useGetExperimentLazyQuery({
     fetchPolicy: 'network-only',
@@ -108,6 +111,9 @@ const DropdownExperimentList = ({
 
   const [getExperimentList, { loading, data }] = useGetExperimentListLazyQuery({
     fetchPolicy: 'cache-and-network',
+    pollInterval: parseInt(
+      appConfig.experimentsListRefresh ?? `${1000 * 15 * 60}`
+    ),
     onCompleted: data => {
       const pages = data.experimentList.totalPages ?? 0;
       if (pageNumber >= pages) setPageNumber(pages - 1);
