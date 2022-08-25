@@ -38,6 +38,8 @@ const downloadThis = (data: string, filename: string) => {
   link.remove();
 };
 
+const exceptList = ['groupsresult', 'alertresult'];
+
 const ExportResult = ({
   children,
   result,
@@ -54,7 +56,7 @@ const ExportResult = ({
     setType((result.__typename ?? 'error').toLowerCase());
   }, [result]);
 
-  if (!allowExport || type === 'groupsresult') {
+  if (!allowExport || exceptList.includes(type)) {
     return <NeutralContainer>{children(chart, type)}</NeutralContainer>;
   }
 
