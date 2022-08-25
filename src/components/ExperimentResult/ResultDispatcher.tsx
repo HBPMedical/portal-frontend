@@ -1,6 +1,7 @@
 import React from 'react';
 import styled from 'styled-components';
 import {
+  AlertResult,
   BarChartResult,
   GroupsResult,
   HeatMapResult,
@@ -20,6 +21,7 @@ import LineGraph from '../UI/Visualization2/LineGraph';
 import MeanPlot from '../UI/Visualization2/MeanPlot';
 import RenderResult from './RenderResult';
 import { Result } from '../utils';
+import AlertDisplay from '../UI/Visualization2/AlertDisplay';
 
 type Props = {
   result: ResultUnion;
@@ -59,6 +61,7 @@ const children = {
   groupsresult: data => (
     <GroupResult result={data as GroupsResult} loading={false} />
   ),
+  alertresult: data => <AlertDisplay data={data as AlertResult} />,
   error: () => <div> An error occured </div>
 } as Switcher;
 

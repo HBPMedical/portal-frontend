@@ -43,6 +43,11 @@ export const coreInfoResult = gql`
       }
       heatMapStyle
     }
+    ... on AlertResult {
+      title
+      message
+      level
+    }
     ... on BarChartResult {
       name
       xAxis {

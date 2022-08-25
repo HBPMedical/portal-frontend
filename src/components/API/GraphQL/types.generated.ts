@@ -13,6 +13,20 @@ export type Scalars = {
   JSON: any;
 };
 
+export enum AlertLevel {
+  Error = 'ERROR',
+  Info = 'INFO',
+  Success = 'SUCCESS',
+  Warning = 'WARNING'
+}
+
+export type AlertResult = {
+  __typename?: 'AlertResult';
+  level?: Maybe<AlertLevel>;
+  message: Scalars['String'];
+  title?: Maybe<Scalars['String']>;
+};
+
 export type Algorithm = {
   __typename?: 'Algorithm';
   coVariable?: Maybe<VariableParameter>;
@@ -104,6 +118,7 @@ export type Configuration = {
   connectorId: Scalars['String'];
   contactLink?: Maybe<Scalars['String']>;
   enableSSO?: Maybe<Scalars['Boolean']>;
+  /** Indicates if filters and formula are enabled */
   hasFilters?: Maybe<Scalars['Boolean']>;
   /** @deprecated Only used for legacy reason should be avoided */
   hasGalaxy?: Maybe<Scalars['Boolean']>;
@@ -438,7 +453,7 @@ export type RawResult = {
   rawdata?: Maybe<Scalars['JSON']>;
 };
 
-export type ResultUnion = BarChartResult | GroupsResult | HeatMapResult | LineChartResult | MeanChartResult | RawResult | TableResult;
+export type ResultUnion = AlertResult | BarChartResult | GroupsResult | HeatMapResult | LineChartResult | MeanChartResult | RawResult | TableResult;
 
 export type StringParameter = BaseParameter & {
   __typename?: 'StringParameter';

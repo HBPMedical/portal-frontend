@@ -1,6 +1,8 @@
 import * as Types from './types.generated';
 
 import { gql } from '@apollo/client';
+export type CoreInfoResult_AlertResult_Fragment = { __typename?: 'AlertResult', title?: Types.Maybe<string>, message: string, level?: Types.Maybe<Types.AlertLevel> };
+
 export type CoreInfoResult_BarChartResult_Fragment = { __typename?: 'BarChartResult', name: string, barValues: Array<number>, hasConnectedBars?: Types.Maybe<boolean>, xAxis?: Types.Maybe<{ __typename?: 'ChartAxis', label?: Types.Maybe<string> }>, yAxis?: Types.Maybe<{ __typename?: 'ChartAxis', label?: Types.Maybe<string> }> };
 
 export type CoreInfoResult_GroupsResult_Fragment = { __typename?: 'GroupsResult' };
@@ -15,7 +17,7 @@ export type CoreInfoResult_RawResult_Fragment = { __typename?: 'RawResult', rawd
 
 export type CoreInfoResult_TableResult_Fragment = { __typename?: 'TableResult', name: string, data: Array<Array<string>>, tableStyle?: Types.Maybe<Types.TableStyle>, headers: Array<{ __typename?: 'Header', name: string, type: string }> };
 
-export type CoreInfoResultFragment = CoreInfoResult_BarChartResult_Fragment | CoreInfoResult_GroupsResult_Fragment | CoreInfoResult_HeatMapResult_Fragment | CoreInfoResult_LineChartResult_Fragment | CoreInfoResult_MeanChartResult_Fragment | CoreInfoResult_RawResult_Fragment | CoreInfoResult_TableResult_Fragment;
+export type CoreInfoResultFragment = CoreInfoResult_AlertResult_Fragment | CoreInfoResult_BarChartResult_Fragment | CoreInfoResult_GroupsResult_Fragment | CoreInfoResult_HeatMapResult_Fragment | CoreInfoResult_LineChartResult_Fragment | CoreInfoResult_MeanChartResult_Fragment | CoreInfoResult_RawResult_Fragment | CoreInfoResult_TableResult_Fragment;
 
 export const CoreInfoResultFragmentDoc = gql`
     fragment coreInfoResult on ResultUnion {
@@ -59,6 +61,11 @@ export const CoreInfoResultFragmentDoc = gql`
       categories
     }
     heatMapStyle
+  }
+  ... on AlertResult {
+    title
+    message
+    level
   }
   ... on BarChartResult {
     name
