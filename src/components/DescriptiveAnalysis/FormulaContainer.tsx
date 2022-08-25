@@ -247,11 +247,6 @@ const FormulaContainer = ({
     SelectedInteraction
   >([]);
   const lookupCallback = useCallback(lookup, []);
-  const handleUpdateFormulaCallback = useCallback(handleUpdateFormula, []);
-
-  useEffect(() => {
-    handleUpdateFormulaCallback(undefined); // set initial state to nothing
-  }, [handleUpdateFormulaCallback]);
 
   useEffect(() => {
     const variables: string[] | undefined = experiment && [

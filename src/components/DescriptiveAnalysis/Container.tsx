@@ -1,4 +1,3 @@
-/* eslint-disable react-hooks/exhaustive-deps */
 import { useReactiveVar } from '@apollo/client';
 import React, { useEffect, useState } from 'react';
 import { Button, Card } from 'react-bootstrap';
@@ -44,38 +43,36 @@ export default (): JSX.Element => {
   const hasFilters = configQuery?.configuration.hasFilters ?? true;
 
   useEffect(() => {
+    if (!draftExperiment || draftExperiment.datasets.length === 0) return;
+
     const datasets = draftExperiment.datasets;
 
-    if (datasets && draftExperiment) {
-      const variables = [
-        ...(draftExperiment.variables ?? []),
-        ...(draftExperiment.coVariables ?? [])
-      ];
+    const variables = [
+      ...(draftExperiment.variables ?? []),
+      ...(draftExperiment.coVariables ?? [])
+    ];
 
-      createTransientMutation({
-        variables: {
-          data: {
-            name: 'Descriptive analysis',
-            datasets: datasets,
-            variables,
-            domain: draftExperiment.domain ?? '',
-            filter: draftExperiment.filter,
-            algorithm: {
-              id: 'DESCRIPTIVE_STATS',
-              type: 'string'
-            },
-            transformations: draftExperiment.formula?.transformations?.map(
-              t => ({
-                id: t.id,
-                operation: t.operation
-              })
-            ),
-            interactions: draftExperiment.formula?.interactions
-          }
+    createTransientMutation({
+      variables: {
+        data: {
+          name: 'Descriptive analysis',
+          datasets: datasets,
+          variables,
+          domain: draftExperiment.domain ?? '',
+          filter: draftExperiment.filter,
+          algorithm: {
+            id: 'DESCRIPTIVE_STATS',
+            type: 'string'
+          },
+          transformations: draftExperiment.formula?.transformations?.map(t => ({
+            id: t.id,
+            operation: t.operation
+          })),
+          interactions: draftExperiment.formula?.interactions
         }
-      });
-    }
-  }, []);
+      }
+    });
+  }, [createTransientMutation, draftExperiment]);
 
   const handleCreateExperiment = async (): Promise<void> => {
     history.push(`/experiment`);

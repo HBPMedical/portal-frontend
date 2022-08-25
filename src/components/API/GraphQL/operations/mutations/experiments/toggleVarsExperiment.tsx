@@ -34,6 +34,11 @@ export default function createToggleVarsExperiment(
       );
     }
 
+    if ([VarType.VARIABLES, VarType.COVARIATES].includes(type))
+      newExperiment.formula = undefined;
+
+    if (type === VarType.FILTER) newExperiment.filter = '';
+
     experimentVar(newExperiment);
   };
 }
