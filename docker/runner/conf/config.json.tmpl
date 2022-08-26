@@ -1,7 +1,6 @@
 {
     "version": "{{ default .Env.VERSION "DEV" }}",
     "instanceName": "{{ default .Env.INSTANCE_NAME "HBP MIP" }}",
-    "ga": "{{ default .Env.TRACKER_ID "UA-80660232-1" }}",
     "contactLink": "{{ default .Env.CONTACT_LINK "https://ebrains.eu/support/"}}",
     "datacatalogueUrl": {{if .Env.DATACATALOGUE_SERVER}}"{{ .Env.DATACATALOGUE_SERVER }}"{{else}}undefined{{end}},
     "ontologyUrl": {{if .Env.ONTOLOGY_URL}}"{{ .Env.ONTOLOGY_URL }}"{{else}}undefined{{end}},
