@@ -116,7 +116,6 @@ export type ChartAxis = {
 export type Configuration = {
   __typename?: 'Configuration';
   connectorId: Scalars['String'];
-  contactLink?: Maybe<Scalars['String']>;
   enableSSO?: Maybe<Scalars['Boolean']>;
   /** Indicates if filters and formula are enabled */
   hasFilters?: Maybe<Scalars['Boolean']>;
@@ -124,7 +123,6 @@ export type Configuration = {
   hasGalaxy?: Maybe<Scalars['Boolean']>;
   /** Indicates if histograms can handle grouping */
   hasGrouping?: Maybe<Scalars['Boolean']>;
-  ontologyUrl?: Maybe<Scalars['String']>;
   skipAuth?: Maybe<Scalars['Boolean']>;
   skipTos?: Maybe<Scalars['Boolean']>;
   version: Scalars['String'];

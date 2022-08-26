@@ -4,7 +4,7 @@ import { DropdownButton } from 'react-bootstrap';
 import { BsBook, BsFillEnvelopeFill, BsFilm } from 'react-icons/bs';
 import { NavLink } from 'react-router-dom';
 import styled from 'styled-components';
-import { configurationVar } from '../API/GraphQL/cache';
+import { appConfigVar } from '../API/GraphQL/cache';
 
 const MainBox = styled.div`
   .dropdown-menu {
@@ -69,7 +69,7 @@ const MainBox = styled.div`
 `;
 
 export default ({ showTraining }: { showTraining?: boolean }): JSX.Element => {
-  const config = useReactiveVar(configurationVar);
+  const config = useReactiveVar(appConfigVar);
 
   return (
     <MainBox>

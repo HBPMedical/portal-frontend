@@ -10,9 +10,7 @@ export const QUERY_CONFIGURATION = gql`
       enableSSO
       skipAuth
       skipTos
-      contactLink
       version
-      ontologyUrl
     }
   }
 `;

@@ -4,6 +4,7 @@ import { Badge, Button, Card, Col, Container, Row } from 'react-bootstrap';
 import { BsFillCaretRightFill, BsTrash } from 'react-icons/bs';
 import styled from 'styled-components';
 import {
+  appConfigVar,
   draftExperimentVar,
   selectedDomainVar,
   selectedExperimentVar,
@@ -83,6 +84,7 @@ export default (props: ExploreProps): JSX.Element => {
   const { handleGoToAnalysis } = props;
 
   const { data: config } = useGetConfigurationQuery();
+  const localConfig = useReactiveVar(appConfigVar);
   const selectedExperiment = useReactiveVar(selectedExperimentVar);
   const draftExperiment = useReactiveVar(draftExperimentVar);
   const variables = useReactiveVar(variablesVar);
@@ -240,10 +242,10 @@ export default (props: ExploreProps): JSX.Element => {
                 <p>
                   <strong>Available algorithms</strong>
                 </p>
-                {config?.configuration.ontologyUrl && (
+                {localConfig.ontologyUrl && (
                   <p>
                     <a
-                      href={`${config?.configuration.ontologyUrl}`}
+                      href={`${localConfig.ontologyUrl}`}
                       target="_blank"
                       rel="noopener noreferrer"
                     >

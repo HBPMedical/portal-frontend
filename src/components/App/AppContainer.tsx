@@ -33,7 +33,6 @@ const AppContainer = (): JSX.Element => {
       appConfigVar({
         instanceName: 'MIP Development',
         version: 'dev',
-        datacatalogueUrl: undefined,
         experimentsListRefresh: `${1000 * 60 * 15}`,
         matomo: {
           enabled: false

@@ -18,6 +18,8 @@ export interface AppConfig {
   version?: string;
   instanceName?: string;
   datacatalogueUrl?: string;
+  ontologyUrl?: string;
+  contactLink?: string;
   experimentsListRefresh?: string;
   matomo?: {
     enabled: boolean;
