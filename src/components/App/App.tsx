@@ -210,7 +210,7 @@ const App = ({ appConfig, showTutorial }: Props) => {
                   }
                 }
               }}
-              datacatalogueUrl={appConfig.datacatalogueUrl || undefined}
+              datacatalogueUrl={appConfig.datacatalogueUrl}
               logout={() => {
                 toast.success('Logged out successfully');
                 logoutHandle();

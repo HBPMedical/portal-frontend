@@ -7,7 +7,7 @@ const defaultOptions =  {}
 export type GetConfigurationQueryVariables = Types.Exact<{ [key: string]: never; }>;
 
 
-export type GetConfigurationQuery = { __typename?: 'Query', configuration: { __typename?: 'Configuration', connectorId: string, hasGalaxy?: Types.Maybe<boolean>, hasFilters?: Types.Maybe<boolean>, enableSSO?: Types.Maybe<boolean>, skipAuth?: Types.Maybe<boolean>, skipTos?: Types.Maybe<boolean>, contactLink?: Types.Maybe<string>, version: string, ontologyUrl?: Types.Maybe<string> } };
+export type GetConfigurationQuery = { __typename?: 'Query', configuration: { __typename?: 'Configuration', connectorId: string, hasGalaxy?: Types.Maybe<boolean>, hasFilters?: Types.Maybe<boolean>, enableSSO?: Types.Maybe<boolean>, skipAuth?: Types.Maybe<boolean>, skipTos?: Types.Maybe<boolean>, version: string } };
 
 export type ListAlgorithmsQueryVariables = Types.Exact<{ [key: string]: never; }>;
 
@@ -128,9 +128,7 @@ export const GetConfigurationDocument = gql`
     enableSSO
     skipAuth
     skipTos
-    contactLink
     version
-    ontologyUrl
   }
 }
     `;
