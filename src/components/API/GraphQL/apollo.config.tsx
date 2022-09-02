@@ -1,5 +1,5 @@
 import { ApolloClient, from, HttpLink } from '@apollo/client';
-import config from '../RequestHeaders';
+import RequestHeaders from '../RequestHeaders';
 import { graphQLURL } from '../RequestURLS';
 import { cache } from './cache';
 import errorLink from './links/errorLink';
@@ -11,10 +11,10 @@ export const apolloClient = new ApolloClient({
       uri: graphQLURL,
       credentials: 'include',
       headers: {
-        ...config.options?.headers,
-        accept: 'application/json, text/plain, */*'
-      }
-    })
+        ...RequestHeaders.options?.headers,
+        accept: 'application/json, text/plain, */*',
+      },
+    }),
   ]),
-  cache: cache
+  cache: cache,
 });

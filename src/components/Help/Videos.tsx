@@ -6,7 +6,7 @@ const Title = styled.h3`
   margin: 16px 0;
 `;
 
-const Videos = styled.div`
+const VideosContainer = styled.div`
   display: flex;
   justify-content: space-around;
   flex-wrap: wrap;
@@ -16,7 +16,7 @@ const Video = styled.iframe`
   margin: 0 16px 32px 0;
 `;
 
-export default (): JSX.Element => (
+const Videos = (): JSX.Element => (
   <>
     <Card>
       <Card.Body>
@@ -30,7 +30,7 @@ export default (): JSX.Element => (
     <Card>
       <Card.Body>
         <article>
-          <Videos>
+          <VideosContainer>
             <Video
               title="01 First steps in the MIP"
               src="https://player.vimeo.com/video/387925204"
@@ -93,9 +93,11 @@ export default (): JSX.Element => (
               height="360"
               allow="autoplay; fullscreen"
             ></Video>
-          </Videos>
+          </VideosContainer>
         </article>
       </Card.Body>
     </Card>
   </>
 );
+
+export default Videos;

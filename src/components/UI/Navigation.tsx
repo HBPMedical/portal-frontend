@@ -140,14 +140,14 @@ interface Props {
   children: JSX.Element;
 }
 
-export default ({
+const Navigation = ({
   isAnonymous,
   authenticated,
   login,
   name,
   datacatalogueUrl,
   logout,
-  children
+  children,
 }: Props): JSX.Element => {
   const instanceName = name || 'MIP';
   const [imageURL, setImageURL] = useState<string | undefined>(undefined);
@@ -228,3 +228,5 @@ export default ({
     </NavBar>
   );
 };
+
+export default Navigation;

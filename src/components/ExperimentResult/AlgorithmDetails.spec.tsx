@@ -1,4 +1,3 @@
-import React from 'react';
 import { MockedProvider } from '@apollo/client/testing';
 import { render, waitFor } from '@testing-library/react';
 import { QUERY_LIST_ALGORITHMS } from '../API/GraphQL/queries';
@@ -17,14 +16,14 @@ const algo = {
     hint: 'test',
     isRequired: true,
     allowedTypes: [],
-    hasMultiple: false
+    hasMultiple: false,
   },
   coVariable: {
     __typename: 'VariableParameter',
     hint: 'test',
     isRequired: true,
     allowedTypes: [],
-    hasMultiple: false
+    hasMultiple: false,
   },
   parameters: [
     {
@@ -34,7 +33,7 @@ const algo = {
       hint: 'test',
       isRequired: false,
       hasMultiple: false,
-      defaultValue: 'test'
+      defaultValue: 'test',
     },
     {
       __typename: 'StringParameter',
@@ -43,23 +42,23 @@ const algo = {
       hint: 'test',
       isRequired: false,
       hasMultiple: false,
-      defaultValue: 'test'
-    }
-  ]
+      defaultValue: 'test',
+    },
+  ],
 };
 
 const mocks = [
   {
     request: {
       operationName: namedOperations.Query.listAlgorithms,
-      query: QUERY_LIST_ALGORITHMS
+      query: QUERY_LIST_ALGORITHMS,
     },
     result: {
       data: {
-        algorithms: [algo]
-      }
-    }
-  }
+        algorithms: [algo],
+      },
+    },
+  },
 ];
 
 const result = {
@@ -67,13 +66,13 @@ const result = {
   parameters: [
     {
       name: 'id1',
-      value: 'val1'
+      value: 'val1',
     },
     {
       name: 'id2',
-      value: 'val2'
-    }
-  ]
+      value: 'val2',
+    },
+  ],
 };
 
 const resultUnknownAlgo = {
@@ -81,13 +80,13 @@ const resultUnknownAlgo = {
   parameters: [
     {
       name: 'id1',
-      value: 'val1'
+      value: 'val1',
     },
     {
       name: 'id2',
-      value: 'val2'
-    }
-  ]
+      value: 'val2',
+    },
+  ],
 };
 
 describe("Experiment's algorithm display details", () => {
@@ -110,7 +109,7 @@ describe("Experiment's algorithm display details", () => {
       );
 
       await waitFor(async () => {
-        await new Promise(resolve => setTimeout(resolve, 100));
+        await new Promise((resolve) => setTimeout(resolve, 100));
       });
 
       expect(queryByText(new RegExp(algo.label, 'i'))).not.toBeNull();
@@ -134,7 +133,7 @@ describe("Experiment's algorithm display details", () => {
       );
 
       await waitFor(async () => {
-        await new Promise(resolve => setTimeout(resolve, 100));
+        await new Promise((resolve) => setTimeout(resolve, 100));
       });
 
       expect(container).toBeEmptyDOMElement();
@@ -150,7 +149,7 @@ describe("Experiment's algorithm display details", () => {
       );
 
       await waitFor(async () => {
-        await new Promise(resolve => setTimeout(resolve, 100));
+        await new Promise((resolve) => setTimeout(resolve, 100));
       });
 
       expect(

@@ -1,8 +1,7 @@
-import React from 'react';
 import { useHistory } from 'react-router-dom';
 import Explore from './Explore';
 
-export default (): JSX.Element => {
+const Container = (): JSX.Element => {
   const history = useHistory();
 
   const handleGoToAnalysis = async (): Promise<void> => {
@@ -10,7 +9,7 @@ export default (): JSX.Element => {
   };
 
   const nextProps = {
-    handleGoToAnalysis
+    handleGoToAnalysis,
   };
 
   return (
@@ -19,3 +18,5 @@ export default (): JSX.Element => {
     </>
   );
 };
+
+export default Container;

@@ -1,6 +1,6 @@
-/* eslint-disable @typescript-eslint/camelcase */
+/* eslint-disable @typescript-eslint/no-explicit-any */
 /* eslint-disable react-hooks/exhaustive-deps */
-import React, { useEffect, useRef } from 'react';
+import { useEffect, useRef } from 'react';
 import styled from 'styled-components';
 import { LineChartResult } from '../../API/GraphQL/types.generated';
 
@@ -18,7 +18,7 @@ const colors = [
   'darkgrey',
   'black',
   'brown',
-  'orange'
+  'orange',
 ];
 
 declare let window: any;
@@ -48,7 +48,7 @@ const LineGraph = ({ data }: Props) => {
     x_axis_label: data.xAxis?.label ?? '',
     y_axis_label: data.yAxis?.label ?? '',
     grid_line_color: 'white',
-    tools: p_tools
+    tools: p_tools,
   });
 
   const hover = p.toolbar.select_one(Bokeh.HoverTool);
@@ -67,7 +67,7 @@ const LineGraph = ({ data }: Props) => {
       line_color: color,
       line_width: 2,
       legend: line.label,
-      line_dash: line.type?.toLocaleLowerCase()
+      line_dash: line.type?.toLocaleLowerCase(),
     });
 
     p.circle({
@@ -77,12 +77,12 @@ const LineGraph = ({ data }: Props) => {
       color: color,
       line_color: 'white',
       legend: line.label,
-      name: 'ROC'
+      name: 'ROC',
     });
   }
 
   if (data.hasBisector) {
-    const values = data.lines.flatMap(line => line.x);
+    const values = data.lines.flatMap((line) => line.x);
     const max = Math.max(...values);
     const min = Math.min(...values);
 
@@ -92,7 +92,7 @@ const LineGraph = ({ data }: Props) => {
       line_color: 'grey',
       line_width: 2,
       line_dash: 'dashed',
-      alpha: 0.5
+      alpha: 0.5,
     });
   }
 

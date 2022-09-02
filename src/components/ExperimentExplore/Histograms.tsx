@@ -8,7 +8,7 @@ import {
   AlgorithmParamInput,
   Domain,
   ResultUnion,
-  Variable
+  Variable,
 } from '../API/GraphQL/types.generated';
 import { HISTOGRAMS_STORAGE_KEY } from '../constants';
 import ResultDispatcher from '../ExperimentResult/ResultDispatcher';
@@ -24,39 +24,40 @@ const breadcrumb = (
     ? breadcrumb(variable.parent, [...paths, variable])
     : [...paths, variable];
 
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
 const overviewChart = (node: HierarchyCircularNode): any => {
   let children = node
     .descendants()
-    .filter(d => d.parent === node && !d.data.isVariable);
+    .filter((d) => d.parent === node && !d.data.isVariable);
 
   children = children.length ? children : [node];
   return {
     chart: {
-      type: 'column'
+      type: 'column',
     },
     legend: {
-      enabled: false
+      enabled: false,
     },
     series: [
       {
-        data: children.map(c => c.descendants().length - 1),
+        data: children.map((c) => c.descendants().length - 1),
         dataLabels: {
-          enabled: true
-        }
-      }
+          enabled: true,
+        },
+      },
     ],
     title: {
-      text: `Variables contained in ${node.data.label}`
+      text: `Variables contained in ${node.data.label}`,
     },
     tooltip: {
-      enabled: false
+      enabled: false,
     },
     xAxis: {
-      categories: children.map(d => d.data.label)
+      categories: children.map((d) => d.data.label),
     },
     yAxis: {
-      allowDecimals: false
-    }
+      allowDecimals: false,
+    },
   };
 };
 
@@ -153,15 +154,15 @@ export interface HistogramVariable {
 interface Props {
   selectedNode?: HierarchyCircularNode;
   independantsVariables: Variable[] | undefined;
-  zoom: Function;
+  zoom: (node: HierarchyCircularNode) => void;
   domain?: Domain;
 }
 
-export default ({
+const Histograms = ({
   independantsVariables,
   selectedNode,
   zoom,
-  domain
+  domain,
 }: Props): JSX.Element => {
   const keyStorage = domain
     ? `${HISTOGRAMS_STORAGE_KEY}_${domain?.id}`
@@ -183,23 +184,23 @@ export default ({
       const params: AlgorithmParamInput[] = [];
 
       const variable = domain.variables.find(
-        v => v.id === selectedNode.data.id
+        (v) => v.id === selectedNode.data.id
       );
       const groupBy = Object.values(choosenVariables ?? {})
-        .filter(v => !variable || v.id !== variable.id)
-        .map(v => v.id);
+        .filter((v) => !variable || v.id !== variable.id)
+        .map((v) => v.id);
 
       if (groupBy && groupBy.length > 0) {
         params.push({
           id: 'x',
-          value: groupBy.join(',')
+          value: groupBy.join(','),
         });
       }
 
       if (variable && variable.type !== 'nominal') {
         params.push({
           id: 'bins',
-          value: JSON.stringify({ [variable.id]: 20 })
+          value: JSON.stringify({ [variable.id]: 20 }),
         });
       }
 
@@ -214,10 +215,10 @@ export default ({
             algorithm: {
               type: 'string',
               id: 'MULTIPLE_HISTOGRAMS',
-              parameters: params
-            }
-          }
-        }
+              parameters: params,
+            },
+          },
+        },
       });
     }
   }, [
@@ -226,7 +227,7 @@ export default ({
     draftExperiment.datasets,
     draftExperiment.domain,
     getHistrograms,
-    selectedNode
+    selectedNode,
   ]);
 
   const handleChooseVariable = (index: number, variable: Variable): void => {
@@ -250,7 +251,7 @@ export default ({
               {' '}
               {nodes &&
                 nodes.length > 0 &&
-                nodes.map(n => (
+                nodes.map((n) => (
                   <p onClick={(): void => zoom(n)} key={n.data.id}>
                     {n.data.label ?? n.data.id}
                   </p>
@@ -299,7 +300,7 @@ export default ({
             </Tab>
             {independantsVariables &&
               independantsVariables.length > 0 &&
-              [1, 2, 3].map(i => (
+              [1, 2, 3].map((i) => (
                 <Tab
                   eventKey={`${i}`}
                   title={
@@ -316,7 +317,7 @@ export default ({
                         }
                       >
                         {independantsVariables &&
-                          independantsVariables.map(v => (
+                          independantsVariables.map((v) => (
                             <Dropdown.Item
                               as={Button}
                               key={v.id}
@@ -353,3 +354,5 @@ export default ({
     </>
   );
 };
+
+export default Histograms;

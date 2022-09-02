@@ -1,4 +1,4 @@
-import * as React from 'react';
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import styled from 'styled-components';
 
 import { round } from '../../utils';
@@ -70,7 +70,7 @@ interface TabularDataResource {
   schema: Fields;
 }
 
-export default ({ data }: { data: TabularDataResource }): JSX.Element => {
+const JSONData = ({ data }: { data: TabularDataResource }): JSX.Element => {
   if (!data) {
     return <p>No data</p>;
   }
@@ -128,3 +128,5 @@ export default ({ data }: { data: TabularDataResource }): JSX.Element => {
     </>
   );
 };
+
+export default JSONData;

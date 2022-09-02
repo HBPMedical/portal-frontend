@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import React, { useCallback, useEffect, useState } from 'react';
 import { Button, Col, Form } from 'react-bootstrap';
 import styled from 'styled-components';
@@ -6,7 +7,7 @@ import {
   Formula,
   FormulaOperation,
   FormulaTransformation,
-  Variable
+  Variable,
 } from '../API/GraphQL/types.generated';
 import { Dict, IFormula } from '../utils';
 
@@ -34,7 +35,7 @@ const InteractionRow = ({
   variables,
   setSelectedInteraction,
   handleSetInteraction,
-  handleUnsetInteraction
+  handleUnsetInteraction,
 }: {
   interaction?: string[];
   selectedInteraction: SelectedInteraction;
@@ -61,7 +62,7 @@ const InteractionRow = ({
           }}
         >
           <option>{variableDefault}</option>
-          {variables?.map(v => (
+          {variables?.map((v) => (
             <option
               key={`interact-${v.id}`}
               value={v.id}
@@ -85,7 +86,7 @@ const InteractionRow = ({
           }}
         >
           <option>{variableDefault}</option>
-          {variables?.map(v => (
+          {variables?.map((v) => (
             <option
               key={`interact2-${v.id}`}
               value={v.id}
@@ -125,7 +126,7 @@ const TransformRow = ({
   formula,
   setSelectedTransform,
   handleSetTransform,
-  handleUnsetTransform
+  handleUnsetTransform,
 }: {
   transformation?: FormulaTransformation;
   variables: Variable[];
@@ -159,18 +160,20 @@ const TransformRow = ({
           onChange={(event: React.FormEvent<any>): void => {
             event.preventDefault();
             const nextName = (event.target as HTMLInputElement).value;
-            setSelectedTransform(prevSelectedTransform => ({
+            setSelectedTransform((prevSelectedTransform) => ({
               id: nextName,
-              operation: prevSelectedTransform?.operation
+              operation: prevSelectedTransform?.operation,
             }));
           }}
         >
           <option>{variableDefault}</option>
-          {variables?.map(v => (
+          {variables?.map((v) => (
             <option
               key={`variable-${v.id}`}
               value={v.id}
-              disabled={formula?.transformations?.map(t => t.id).includes(v.id)}
+              disabled={formula?.transformations
+                ?.map((t) => t.id)
+                .includes(v.id)}
             >
               {v.label}
             </option>
@@ -186,17 +189,17 @@ const TransformRow = ({
           onChange={(event: React.FormEvent<any>): void => {
             event.preventDefault();
             const t = (event.target as HTMLInputElement).value;
-            setSelectedTransform(prevSelectedTransform => ({
+            setSelectedTransform((prevSelectedTransform) => ({
               id: prevSelectedTransform?.id,
-              operation: t
+              operation: t,
             }));
           }}
         >
           <option>{operationDefault}</option>
           {dictOperations[
-            variables?.find(v => v.id === name)?.type?.toLowerCase() ??
+            variables?.find((v) => v.id === name)?.type?.toLowerCase() ??
               'default'
-          ]?.map(f => (
+          ]?.map((f) => (
             <option key={`tranform-${f}`} value={f}>
               {f}
             </option>
@@ -230,7 +233,7 @@ const FormulaContainer = ({
   lookup,
   availableAlgorithms,
   experiment,
-  operations
+  operations,
 }: {
   handleUpdateFormula: (formula?: IFormula) => void;
   lookup: (id: string) => Variable | undefined;
@@ -239,26 +242,24 @@ const FormulaContainer = ({
   experiment: Experiment;
 }): JSX.Element => {
   const [variables, setVariables] = useState<Variable[]>();
-  const [
-    selectedTransform,
-    setSelectedTransform
-  ] = useState<SelectedTransformation | null>();
-  const [selectedInteraction, setSelectedInteraction] = useState<
-    SelectedInteraction
-  >([]);
+  const [selectedTransform, setSelectedTransform] =
+    useState<SelectedTransformation | null>();
+  const [selectedInteraction, setSelectedInteraction] =
+    useState<SelectedInteraction>([]);
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   const lookupCallback = useCallback(lookup, []);
 
   useEffect(() => {
     const variables: string[] | undefined = experiment && [
       ...(experiment.coVariables || []),
-      ...(experiment.variables || [])
+      ...(experiment.variables || []),
     ];
 
     // Get all non categoricals variables
     const lookedUpVariables =
       (variables
-        ?.map(v => lookupCallback(v))
-        .filter(v => v && !v.enumerations?.length) as Variable[]) ?? [];
+        ?.map((v) => lookupCallback(v))
+        .filter((v) => v && !v.enumerations?.length) as Variable[]) ?? [];
 
     setVariables(lookedUpVariables);
   }, [experiment, setVariables, lookupCallback]);
@@ -271,8 +272,8 @@ const FormulaContainer = ({
         ...formula,
         transformations: [
           ...(transformations ? transformations : []),
-          selectedTransform as FormulaTransformation
-        ]
+          selectedTransform as FormulaTransformation,
+        ],
       };
       handleUpdateFormula(nextFormula);
     }
@@ -285,11 +286,11 @@ const FormulaContainer = ({
     const formula = experiment?.formula;
     const previousTransformations = formula?.transformations;
     const transformations = previousTransformations?.filter(
-      t => t.id !== transformation?.id
+      (t) => t.id !== transformation?.id
     );
     const nextFormula = {
       ...formula,
-      transformations
+      transformations,
     };
     handleUpdateFormula(nextFormula);
   };
@@ -302,8 +303,8 @@ const FormulaContainer = ({
         ...formula,
         interactions: [
           ...(interactions ? interactions : []),
-          [selectedInteraction[0], selectedInteraction[1]]
-        ]
+          [selectedInteraction[0], selectedInteraction[1]],
+        ],
       };
       handleUpdateFormula(nextFormula);
     }
@@ -314,11 +315,11 @@ const FormulaContainer = ({
     const formula = experiment?.formula;
     const previousInteractions = formula?.interactions;
     const interactions = previousInteractions?.filter(
-      i => !(i[0] === interaction[0] && i[1] === interaction[1])
+      (i) => !(i[0] === interaction[0] && i[1] === interaction[1])
     );
     const nextFormula = {
       ...formula,
-      interactions
+      interactions,
     };
     handleUpdateFormula(nextFormula);
   };
@@ -346,7 +347,7 @@ const FormulaContainer = ({
             <strong>Add Transformation</strong>
           </p>
 
-          {transformationVariables.map(transformation => (
+          {transformationVariables.map((transformation) => (
             <TransformRow
               operations={operations}
               transformation={transformation}
@@ -380,7 +381,7 @@ const FormulaContainer = ({
               <p>
                 <strong>Add Interaction</strong>
               </p>
-              {interactionVariables.map(interaction => (
+              {interactionVariables.map((interaction) => (
                 <InteractionRow
                   interaction={interaction}
                   handleSetInteraction={handleSetInteraction}

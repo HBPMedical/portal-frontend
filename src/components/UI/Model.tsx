@@ -1,4 +1,5 @@
-import * as React from 'react';
+/* eslint-disable @typescript-eslint/no-explicit-any */
+import { Component } from 'react';
 import styled from 'styled-components';
 import { Domain, Experiment, Variable } from '../API/GraphQL/types.generated';
 import { IFormula } from '../utils';
@@ -18,7 +19,7 @@ interface Props {
   domain: Domain;
 }
 
-class Model extends React.Component<Props> {
+class Model extends Component<Props> {
   render(): JSX.Element {
     const { experiment, domain } = this.props;
 
@@ -30,8 +31,8 @@ class Model extends React.Component<Props> {
               <section>
                 <h4>Variables</h4>
                 {domain.variables
-                  .filter(v => experiment.variables.includes(v.id))
-                  .map(v => (
+                  .filter((v) => experiment.variables.includes(v.id))
+                  .map((v) => (
                     <p key={v.id}>{this.infoVariable(v)} </p>
                   ))}
               </section>
@@ -40,7 +41,7 @@ class Model extends React.Component<Props> {
             {experiment.coVariables && experiment.coVariables.length > 0 && (
               <section>
                 <h4>Covariates</h4>
-                {this.lookup(experiment.coVariables, domain).map(v => (
+                {this.lookup(experiment.coVariables, domain).map((v) => (
                   <p key={v.id}>{this.infoVariable(v)}</p>
                 ))}
               </section>
@@ -71,7 +72,7 @@ class Model extends React.Component<Props> {
     `${v.label ?? v.id} ${v.type ? `(${v.type})` : ''}`;
 
   private lookup = (idVars: string[], domain: Domain): Variable[] =>
-    domain.variables.filter(v => idVars.includes(v.id));
+    domain.variables.filter((v) => idVars.includes(v.id));
 
   private ruleOperator = (operator: string): string => {
     switch (operator) {
@@ -103,7 +104,7 @@ class Model extends React.Component<Props> {
         data.rules.forEach((rule: any, index: number) => {
           const condition = {
             data: `${data.condition}`,
-            level
+            level,
           };
 
           if (rule.condition) {
@@ -120,7 +121,7 @@ class Model extends React.Component<Props> {
             data: `${
               this.lookup([rule.field], domain).pop()?.label
             } ${this.ruleOperator(rule.operator)} ${rule.value}`,
-            level
+            level,
           });
 
           if (index < data.rules.length - 1) {
@@ -149,7 +150,7 @@ class Model extends React.Component<Props> {
     const Transformation = (): JSX.Element => (
       <>
         {(transformations?.length || 0) > 0 && <h6>Transformations</h6>}
-        {transformations?.map(t => (
+        {transformations?.map((t) => (
           <p key={t.operation}>
             <em>{t.operation}: </em>
             {t.id}

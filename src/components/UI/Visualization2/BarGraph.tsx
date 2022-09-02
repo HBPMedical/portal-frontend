@@ -1,9 +1,9 @@
-/* eslint-disable @typescript-eslint/camelcase */
 /* eslint-disable react-hooks/exhaustive-deps */
-import React, { useEffect, useRef } from 'react';
+import { useEffect, useRef } from 'react';
 import styled from 'styled-components';
 import { BarChartResult } from '../../API/GraphQL/types.generated';
 
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
 declare let window: any;
 
 const Container = styled.div`
@@ -15,7 +15,7 @@ interface Props {
   data: BarChartResult;
 }
 
-export default (props: Props) => {
+const BarGraph = (props: Props) => {
   const containerRef = useRef<HTMLDivElement>(null);
   const Bokeh = window.Bokeh;
   const plot = Bokeh.Plotting;
@@ -33,15 +33,15 @@ export default (props: Props) => {
   const source = new Bokeh.ColumnDataSource({
     data: {
       categories,
-      counts: data.barValues
-    }
+      counts: data.barValues,
+    },
   });
 
   const p = plot.figure({
     x_range: categories,
     title: data.name,
     toolbar_location: null,
-    tools: ''
+    tools: '',
   });
 
   p.vbar({
@@ -50,20 +50,20 @@ export default (props: Props) => {
     width: 0.8,
     line_alpha: 0.5,
     fill_alpha: 0.5,
-    source: source
+    source: source,
   });
 
   if (data.hasConnectedBars) {
     p.line({
       x: { field: 'categories' },
       y: { field: 'counts' },
-      source: source
+      source: source,
     });
 
     p.circle({
       x: { field: 'categories' },
       y: { field: 'counts' },
-      source: source
+      source: source,
     });
   }
 
@@ -77,3 +77,5 @@ export default (props: Props) => {
 
   return <Container id={slug} className="result" ref={containerRef} />;
 };
+
+export default BarGraph;

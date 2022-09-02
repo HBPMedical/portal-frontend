@@ -69,10 +69,6 @@ interface NodeData {
   samples: NodeInfo | undefined;
 }
 
-interface NodeAttribute {
-  data: { info?: NodeData };
-}
-
 type HierarchyPointNode = d3.HierarchyPointNode<Node>;
 
 const Y_LINE_HEIGHT = 14;
@@ -91,15 +87,15 @@ const makeNodes = (data: JSONNode): Node[] | undefined => {
     {
       ...(hasLeft && {
         children: makeNodes(data.left as JSONNode),
-        info: makeNodeData(data.left as JSONNode, false)
-      })
+        info: makeNodeData(data.left as JSONNode, false),
+      }),
     },
     {
       ...(hasRight && {
         children: makeNodes(data.right as JSONNode),
-        info: makeNodeData(data.right as JSONNode, true)
-      })
-    }
+        info: makeNodeData(data.right as JSONNode, true),
+      }),
+    },
   ];
 
   return children;
@@ -117,7 +113,7 @@ const makeNodeData = (data: JSONNode, isRight: boolean): NodeData => {
     data.gain !== 'None'
       ? {
           y,
-          text: `${data.criterion} = ${round(data.gain as number, 3)}`
+          text: `${data.criterion} = ${round(data.gain as number, 3)}`,
         }
       : undefined;
 
@@ -137,7 +133,7 @@ const makeNodeData = (data: JSONNode, isRight: boolean): NodeData => {
           text:
             typeof data.samples === 'number'
               ? `samples = ${round(data.samples, 0)}`
-              : `samples: ${data.samples}`
+              : `samples: ${data.samples}`,
         }
       : undefined;
 
@@ -146,12 +142,12 @@ const makeNodeData = (data: JSONNode, isRight: boolean): NodeData => {
     variable,
     criterion,
     class: klass,
-    samples
+    samples,
   };
 };
 
 // TODO collapsible tree https://observablehq.com/@d3/collapsible-tree
-export default ({ data }: { data: JSONNode }): JSX.Element => {
+const BinaryTree = ({ data }: { data: JSONNode }): JSX.Element => {
   const svgRef = useRef(null);
   const [, setLocalData] = React.useState(data);
   React.useLayoutEffect(() => {
@@ -259,45 +255,43 @@ export default ({ data }: { data: JSONNode }): JSX.Element => {
       node
         .append('text')
         .attr('x', x)
-        .attr('y', d => y + (d?.data.info?.variable?.y || 0))
+        .attr('y', (d) => y + (d?.data.info?.variable?.y || 0))
         .style('text-anchor', 'start')
         .text((d: HierarchyPointNode) => d?.data.info?.variable?.text || '');
 
       node
         .append('text')
         .attr('x', x)
-        .attr('y', d => y + (d?.data.info?.criterion?.y || 0))
+        .attr('y', (d) => y + (d?.data.info?.criterion?.y || 0))
         .style('text-anchor', 'start')
         .text((d: HierarchyPointNode) => d?.data.info?.criterion?.text || '');
 
       node
         .append('text')
         .attr('x', x)
-        .attr('y', d => y + (d?.data.info?.class?.y || 0))
+        .attr('y', (d) => y + (d?.data.info?.class?.y || 0))
         .style('text-anchor', 'start')
         .text((d: HierarchyPointNode) => d?.data.info?.class?.text || '');
 
       node
         .append('text')
         .attr('x', x)
-        .attr('y', d => y + (d?.data.info?.samples?.y || 0))
+        .attr('y', (d) => y + (d?.data.info?.samples?.y || 0))
         .style('text-anchor', 'start')
         .text((d: HierarchyPointNode) => d?.data.info?.samples?.text || '');
     };
 
     const updateRender = (treeData: Node): void => {
-      d3.select(svgRef.current)
-        .selectAll('svg')
-        .remove();
+      d3.select(svgRef.current).selectAll('svg').remove();
 
       firstRender(treeData);
     };
 
     // update or render
-    setLocalData(previousData => {
+    setLocalData((previousData) => {
       const treeNode: Node = {
         children: makeNodes(data),
-        info: makeNodeData(data, true)
+        info: makeNodeData(data, true),
       };
 
       if (previousData !== data) {
@@ -318,3 +312,5 @@ export default ({ data }: { data: JSONNode }): JSX.Element => {
     </div>
   );
 };
+
+export default BinaryTree;

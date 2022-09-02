@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/ban-types */
 // Source: https://github.com/alexzywiak/d3-react-components/blob/master/src/hooks/renderLifecycle.ts
 
 import { useLayoutEffect, useRef } from 'react';
@@ -8,10 +9,10 @@ interface RenderLifecycleArgs {
   lastRender?: Function;
 }
 
-export default ({
+const RenderLifeCycle = ({
   firstRender,
   updateRender,
-  lastRender
+  lastRender,
 }: RenderLifecycleArgs): void => {
   const isFirstRender = useRef(true);
 
@@ -32,3 +33,5 @@ export default ({
     };
   }, [firstRender, lastRender]);
 };
+
+export default RenderLifeCycle;

@@ -35,8 +35,8 @@ const AppContainer = (): JSX.Element => {
         version: 'dev',
         experimentsListRefresh: `${1000 * 60 * 15}`,
         matomo: {
-          enabled: false
-        }
+          enabled: false,
+        },
       });
     });
   }, []);
@@ -45,7 +45,7 @@ const AppContainer = (): JSX.Element => {
     <MIPContext.Provider
       value={{
         showTutorial: showTutorial,
-        toggleTutorial
+        toggleTutorial,
       }}
     >
       <Router history={history}>

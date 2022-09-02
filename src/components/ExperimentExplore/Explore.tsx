@@ -1,5 +1,6 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import { useReactiveVar } from '@apollo/client';
-import React, { useState } from 'react';
+import { useState } from 'react';
 import { Badge, Button, Card, Col, Container, Row } from 'react-bootstrap';
 import { BsFillCaretRightFill, BsTrash } from 'react-icons/bs';
 import styled from 'styled-components';
@@ -8,7 +9,7 @@ import {
   draftExperimentVar,
   selectedDomainVar,
   selectedExperimentVar,
-  variablesVar
+  variablesVar,
 } from '../API/GraphQL/cache';
 import { localMutations } from '../API/GraphQL/operations/mutations';
 import { VarType } from '../API/GraphQL/operations/mutations/experiments/toggleVarsExperiment';
@@ -77,10 +78,10 @@ const Col1 = styled(Col2 as any)`
 `;
 
 export interface ExploreProps {
-  handleGoToAnalysis: any; // FIXME Promise<void>
+  handleGoToAnalysis: any;
 }
 
-export default (props: ExploreProps): JSX.Element => {
+const Explore = (props: ExploreProps): JSX.Element => {
   const { handleGoToAnalysis } = props;
 
   const { data: config } = useGetConfigurationQuery();
@@ -98,14 +99,14 @@ export default (props: ExploreProps): JSX.Element => {
       'As variable',
       'success',
       [...(draftExperiment.variables || [])],
-      VarType.VARIABLES
+      VarType.VARIABLES,
     ],
     [
       'As covariate',
       'warning',
       [...(draftExperiment.coVariables || [])],
-      VarType.COVARIATES
-    ]
+      VarType.COVARIATES,
+    ],
   ];
 
   if (config?.configuration.hasFilters) {
@@ -113,12 +114,12 @@ export default (props: ExploreProps): JSX.Element => {
       'As filter',
       'secondary',
       [...(draftExperiment.filterVariables || [])],
-      VarType.FILTER
+      VarType.FILTER,
     ]);
   }
 
   const independantsVariables =
-    domain?.variables.filter(v => v.type === 'nominal') ?? [];
+    domain?.variables.filter((v) => v.type === 'nominal') ?? [];
 
   return (
     <>
@@ -162,7 +163,7 @@ export default (props: ExploreProps): JSX.Element => {
 
               <Container>
                 <Row>
-                  {containers.map(bag => (
+                  {containers.map((bag) => (
                     <Col className="px-1" key={bag[0] as string}>
                       <div className="d-flex justify-content-between mb-1">
                         <div>
@@ -179,8 +180,8 @@ export default (props: ExploreProps): JSX.Element => {
                               const vars =
                                 selectedNode
                                   ?.leaves()
-                                  .filter(node => node.data.id)
-                                  .map(node => node.data.id) ?? [];
+                                  .filter((node) => node.data.id)
+                                  .map((node) => node.data.id) ?? [];
 
                               localMutations.toggleVarsDraftExperiment(
                                 vars,
@@ -192,7 +193,7 @@ export default (props: ExploreProps): JSX.Element => {
                             selectedNode &&
                             selectedNode
                               .leaves()
-                              .filter(n => bag[2]?.includes(n.data.id))
+                              .filter((n) => bag[2]?.includes(n.data.id))
                               .length === selectedNode.leaves().length
                               ? '-'
                               : '+'}{' '}
@@ -220,7 +221,7 @@ export default (props: ExploreProps): JSX.Element => {
                       </div>
                       <VariablesGroupList
                         variables={
-                          domain?.variables?.filter(v =>
+                          domain?.variables?.filter((v) =>
                             bag[2].includes(v.id)
                           ) ?? []
                         }
@@ -279,3 +280,5 @@ export default (props: ExploreProps): JSX.Element => {
     </>
   );
 };
+
+export default Explore;

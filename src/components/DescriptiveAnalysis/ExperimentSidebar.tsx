@@ -18,7 +18,7 @@ const ExperimentSidebar = ({
   selectedExperiment,
   draftExperiment,
   handleSelectDataset,
-  handleSelectExperiment
+  handleSelectExperiment,
 }: Props): JSX.Element => {
   return (
     <Card className="datasets">
@@ -26,7 +26,7 @@ const ExperimentSidebar = ({
         <section>
           <DropdownExperimentList
             hasDetailedView={false}
-            handleExperimentChanged={id => {
+            handleExperimentChanged={(id) => {
               handleSelectExperiment?.(id);
             }}
             label={

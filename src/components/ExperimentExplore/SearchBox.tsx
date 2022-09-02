@@ -55,7 +55,7 @@ interface Props {
   groups: Group[];
 }
 
-export default (props: Props): JSX.Element => {
+const SearchBox = (props: Props): JSX.Element => {
   const searchRef = useRef<HTMLInputElement>(document.createElement('input'));
   const [searchText, setSearchText] = useState<string | undefined>(undefined);
   const [visibleResults, setVisibleResults] = useState(false);
@@ -67,9 +67,9 @@ export default (props: Props): JSX.Element => {
 
   const handleKeyDown = (event: KeyboardEvent): void => {
     if (event.key === 'ArrowDown') {
-      setKeyDownIndex(index => index + 1);
+      setKeyDownIndex((index) => index + 1);
     } else if (event.key === 'ArrowUp') {
-      setKeyDownIndex(index => index - 1);
+      setKeyDownIndex((index) => index - 1);
     } else if (event.key === 'Enter') {
       if (searchResult && searchResult[keyDownIndex])
         handleSelectNode(searchResult[keyDownIndex]);
@@ -82,8 +82,8 @@ export default (props: Props): JSX.Element => {
 
   useEffect(() => {
     setSearchResult([
-      ...visibleVars.map(v => v.id),
-      ...visibleGroups.map(g => g.id)
+      ...visibleVars.map((v) => v.id),
+      ...visibleGroups.map((g) => g.id),
     ]);
   }, [visibleVars, visibleGroups]);
 
@@ -97,9 +97,9 @@ export default (props: Props): JSX.Element => {
 
       const regexp = new RegExp(searchText, 'ig');
 
-      setVisibleGroups(groups.filter(g => regexp.test(`${g.id} ${g.label}`)));
+      setVisibleGroups(groups.filter((g) => regexp.test(`${g.id} ${g.label}`)));
       setVisibleVars(
-        variables.filter(v => regexp.test(`${v.id} ${v.type} ${v.label}`))
+        variables.filter((v) => regexp.test(`${v.id} ${v.type} ${v.label}`))
       );
     }, 500);
 
@@ -206,3 +206,5 @@ export default (props: Props): JSX.Element => {
     </Shortcuts>
   );
 };
+
+export default SearchBox;

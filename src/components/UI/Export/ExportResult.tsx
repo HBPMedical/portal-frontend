@@ -1,5 +1,5 @@
 import * as hmtlToImage from 'html-to-image';
-import React, { useEffect, useRef, useState } from 'react';
+import { ReactNode, useEffect, useRef, useState } from 'react';
 import { Button } from 'react-bootstrap';
 import { BsFileCode, BsFillImageFill } from 'react-icons/bs';
 import styled from 'styled-components';
@@ -24,10 +24,22 @@ const ToolBox = styled.div`
     padding: 1px 5px;
   }
 `;
+
+type ContainerProps = {
+  hasExport: boolean;
+};
+
+const ContainerResult = styled.div<ContainerProps>`
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  padding-top: ${(p) => (p.hasExport ? '20px' : '0')};
+`;
+
 type Props = {
   result: ResultUnion;
   allowExport?: boolean;
-  children: (wrapResult: ResultUnion, type: string) => React.ReactNode;
+  children: (wrapResult: ResultUnion, type: string) => ReactNode;
 };
 
 const downloadThis = (data: string, filename: string) => {
@@ -43,7 +55,7 @@ const exceptList = ['groupsresult', 'alertresult'];
 const ExportResult = ({
   children,
   result,
-  allowExport = true
+  allowExport = true,
 }: Props): JSX.Element => {
   const childRef = useRef<HTMLDivElement>(null);
   const [chart, setChart] = useState<ResultUnion>(result);
@@ -68,8 +80,8 @@ const ExportResult = ({
 
     const img = await hmtlToImage.toPng(child, {
       style: {
-        display: 'inline-block'
-      }
+        display: 'inline-block',
+      },
     });
 
     downloadThis(img, 'export-result.png');
@@ -87,13 +99,18 @@ const ExportResult = ({
 
   return (
     <ExportContainer>
-      <NeutralContainer ref={childRef}>
+      <ContainerResult
+        ref={childRef}
+        className="exp-result"
+        data-export={type === 'tableresult' ? 'container' : 'inplace'}
+        hasExport={allowExport}
+      >
         {children(chart, type)}
-      </NeutralContainer>
+      </ContainerResult>
       <ToolBox className="tool-actions">
         <EditChart
           value={result}
-          onChange={val => {
+          onChange={(val) => {
             setChart(val);
           }}
         />

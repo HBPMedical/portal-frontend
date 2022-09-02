@@ -1,10 +1,9 @@
-import React from 'react';
-import { Pagination } from 'react-bootstrap';
+import { Pagination as PaginationContainer } from 'react-bootstrap';
 
-export default ({
+const Pagination = ({
   totalPages,
   currentPage,
-  handleSetCurrentPage
+  handleSetCurrentPage,
 }: {
   totalPages: number;
   currentPage: number;
@@ -12,28 +11,30 @@ export default ({
 }): JSX.Element => {
   return (
     (totalPages > 1 && (
-      <Pagination className="justify-content-center">
-        <Pagination.Prev
+      <PaginationContainer className="justify-content-center">
+        <PaginationContainer.Prev
           disabled={currentPage === 0}
           onClick={(): void => handleSetCurrentPage(currentPage - 1)}
         />
 
-        {[...Array(totalPages).keys()].map(n => (
-          <Pagination.Item
+        {[...Array(totalPages).keys()].map((n) => (
+          <PaginationContainer.Item
             key={`page-${n}`}
             onClick={(): void => handleSetCurrentPage(n)}
             active={currentPage === n}
           >
             {n + 1}
-          </Pagination.Item>
+          </PaginationContainer.Item>
         ))}
 
-        <Pagination.Next
+        <PaginationContainer.Next
           onClick={(): void => handleSetCurrentPage(currentPage + 1)}
           active={totalPages === currentPage}
           disabled={currentPage >= totalPages - 1}
         />
-      </Pagination>
+      </PaginationContainer>
     )) || <div></div>
   );
 };
+
+export default Pagination;

@@ -80,8 +80,8 @@ Let's fire a development frontend. I assume you cloned this repository and check
 - Run: `yarn install`
 - Create a `.env.development` file in the root directory and add 
 ```
-REACT_APP_BACKEND_URL=http://[MY IP]:8081
-REACT_APP_GATEWAY_URL=$REACT_APP_BACKEND_URL/graphql
+VITE_BACKEND_URL=http://[MY IP]:8081
+VITE_GATEWAY_URL=$VITE_BACKEND_URL/graphql
 ``` 
 which points to the backend API.
 

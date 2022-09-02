@@ -6,7 +6,7 @@ import {
   Experiment,
   NominalParameter,
   OptionValue,
-  Variable
+  Variable,
 } from '../../API/GraphQL/types.generated';
 
 type Props = {
@@ -29,7 +29,7 @@ const getLinkedVar = (
       : exp.coVariables) ?? [];
 
   const variable = vars.find(
-    v => idCandidates.includes(v.id) && v.type === 'nominal'
+    (v) => idCandidates.includes(v.id) && v.type === 'nominal'
   );
 
   if (variable && variable.enumerations) {
@@ -43,7 +43,7 @@ const NominalInput = ({
   parameter,
   experiment,
   variables,
-  handleValueChanged
+  handleValueChanged,
 }: Props) => {
   const isLinked = parameter.linkedTo;
   const [linkedVar, setLinkedVar] = useState<Variable | undefined>(undefined);
@@ -59,9 +59,9 @@ const NominalInput = ({
     setLinkedVar(linkedVar);
     const opts: OptionValue[] =
       (parameter.linkedTo
-        ? linkedVar?.enumerations?.map(e => ({
+        ? linkedVar?.enumerations?.map((e) => ({
             value: e.value,
-            label: e.label ?? e.value
+            label: e.label ?? e.value,
           }))
         : parameter.allowedValues) ?? [];
 
@@ -79,12 +79,12 @@ const NominalInput = ({
         <Form.Control
           as="select"
           custom
-          onChange={e => handleValueChanged?.(parameter.name, e.target.value)}
+          onChange={(e) => handleValueChanged?.(parameter.name, e.target.value)}
           defaultValue={parameter.defaultValue ?? undefined}
           multiple={parameter.hasMultiple ?? undefined}
         >
           <option value="">Select an option</option>
-          {options.map(opt => {
+          {options.map((opt) => {
             return (
               <option key={opt.value} value={opt.value}>
                 {opt.label}
@@ -95,13 +95,16 @@ const NominalInput = ({
       )}
       {parameter.hasMultiple && (
         <Select
-          onChange={values =>
+          onChange={(values) =>
             handleValueChanged?.(
               parameter.name,
-              values?.map(v => v.value).toString() ?? ''
+              values?.map((v) => v.value).toString() ?? ''
             )
           }
-          options={options.map(opt => ({ value: opt.value, label: opt.label }))}
+          options={options.map((opt) => ({
+            value: opt.value,
+            label: opt.label,
+          }))}
           isMulti={true}
         />
       )}

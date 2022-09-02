@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import React, { useCallback } from 'react';
 import { Card, Container, Navbar } from 'react-bootstrap';
 import { localMutations } from '../API/GraphQL/operations/mutations';
@@ -23,7 +24,7 @@ const NavBar = (): JSX.Element => (
 const handleUpdateFilter = (data: string): void => {
   const filter = (data && JSON.stringify(data)) || '';
   localMutations.updateDraftExperiment({
-    filter
+    filter,
   });
 };
 
@@ -33,21 +34,22 @@ const handleUpdateFormula = (formula?: IFormula): void => {
 
 const FilterFormulaWrapper = ({
   experiment,
-  domain
+  domain,
 }: IOptions): JSX.Element => {
   const lookup = useCallback(
     (id: string): Variable | undefined =>
-      domain.variables.find(v => v.id === id),
+      domain.variables.find((v) => v.id === id),
     [domain]
   );
 
   const { data } = useGetFilterFormulaDataQuery();
   const availableAlgorithms =
-    data?.algorithms.filter(a => a.hasFormula).map(a => a.label ?? a.id) ?? [];
+    data?.algorithms.filter((a) => a.hasFormula).map((a) => a.label ?? a.id) ??
+    [];
   const numberTypes = data?.filter?.numberTypes ?? [];
 
   const handleUpdateFormulaCallback = React.useCallback(handleUpdateFormula, [
-    experiment.formula // hacky way to force re-render on formula changes
+    experiment.formula, // hacky way to force re-render on formula changes
   ]);
 
   const makeFilters = (): any => {
@@ -58,7 +60,7 @@ const FilterFormulaWrapper = ({
         return [];
       }
 
-      const originalVar = domain.variables.find(v => v.id === code);
+      const originalVar = domain.variables.find((v) => v.id === code);
 
       if (!originalVar) {
         return [];
@@ -71,7 +73,7 @@ const FilterFormulaWrapper = ({
         //default input type: text
         type: 'string',
         input: 'text',
-        operators: ['equal', 'not_equal']
+        operators: ['equal', 'not_equal'],
       };
 
       if (
@@ -79,8 +81,8 @@ const FilterFormulaWrapper = ({
         originalVar.enumerations &&
         originalVar.enumerations.length > 0
       ) {
-        output.values = originalVar.enumerations.map(c => ({
-          [c.value]: c.label || c.value
+        output.values = originalVar.enumerations.map((c) => ({
+          [c.value]: c.label || c.value,
         }));
         output.input = 'select';
         output.operators = ['equal', 'not_equal', 'in', 'not_in'];
@@ -96,7 +98,7 @@ const FilterFormulaWrapper = ({
           'less',
           'greater',
           'between',
-          'not_between'
+          'not_between',
         ];
       }
 
@@ -105,7 +107,7 @@ const FilterFormulaWrapper = ({
 
     varFields =
       (experiment.filterVariables &&
-        [...experiment.filterVariables.map(buildFilter)].filter(f => f.id)) ||
+        [...experiment.filterVariables.map(buildFilter)].filter((f) => f.id)) ||
       [];
     const expFilters =
       (experiment && experiment.filter && JSON.parse(experiment.filter)) || '';

@@ -8,7 +8,7 @@ import { appConfigVar } from '../../../API/GraphQL/cache';
 import { localMutations } from '../../../API/GraphQL/operations/mutations';
 import {
   useGetExperimentLazyQuery,
-  useGetExperimentListLazyQuery
+  useGetExperimentListLazyQuery,
 } from '../../../API/GraphQL/queries.generated';
 import { Experiment } from '../../../API/GraphQL/types.generated';
 import { useOnClickOutside } from '../../../utils';
@@ -70,7 +70,7 @@ const PaginationContainer = styled.div`
 
 const Search = ({
   searchName,
-  setSearchName
+  setSearchName,
 }: {
   searchName: string;
   setSearchName: (name: string) => void;
@@ -90,7 +90,7 @@ const Search = ({
 const DropdownExperimentList = ({
   hasDetailedView = false,
   label = 'Experiment list',
-  handleExperimentChanged
+  handleExperimentChanged,
 }: {
   hasDetailedView: boolean;
   label: string;
@@ -104,9 +104,9 @@ const DropdownExperimentList = ({
 
   const [selectExperiment] = useGetExperimentLazyQuery({
     fetchPolicy: 'network-only',
-    onCompleted: data => {
+    onCompleted: (data) => {
       localMutations.selectExperiment(data.experiment as Experiment);
-    }
+    },
   });
 
   const [getExperimentList, { loading, data }] = useGetExperimentListLazyQuery({
@@ -114,13 +114,13 @@ const DropdownExperimentList = ({
     pollInterval: parseInt(
       appConfig.experimentsListRefresh ?? `${1000 * 15 * 60}`
     ),
-    onCompleted: data => {
+    onCompleted: (data) => {
       const pages = data.experimentList.totalPages ?? 0;
       if (pageNumber >= pages) setPageNumber(pages - 1);
       if (pages !== totalPages) {
         setTotalPages(pages);
       }
-    }
+    },
   });
 
   useEffect(() => {

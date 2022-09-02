@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/ban-ts-ignore */
 /* eslint-disable @typescript-eslint/no-empty-function */
 import { render, screen } from '@testing-library/react';
 import React from 'react';
@@ -15,7 +14,7 @@ const stringInput = {
   hint: 'test',
   isRequired: false,
   hasMultiple: false,
-  defaultValue: 'test'
+  defaultValue: 'test',
 };
 
 const numberInput = {
@@ -27,7 +26,7 @@ const numberInput = {
   hasMultiple: false,
   defaultValue: '2',
   min: 1,
-  max: 3
+  max: 3,
 };
 
 const algo = {
@@ -39,15 +38,15 @@ const algo = {
     hint: 'test',
     isRequired: true,
     allowedTypes: ['nominal'],
-    hasMultiple: false
+    hasMultiple: false,
   },
   coVariable: {
     hint: 'test',
     isRequired: true,
     //allowedTypes: [], // accept all types
-    hasMultiple: false
+    hasMultiple: false,
   },
-  parameters: [stringInput, numberInput]
+  parameters: [stringInput, numberInput],
 };
 
 const algoNoParam = {
@@ -59,15 +58,15 @@ const algoNoParam = {
     hint: 'test',
     isRequired: true,
     allowedTypes: ['nominal'],
-    hasMultiple: false
+    hasMultiple: false,
   },
   coVariable: {
     hint: 'test',
     isRequired: true,
     //allowedTypes: [], // accept all types
-    hasMultiple: false
+    hasMultiple: false,
   },
-  parameters: []
+  parameters: [],
 };
 
 describe('Algorithm parameters component', () => {

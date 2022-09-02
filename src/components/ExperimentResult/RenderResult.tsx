@@ -8,9 +8,9 @@ import BinaryTree from '../UI/Visualization/BinaryTree';
 import Warning from '../UI/Visualization/Warning';
 import { Result } from '../utils';
 
-export default ({
+const RenderResult = ({
   results,
-  constraint
+  constraint,
 }: {
   results: Result[] | undefined;
   constraint: boolean;
@@ -19,7 +19,7 @@ export default ({
     <>
       {results &&
         results
-          .filter(r => r && r.type)
+          .filter((r) => r && r.type)
           .map((result, i) => (
             <div
               style={{ maxWidth: 'calc(100vw - 280px)', overflow: 'auto' }}
@@ -52,3 +52,5 @@ export default ({
     </>
   );
 };
+
+export default RenderResult;

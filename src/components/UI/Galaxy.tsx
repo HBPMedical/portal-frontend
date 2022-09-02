@@ -33,7 +33,8 @@ export default React.memo(() => {
       let config = { error: { message: 'Unknow error' } };
       try {
         const response = await fetch(`${backendURL}/galaxy`, {
-          ...headers.options
+          ...headers.options,
+          credentials: headers.options.credentials as RequestCredentials,
         });
 
         if (response.ok) {

@@ -4,10 +4,10 @@ import CalibrationBelt from '../components/UI/Visualization2/CalibrationBelt';
 
 export default {
   title: 'Charts/CalibrationBelt',
-  component: CalibrationBelt
+  component: CalibrationBelt,
 } as ComponentMeta<typeof CalibrationBelt>;
 
-const Template: ComponentStory<typeof CalibrationBelt> = args => (
+const Template: ComponentStory<typeof CalibrationBelt> = (args) => (
   <CalibrationBelt />
 );
 

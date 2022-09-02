@@ -3,7 +3,7 @@
 exports[`Available Algorithms component when there are algorithms should display one algorithm enabled 1`] = `
 <DocumentFragment>
   <div
-    class="sc-hKgJUU bjqHqu"
+    class="sc-hKMtZM eFzUpx"
   >
     <div
       class="algorithms horizontal "
@@ -26,7 +26,7 @@ exports[`Available Algorithms component when there are algorithms should display
 exports[`Available Algorithms component when there are algorithms should display one algorithm selected 1`] = `
 <DocumentFragment>
   <div
-    class="sc-hKgJUU bjqHqu"
+    class="sc-hKMtZM eFzUpx"
   >
     <div
       class="algorithms horizontal "
@@ -49,7 +49,7 @@ exports[`Available Algorithms component when there are algorithms should display
 exports[`Available Algorithms component when there is no algorithm should display nothing 1`] = `
 <DocumentFragment>
   <div
-    class="sc-hKgJUU bjqHqu"
+    class="sc-hKMtZM eFzUpx"
   >
     <div
       class="algorithms horizontal "

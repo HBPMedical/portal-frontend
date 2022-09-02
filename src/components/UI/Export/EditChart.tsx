@@ -1,6 +1,7 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import { JsonEditor as Editor } from 'jsoneditor-react';
 import 'jsoneditor-react/es/editor.min.css';
-import React, { useEffect, useRef, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { Button } from 'react-bootstrap';
 import { FaEdit } from 'react-icons/fa';
 import { ResultUnion } from '../../API/GraphQL/types.generated';
@@ -18,7 +19,7 @@ const EditChart = ({ value, onChange }: Props): JSX.Element => {
   const [internalVal, setInternalVal] = useState<any>(internalClonedValue);
   const editData = {
     xAxis: internalVal?.rawdata?.data?.xAxis ?? internalVal.xAxis,
-    yAxis: internalVal?.rawdata?.data?.yAxis ?? internalVal.yAxis
+    yAxis: internalVal?.rawdata?.data?.yAxis ?? internalVal.yAxis,
   };
   if (editData.xAxis) {
     editData.xAxis.__typename = undefined;

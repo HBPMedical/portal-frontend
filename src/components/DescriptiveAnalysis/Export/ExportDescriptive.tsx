@@ -15,12 +15,12 @@ const ExportDescriptive = ({ draftExperiment }: Props) => {
     createdAt: new Date().toISOString(),
     author: {
       fullname: data?.user.fullname,
-      username: data?.user.username
+      username: data?.user.username,
     },
     algorithm: {
       name: 'DESCRIPTIVE_STATS',
-      parameters: []
-    }
+      parameters: [],
+    },
   };
 
   if (loading || !experiment) return <></>;

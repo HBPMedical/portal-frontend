@@ -6,7 +6,7 @@ import {
   draftExperimentVar,
   groupsVar,
   selectedDomainVar,
-  variablesVar
+  variablesVar,
 } from '../API/GraphQL/cache';
 import { localMutations } from '../API/GraphQL/operations/mutations';
 import { useGetDomainListQuery } from '../API/GraphQL/queries.generated';
@@ -47,7 +47,7 @@ const SearchBox = styled.div`
 
 const DataSelection = ({
   handleChangeDomain,
-  handleSelectedDataset
+  handleSelectedDataset,
 }: {
   handleChangeDomain?: (domain: string) => void;
   handleSelectedDataset?: (id: string) => void;
@@ -93,7 +93,7 @@ const DataSelection = ({
                   variant="light"
                   title={uppercase(domain?.label || 'Domains')}
                 >
-                  {data.domains.map(d => (
+                  {data.domains.map((d) => (
                     <Dropdown.Item
                       onSelect={(): void => {
                         showDialogDomainChange(d.id);

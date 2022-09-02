@@ -1,8 +1,6 @@
-import * as React from 'react';
 import { Button, Carousel, Modal } from 'react-bootstrap';
 import styled from 'styled-components';
 import { Link } from 'react-router-dom';
-
 import MIPContext from '../App/MIPContext';
 import blank from './blank.png';
 import how from './how.png';
@@ -18,6 +16,7 @@ import eight from './8.png';
 import nine from './9.png';
 import ten from './10.png';
 import eleven from './11.png';
+import { memo } from 'react';
 
 const CarouselStyled = styled(Carousel)`
   .carousel-control-next-icon,
@@ -38,101 +37,94 @@ const Text = styled.p`
   color: black;
 `;
 
-export default React.memo(
-  (): JSX.Element => {
-    const [width, height] = [1200, 675];
-    const slides = [
-      one,
-      two,
-      three,
-      four,
-      five,
-      six,
-      seven,
-      eight,
-      nine,
-      ten,
-      eleven
-    ];
+export default memo((): JSX.Element => {
+  const [width, height] = [1200, 675];
+  const slides = [
+    one,
+    two,
+    three,
+    four,
+    five,
+    six,
+    seven,
+    eight,
+    nine,
+    ten,
+    eleven,
+  ];
 
-    return (
-      <MIPContext.Consumer>
-        {({ toggleTutorial }): JSX.Element => (
-          <Modal show={true} id="main-modal" centered>
-            <Modal.Header
-              translate="no"
-              style={{ display: 'flex', justifyContent: 'space-between' }}
+  return (
+    <MIPContext.Consumer>
+      {({ toggleTutorial }): JSX.Element => (
+        <Modal show={true} id="main-modal" centered>
+          <Modal.Header
+            translate="no"
+            style={{ display: 'flex', justifyContent: 'space-between' }}
+          >
+            <Modal.Title>MIP User Guide</Modal.Title>
+            <Button
+              variant="link"
+              onClick={toggleTutorial}
+              style={{ marginLeft: 'auto' }}
             >
-              <Modal.Title>MIP User Guide</Modal.Title>
-              <Button
-                variant="link"
-                onClick={toggleTutorial}
-                style={{ marginLeft: 'auto' }}
-              >
-                <span aria-hidden="true">×</span>
-                <span className="sr-only">Close</span>
-              </Button>
-            </Modal.Header>
-            <Modal.Body>
-              <CarouselStyled>
-                <Carousel.Item>
-                  <img
-                    width={width}
-                    height={height}
-                    alt="Mip User Guide"
-                    src={start}
-                  />
-                  <Carousel.Caption>
-                    <Title>Welcome To the MIP</Title>
-                    <Text>
-                      Basic skills to start working with the MIP and conduct
-                      initial experiments
-                    </Text>
-                  </Carousel.Caption>
-                </Carousel.Item>
-                <Carousel.Item>
-                  <img
-                    width={width}
-                    height={height}
-                    alt="How does the MIP work"
-                    src={how}
-                  />
-                </Carousel.Item>
+              <span aria-hidden="true">×</span>
+              <span className="sr-only">Close</span>
+            </Button>
+          </Modal.Header>
+          <Modal.Body>
+            <CarouselStyled>
+              <Carousel.Item>
+                <img
+                  width={width}
+                  height={height}
+                  alt="Mip User Guide"
+                  src={start}
+                />
+                <Carousel.Caption>
+                  <Title>Welcome To the MIP</Title>
+                  <Text>
+                    Basic skills to start working with the MIP and conduct
+                    initial experiments
+                  </Text>
+                </Carousel.Caption>
+              </Carousel.Item>
+              <Carousel.Item>
+                <img
+                  width={width}
+                  height={height}
+                  alt="How does the MIP work"
+                  src={how}
+                />
+              </Carousel.Item>
 
-                {slides.map((s, i) => (
-                  <Carousel.Item key={`slide-${i}`}>
-                    <img
-                      width={width}
-                      height={height}
-                      alt="Variables"
-                      src={s}
-                    />
-                  </Carousel.Item>
-                ))}
-
-                <Carousel.Item>
-                  <img
-                    width={width}
-                    height={height}
-                    alt="Variables"
-                    src={blank}
-                  />
-                  <Carousel.Caption>
-                    <Title>More Videos Training</Title>
-                    <Text>
-                      This user manual is based on a{' '}
-                      <Link to="/training">series of video tutorials</Link>
-                    </Text>
-                  </Carousel.Caption>
+              {slides.map((s, i) => (
+                <Carousel.Item key={`slide-${i}`}>
+                  <img width={width} height={height} alt="Variables" src={s} />
                 </Carousel.Item>
-              </CarouselStyled>
-            </Modal.Body>
-            <Modal.Footer>
-              <Button onClick={toggleTutorial}>Close</Button>
-            </Modal.Footer>
-          </Modal>
-        )}
-      </MIPContext.Consumer>
-    );
-  }
-);
+              ))}
+
+              <Carousel.Item>
+                <img
+                  width={width}
+                  height={height}
+                  alt="Variables"
+                  src={blank}
+                />
+                <Carousel.Caption>
+                  <Title>More Videos Training</Title>
+                  <Text>
+                    This user manual is based on a{' '}
+                    <Link to="/training">series of video tutorials</Link>
+                  </Text>
+                </Carousel.Caption>
+              </Carousel.Item>
+            </CarouselStyled>
+          </Modal.Body>
+          <Modal.Footer>
+            <Button onClick={toggleTutorial}>Close</Button>
+          </Modal.Footer>
+        </Modal>
+      )}
+    </MIPContext.Consumer>
+  );
+});

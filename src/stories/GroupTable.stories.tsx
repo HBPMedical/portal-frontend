@@ -4,15 +4,15 @@ import 'bootstrap/dist/js/bootstrap.bundle.min';
 import React from 'react';
 import {
   GroupsResult,
-  TableResult
+  TableResult,
 } from '../components/API/GraphQL/types.generated';
 import GroupTable from '../components/UI/Visualization2/GroupResult';
 export default {
   title: 'Charts/GroupTable',
-  component: GroupTable
+  component: GroupTable,
 } as ComponentMeta<typeof GroupTable>;
 
-const Template: ComponentStory<typeof GroupTable> = args => (
+const Template: ComponentStory<typeof GroupTable> = (args) => (
   <GroupTable {...args} />
 );
 
@@ -28,21 +28,21 @@ const tabs: TableResult[] = [
       ['max', '4.4519'],
       ['lower_confidence', '2.6112668852519345'],
       ['mean', '2.97384897260274'],
-      ['upper_confidence', '3.3364310599535454']
+      ['upper_confidence', '3.3364310599535454'],
     ],
     headers: [
       {
         name: '',
         type: 'string',
-        __typename: 'Header'
+        __typename: 'Header',
       },
       {
         name: 'edsd',
         type: 'string',
-        __typename: 'Header'
-      }
+        __typename: 'Header',
+      },
     ],
-    __typename: 'TableResult'
+    __typename: 'TableResult',
   },
   {
     name: 'alzheimerbroadcategory',
@@ -51,22 +51,22 @@ const tabs: TableResult[] = [
       ['Datapoints', '292'],
       ['Nulls', ''],
       ['AD', '141'],
-      ['CN', '151']
+      ['CN', '151'],
     ],
     headers: [
       {
         name: '',
         type: 'string',
-        __typename: 'Header'
+        __typename: 'Header',
       },
       {
         name: 'edsd',
         type: 'string',
-        __typename: 'Header'
-      }
+        __typename: 'Header',
+      },
     ],
-    __typename: 'TableResult'
-  }
+    __typename: 'TableResult',
+  },
 ];
 
 const groups: GroupsResult = { groups: [] };
@@ -74,13 +74,13 @@ const groups: GroupsResult = { groups: [] };
 groups.groups.push({
   name: 'Variables',
   description: 'Optional description of variables',
-  results: tabs
+  results: tabs,
 });
 
 groups.groups.push({
   name: 'Models',
   description: 'Optional description of models',
-  results: tabs
+  results: tabs,
 });
 
 export const Default = Template.bind({});

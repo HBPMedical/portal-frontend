@@ -1,6 +1,5 @@
-/* eslint-disable @typescript-eslint/camelcase */
 /* eslint-disable react-hooks/exhaustive-deps */
-import React, { useEffect, useRef } from 'react';
+import { useEffect, useRef } from 'react';
 import { HeatMapResult, HeatMapStyle } from '../../API/GraphQL/types.generated';
 import styled from 'styled-components';
 
@@ -9,18 +8,21 @@ const Container = styled.div`
   display: inline-block;
 `;
 
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
 declare let window: any;
 
 interface Props {
   data: HeatMapResult;
 }
 
-export default ({ ...props }: Props) => {
+const HeatMapChart = ({ ...props }: Props) => {
   const containerRef = useRef<HTMLDivElement>(null);
   const Bokeh = window.Bokeh;
   const plot = Bokeh.Plotting;
   const data: HeatMapResult = JSON.parse(JSON.stringify(props.data)); // copy data for manipulations
-  data.matrix = data.matrix.map(row => row.map(i => Math.round(i * 100) / 100));
+  data.matrix = data.matrix.map((row) =>
+    row.map((i) => Math.round(i * 100) / 100)
+  );
   const slug =
     'chart-heatmap-' +
     data.name
@@ -29,14 +31,18 @@ export default ({ ...props }: Props) => {
       .replace(/[^\w-]+/g, '');
   const isBubble = data.heatMapStyle === HeatMapStyle.Bubble;
   const xValues = data.matrix
-    .map(row => row.map((_, x) => (data.xAxis?.categories || [])[x] ?? `${x}`))
+    .map((row) =>
+      row.map((_, x) => (data.xAxis?.categories || [])[x] ?? `${x}`)
+    )
     .flat();
   const yValues = data.matrix
     .reverse() // reverse matrix order to fit chart referential
-    .map((row, y) => row.map(_ => (data.yAxis?.categories || [])[y] ?? `${y}`))
+    .map((row, y) =>
+      row.map((_) => (data.yAxis?.categories || [])[y] ?? `${y}`)
+    )
     .flat();
   const matrixValues = data.matrix.flat();
-  const indices = matrixValues.map(item => matrixValues.indexOf(item));
+  const indices = matrixValues.map((item) => matrixValues.indexOf(item));
   const [min, max] = [Math.min(...matrixValues), Math.max(...matrixValues)];
   const maxAbs = Math.max(...matrixValues.map(Math.abs));
   const source = new Bokeh.ColumnDataSource({
@@ -45,10 +51,10 @@ export default ({ ...props }: Props) => {
       xAxisLabels: xValues,
       yAxisLabels: yValues,
       value: matrixValues,
-      radius: matrixValues.map(val =>
+      radius: matrixValues.map((val) =>
         Math.max(Math.abs(val) / (2.2 * maxAbs), 0.1)
-      ) /* radius of a bubble */
-    }
+      ) /* radius of a bubble */,
+    },
   });
 
   const colors = [
@@ -60,7 +66,7 @@ export default ({ ...props }: Props) => {
     '#ddb7b1',
     '#cc7878',
     '#933b41',
-    '#550b1d'
+    '#550b1d',
   ];
 
   const p = plot.figure({
@@ -72,7 +78,7 @@ export default ({ ...props }: Props) => {
     tools: '',
     toolbar_location: null,
     x_range: data.xAxis?.categories,
-    y_range: data.yAxis?.categories
+    y_range: data.yAxis?.categories,
   });
 
   p.xaxis[0].major_label_orientation = Math.PI / 6;
@@ -80,15 +86,15 @@ export default ({ ...props }: Props) => {
   const mapper = new Bokeh.LinearColorMapper({
     palette: colors,
     low: min,
-    high: max
+    high: max,
   });
 
   const color_bar = new Bokeh.ColorBar({
     color_mapper: mapper,
     ticker: new Bokeh.BasicTicker({ desired_num_ticks: colors.length }),
     formatter: new Bokeh.BasicTickFormatter({
-      use_scientific: true
-    })
+      use_scientific: true,
+    }),
   });
 
   p.rect({
@@ -98,7 +104,7 @@ export default ({ ...props }: Props) => {
     width: 1,
     height: 1,
     line_color: isBubble ? 'black' : { field: 'value', transform: mapper },
-    fill_color: isBubble ? 'white' : { field: 'value', transform: mapper }
+    fill_color: isBubble ? 'white' : { field: 'value', transform: mapper },
   });
 
   if (isBubble) {
@@ -109,7 +115,7 @@ export default ({ ...props }: Props) => {
       radius: { field: 'radius' },
       name: 'Bubble Chart',
       line_color: { field: 'value', transform: mapper },
-      fill_color: { field: 'value', transform: mapper }
+      fill_color: { field: 'value', transform: mapper },
     });
   }
 
@@ -124,7 +130,7 @@ export default ({ ...props }: Props) => {
       text_baseline: 'center',
       text_align: 'center',
       y_offset: -5,
-      source: source
+      source: source,
     });
 
     p.add_layout(labels);
@@ -139,3 +145,5 @@ export default ({ ...props }: Props) => {
 
   return <Container id={slug} className="result" ref={containerRef} />;
 };
+
+export default HeatMapChart;

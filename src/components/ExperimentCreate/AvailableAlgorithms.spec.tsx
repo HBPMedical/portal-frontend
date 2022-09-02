@@ -7,13 +7,13 @@ import { namedOperations } from '../API/GraphQL/queries.generated';
 import {
   Algorithm,
   Experiment,
-  Variable
+  Variable,
 } from '../API/GraphQL/types.generated';
 import AvailableAlgorithms from './AvailableAlgorithms';
 
 const exp: Experiment = {
   ...initialExperiment,
-  variables: ['var1']
+  variables: ['var1'],
 };
 
 const algo: Algorithm = {
@@ -28,16 +28,16 @@ const algo: Algorithm = {
     hint: 'test',
     isRequired: true,
     allowedTypes: ['real'],
-    hasMultiple: false
+    hasMultiple: false,
   },
   coVariable: {
     __typename: 'VariableParameter',
     hint: 'test',
     isRequired: true,
     allowedTypes: [], // accept no types
-    hasMultiple: false
+    hasMultiple: false,
   },
-  parameters: []
+  parameters: [],
 };
 
 const algoOneVar: Algorithm = {
@@ -52,26 +52,26 @@ const algoOneVar: Algorithm = {
     hint: 'test',
     isRequired: false,
     allowedTypes: ['integer'],
-    hasMultiple: false
+    hasMultiple: false,
   },
   coVariable: null,
-  parameters: []
+  parameters: [],
 };
 
 const listVars: Variable[] = [
-  { id: 'var1', label: 'Variable 1', type: 'integer' }
+  { id: 'var1', label: 'Variable 1', type: 'integer' },
 ];
 
 const pipe = (algorithms = [algo]) => ({
   request: {
     operationName: namedOperations.Query.listAlgorithms,
-    query: QUERY_LIST_ALGORITHMS
+    query: QUERY_LIST_ALGORITHMS,
   },
   result: {
     data: {
-      algorithms
-    }
-  }
+      algorithms,
+    },
+  },
 });
 
 const mocks = [pipe([]), pipe([])];
@@ -101,7 +101,7 @@ describe('Available Algorithms component', () => {
       expect(getByText('loading...')).not.toBeNull();
 
       await waitFor(async () => {
-        await new Promise(resolve => setTimeout(resolve, 100));
+        await new Promise((resolve) => setTimeout(resolve, 100));
       });
 
       expect(asFragment()).toMatchSnapshot();
@@ -111,11 +111,11 @@ describe('Available Algorithms component', () => {
   describe('when there are algorithms', () => {
     it('should display one algorithm enabled', async () => {
       const { asFragment } = renderComponent(exp, listVars, [
-        pipe([algo, algoOneVar])
+        pipe([algo, algoOneVar]),
       ]);
 
       await waitFor(async () => {
-        await new Promise(resolve => setTimeout(resolve, 100));
+        await new Promise((resolve) => setTimeout(resolve, 100));
       });
 
       expect(asFragment()).toMatchSnapshot();
@@ -130,7 +130,7 @@ describe('Available Algorithms component', () => {
       );
 
       await waitFor(async () => {
-        await new Promise(resolve => setTimeout(resolve, 100));
+        await new Promise((resolve) => setTimeout(resolve, 100));
       });
 
       expect(asFragment()).toMatchSnapshot();

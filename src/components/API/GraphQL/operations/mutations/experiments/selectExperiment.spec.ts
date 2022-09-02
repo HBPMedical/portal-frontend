@@ -1,7 +1,7 @@
 import { makeVar } from '@apollo/client';
 import {
   getMockDomain,
-  initMockDomainVar
+  initMockDomainVar,
 } from '../../../../../../tests/mocks/mockDomainVar';
 import { mockExperiment } from '../../../../../../tests/mocks/mockExperiment';
 import { initialExperiment } from '../../../cache';
