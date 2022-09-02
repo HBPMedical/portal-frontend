@@ -16,20 +16,13 @@ export default defineConfig(({ mode }) => {
   return {
     resolve: {
       alias: {
-        util: 'rollup-plugin-node-polyfills/polyfills/util',
-        sys: 'util',
-        events: 'rollup-plugin-node-polyfills/polyfills/events',
         stream: 'rollup-plugin-node-polyfills/polyfills/stream',
         path: 'rollup-plugin-node-polyfills/polyfills/path',
         querystring: 'rollup-plugin-node-polyfills/polyfills/qs',
         url: 'rollup-plugin-node-polyfills/polyfills/url',
-        string_decoder: 'rollup-plugin-node-polyfills/polyfills/string-decoder',
-        http: 'rollup-plugin-node-polyfills/polyfills/http',
-        https: 'rollup-plugin-node-polyfills/polyfills/http',
         os: 'rollup-plugin-node-polyfills/polyfills/os',
         console: 'rollup-plugin-node-polyfills/polyfills/console',
         zlib: 'rollup-plugin-node-polyfills/polyfills/zlib',
-        domain: 'rollup-plugin-node-polyfills/polyfills/domain',
       },
     },
     build: {

@@ -9,7 +9,6 @@
     "@bugsnag/plugin-react": "^6.4.0",
     "@jonkoops/matomo-tracker-react": "^0.7.0",
     "@react-pdf/renderer": "^2.1.1",
-    "@storybook/builder-vite": "^0.2.2",
     "@types/d3": "^5.7.2",
     "@types/jest": "^29.0.0",
     "@types/jquery": "^3.3.34",
@@ -80,15 +79,15 @@
     "analyze": "source-map-explorer 'build/static/js/*.js'",
     "start": "vite preview",
     "start:dev": "vite dev",
-    "build": "tsc && vite build",
+    "build": "vite build",
     "build:dev": "tsc && vite build --mode development",
     "test": "NODE_ENV=test jest",
     "ci-test": "jest --forceExit --silent",
     "lint:fix": "eslint './src/**/*.{ts,tsx}' --fix",
     "lint": "eslint './src/**/*.{ts,tsx}'",
     "codegen": "graphql-codegen -r dotenv/config --config codegen.yml ",
-    "storybook": "start-storybook -p 6006 -s public",
-    "build:storybook": "build-storybook -s public"
+    "storybook": "start-storybook -p 6006",
+    "build:storybook": "build-storybook"
   },
   "husky": {
     "hooks": {
@@ -109,9 +108,7 @@
     "@storybook/addon-essentials": "^6.5.10",
     "@storybook/addon-interactions": "^6.5.10",
     "@storybook/addon-links": "^6.5.10",
-    "@storybook/manager-webpack4": "^6.5.10",
-    "@storybook/manager-webpack5": "^6.5.10",
-    "@storybook/node-logger": "^6.5.10",
+    "@storybook/builder-vite": "^0.2.2",
     "@storybook/react": "^6.5.10",
     "@storybook/testing-library": "^0.0.13",
     "@testing-library/jest-dom": "^5.16.4",
