@@ -5,6 +5,8 @@ WORKDIR /frontend
 
 ADD yarn.lock /frontend
 ADD package.json /frontend
+ADD vite.config.ts /frontend
+ADD index.html /frontend
 
 RUN yarn install
 
@@ -43,8 +45,6 @@ COPY docker/runner/run.sh /
 
 # Add front end resources
 COPY --from=builder /frontend/build /usr/share/caddy/html/
-
-EXPOSE 80 443
 
 ENTRYPOINT ["/run.sh"]
 

@@ -23,7 +23,7 @@ const AppContainer = (): JSX.Element => {
 
     const fetchData = async () => {
       // Conf written by dockerize
-      const response = await fetch(`${webURL}/static/config.json`);
+      const response = await fetch(`${webURL}/assets/config.json`);
       const data: AppConfig = await response.json();
 
       appConfigVar(data);
