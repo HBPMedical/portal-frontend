@@ -1,4 +1,4 @@
-import { defineConfig, loadEnv } from 'vite';
+import { defineConfig, loadEnv, splitVendorChunkPlugin } from 'vite';
 import svgrPlugin from 'vite-plugin-svgr';
 import reactPlugin from '@vitejs/plugin-react';
 import checkerPlugin from 'vite-plugin-checker';
@@ -57,6 +57,7 @@ export default defineConfig(({ mode }) => {
         typescript: true,
       }),
       eslintPlugin(),
+      splitVendorChunkPlugin(),
     ],
     define: {
       'process.env': `${JSON.stringify(envConfig)}`,
