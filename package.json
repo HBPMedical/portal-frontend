@@ -69,7 +69,7 @@
   "scripts": {
     "start": "vite preview",
     "start:dev": "vite dev",
-    "build": "vite build",
+    "build": "node --max_old_space_size=5048 ./node_modules/vite/bin/vite.js build",
     "build:dev": "tsc && vite build --mode development",
     "test": "NODE_ENV=test jest",
     "ci-test": "jest --forceExit --silent",
