@@ -31,5 +31,5 @@ test-server/**/datasets.db
 
 **/.fuse*
 
-# Dependencies visualizer
+# Bundle visualizer output
 stats.html 
