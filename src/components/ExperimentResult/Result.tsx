@@ -1,4 +1,3 @@
-import React from 'react';
 import { Card, ProgressBar } from 'react-bootstrap';
 import styled, { keyframes } from 'styled-components';
 import { Experiment, ExperimentStatus } from '../API/GraphQL/types.generated';
@@ -42,7 +41,7 @@ const ProgressBarStyled = styled.div`
   border-radius: 4px;
 `;
 
-export default ({ experiment }: { experiment?: Experiment }): JSX.Element => {
+const Result = ({ experiment }: { experiment?: Experiment }): JSX.Element => {
   const loading = experiment?.status === ExperimentStatus.Pending;
 
   return (
@@ -73,3 +72,5 @@ export default ({ experiment }: { experiment?: Experiment }): JSX.Element => {
     </Card>
   );
 };
+
+export default Result;

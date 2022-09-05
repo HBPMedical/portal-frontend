@@ -15,8 +15,8 @@ export default function createResetSelectedExperiment(
     const domain = domainVar()?.id ?? '';
     const datasets =
       domainVar()
-        ?.datasets.filter(d => !d.isLongitudinal)
-        .map(d => d.id) ?? [];
+        ?.datasets.filter((d) => !d.isLongitudinal)
+        .map((d) => d.id) ?? [];
     selectedExperimentVar(undefined);
     draftExperimentVar({ ...initialExperiment, domain, datasets });
   };

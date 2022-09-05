@@ -1,6 +1,6 @@
 import { useReactiveVar } from '@apollo/client';
 import * as d3 from 'd3';
-import React, { useEffect, useState } from 'react';
+import { useEffect, useState } from 'react';
 import { Spinner } from 'react-bootstrap';
 import styled from 'styled-components';
 import { draftExperimentVar, selectedDomainVar } from '../API/GraphQL/cache';
@@ -23,7 +23,7 @@ const SpinnerContainer = styled.div`
   align-items: center;
 `;
 
-export default ({ selectedNode, handleSelectNode }: Props) => {
+const D3Container = ({ selectedNode, handleSelectNode }: Props) => {
   const domain = useReactiveVar(selectedDomainVar);
   const draftExp = useReactiveVar(draftExperimentVar);
   const datasets = draftExp?.datasets;
@@ -54,13 +54,13 @@ export default ({ selectedNode, handleSelectNode }: Props) => {
   const groupVars = [
     ['Filters', draftExp.filterVariables, 'slategrey'], // => item[0], item[1], item[2]
     ['Variables', draftExp.variables, '#5cb85c'],
-    ['Covariates', draftExp.coVariables, '#f0ad4e']
+    ['Covariates', draftExp.coVariables, '#f0ad4e'],
   ]
-    .filter(item => item[1] && item[1].length)
-    .map(item => ({
+    .filter((item) => item[1] && item[1].length)
+    .map((item) => ({
       name: item[0] as string,
       items: item[1] as string[],
-      color: item[2] as string
+      color: item[2] as string,
     }));
 
   if (!d3Layout)
@@ -79,3 +79,5 @@ export default ({ selectedNode, handleSelectNode }: Props) => {
     />
   );
 };
+
+export default D3Container;

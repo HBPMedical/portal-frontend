@@ -1,4 +1,3 @@
-import React from 'react';
 import { Form } from 'react-bootstrap';
 import styled from 'styled-components';
 import {
@@ -7,7 +6,7 @@ import {
   NominalParameter,
   NumberParameter,
   StringParameter,
-  Variable
+  Variable,
 } from '../API/GraphQL/types.generated';
 import { Dict } from '../utils';
 import NominalInput from './inputs/NominalInput';
@@ -32,7 +31,7 @@ const AlgorithmParameters = ({
   experiment,
   algorithm,
   variables = [],
-  handleParameterChange
+  handleParameterChange,
 }: Props) => {
   if (!algorithm)
     return (
@@ -58,34 +57,38 @@ const AlgorithmParameters = ({
 
         {algorithm.parameters?.length !== 0 && (
           <Form validated={true}>
-            {algorithm.parameters?.map(param => {
-              const type = ((param as unknown) as Dict).__typename;
-              const id = `${algorithm.id}-${param.name}`;
+            {algorithm.parameters
+              ?.map((param) => {
+                const type = (param as unknown as Dict).__typename;
+                const id = `${algorithm.id}-${param.name}`;
 
-              if (type === 'StringParameter' || type === 'NumberParameter')
-                return (
-                  <SimpleInput
-                    key={id}
-                    parameter={
-                      type === 'StringParameter'
-                        ? (param as StringParameter)
-                        : (param as NumberParameter)
-                    }
-                    handleValueChanged={handleParameterChange}
-                  />
-                );
+                if (type === 'StringParameter' || type === 'NumberParameter')
+                  return (
+                    <SimpleInput
+                      key={id}
+                      parameter={
+                        type === 'StringParameter'
+                          ? (param as StringParameter)
+                          : (param as NumberParameter)
+                      }
+                      handleValueChanged={handleParameterChange}
+                    />
+                  );
 
-              if (type === 'NominalParameter')
-                return (
-                  <NominalInput
-                    key={id}
-                    parameter={param as NominalParameter}
-                    experiment={experiment}
-                    variables={variables}
-                    handleValueChanged={handleParameterChange}
-                  />
-                );
-            })}
+                if (type === 'NominalParameter')
+                  return (
+                    <NominalInput
+                      key={id}
+                      parameter={param as NominalParameter}
+                      experiment={experiment}
+                      variables={variables}
+                      handleValueChanged={handleParameterChange}
+                    />
+                  );
+
+                return undefined;
+              })
+              .filter((input) => input !== undefined)}
           </Form>
         )}
       </Header>

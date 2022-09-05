@@ -1,13 +1,13 @@
 import dayjs from 'dayjs';
 import relativeTime from 'dayjs/plugin/relativeTime';
-import * as React from 'react';
+import { useState } from 'react';
 import { Button, Card } from 'react-bootstrap';
 import { GoCheck } from 'react-icons/go';
 import { useHistory } from 'react-router-dom';
 import styled from 'styled-components';
 import {
   useDeleteExperimentMutation,
-  useEditExperimentMutation
+  useEditExperimentMutation,
 } from '../API/GraphQL/queries.generated';
 import { Experiment } from '../API/GraphQL/types.generated';
 import ExportExperiment from '../UI/Export/ExportExperiment';
@@ -32,13 +32,8 @@ interface Props {
   handleCopyExperiment: () => void;
 }
 
-const ExperimentResultHeader = ({
-  experiment,
-  handleCopyExperiment
-}: Props): JSX.Element => {
-  const [confirmDelete, setConfirmDelete] = React.useState<
-    string | undefined
-  >();
+const Header = ({ experiment, handleCopyExperiment }: Props): JSX.Element => {
+  const [confirmDelete, setConfirmDelete] = useState<string | undefined>();
 
   const [deleteExperimentMutation, delState] = useDeleteExperimentMutation();
   const [editExperimentMutation, editState] = useEditExperimentMutation();
@@ -55,8 +50,8 @@ const ExperimentResultHeader = ({
     if (confirmDelete === undefined) return;
     await deleteExperimentMutation({
       variables: {
-        id: confirmDelete
-      }
+        id: confirmDelete,
+      },
     });
     if (delState.error === undefined) return history.push('/explore');
     console.log(delState.error);
@@ -68,9 +63,9 @@ const ExperimentResultHeader = ({
       variables: {
         id: id,
         data: {
-          shared: !experiment?.shared
-        }
-      }
+          shared: !experiment?.shared,
+        },
+      },
     });
     if (editState.error !== undefined) console.log(editState.error);
   };
@@ -150,4 +145,4 @@ const ExperimentResultHeader = ({
   );
 };
 
-export default ExperimentResultHeader;
+export default Header;

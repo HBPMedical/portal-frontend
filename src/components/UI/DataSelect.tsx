@@ -1,6 +1,5 @@
 import React, { useRef } from 'react';
-import { Badge } from 'react-bootstrap';
-import { Button, Form } from 'react-bootstrap';
+import { Badge, Button, Form } from 'react-bootstrap';
 import styled from 'styled-components';
 import { Dataset } from '../API/GraphQL/types.generated';
 import { useOnClickOutside } from '../utils';
@@ -103,29 +102,29 @@ interface Props {
   isDropdown?: boolean;
 }
 
-export default ({
+const DataSelect = ({
   datasets,
   handleSelectDataset,
   selectedDatasets,
-  isDropdown = false
+  isDropdown = false,
 }: Props): JSX.Element => {
   const [visible, setVisible] = React.useState(!isDropdown);
   const style = visible ? undefined : { display: 'none' };
   const node = useRef<HTMLDivElement | null>(null);
   const btn = useRef<HTMLDivElement | null>();
 
-  useOnClickOutside(node, event => {
+  useOnClickOutside(node, (event) => {
     if (visible && event.target !== btn.current) setVisible(false);
   });
 
-  const ndatasets = datasets.filter(d => !d.isLongitudinal) ?? [];
-  const ldatasets = datasets.filter(d => !!d.isLongitudinal) ?? [];
+  const ndatasets = datasets.filter((d) => !d.isLongitudinal) ?? [];
+  const ldatasets = datasets.filter((d) => !!d.isLongitudinal) ?? [];
 
   const grpDatasets =
     ldatasets.length > 0 ? [ndatasets, ldatasets] : [ndatasets];
 
   const container = grpDatasets.map((list, i) => {
-    const elements = list.map(item => (
+    const elements = list.map((item) => (
       <div
         key={item.id}
         className="dataset"
@@ -186,3 +185,5 @@ export default ({
     </>
   );
 };
+
+export default DataSelect;

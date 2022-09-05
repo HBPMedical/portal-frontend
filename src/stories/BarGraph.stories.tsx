@@ -5,15 +5,15 @@ import { BarChartResult } from '../components/API/GraphQL/types.generated';
 
 export default {
   title: 'Charts/BarGraph',
-  component: BarGraph
+  component: BarGraph,
 } as ComponentMeta<typeof BarGraph>;
 
 const data: BarChartResult = {
   name: 'Example BarChart graph',
-  barValues: [3, 4.12, 8.23, 0, 0.23, 4, 1]
+  barValues: [3, 4.12, 8.23, 0, 0.23, 4, 1],
 };
 
-const Template: ComponentStory<typeof BarGraph> = args => (
+const Template: ComponentStory<typeof BarGraph> = (args) => (
   <BarGraph {...args} />
 );
 

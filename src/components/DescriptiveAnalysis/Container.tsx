@@ -1,5 +1,5 @@
 import { useReactiveVar } from '@apollo/client';
-import React, { useEffect, useState } from 'react';
+import { useEffect, useState } from 'react';
 import { Button, Card } from 'react-bootstrap';
 import { useHistory } from 'react-router-dom';
 import Sidebar from 'react-sidebar';
@@ -7,12 +7,12 @@ import styled from 'styled-components';
 import {
   draftExperimentVar,
   selectedDomainVar,
-  selectedExperimentVar
+  selectedExperimentVar,
 } from '../API/GraphQL/cache';
 import { localMutations } from '../API/GraphQL/operations/mutations';
 import {
   useCreateExperimentMutation,
-  useGetConfigurationQuery
+  useGetConfigurationQuery,
 } from '../API/GraphQL/queries.generated';
 import { ResultUnion } from '../API/GraphQL/types.generated';
 import ResultDispatcher from '../ExperimentResult/ResultDispatcher';
@@ -27,12 +27,10 @@ const ExportButton = styled.div`
   float: right;
 `;
 
-export default (): JSX.Element => {
+const Container = (): JSX.Element => {
   const [sidebarOpen, setSidebarOpen] = useState(false);
-  const [
-    createTransientMutation,
-    { data, loading, error }
-  ] = useCreateExperimentMutation();
+  const [createTransientMutation, { data, loading, error }] =
+    useCreateExperimentMutation();
 
   const history = useHistory();
   const results = data?.createExperiment.results as ResultUnion[];
@@ -49,7 +47,7 @@ export default (): JSX.Element => {
 
     const variables = [
       ...(draftExperiment.variables ?? []),
-      ...(draftExperiment.coVariables ?? [])
+      ...(draftExperiment.coVariables ?? []),
     ];
 
     createTransientMutation({
@@ -62,15 +60,17 @@ export default (): JSX.Element => {
           filter: draftExperiment.filter,
           algorithm: {
             id: 'DESCRIPTIVE_STATS',
-            type: 'string'
+            type: 'string',
           },
-          transformations: draftExperiment.formula?.transformations?.map(t => ({
-            id: t.id,
-            operation: t.operation
-          })),
-          interactions: draftExperiment.formula?.interactions
-        }
-      }
+          transformations: draftExperiment.formula?.transformations?.map(
+            (t) => ({
+              id: t.id,
+              operation: t.operation,
+            })
+          ),
+          interactions: draftExperiment.formula?.interactions,
+        },
+      },
     });
   }, [createTransientMutation, draftExperiment]);
 
@@ -153,3 +153,5 @@ export default (): JSX.Element => {
     </>
   );
 };
+
+export default Container;

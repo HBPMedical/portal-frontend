@@ -8,7 +8,7 @@ import {
   StyleSheet,
   Text,
   usePDF,
-  View
+  View,
 } from '@react-pdf/renderer';
 import * as hmtlToImage from 'html-to-image';
 import React, { useEffect, useImperativeHandle, useRef, useState } from 'react';
@@ -22,15 +22,13 @@ Font.register({
   family: 'Open Sans',
   fonts: [
     {
-      src:
-        'https://cdn.jsdelivr.net/npm/open-sans-all@0.1.3/fonts/open-sans-regular.ttf'
+      src: 'https://cdn.jsdelivr.net/npm/open-sans-all@0.1.3/fonts/open-sans-regular.ttf',
     },
     {
-      src:
-        'https://cdn.jsdelivr.net/npm/open-sans-all@0.1.3/fonts/open-sans-600.ttf',
-      fontWeight: 600
-    }
-  ]
+      src: 'https://cdn.jsdelivr.net/npm/open-sans-all@0.1.3/fonts/open-sans-600.ttf',
+      fontWeight: 600,
+    },
+  ],
 });
 
 const headerStyles = StyleSheet.create({
@@ -48,7 +46,7 @@ const headerStyles = StyleSheet.create({
     height: 70,
     top: 0,
     left: 0,
-    right: 0
+    right: 0,
   },
   text: {
     textAlign: 'right',
@@ -57,12 +55,12 @@ const headerStyles = StyleSheet.create({
     alignSelf: 'center',
     color: '#929292',
     fontSize: 14,
-    fontWeight: 'thin'
+    fontWeight: 'thin',
   },
   logo: {
     height: 'auto',
-    width: 40
-  }
+    width: 40,
+  },
 });
 
 const styles = StyleSheet.create({
@@ -70,35 +68,35 @@ const styles = StyleSheet.create({
     paddingTop: 35,
     paddingBottom: 65,
     paddingHorizontal: 35,
-    marginTop: 100
+    marginTop: 100,
   },
   bold: {
     fontWeight: 'bold',
-    alignSelf: 'flex-start'
+    alignSelf: 'flex-start',
   },
   flexCol: {
     display: 'flex',
     flexDirection: 'column',
-    alignItems: 'flex-start'
+    alignItems: 'flex-start',
   },
   result: {
     textAlign: 'center',
     alignContent: 'center',
     alignSelf: 'center',
-    alignItems: 'center'
+    alignItems: 'center',
   },
   smallMargin: {
     paddingTop: 35,
     paddingBottom: 65,
     paddingHorizontal: 15,
-    marginTop: 100
+    marginTop: 100,
   },
   title: {
     fontFamily: 'Open Sans',
     fontSize: 26,
     display: 'flex',
     flexDirection: 'row',
-    alignItems: 'center'
+    alignItems: 'center',
   },
   subtitle: {
     fontFamily: 'Open Sans',
@@ -107,16 +105,16 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     marginTop: 3,
-    flexWrap: 'wrap'
+    flexWrap: 'wrap',
   },
   author: {
     fontSize: 12,
-    color: '#969696'
+    color: '#969696',
   },
   text: {
     margin: 12,
     fontSize: 14,
-    textAlign: 'justify'
+    textAlign: 'justify',
   },
 
   footer: {
@@ -129,12 +127,12 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     flexDirection: 'row',
     fontSize: 12,
-    color: 'grey'
+    color: 'grey',
   },
   pageNumber: {
     flex: 1,
-    textAlign: 'center'
-  }
+    textAlign: 'center',
+  },
 });
 
 export type ChildrenPDFExport = {
@@ -159,7 +157,7 @@ type DocumentPDFHandle = {
 const fetchImages = async (): Promise<string[]> => {
   const results = Array.from(document.getElementsByClassName('exp-result'));
   return Promise.all(
-    results.map(async elem => {
+    results.map(async (elem) => {
       const container = document.createElement('div');
       container.setAttribute('style', 'width: 1300px; height: auto;');
       document.body.appendChild(container);
@@ -174,7 +172,7 @@ const fetchImages = async (): Promise<string[]> => {
       const img = await hmtlToImage.toPng(el, {
         skipFonts: true,
         quality: 1,
-        pixelRatio: 2
+        pixelRatio: 2,
       });
 
       if (hasContainer) {
@@ -231,33 +229,33 @@ const DocumentPDF = React.forwardRef<DocumentPDFHandle, DocumentProps>(
     const algos = useReactiveVar(algorithmsVar);
     const emptyLabel = 'none';
     const domain = useReactiveVar(domainsVar).find(
-      d => experiment?.domain === d.id
+      (d) => experiment?.domain === d.id
     );
     const interactions =
       experiment?.formula?.interactions &&
       experiment?.formula?.interactions?.length > 0
         ? experiment?.formula?.interactions
-            ?.map(tuple => tuple.join(' ↔ '))
+            ?.map((tuple) => tuple.join(' ↔ '))
             .join(', ')
         : emptyLabel;
     const logoUrl = makeAssetURL('logo.png');
-    const algo = algos.find(a => a.id === experiment?.algorithm.name);
+    const algo = algos.find((a) => a.id === experiment?.algorithm.name);
 
     const transformations = experiment?.formula?.transformations
-      ?.map(t => ({
+      ?.map((t) => ({
         operation: t.operation,
-        variable: variables.find(v => v.id === t.id)
+        variable: variables.find((v) => v.id === t.id),
       }))
-      .map(t => `${t.operation}: ${t.variable?.label ?? t.variable?.id}`)
+      .map((t) => `${t.operation}: ${t.variable?.label ?? t.variable?.id}`)
       .join(', ');
 
     const params =
-      experiment?.algorithm.parameters?.map(p => {
-        const label = algo?.parameters?.find(p2 => p2.name === p.name)?.label;
+      experiment?.algorithm.parameters?.map((p) => {
+        const label = algo?.parameters?.find((p2) => p2.name === p.name)?.label;
         return {
           id: p.name,
           label: label ?? p.name,
-          value: p.value
+          value: p.value,
         };
       }) ?? [];
 
@@ -265,7 +263,7 @@ const DocumentPDF = React.forwardRef<DocumentPDFHandle, DocumentProps>(
       update: async (): Promise<void> => {
         const imgs = await fetchImages();
         SetImages(imgs);
-      }
+      },
     }));
 
     return (
@@ -279,7 +277,7 @@ const DocumentPDF = React.forwardRef<DocumentPDFHandle, DocumentProps>(
               justifyContent: 'center',
               paddingHorizontal: 50,
               paddingBottom: 100,
-              height: '100%'
+              height: '100%',
             }}
           >
             {experiment && (
@@ -326,7 +324,7 @@ const DocumentPDF = React.forwardRef<DocumentPDFHandle, DocumentProps>(
                     <View style={styles.flexCol}>
                       {params.length === 0 && <Text>{emptyLabel}</Text>}
                       {params
-                        ?.map(p => `${p.label ?? p.id}: ${p.value}`)
+                        ?.map((p) => `${p.label ?? p.id}: ${p.value}`)
                         .map((text, i) => <Text key={i}>{text}</Text>) ??
                         emptyLabel}
                     </View>
@@ -339,8 +337,8 @@ const DocumentPDF = React.forwardRef<DocumentPDFHandle, DocumentProps>(
                     <Text style={styles.bold}>Datasets: </Text>
                     <Text>
                       {domain?.datasets
-                        .filter(d => experiment.datasets.includes(d.id))
-                        .map(d => d.label ?? d.id)
+                        .filter((d) => experiment.datasets.includes(d.id))
+                        .map((d) => d.label ?? d.id)
                         .join(', ')}
                     </Text>
                   </View>
@@ -349,7 +347,8 @@ const DocumentPDF = React.forwardRef<DocumentPDFHandle, DocumentProps>(
                     <Text>
                       {experiment.variables
                         .map(
-                          id => variables.find(v => v.id === id)?.label ?? id
+                          (id) =>
+                            variables.find((v) => v.id === id)?.label ?? id
                         )
                         .join(', ') ?? emptyLabel}
                     </Text>
@@ -359,7 +358,8 @@ const DocumentPDF = React.forwardRef<DocumentPDFHandle, DocumentProps>(
                     <Text>
                       {experiment.coVariables
                         ?.map(
-                          id => variables.find(v => v.id === id)?.label ?? id
+                          (id) =>
+                            variables.find((v) => v.id === id)?.label ?? id
                         )
                         .join(', ') ?? emptyLabel}
                     </Text>
@@ -406,11 +406,11 @@ const ExperimentPDF = ({ experiment, children, filename }: Props) => {
   const [isEnabled, setEnabled] = useState<boolean>(false);
   const [isLoading, setLoading] = useState<boolean>(false);
   useListAlgorithmsQuery({
-    onCompleted: data => algorithmsVar(data.algorithms)
+    onCompleted: (data) => algorithmsVar(data.algorithms),
   });
 
   const [instance, updateInstance] = usePDF({
-    document: <DocumentPDF experiment={experiment} ref={documentPDF} />
+    document: <DocumentPDF experiment={experiment} ref={documentPDF} />,
   });
 
   useEffect(() => {
@@ -452,7 +452,7 @@ const ExperimentPDF = ({ experiment, children, filename }: Props) => {
   return children ? (
     children({
       downloadPDF: reloadDocument,
-      isLoading
+      isLoading,
     })
   ) : (
     <>

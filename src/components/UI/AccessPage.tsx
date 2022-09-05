@@ -1,4 +1,4 @@
-import React, { useEffect, useRef, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { Container, Jumbotron } from 'react-bootstrap';
 import ReactMarkdown from 'react-markdown';
 import { toast } from 'react-toastify';
@@ -29,7 +29,7 @@ const StyledJumbotron = styled(Jumbotron)`
   font-size: 1.25em;
 `;
 
-export default () => {
+const AccessPage = () => {
   const [text, setText] = useState<string | undefined>(undefined);
   const mountedRef = useRef(true);
 
@@ -41,7 +41,7 @@ export default () => {
       if (mountedRef.current) setText(text); // check if component is still mounted before setting state
     };
 
-    fetchData().catch(error => {
+    fetchData().catch((error) => {
       if (mountedRef.current)
         toast.error(
           'A problem occurred when fetching data from the server, please contact your administrator'
@@ -67,3 +67,5 @@ export default () => {
     </StyledContainer>
   );
 };
+
+export default AccessPage;

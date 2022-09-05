@@ -2,7 +2,7 @@ import React from 'react';
 import { Form } from 'react-bootstrap';
 import {
   NumberParameter,
-  StringParameter
+  StringParameter,
 } from '../../API/GraphQL/types.generated';
 
 interface Dictionary<T> {
@@ -19,7 +19,7 @@ const SimpleInput = ({ parameter, handleValueChanged }: Props) => {
   const options: Dictionary<string | number | boolean | undefined> = {
     required: parameter.isRequired ?? false,
     defaultValue,
-    placeholder: defaultValue
+    placeholder: defaultValue,
   };
   const helpLine = [];
   const helper = [parameter.hint];
@@ -46,11 +46,11 @@ const SimpleInput = ({ parameter, handleValueChanged }: Props) => {
       <Form.Label htmlFor={`${parameter.name}`}>{parameter.label}</Form.Label>
       <Form.Control
         {...options}
-        onChange={e => handleValueChanged?.(parameter.name, e.target.value)}
+        onChange={(e) => handleValueChanged?.(parameter.name, e.target.value)}
       ></Form.Control>
       {helper
-        .filter(t => t && t?.length > 1)
-        .map(t => t as string)
+        .filter((t) => t && t?.length > 1)
+        .map((t) => t as string)
         .map((text, i) => (
           <Form.Text key={i} className="text-muted">
             {text?.charAt(0).toUpperCase() + text?.slice(1)}

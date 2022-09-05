@@ -6,7 +6,7 @@ import {
   Algorithm,
   Experiment,
   Variable,
-  VariableParameter
+  VariableParameter,
 } from '../API/GraphQL/types.generated';
 import Loader from '../UI/Loader';
 
@@ -95,30 +95,31 @@ export const AvailableAlgorithms = ({
   handleSelect,
   experiment,
   listVariables,
-  selectedAlgorithm
+  selectedAlgorithm,
 }: Props) => {
   const isClickable = !!handleSelect;
   const { data, loading } = useListAlgorithmsQuery();
   const variables = experiment.variables
-    .map(id => listVariables.find(v => v.id === id))
-    .filter(v => v)
-    .map(v => v as Variable);
+    .map((id) => listVariables.find((v) => v.id === id))
+    .filter((v) => v)
+    .map((v) => v as Variable);
   const coVariables = (
-    experiment.coVariables?.map(id => listVariables.find(v => v.id === id)) ??
-    []
+    experiment.coVariables?.map((id) =>
+      listVariables.find((v) => v.id === id)
+    ) ?? []
   )
-    .filter(v => v)
-    .map(v => v as Variable);
+    .filter((v) => v)
+    .map((v) => v as Variable);
 
   const algorithms =
     data?.algorithms
-      .map(algo => {
+      .map((algo) => {
         return {
           ...algo,
           label: (algo.label ?? algo.id).trim(),
           isEnabled:
             checkValidity(algo.variable, variables) &&
-            checkValidity(algo.coVariable, coVariables)
+            checkValidity(algo.coVariable, coVariables),
         };
       })
       .sort((a, b) => a.label.localeCompare(b.label)) ?? [];
@@ -130,7 +131,7 @@ export const AvailableAlgorithms = ({
       <div
         className={`algorithms ${direction} ${isClickable ? 'clickable' : ''}`}
       >
-        {algorithms.map(algo => (
+        {algorithms.map((algo) => (
           <OverlayTrigger
             key={algo.id}
             placement="left"

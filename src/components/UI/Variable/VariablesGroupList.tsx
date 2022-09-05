@@ -17,10 +17,10 @@ const ButtonList = styled(Button)`
   text-decoration: none;
 `;
 
-export default ({
+const VariablesGroupList = ({
   handleOnItemClick,
   handleOnDeleteItem,
-  variables
+  variables,
 }: {
   handleOnItemClick: (variableId: string) => void;
   handleOnDeleteItem: (variableId: string) => void;
@@ -28,7 +28,7 @@ export default ({
 }): JSX.Element => {
   return (
     <ListGroupVariables variant="flush">
-      {variables.map(v => (
+      {variables.map((v) => (
         <ListGroup.Item
           key={v.id}
           className="d-flex justify-content-between align-items-start py-1"
@@ -64,3 +64,5 @@ export default ({
     </ListGroupVariables>
   );
 };
+
+export default VariablesGroupList;

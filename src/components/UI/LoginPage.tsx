@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import { useState } from 'react';
 import { Button, Card, Spinner } from 'react-bootstrap';
 import { useHistory } from 'react-router-dom';
 import { toast } from 'react-toastify';
@@ -8,7 +8,7 @@ import { apolloClient } from '../API/GraphQL/apollo.config';
 import { localMutations } from '../API/GraphQL/operations/mutations';
 import {
   useActiveUserQuery,
-  useLoginMutation
+  useLoginMutation,
 } from '../API/GraphQL/queries.generated';
 import { REFRESH_TOKEN_KEY_NAME } from '../constants';
 
@@ -29,7 +29,7 @@ const CardContainer = styled(Card)`
   }
 `;
 
-export default () => {
+const LoginPage = () => {
   const [username, setUsername] = useState<string>('');
   const [password, setPassword] = useState<string>('');
   const history = useHistory();
@@ -38,11 +38,11 @@ export default () => {
     onCompleted: () => {
       // Done only if user is logged in
       history.push('/');
-    }
+    },
   });
 
   const [loginMutation, { loading }] = useLoginMutation({
-    onCompleted: async data => {
+    onCompleted: async (data) => {
       toast.success('Logged in successfully');
 
       localMutations.resetStore();
@@ -53,7 +53,7 @@ export default () => {
       history.push('/');
     },
     refetchQueries: 'active',
-    onError: data => {
+    onError: (data) => {
       if (data.graphQLErrors) {
         for (const err of data.graphQLErrors) {
           switch (err.extensions?.code || 'unknown') {
@@ -67,12 +67,12 @@ export default () => {
           }
         }
       }
-    }
+    },
   });
 
   const handleLogin = () => {
     loginMutation({
-      variables: { username, password }
+      variables: { username, password },
     });
   };
 
@@ -92,7 +92,7 @@ export default () => {
             <input
               type="text"
               className="form-control"
-              onChange={event => setUsername(event.target.value)}
+              onChange={(event) => setUsername(event.target.value)}
               required={true}
             />
           </div>
@@ -101,7 +101,7 @@ export default () => {
             <input
               type="password"
               className="form-control"
-              onChange={event => setPassword(event.target.value)}
+              onChange={(event) => setPassword(event.target.value)}
             />
           </div>
 
@@ -122,3 +122,5 @@ export default () => {
     </Container>
   );
 };
+
+export default LoginPage;

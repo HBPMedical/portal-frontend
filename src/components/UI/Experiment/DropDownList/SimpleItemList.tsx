@@ -27,7 +27,7 @@ const MessageItem = styled.li`
 
 const SimpleItemList = ({
   handleOnClick,
-  experiments
+  experiments,
 }: {
   handleOnClick: (experimentId?: string) => void;
   experiments: Partial<Experiment>[];
@@ -39,8 +39,8 @@ const SimpleItemList = ({
           <MessageItem>There is no result</MessageItem>
         )}
         {experiments
-          .filter(exp => exp.id !== null)
-          .map(experiment => (
+          .filter((exp) => exp.id !== null)
+          .map((experiment) => (
             <ListItem
               onClick={(): void => handleOnClick(experiment.id)}
               key={experiment.id}

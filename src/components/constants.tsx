@@ -9,7 +9,7 @@ export enum MIME_TYPES {
   PFA = 'application/pfa+json',
   JSONDATA = 'application/vnd.dataresource+json',
   HTML = 'text/html',
-  TEXT = 'text/plain'
+  TEXT = 'text/plain',
 }
 
 export const HISTOGRAMS_STORAGE_KEY = 'mipChoosenHistogramsVars';
@@ -19,7 +19,7 @@ export const FORBIDDEN_ACCESS_MESSAGE =
 export const ERRORS_OUTPUT = [
   MIME_TYPES.ERROR,
   MIME_TYPES.WARNING,
-  MIME_TYPES.USER_WARNING
+  MIME_TYPES.USER_WARNING,
 ];
 
 export const MIN_SEARCH_CHARACTER_NUMBER = 2; //

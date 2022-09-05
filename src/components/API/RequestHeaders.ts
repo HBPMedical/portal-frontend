@@ -1,31 +1,38 @@
-import * as dotenv from 'dotenv';
-
-dotenv.config();
-
 const XSRFToken = (cookie: string) => {
   const tokenArray =
     cookie &&
     cookie.match(/XSRF-TOKEN=([a-f\d]{8}(-[a-f\d]{4}){3}-[a-f\d]{12}?)/);
-  const token = (tokenArray && tokenArray[1]) || '';
-
-  return token;
+  return (tokenArray && tokenArray[1]) || '';
 };
 
-const options: any = process.env.REACT_APP_TOKEN
-  ? {
+type Headers = {
+  credentials?: string;
+  headers?: Record<string, string>;
+};
+
+const opts = (token?: string, mode?: string): Headers => {
+  if (token)
+    return {
       headers: {
-        Authorization: process.env.REACT_APP_AUTHORIZATION!,
-        Cookie: `JSESSIONID=${process.env.REACT_APP_JSESSIONID}; XSRF-TOKEN=${process.env.REACT_APP_TOKEN}`,
-        'X-XSRF-TOKEN': process.env.REACT_APP_TOKEN
-      }
-    }
-  : process.env.NODE_ENV === 'production'
-  ? {
+        Authorization: process.env.VITE_AUTHORIZATION ?? '',
+        Cookie: `JSESSIONID=${process.env.VITE_JSESSIONID}; XSRF-TOKEN=${process.env.VITE_TOKEN}`,
+        'X-XSRF-TOKEN': process.env.VITE_TOKEN ?? '',
+      },
+    };
+
+  if (mode === 'production')
+    return {
       credentials: 'include',
       headers: {
-        'X-XSRF-TOKEN': XSRFToken(document.cookie)
-      }
-    }
-  : {};
+        'X-XSRF-TOKEN': XSRFToken(document.cookie),
+      },
+    };
 
-export default { options };
+  return {};
+};
+
+const RequestHeaders = {
+  options: opts(process.env.VITE_TOKEN, process.env.NODE_ENV),
+};
+
+export default RequestHeaders;

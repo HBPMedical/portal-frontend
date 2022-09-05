@@ -1,7 +1,7 @@
 import { makeVar } from '@apollo/client';
 import {
   initMockDomainVar,
-  mockDomain
+  mockDomain,
 } from '../../../../../../tests/mocks/mockDomainVar';
 import { mockExperiment } from '../../../../../../tests/mocks/mockExperiment';
 import { initialExperiment } from '../../../cache';
@@ -30,13 +30,13 @@ describe('ResetSelectedExperiment', () => {
     const domain = mockDomainVar()?.id ?? '';
     const datasets =
       mockDomainVar()
-        ?.datasets.filter(d => !d.isLongitudinal)
-        .map(d => d.id) ?? [];
+        ?.datasets.filter((d) => !d.isLongitudinal)
+        .map((d) => d.id) ?? [];
     expect(mockSelectedExperimentVar()).toBe(undefined);
     expect(mockDraftExperimentVar()).toStrictEqual({
       ...initialExperiment,
       domain,
-      datasets
+      datasets,
     });
   });
 

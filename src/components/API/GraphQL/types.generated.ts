@@ -1,4 +1,5 @@
 export type Maybe<T> = T | null;
+export type InputMaybe<T> = Maybe<T>;
 export type Exact<T extends { [key: string]: unknown }> = { [K in keyof T]: T[K] };
 export type MakeOptional<T, K extends keyof T> = Omit<T, K> & { [SubKey in K]?: Maybe<T[SubKey]> };
 export type MakeMaybe<T, K extends keyof T> = Omit<T, K> & { [SubKey in K]: Maybe<T[SubKey]> };
@@ -9,7 +10,6 @@ export type Scalars = {
   Boolean: boolean;
   Int: number;
   Float: number;
-  /** The `JSON` scalar type represents JSON values as specified by [ECMA-404](http://www.ecma-international.org/publications/files/ECMA-ST/ECMA-404.pdf). */
   JSON: any;
 };
 
@@ -41,8 +41,8 @@ export type Algorithm = {
 
 export type AlgorithmInput = {
   id: Scalars['String'];
-  parameters?: Maybe<Array<AlgorithmParamInput>>;
-  type?: Maybe<Scalars['String']>;
+  parameters?: InputMaybe<Array<AlgorithmParamInput>>;
+  type?: InputMaybe<Scalars['String']>;
 };
 
 export type AlgorithmParamInput = {
@@ -171,20 +171,20 @@ export type Experiment = {
 
 export type ExperimentCreateInput = {
   algorithm: AlgorithmInput;
-  coVariables?: Maybe<Array<Scalars['String']>>;
+  coVariables?: InputMaybe<Array<Scalars['String']>>;
   datasets: Array<Scalars['String']>;
   domain: Scalars['String'];
-  filter?: Maybe<Scalars['String']>;
-  interactions?: Maybe<Array<Array<Scalars['String']>>>;
+  filter?: InputMaybe<Scalars['String']>;
+  interactions?: InputMaybe<Array<Array<Scalars['String']>>>;
   name: Scalars['String'];
-  transformations?: Maybe<Array<FormulaTransformation>>;
+  transformations?: InputMaybe<Array<FormulaTransformation>>;
   variables: Array<Scalars['String']>;
 };
 
 export type ExperimentEditInput = {
-  name?: Maybe<Scalars['String']>;
-  shared?: Maybe<Scalars['Boolean']>;
-  viewed?: Maybe<Scalars['Boolean']>;
+  name?: InputMaybe<Scalars['String']>;
+  shared?: InputMaybe<Scalars['Boolean']>;
+  viewed?: InputMaybe<Scalars['Boolean']>;
 };
 
 export enum ExperimentStatus {
@@ -325,7 +325,7 @@ export type Mutation = {
 
 export type MutationCreateExperimentArgs = {
   data: ExperimentCreateInput;
-  isTransient?: Maybe<Scalars['Boolean']>;
+  isTransient?: InputMaybe<Scalars['Boolean']>;
 };
 
 
@@ -442,8 +442,8 @@ export type QueryExperimentArgs = {
 
 
 export type QueryExperimentListArgs = {
-  name?: Maybe<Scalars['String']>;
-  page?: Maybe<Scalars['Float']>;
+  name?: InputMaybe<Scalars['String']>;
+  page?: InputMaybe<Scalars['Float']>;
 };
 
 export type RawResult = {

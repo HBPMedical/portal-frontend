@@ -1,9 +1,9 @@
-/* eslint-disable @typescript-eslint/camelcase */
 /* eslint-disable react-hooks/exhaustive-deps */
-import React, { useEffect, useRef } from 'react';
+import { useEffect, useRef } from 'react';
 import styled from 'styled-components';
 import { MeanChartResult } from '../../API/GraphQL/types.generated';
 
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
 declare let window: any;
 
 const Container = styled.div`
@@ -15,7 +15,7 @@ interface Props {
   data: MeanChartResult;
 }
 
-export default ({ ...props }: Props) => {
+const MeanPlot = ({ ...props }: Props) => {
   const containerRef = useRef<HTMLDivElement>(null);
   const Bokeh = window.Bokeh;
   const plot = Bokeh.Plotting;
@@ -29,18 +29,18 @@ export default ({ ...props }: Props) => {
   const title = props.data.name;
   const categories = props.data.xAxis?.categories ?? [];
   const data = {
-    means: props.data.pointCIs.map(ci => ci.mean),
+    means: props.data.pointCIs.map((ci) => ci.mean),
     categories,
-    mins: props.data.pointCIs.map(ci => ci.min ?? ci.mean),
-    maxs: props.data.pointCIs.map(ci => ci.max ?? ci.mean)
+    mins: props.data.pointCIs.map((ci) => ci.min ?? ci.mean),
+    maxs: props.data.pointCIs.map((ci) => ci.max ?? ci.mean),
   };
   const source = new Bokeh.ColumnDataSource({
-    data
+    data,
   });
 
   const [min, max] = [
     Math.min.apply(null, data.mins),
-    Math.max.apply(null, data.maxs)
+    Math.max.apply(null, data.maxs),
   ];
 
   const p = plot.figure({
@@ -48,7 +48,7 @@ export default ({ ...props }: Props) => {
     x_range: categories,
     y_range: [min - min * 0.05, max + max * 0.05],
     x_axis_label: props.data.xAxis?.label,
-    y_axis_label: props.data.yAxis?.label
+    y_axis_label: props.data.yAxis?.label,
   });
 
   p.scatter({
@@ -58,7 +58,7 @@ export default ({ ...props }: Props) => {
     fill_color: 'black',
     fill_alpha: 0.5,
     size: 12,
-    source: source
+    source: source,
   });
 
   const whisker = new Bokeh.Whisker({
@@ -67,7 +67,7 @@ export default ({ ...props }: Props) => {
     upper: { field: 'mins' },
     lower: { field: 'maxs' },
     upper_head: new Bokeh.TeeHead({ size: 100 }),
-    lower_head: new Bokeh.TeeHead({ size: 100 })
+    lower_head: new Bokeh.TeeHead({ size: 100 }),
   });
 
   p.add_layout(whisker);
@@ -79,3 +79,5 @@ export default ({ ...props }: Props) => {
 
   return <Container id={slug} className="result" ref={containerRef} />;
 };
+
+export default MeanPlot;

@@ -1,6 +1,5 @@
-import * as React from 'react';
-
-export default ({ doc }: { doc: any }): JSX.Element => (
+/* eslint-disable @typescript-eslint/no-explicit-any */
+const HTML = ({ doc }: { doc: any }): JSX.Element => (
   <iframe
     title="HTML results"
     className="html-iframe"
@@ -11,3 +10,5 @@ export default ({ doc }: { doc: any }): JSX.Element => (
     frameBorder={0}
   />
 );
+
+export default HTML;

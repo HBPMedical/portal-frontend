@@ -5,7 +5,7 @@ import { Redirect, Route, RouteProps } from 'react-router-dom';
 import styled from 'styled-components';
 import {
   useActiveUserQuery,
-  useGetConfigurationQuery
+  useGetConfigurationQuery,
 } from '../API/GraphQL/queries.generated';
 
 const SpinnerContainer = styled.div`
@@ -20,16 +20,14 @@ type Props = {
   children: React.ReactNode;
 } & RouteProps;
 
-export default ({ children, ...rest }: Props) => {
+const ProtectedRoute = ({ children, ...rest }: Props) => {
   const {
     loading: userLoading,
     data: userData,
-    networkStatus
+    networkStatus,
   } = useActiveUserQuery();
-  const {
-    loading: configLoading,
-    data: { configuration } = {}
-  } = useGetConfigurationQuery();
+  const { loading: configLoading, data: { configuration } = {} } =
+    useGetConfigurationQuery();
 
   const isAuth = !!userData?.user;
   const skipTOS = userData?.user?.agreeNDA || configuration?.skipTos;
@@ -69,3 +67,5 @@ export default ({ children, ...rest }: Props) => {
     </>
   );
 };
+
+export default ProtectedRoute;

@@ -1,7 +1,7 @@
 import { makeVar } from '@apollo/client';
 import {
   getMockDomain,
-  initMockDomainVar
+  initMockDomainVar,
 } from '../../../../../../tests/mocks/mockDomainVar';
 import { mockExperiment } from '../../../../../../tests/mocks/mockExperiment';
 import { Experiment, Group, Variable } from '../../../types.generated';
@@ -36,7 +36,7 @@ describe('Toggle datasets', () => {
     toggleDatasetExperiment(mockDomain.datasets[0].id);
 
     expect(mockDraftExpVar().datasets.sort()).toEqual(
-      mockDomain.datasets.map(d => d.id).sort()
+      mockDomain.datasets.map((d) => d.id).sort()
     );
   });
 
@@ -57,17 +57,17 @@ describe('Toggle datasets', () => {
     mockDomainVar(mockDomain);
     mockDraftExpVar({
       ...mockExperiment,
-      datasets: mockDomain.datasets.filter((_, i) => i !== 0).map(d => d.id)
+      datasets: mockDomain.datasets.filter((_, i) => i !== 0).map((d) => d.id),
     });
 
-    mockGroups(mockGroups().filter(g => g.id !== mockDomain.groups[0].id));
+    mockGroups(mockGroups().filter((g) => g.id !== mockDomain.groups[0].id));
     toggleDatasetExperiment(mockDomain.datasets[0].id);
 
     expect(
       mockGroups()
-        .map(g => g.id)
+        .map((g) => g.id)
         .sort()
-    ).toEqual(mockDomain.groups.map(g => g.id).sort());
+    ).toEqual(mockDomain.groups.map((g) => g.id).sort());
   });
 
   it('Test remove dataset filtered group', () => {
@@ -75,17 +75,17 @@ describe('Toggle datasets', () => {
     mockDomainVar(mockDomain);
 
     const totalVars = mockDomain.groups
-      .map(g => g.variables?.length ?? 0)
+      .map((g) => g.variables?.length ?? 0)
       .reduce((p, v) => p + v, 0);
 
     toggleDatasetExperiment(mockDomain.datasets[0].id);
 
-    expect(mockGroups().map(g => g.id)).toStrictEqual(['group2']);
+    expect(mockGroups().map((g) => g.id)).toStrictEqual(['group2']);
 
     const afterNbVars =
       totalVars -
       mockGroups()
-        .map(g => g.variables?.length ?? 0)
+        .map((g) => g.variables?.length ?? 0)
         .reduce((p, v) => p + v, 0);
 
     expect(afterNbVars).toBeGreaterThan(0);
@@ -100,12 +100,12 @@ describe('Toggle datasets', () => {
 
     expect(
       mockVars()
-        .map(v => v.id)
+        .map((v) => v.id)
         .sort()
     ).toEqual(
       mockDomain.variables
         .filter((_, i) => i !== 0)
-        .map(v => v.id)
+        .map((v) => v.id)
         .sort()
     );
 

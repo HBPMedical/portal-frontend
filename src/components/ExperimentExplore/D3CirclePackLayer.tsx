@@ -1,3 +1,5 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
+/* eslint-disable react-hooks/exhaustive-deps */
 import { useReactiveVar } from '@apollo/client';
 import * as d3 from 'd3';
 import React, { useCallback, useEffect, useRef } from 'react';
@@ -46,7 +48,7 @@ const splitText = (text: string): string[] => {
   );
 };
 
-export default ({ layout, ...props }: Props): JSX.Element => {
+const D3CirclePackLayer = ({ layout, ...props }: Props): JSX.Element => {
   const svgRef = useRef(null);
   const view = useRef<IView>([diameter / 2, diameter / 2, diameter]);
   const focus = useRef(layout);
@@ -91,7 +93,7 @@ export default ({ layout, ...props }: Props): JSX.Element => {
       const targetView: IView = [
         circleNode.x,
         circleNode.y,
-        circleNode.r * zoomFactor + padding
+        circleNode.r * zoomFactor + padding,
       ];
       const transition = d3
         .transition<d3.BaseType>()
@@ -111,7 +113,7 @@ export default ({ layout, ...props }: Props): JSX.Element => {
       const text = svg.selectAll('text');
 
       text
-        .filter(function(dd: any) {
+        .filter(function (dd: any) {
           const el = this as HTMLElement;
           return (
             shouldDisplay(dd, focus.current) ||
@@ -122,7 +124,7 @@ export default ({ layout, ...props }: Props): JSX.Element => {
         .style('fill-opacity', (dd: any) =>
           shouldDisplay(dd, focus.current) ? 1 : 0
         )
-        .on('start', function(dd: any) {
+        .on('start', function (dd: any) {
           const el = this as HTMLElement;
           if (shouldDisplay(dd, focus.current)) {
             el.style.display = 'inline';
@@ -141,23 +143,24 @@ export default ({ layout, ...props }: Props): JSX.Element => {
     circle
       .style('fill-opacity', '1')
       .filter(
-        d => ![...(groupVars.flatMap(g => g.items) || [])].includes(d.data.id)
+        (d) =>
+          ![...(groupVars.flatMap((g) => g.items) || [])].includes(d.data.id)
       )
-      .style('fill', d =>
+      .style('fill', (d) =>
         d.children ? colorCallback(d.depth) ?? 'white' : 'white'
       );
 
     if (selectedNode && selectedNode !== layout) {
       circle
-        .filter(d => d.data.id === selectedNode.data.id)
+        .filter((d) => d.data.id === selectedNode.data.id)
         .transition()
         .duration(80)
         .style('fill-opacity', '0.8');
     }
 
-    groupVars.forEach(g => {
+    groupVars.forEach((g) => {
       circle
-        .filter(d => g.items.includes(d.data.id))
+        .filter((d) => g.items.includes(d.data.id))
         .transition()
         .duration(250)
         .style('fill', g.color ?? 'white');
@@ -168,9 +171,7 @@ export default ({ layout, ...props }: Props): JSX.Element => {
   const selectNodeCallback = useCallback(props.handleSelectNode, []);
 
   useEffect(() => {
-    d3.select(svgRef.current)
-      .selectAll('g')
-      .remove();
+    d3.select(svgRef.current).selectAll('g').remove();
 
     const svg = d3
       .select(svgRef.current)
@@ -196,10 +197,10 @@ export default ({ layout, ...props }: Props): JSX.Element => {
       .data(layout.descendants())
       .join('circle')
       .attr('class', 'node')
-      .attr('fill', d =>
+      .attr('fill', (d) =>
         d.children ? colorCallback(d.depth) ?? 'white' : 'white'
       )
-      .on('click', d => {
+      .on('click', (d) => {
         selectNodeCallback(d);
         d3.event.stopPropagation();
         // Don't zoom on single variable selection
@@ -215,7 +216,8 @@ export default ({ layout, ...props }: Props): JSX.Element => {
       .data(layout.descendants())
       .append('title')
       .text(
-        d => `${d.data.label}\n${d.data.description ? d.data.description : ''}`
+        (d) =>
+          `${d.data.label}\n${d.data.description ? d.data.description : ''}`
       );
 
     svg
@@ -224,18 +226,18 @@ export default ({ layout, ...props }: Props): JSX.Element => {
       .data(layout.descendants())
       .join('text')
       .attr('class', 'label')
-      .style('fill-opacity', d => (d.parent === layout ? 1 : 0))
-      .style('display', d => (d.parent === layout ? 'inline' : 'none'))
+      .style('fill-opacity', (d) => (d.parent === layout ? 1 : 0))
+      .style('display', (d) => (d.parent === layout ? 'inline' : 'none'))
       .style('font-size', (d: any) => {
         const size = 12 - Math.log(d.data.label.length) + Math.log(d.r);
         return Math.round(size) + 'px';
       })
       .selectAll('tspan')
-      .data(d => splitText(d.data.label))
+      .data((d) => splitText(d.data.label))
       .join('tspan')
       .attr('x', 0)
       .attr('y', (d, i, nodes) => `${i - nodes.length / 2 + 0.8}em`)
-      .text(d => d);
+      .text((d) => d);
 
     selectNodeCallback(layout);
     zoomTo([layout.x, layout.y, layout.r * 2]);
@@ -243,7 +245,7 @@ export default ({ layout, ...props }: Props): JSX.Element => {
 
   const zoomToNode = useCallback(
     (id: string) => {
-      const node = layout.descendants().find(n => n.data.id === id);
+      const node = layout.descendants().find((n) => n.data.id === id);
 
       if (node) {
         zoom(node);
@@ -262,3 +264,5 @@ export default ({ layout, ...props }: Props): JSX.Element => {
 
   return <svg ref={svgRef} />;
 };
+
+export default D3CirclePackLayer;

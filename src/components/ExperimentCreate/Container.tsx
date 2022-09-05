@@ -7,12 +7,12 @@ import {
   draftExperimentVar,
   selectedDomainVar,
   selectedExperimentVar,
-  variablesVar
+  variablesVar,
 } from '../API/GraphQL/cache';
 import { localMutations } from '../API/GraphQL/operations/mutations';
 import {
   namedOperations,
-  useCreateExperimentMutation
+  useCreateExperimentMutation,
 } from '../API/GraphQL/queries.generated';
 import { Algorithm } from '../API/GraphQL/types.generated';
 import ExperimentSidebar from '../DescriptiveAnalysis/ExperimentSidebar';
@@ -40,19 +40,19 @@ export const ExperimentCreateContainer = (): JSX.Element => {
 
   const [createExperiment] = useCreateExperimentMutation({
     refetchQueries: [namedOperations.Query.getExperimentList],
-    onCompleted: data => {
+    onCompleted: (data) => {
       const id = data.createExperiment.id;
       if (id) {
         history.push(`/experiment/${id}`);
       }
     },
-    onError: data => {
+    onError: (data) => {
       setAlert({
         message: data.message,
         title: 'Error during creation',
-        styled: 'error'
+        styled: 'error',
       });
-    }
+    },
   });
 
   const handleGoBackToReview = (): void => {
@@ -64,7 +64,7 @@ export const ExperimentCreateContainer = (): JSX.Element => {
       algorithm?.parameters?.reduce(
         (prev, param) => ({
           ...prev,
-          [param.name]: param.defaultValue
+          [param.name]: param.defaultValue,
         }),
         {}
       ) ?? {}
@@ -72,9 +72,9 @@ export const ExperimentCreateContainer = (): JSX.Element => {
   }, [algorithm]);
 
   const handleParamChanged = (key: string, value?: string) => {
-    setParams(prevState => ({
+    setParams((prevState) => ({
       ...prevState,
-      [key]: value
+      [key]: value,
     }));
   };
 
@@ -103,11 +103,11 @@ export const ExperimentCreateContainer = (): JSX.Element => {
               .filter(([k, v]) => !!v)
               .map(([k, v]) => ({
                 id: k,
-                value: v as string
-              }))
-          }
-        }
-      }
+                value: v as string,
+              })),
+          },
+        },
+      },
     });
   };
 
@@ -176,13 +176,13 @@ export const ExperimentCreateContainer = (): JSX.Element => {
                 listVariables={variables}
                 selectedAlgorithm={algorithm}
                 direction="vertical"
-                handleSelect={algo => {
+                handleSelect={(algo) => {
                   setAlgorithm(algo);
                   localMutations.updateDraftExperiment({
                     algorithm: {
                       name: algo.id,
-                      parameters: []
-                    }
+                      parameters: [],
+                    },
                   });
                 }}
               />

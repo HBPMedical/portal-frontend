@@ -6,27 +6,27 @@ import {
   Domain,
   Experiment,
   Group,
-  Variable
+  Variable,
 } from './types.generated';
 
 export const initialExperiment: Experiment = {
   id: '',
   algorithm: {
     name: '',
-    parameters: []
+    parameters: [],
   },
   datasets: [],
   domain: '',
   name: 'New experiment',
   shared: false,
   viewed: false,
-  variables: []
+  variables: [],
 };
 
 export const initialConfig: Configuration = {
   connectorId: 'default',
   hasGalaxy: false,
-  version: ''
+  version: '',
 };
 
 export const sessionStateVar = makeVar<SessionState>(SessionState.INIT);
@@ -52,30 +52,30 @@ export const cacheConfig = {
       'LineChartResult',
       'MeanChartResult',
       'BarChartResult',
-      'AlertResult'
+      'AlertResult',
     ],
-    BaseParameter: ['StringParameter', 'NominalParameter', 'NumberParameter']
+    BaseParameter: ['StringParameter', 'NominalParameter', 'NumberParameter'],
   },
   typePolicies: {
     //Group, Variable and Dataset are weak entities, closely related to a domain (pathology)
     //We need to disable the cache system for them to avoid conflicts
     Group: {
-      keyFields: false as false
+      keyFields: false as const,
     },
     Variable: {
-      keyFields: false as false
+      keyFields: false as const,
     },
     Dataset: {
-      keyFields: false as false
+      keyFields: false as const,
     },
     Query: {
       fields: {
         configuration: {
-          merge: true
-        }
-      }
-    }
-  }
+          merge: true,
+        },
+      },
+    },
+  },
 };
 
 export const cache: InMemoryCache = new InMemoryCache(cacheConfig);

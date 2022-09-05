@@ -11,7 +11,7 @@ describe('Set configuration', () => {
     const configuration: Configuration = {
       ...initialConfig,
       hasGalaxy: true,
-      connectorId: 'dummy-id'
+      connectorId: 'dummy-id',
     };
     setConfiguration(configuration);
     expect(mockConfigurationVar()).toBe(configuration);

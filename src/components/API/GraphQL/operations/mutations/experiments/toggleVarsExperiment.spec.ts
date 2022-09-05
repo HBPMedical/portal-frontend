@@ -10,7 +10,7 @@ describe('Toggle variable on experiment', () => {
   [
     ['variables', VarType.VARIABLES],
     ['coVariables', VarType.COVARIATES],
-    ['filterVariables', VarType.FILTER]
+    ['filterVariables', VarType.FILTER],
   ].forEach(([tab1, tab2]) => {
     const propName = tab1 as keyof Experiment;
     const type = tab2 as VarType;
@@ -32,7 +32,7 @@ describe('Toggle variable on experiment', () => {
       const exp: Experiment = mockExperimentVar();
 
       expect(exp[propName]).toEqual(
-        varsPack1.filter(v => !varsPack2.includes(v))
+        varsPack1.filter((v) => !varsPack2.includes(v))
       );
     });
 

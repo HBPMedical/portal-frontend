@@ -1,4 +1,3 @@
-import * as React from 'react';
 import { CSVLink } from 'react-csv';
 import { FaFileCsv } from 'react-icons/fa';
 import styled from 'styled-components';
@@ -95,8 +94,8 @@ const Container = styled.div`
   }
 `;
 
-export default ({ data }: TableProps): JSX.Element => {
-  const csvData = [[...data.headers.map(h => h.name)], ...data.data];
+const DataTable = ({ data }: TableProps): JSX.Element => {
+  const csvData = [[...data.headers.map((h) => h.name)], ...data.data];
 
   return (
     <Container className="table-result">
@@ -138,3 +137,5 @@ export default ({ data }: TableProps): JSX.Element => {
     </Container>
   );
 };
+
+export default DataTable;

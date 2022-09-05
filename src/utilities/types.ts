@@ -6,5 +6,5 @@ export const enum SessionState {
   INVALID = 2,
   LOGGED_OUT = 3,
   ERROR = 4,
-  ACCESS_DENIED = 5
+  ACCESS_DENIED = 5,
 }

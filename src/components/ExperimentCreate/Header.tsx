@@ -17,7 +17,7 @@ const ExperimentCreateHeader = ({
   method,
   handleGoBackToReview,
   handleRunExperiment,
-  handleNameChange
+  handleNameChange,
 }: Props): JSX.Element => {
   const [name, setName] = useState<string>('');
 

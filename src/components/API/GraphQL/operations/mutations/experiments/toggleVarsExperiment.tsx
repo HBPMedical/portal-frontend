@@ -4,7 +4,7 @@ import { Experiment } from '../../../types.generated';
 export enum VarType {
   VARIABLES = 'variables',
   COVARIATES = 'coVariables',
-  FILTER = 'filterVariables'
+  FILTER = 'filterVariables',
 }
 
 export default function createToggleVarsExperiment(
@@ -17,20 +17,20 @@ export default function createToggleVarsExperiment(
     newExperiment[type] = [
       ...new Set([
         // for uniqueness
-        ...vars.filter(v => !oldData.includes(v)),
-        ...oldData.filter(v => !vars.includes(v))
-      ])
+        ...vars.filter((v) => !oldData.includes(v)),
+        ...oldData.filter((v) => !vars.includes(v)),
+      ]),
     ];
 
     if (type === VarType.VARIABLES) {
       newExperiment.coVariables = newExperiment.coVariables?.filter(
-        v => !newExperiment.variables.includes(v)
+        (v) => !newExperiment.variables.includes(v)
       );
     }
 
     if (type === VarType.COVARIATES) {
       newExperiment.variables = newExperiment.variables.filter(
-        v => !newExperiment.coVariables?.includes(v)
+        (v) => !newExperiment.coVariables?.includes(v)
       );
     }
 

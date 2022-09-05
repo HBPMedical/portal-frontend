@@ -1,4 +1,3 @@
-import * as React from 'react';
 import styled from 'styled-components';
 import ChuvLogo from '../../images/logo_chuv.png';
 import { AppConfig } from '../utils';
@@ -28,7 +27,7 @@ const FooterBox = styled.div`
   }
 `;
 
-export default ({ appConfig }: { appConfig: AppConfig }): JSX.Element => (
+const Footer = ({ appConfig }: { appConfig: AppConfig }): JSX.Element => (
   <FooterBox>
     <div title="CHUV Lausanne"></div>
     <h6>
@@ -44,3 +43,5 @@ export default ({ appConfig }: { appConfig: AppConfig }): JSX.Element => (
     <h6>{appConfig.version}</h6>
   </FooterBox>
 );
+
+export default Footer;

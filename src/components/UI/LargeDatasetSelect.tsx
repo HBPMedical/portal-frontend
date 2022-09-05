@@ -1,4 +1,4 @@
-import React, { useEffect, useRef } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { Button, Form } from 'react-bootstrap';
 import styled from 'styled-components';
 import { Dataset } from '../API/GraphQL/types.generated';
@@ -88,19 +88,19 @@ const Card = styled.div`
   }
 `;
 
-export default ({
+const LargeDatasetSelect = ({
   datasets,
   handleSelectDataset,
   selectedDatasets,
-  isDropdown = false
+  isDropdown = false,
 }: Props): JSX.Element => {
-  const [visible, setVisible] = React.useState(!isDropdown);
+  const [visible, setVisible] = useState(!isDropdown);
   const style = visible ? undefined : { display: 'none' };
   const node = useRef<HTMLDivElement | null>(null);
 
   // TODO: tag dataset as longitudinal
-  const ndatasets = datasets?.filter(d => !d.isLongitudinal);
-  const ldatasets = datasets?.filter(d => d.isLongitudinal);
+  const ndatasets = datasets?.filter((d) => !d.isLongitudinal);
+  const ldatasets = datasets?.filter((d) => d.isLongitudinal);
 
   const handleClickOutside = (event: MouseEvent): void => {
     // inside click
@@ -123,7 +123,7 @@ export default ({
   }, [setVisible, visible]);
 
   const checkboxFor = (sets: Dataset[]): JSX.Element[] =>
-    sets.map(dataset => (
+    sets.map((dataset) => (
       <span key={dataset.id}>
         <Form.Check
           inline={true}
@@ -177,3 +177,5 @@ export default ({
     </>
   );
 };
+
+export default LargeDatasetSelect;

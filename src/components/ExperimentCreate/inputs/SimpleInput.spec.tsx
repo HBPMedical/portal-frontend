@@ -3,7 +3,7 @@ import { render } from '@testing-library/react';
 import React from 'react';
 import {
   NumberParameter,
-  StringParameter
+  StringParameter,
 } from '../../API/GraphQL/types.generated';
 import SimpleInput from './SimpleInput';
 
@@ -16,7 +16,7 @@ const numberInput: NumberParameter = {
   hasMultiple: false,
   defaultValue: '2',
   min: 1,
-  max: 3
+  max: 3,
 };
 
 const stringInput: StringParameter = {
@@ -26,7 +26,7 @@ const stringInput: StringParameter = {
   hint: 'My super hint',
   isRequired: false,
   hasMultiple: false,
-  defaultValue: 'my value'
+  defaultValue: 'my value',
 };
 
 describe('SimpleInput component', () => {

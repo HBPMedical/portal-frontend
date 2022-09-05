@@ -6,7 +6,7 @@ interface Context {
 }
 
 const MIPContext = createContext<Context>({
-  showTutorial: true
+  showTutorial: true,
 });
 
 export default MIPContext;

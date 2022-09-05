@@ -1,6 +1,6 @@
 import { NetworkStatus, useReactiveVar } from '@apollo/client';
-import { useMatomo } from '@datapunt/matomo-tracker-react';
-import React, { useCallback, useEffect } from 'react';
+import { useMatomo } from '@jonkoops/matomo-tracker-react';
+import { useCallback, useEffect } from 'react';
 import { Spinner } from 'react-bootstrap';
 import { Route, Switch, useHistory } from 'react-router-dom';
 import { toast, ToastContainer } from 'react-toastify';
@@ -15,7 +15,7 @@ import {
   useActiveUserQuery,
   useGetConfigurationQuery,
   useListDomainsQuery,
-  useLogoutMutation
+  useLogoutMutation,
 } from '../API/GraphQL/queries.generated';
 import { makeAssetURL } from '../API/RequestURLS';
 import { DescriptiveAnalysis } from '../DescriptiveAnalysis';
@@ -73,6 +73,7 @@ interface Props {
 }
 
 interface MainProps {
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   showTutorial: any;
 }
 
@@ -94,10 +95,10 @@ const App = ({ appConfig, showTutorial }: Props) => {
   const {
     loading: userLoading,
     data: userData,
-    networkStatus: userNetwork
+    networkStatus: userNetwork,
   } = useActiveUserQuery({
     fetchPolicy: 'network-only',
-    notifyOnNetworkStatusChange: true
+    notifyOnNetworkStatusChange: true,
   });
 
   const [logoutMutation] = useLogoutMutation();
@@ -118,36 +119,32 @@ const App = ({ appConfig, showTutorial }: Props) => {
     localMutations.user.setState(SessionState.LOGGED_OUT);
   }, [history, logoutMutation]);
 
-  const {
-    data: { configuration } = {},
-    loading: configLoading
-  } = useGetConfigurationQuery({
-    onCompleted: data => {
-      if (data.configuration) {
-        localMutations.setConfiguration(data.configuration);
-        const favicon = document.getElementById('favicon') as HTMLLinkElement;
-        favicon.href = makeAssetURL('favicon.ico');
-      }
-    }
-  });
+  const { data: { configuration } = {}, loading: configLoading } =
+    useGetConfigurationQuery({
+      onCompleted: (data) => {
+        if (data.configuration) {
+          localMutations.setConfiguration(data.configuration);
+          const favicon = document.getElementById('favicon') as HTMLLinkElement;
+          favicon.href = makeAssetURL('favicon.ico');
+        }
+      },
+    });
 
   const user = userData?.user;
   const isAnonymous = user?.username === 'anonymous' || false;
   const authenticated = !!user && userState !== SessionState.LOGGED_OUT;
 
   //load domains for every page
-  const {
-    loading: domainsLoading,
-    networkStatus: domainNetwork
-  } = useListDomainsQuery({
-    notifyOnNetworkStatusChange: true,
-    onCompleted: data => {
-      if (data.domains) {
-        localMutations.setDomains(data.domains);
-        localMutations.selectDomain(data.domains[0].id);
-      }
-    }
-  });
+  const { loading: domainsLoading, networkStatus: domainNetwork } =
+    useListDomainsQuery({
+      notifyOnNetworkStatusChange: true,
+      onCompleted: (data) => {
+        if (data.domains) {
+          localMutations.setDomains(data.domains);
+          localMutations.selectDomain(data.domains[0].id);
+        }
+      },
+    });
 
   const loading =
     configLoading ||

@@ -7,7 +7,7 @@ import styled from 'styled-components';
 import {
   namedOperations,
   useActiveUserQuery,
-  useUpdateActiveUserMutation
+  useUpdateActiveUserMutation,
 } from '../API/GraphQL/queries.generated';
 import { makeAssetURL } from '../API/RequestURLS';
 
@@ -27,7 +27,7 @@ const ContainerBtnRight = styled.div`
   }
 `;
 
-export default (): JSX.Element => {
+const TOS = (): JSX.Element => {
   const [accepted, setAccepted] = useState(false);
   const [TOS, setTOS] = useState<string | undefined>(undefined);
   const mountedRef = useRef(true);
@@ -40,7 +40,7 @@ export default (): JSX.Element => {
     refetchQueries: [namedOperations.Query.activeUser],
     onCompleted: () => {
       history.push('/');
-    }
+    },
   });
 
   useEffect(() => {
@@ -57,7 +57,7 @@ export default (): JSX.Element => {
       if (mountedRef.current) setTOS(text);
     };
 
-    fetchData().catch(error => {
+    fetchData().catch((error) => {
       if (mountedRef.current)
         setTOS('TOS are not available, please contact your administrator');
       console.log(error);
@@ -72,9 +72,9 @@ export default (): JSX.Element => {
       updateActiveUser({
         variables: {
           updateUserInput: {
-            agreeNDA: true
-          }
-        }
+            agreeNDA: true,
+          },
+        },
       });
     }
   };
@@ -121,3 +121,5 @@ export default (): JSX.Element => {
     </Container>
   );
 };
+
+export default TOS;

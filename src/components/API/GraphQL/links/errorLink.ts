@@ -31,16 +31,16 @@ const renewToken = async () => {
       method: 'POST',
       credentials: 'include',
       headers: {
-        'content-type': 'application/json'
+        'content-type': 'application/json',
       },
       body: JSON.stringify({
-        query: queryRefresh(refreshToken)
-      })
+        query: queryRefresh(refreshToken),
+      }),
     });
 
     if (!response || !response.ok) return;
 
-    response.json().then(res => {
+    response.json().then((res) => {
       if (res.data && res.data.refresh && res.data.refresh.refreshToken) {
         localStorage.setItem(
           REFRESH_TOKEN_KEY_NAME,
@@ -60,7 +60,7 @@ const errorLink = onError(
   ({ graphQLErrors, networkError, operation, forward }) => {
     if (
       graphQLErrors &&
-      graphQLErrors.some(error => error.extensions?.status === 401) &&
+      graphQLErrors.some((error) => error.extensions?.status === 401) &&
       (hasRefreshToken() || !!refreshTokenPromise)
     ) {
       if (!refreshTokenPromise) {
@@ -69,12 +69,12 @@ const errorLink = onError(
         });
       }
 
-      return new Observable(observer => {
+      return new Observable((observer) => {
         refreshTokenPromise?.then(() => {
           const subscriber = {
             next: observer.next.bind(observer),
             error: observer.error.bind(observer),
-            complete: observer.complete.bind(observer)
+            complete: observer.complete.bind(observer),
           };
 
           //Retry the operation again

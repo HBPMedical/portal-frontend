@@ -8,7 +8,7 @@ import { useGetExperimentQuery } from '../API/GraphQL/queries.generated';
 import {
   Domain,
   Experiment,
-  ExperimentStatus
+  ExperimentStatus,
 } from '../API/GraphQL/types.generated';
 import ListSection from '../UI/ListSection';
 import Model from '../UI/Model';
@@ -33,11 +33,11 @@ const ContainerWrap = ({ ...props }: Props): JSX.Element => {
     variables: { id: uuid },
     fetchPolicy: 'network-only',
     notifyOnNetworkStatusChange: true, // needed to refire onCompleted after each poll
-    onCompleted: data => {
+    onCompleted: (data) => {
       const domainId = data.experiment.domain;
       const newExperiment = data.experiment as Experiment;
       if (domainId && domainId !== domain?.id)
-        setDomain(domains.find(d => d.id === domainId));
+        setDomain(domains.find((d) => d.id === domainId));
 
       if (newExperiment.status === ExperimentStatus.Pending && !isPolling) {
         startPolling(1000);
@@ -55,7 +55,7 @@ const ContainerWrap = ({ ...props }: Props): JSX.Element => {
         newExperiment.status !== ExperimentStatus.Pending
       )
         setExperiment(newExperiment);
-    }
+    },
   });
 
   return (
@@ -104,8 +104,8 @@ const ContainerWrap = ({ ...props }: Props): JSX.Element => {
                         title="Datasets"
                         list={
                           domain?.datasets
-                            .filter(d => experiment.datasets.includes(d.id))
-                            .map(d => d.label ?? d.id) ?? []
+                            .filter((d) => experiment.datasets.includes(d.id))
+                            .map((d) => d.label ?? d.id) ?? []
                         }
                       />
                       <section>

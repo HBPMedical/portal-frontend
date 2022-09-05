@@ -1,7 +1,6 @@
-import React from 'react';
 import styled from 'styled-components';
 
-const Warning = styled.div`
+const WarningContainer = styled.div`
   h3 {
     margin: 0;
     font-size: 16px;
@@ -9,9 +8,11 @@ const Warning = styled.div`
   }
 `;
 
-export default ({ message }: { message: string }): JSX.Element => (
-  <Warning>
+const Warning = ({ message }: { message: string }): JSX.Element => (
+  <WarningContainer>
     <h3>A problem has occured</h3>
     <p>{message}</p>
-  </Warning>
+  </WarningContainer>
 );
+
+export default Warning;

@@ -8,7 +8,7 @@ import {
   selectedVariableVar,
   sessionStateVar,
   variablesVar,
-  zoomNodeVar
+  zoomNodeVar,
 } from '../../cache';
 import createResetStore from './common/resetStore';
 import createSelectDomain from './common/selectDomain';
@@ -65,6 +65,6 @@ export const localMutations = {
     groupsVar
   ),
   user: {
-    setState: createSetSessionState(sessionStateVar)
-  }
+    setState: createSetSessionState(sessionStateVar),
+  },
 };

@@ -35,7 +35,7 @@ const ModalComponent = React.forwardRef<ModalComponentHandle, Props>(
         return new Promise<boolean>((resolve, reject) => {
           setPromiseRes({ resolve, reject });
         });
-      }
+      },
     }));
 
     return (

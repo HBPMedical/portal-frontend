@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 declare module 'jsoneditor-react' {
   import React from 'react';
   export class JsonEditor extends React.Component<JsonEditorProps> {

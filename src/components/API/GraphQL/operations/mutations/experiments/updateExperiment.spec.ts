@@ -13,7 +13,7 @@ describe('Test name', () => {
   it('Set experiment data', () => {
     const data: Partial<Experiment> = {
       name: 'Test',
-      variables: ['test', 'test2']
+      variables: ['test', 'test2'],
     };
     updateExperiment(data);
 

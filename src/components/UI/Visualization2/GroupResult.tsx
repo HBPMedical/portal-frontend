@@ -1,9 +1,8 @@
-import * as React from 'react';
 import { Card, Tab, Tabs } from 'react-bootstrap';
 import {
   GroupResult,
   GroupsResult,
-  ResultUnion
+  ResultUnion,
 } from '../../API/GraphQL/types.generated';
 import ResultDispatcher from '../../ExperimentResult/ResultDispatcher';
 import Error from '../Error';
@@ -18,7 +17,7 @@ interface Props {
 const DescriptiveStatistics = ({
   result,
   loading,
-  error
+  error,
 }: Props): JSX.Element => {
   return (
     <Card className="result">

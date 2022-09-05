@@ -1,4 +1,3 @@
-import React from 'react';
 import { Alert } from 'react-bootstrap';
 import { AlertResult, AlertLevel } from '../../API/GraphQL/types.generated';
 
@@ -6,7 +5,7 @@ const lookupTable = {
   [AlertLevel.Info]: { variant: 'info', title: 'Info' },
   [AlertLevel.Warning]: { variant: 'warning', title: 'Warning' },
   [AlertLevel.Error]: { variant: 'danger', title: 'Error' },
-  [AlertLevel.Success]: { variant: 'success', title: 'Success' }
+  [AlertLevel.Success]: { variant: 'success', title: 'Success' },
 };
 
 type Props = { data: AlertResult };

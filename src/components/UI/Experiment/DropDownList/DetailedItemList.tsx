@@ -1,6 +1,7 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import dayjs from 'dayjs';
 import relativeTime from 'dayjs/plugin/relativeTime';
-import React, { useRef, useState } from 'react';
+import { useRef, useState } from 'react';
 import { Button, Container, Form, Table } from 'react-bootstrap';
 import {
   BsCloudDownload,
@@ -9,7 +10,7 @@ import {
   BsFillEyeSlashFill,
   BsFillTrashFill,
   BsPencilSquare,
-  BsWatch
+  BsWatch,
 } from 'react-icons/bs';
 import { FaShareAlt } from 'react-icons/fa';
 import { GoCheck } from 'react-icons/go';
@@ -20,11 +21,11 @@ import {
   EditExperimentMutationVariables,
   useActiveUserQuery,
   useDeleteExperimentMutation,
-  useEditExperimentMutation
+  useEditExperimentMutation,
 } from '../../../API/GraphQL/queries.generated';
 import {
   Experiment,
-  ExperimentStatus
+  ExperimentStatus,
 } from '../../../API/GraphQL/types.generated';
 import { useKeyPressed } from '../../../utils';
 
@@ -86,7 +87,7 @@ interface AnimatedProps {
 const ExperimentIcon = ({
   status,
   viewed,
-  shared
+  shared,
 }: Partial<Experiment>): JSX.Element => {
   if (status === ExperimentStatus.Error) {
     return (
@@ -119,7 +120,7 @@ const ExperimentIcon = ({
 const InlineTextEdit = ({
   text,
   handleTextChange,
-  handleCancel
+  handleCancel,
 }: {
   text: string;
   handleTextChange: (text: string) => void;
@@ -167,7 +168,7 @@ const InlineTextEdit = ({
 };
 
 const ConfimDeleteContainer = ({
-  handleActionDelete
+  handleActionDelete,
 }: {
   handleActionDelete: (confirm: boolean) => void;
 }): JSX.Element => {
@@ -212,12 +213,12 @@ enum RowState {
   DISPLAYING,
   EDITING,
   DELETEING,
-  DELETED
+  DELETED,
 }
 
 const ExperimentRow = ({
   experiment,
-  handleOnClick
+  handleOnClick,
 }: {
   experiment: Experiment;
   handleOnClick?: (experimentId?: string) => void;
@@ -236,7 +237,7 @@ const ExperimentRow = ({
     data: EditExperimentMutationVariables['data']
   ): Promise<void> => {
     await editExperimentMutation({
-      variables: { id: experiment.id, data }
+      variables: { id: experiment.id, data },
     });
   };
 
@@ -248,7 +249,7 @@ const ExperimentRow = ({
         const normalizedId = cache.identify({ id, __typename: 'Experiment' });
         cache.evict({ id: normalizedId });
         cache.gc();
-      }
+      },
     });
   };
 
@@ -314,7 +315,7 @@ const ExperimentRow = ({
                     }
                     onClick={(): void => {
                       handleUpdate({
-                        shared: !experiment.shared
+                        shared: !experiment.shared,
                       });
                     }}
                   >
@@ -354,7 +355,7 @@ const ExperimentRow = ({
 
 export const DetailedItemList = ({
   experiments,
-  handleOnClick
+  handleOnClick,
 }: {
   experiments: Experiment[];
   handleOnClick: (experimentId?: string) => void;
@@ -374,7 +375,7 @@ export const DetailedItemList = ({
               </tr>
             </thead>
             <tbody>
-              {experiments.map(experiment => (
+              {experiments.map((experiment) => (
                 <ExperimentRow
                   key={experiment.id}
                   experiment={experiment}

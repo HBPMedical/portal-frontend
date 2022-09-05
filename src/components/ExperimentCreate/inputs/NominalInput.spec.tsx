@@ -15,8 +15,8 @@ const nominalParameter: NominalParameter = {
   defaultValue: 'val1',
   allowedValues: [
     { label: 'Value 1', value: 'val1' },
-    { label: 'Value 2', value: 'val2' }
-  ]
+    { label: 'Value 2', value: 'val2' },
+  ],
 };
 
 const renderComponent = () => {
@@ -31,7 +31,7 @@ describe('NominalComponent component', () => {
       const { getByRole } = renderComponent();
       expect(
         getByRole('option', {
-          selected: true
+          selected: true,
         })
       ).toBeDefined();
     });
