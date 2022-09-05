@@ -70,6 +70,7 @@
     "start": "vite preview",
     "start:dev": "vite dev",
     "build": "node --max_old_space_size=5048 ./node_modules/vite/bin/vite.js build",
+    "build:viz": "VISUALIZER=true vite build",
     "build:dev": "tsc && vite build --mode development",
     "test": "NODE_ENV=test jest",
     "ci-test": "jest --forceExit --silent",
@@ -120,6 +121,7 @@
     "jest-canvas-mock": "^2.1.1",
     "jest-environment-jsdom": "^29.0.1",
     "prettier": "^2.7.1",
+    "rollup-plugin-visualizer": "^5.8.1",
     "ts-jest": "^28.0.8",
     "ts-node": "^10.9.1"
   },

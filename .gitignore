@@ -30,3 +30,6 @@ test-server/logs
 test-server/**/datasets.db
 
 **/.fuse*
+
+# Dependencies visualizer
+stats.html 

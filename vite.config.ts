@@ -7,11 +7,38 @@ import tsConfigPathPlugin from 'vite-tsconfig-paths';
 import { NodeGlobalsPolyfillPlugin } from '@esbuild-plugins/node-globals-polyfill';
 import { NodeModulesPolyfillPlugin } from '@esbuild-plugins/node-modules-polyfill';
 import rollupNodePolyFill from 'rollup-plugin-polyfill-node';
+import visualizerPlugin from 'rollup-plugin-visualizer';
 
 // https://vitejs.dev/config/
 export default defineConfig(({ mode }) => {
   const envConfig = loadEnv(mode, process.cwd(), '');
   envConfig.NODE_ENV = mode;
+
+  const plugins = [
+    tsConfigPathPlugin(),
+    reactPlugin({
+      jsxRuntime: mode === 'development' ? 'classic' : 'automatic',
+    }),
+    svgrPlugin({
+      svgrOptions: {
+        icon: true,
+      },
+    }),
+    checkerPlugin({
+      typescript: true,
+    }),
+    eslintPlugin(),
+    splitVendorChunkPlugin(),
+  ];
+
+  if (process.env.VISUALIZER && process.env.VISUALIZER === 'true') {
+    plugins.push(
+      visualizerPlugin({
+        title: 'Vite Visualizer',
+        filename: './stats.html',
+      })
+    );
+  }
 
   return {
     resolve: {
@@ -45,20 +72,7 @@ export default defineConfig(({ mode }) => {
         ],
       },
     },
-    plugins: [
-      tsConfigPathPlugin(),
-      reactPlugin(),
-      svgrPlugin({
-        svgrOptions: {
-          icon: true,
-        },
-      }),
-      checkerPlugin({
-        typescript: true,
-      }),
-      eslintPlugin(),
-      splitVendorChunkPlugin(),
-    ],
+    plugins,
     define: {
       'process.env': `${JSON.stringify(envConfig)}`,
     },
