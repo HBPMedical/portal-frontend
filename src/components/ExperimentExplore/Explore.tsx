@@ -161,7 +161,7 @@ const Explore = (props: ExploreProps): JSX.Element => {
                 </div>
               </MenuParametersContainer>
 
-              <Container>
+              <Container id="variable-containers">
                 <Row>
                   {containers.map((bag) => (
                     <Col className="px-1" key={bag[0] as string}>

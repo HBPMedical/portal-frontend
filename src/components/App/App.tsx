@@ -5,6 +5,7 @@ import { Spinner } from 'react-bootstrap';
 import { Route, Switch, useHistory } from 'react-router-dom';
 import { toast, ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.min.css';
+import 'shepherd.js/dist/css/shepherd.css';
 import styled from 'styled-components';
 import { SessionState } from '../../utilities/types';
 import { backendURL } from '../API';
@@ -34,6 +35,9 @@ import LoginPage from '../UI/LoginPage';
 import Navigation from '../UI/Navigation';
 import NotFound from '../UI/NotFound';
 import TOS from '../UI/TOS';
+import ShepherdContainer from '../UserGuide/shepherdContainer';
+import analysisTour from '../UserGuide/tours/analysisTour';
+import exploreTour from '../UserGuide/tours/exploreTour';
 import Tutorial from '../UserGuide/Tutorial';
 import { AppConfig } from '../utils';
 
@@ -240,10 +244,12 @@ const App = ({ appConfig, showTutorial }: Props) => {
               </Route>
 
               <ProtectedRoute path={['/', '/explore']} exact={true}>
+                <ShepherdContainer steps={exploreTour} />
                 <Explore />
               </ProtectedRoute>
 
               <ProtectedRoute path={['/review', '/analysis']}>
+                <ShepherdContainer steps={analysisTour} />
                 <DescriptiveAnalysis />
               </ProtectedRoute>
 

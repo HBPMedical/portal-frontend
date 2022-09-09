@@ -6,7 +6,7 @@ import { NavLink } from 'react-router-dom';
 import styled from 'styled-components';
 import { configurationVar } from '../API/GraphQL/cache';
 import { makeAssetURL } from '../API/RequestURLS';
-import MIPContext from '../App/MIPContext';
+import { tourVar } from '../UserGuide/shepherdContainer';
 import HelpButton from './HelpButton';
 
 const NavBar = styled.nav`
@@ -152,6 +152,7 @@ const Navigation = ({
   const instanceName = name || 'MIP';
   const [imageURL, setImageURL] = useState<string | undefined>(undefined);
   const config = useReactiveVar(configurationVar);
+  const tour = useReactiveVar(tourVar);
 
   useEffect(() => {
     if (!config.version) return;
@@ -191,23 +192,19 @@ const Navigation = ({
         </Links>
       )}
       <RightLinks className="experiment-nav right-nav">
-        <MIPContext.Consumer>
-          {({ toggleTutorial }): JSX.Element =>
-            (
-              <a
-                href="/"
-                onClick={(
-                  e: React.MouseEvent<HTMLAnchorElement, MouseEvent>
-                ): void => {
-                  e.preventDefault();
-                  toggleTutorial && toggleTutorial();
-                }}
-              >
-                User Guide
-              </a>
-            ) || <></>
-          }
-        </MIPContext.Consumer>
+        <a
+          href="/"
+          onClick={(
+            e: React.MouseEvent<HTMLAnchorElement, MouseEvent>
+          ): void => {
+            e.preventDefault();
+            //toggleTutorial && toggleTutorial();
+            console.log('tour', tour);
+            tour?.start();
+          }}
+        >
+          User Guide
+        </a>
         <HelpButton showTraining={true} />
         {!isAnonymous && !authenticated && (
           <LoginButton
