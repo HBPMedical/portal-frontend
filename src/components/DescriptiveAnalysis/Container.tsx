@@ -45,17 +45,13 @@ const Container = (): JSX.Element => {
 
     const datasets = draftExperiment.datasets;
 
-    const variables = [
-      ...(draftExperiment.variables ?? []),
-      ...(draftExperiment.coVariables ?? []),
-    ];
-
     createTransientMutation({
       variables: {
         data: {
           name: 'Descriptive analysis',
           datasets: datasets,
-          variables,
+          variables: draftExperiment.variables,
+          coVariables: draftExperiment.coVariables,
           domain: draftExperiment.domain ?? '',
           filter: draftExperiment.filter,
           algorithm: {
