@@ -1,5 +1,6 @@
 import styled from 'styled-components';
 import ChuvLogo from '../../images/logo_chuv.png';
+import HbpLogo from '../../images/hbp-logo.png';
 import { AppConfig } from '../utils';
 
 const FooterBox = styled.div`
@@ -19,17 +20,19 @@ const FooterBox = styled.div`
     display: flex;
   }
 
-  div {
-    background: url(${ChuvLogo}) left center no-repeat;
-    width: 59px;
-    height: 31px;
-    margin-right: 16px;
+  .footer-logos {
+    display: flex;
+    flex-direction: row;
+    gap: 5px;
   }
 `;
 
 const Footer = ({ appConfig }: { appConfig: AppConfig }): JSX.Element => (
   <FooterBox>
-    <div title="CHUV Lausanne"></div>
+    <div className="footer-logos">
+      <img src={HbpLogo} alt="HBP Logo" height="30" />
+      <img src={ChuvLogo} alt="CHUV Logo" />
+    </div>
     <h6>
       © 2015-2022{' '}
       <a
