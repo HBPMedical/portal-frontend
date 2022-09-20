@@ -5,7 +5,6 @@ import { Spinner } from 'react-bootstrap';
 import { Route, Switch, useHistory } from 'react-router-dom';
 import { toast, ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.min.css';
-import 'shepherd.js/dist/css/shepherd.css';
 import styled from 'styled-components';
 import { SessionState } from '../../utilities/types';
 import { backendURL } from '../API';

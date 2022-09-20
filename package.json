@@ -123,6 +123,7 @@
     "jest-environment-jsdom": "^29.0.1",
     "prettier": "^2.7.1",
     "rollup-plugin-visualizer": "^5.8.1",
+    "sass": "^1.54.9",
     "ts-jest": "^28.0.8",
     "ts-node": "^10.9.1"
   },

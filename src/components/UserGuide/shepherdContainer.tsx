@@ -5,6 +5,8 @@ import {
   ShepherdTourContext,
   Tour,
 } from 'react-shepherd';
+import 'shepherd.js/dist/css/shepherd.css';
+import './style.scss';
 
 export const tourVar = makeVar<Tour | null>(null);
 
@@ -12,15 +14,16 @@ type Props = {
   steps?: ShepherdOptionsWithType[];
 };
 
-const tourOptions = {
+const tourOptions: Tour.TourOptions = {
   defaultStepOptions: {
-    classes: 'shadow-md bg-purple-dark',
+    classes: 'shepherd-theme-mip',
     scrollTo: false,
     cancelIcon: {
       enabled: true,
     },
   },
   useModalOverlay: true,
+  keyboardNavigation: false,
 };
 
 const ShepherdContainer = ({ steps }: Props): JSX.Element => {

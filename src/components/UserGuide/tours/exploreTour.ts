@@ -1,23 +1,5 @@
 import { ShepherdOptionsWithType } from 'react-shepherd';
-import { basicStepBtns, lastStepBtns } from './utils';
-
-/*
-
-buttons: [
-      basicStepBtns[0],
-      basicStepBtns[1],
-      {
-        action() {
-          const selector = document.querySelector(
-            '#dataset-select button'
-          ) as HTMLElement;
-          if (selector) selector.click();
-          return this.next();
-        },
-        text: 'Next',
-      },
-    ],
-  */
+import { backBtn, basicStepBtns, exitBtn, lastStepBtns } from './utils';
 
 const exploreTour: ShepherdOptionsWithType[] = [
   {
@@ -30,7 +12,7 @@ const exploreTour: ShepherdOptionsWithType[] = [
     id: 'explore-domain',
     title: 'Domain',
     text: [
-      'This section allow to select the domain of interest and specify the dataset / cohort you want to work on',
+      'This section allow to select the domain of interest and specify the dataset / cohort you want to work on.',
     ],
     attachTo: {
       element: '#domain-select',
@@ -41,39 +23,99 @@ const exploreTour: ShepherdOptionsWithType[] = [
   {
     id: 'explore-variables',
     title: 'Variables selection',
-    text: `<p>This section allows to select the variables of interest</p>
+    text: `<p>This section allows to select the variables of interest.</p>
       <p>Each white bubble represent a variable. You can select one variable by clicking on it.</p>
+      <p><b>Click on a variable (white bubble) to go to the next step.</b></p>
     `,
     attachTo: {
       element: '#variables-select',
       on: 'auto',
     },
-    buttons: basicStepBtns,
+    when: {
+      show: function () {
+        const elements = document.querySelectorAll('.node.node--leaf');
+        const goNext = () => {
+          this.getTour().next();
+          elements.forEach((element) => {
+            element.removeEventListener('click', goNext);
+          });
+        };
+        elements.forEach((element) => {
+          element.addEventListener('click', goNext);
+        });
+      },
+    },
+    buttons: [exitBtn, backBtn],
   },
   {
     id: 'explore-histograms',
-    title: "Variable's details",
-    text: `<p>This section allows to visualize the details of the selected variable</p>`,
+    title: 'Variable details',
+    text: `<p>After clicking on a white bubble, this section will update to visualize the details of the selected variable.</p>`,
     attachTo: {
       element: '.statistics',
       on: 'auto',
-    },
-    when: {
-      show: () => {
-        const nodes = document.querySelectorAll('.node.node--leaf');
-        const node = nodes[nodes.length - 1];
-        const evt = new Event('click', { bubbles: true });
-        node.dispatchEvent(evt);
-      },
     },
     buttons: basicStepBtns,
   },
   {
     id: 'explore-bag-variable',
     title: 'Variable containers',
-    text: `<p>T</p> `,
+    text: `
+      <p>Once you have selected a variable, you be able to put it inside one of the different container that you got here.</p>
+      <p><b>Variable</b> represents the variable of interest or the independant variable.</p>
+      <p><b>Covariate</b> represents the dependant variable.</p>
+
+      <p><b>Click on the "As variable" button to continue.</b></p>
+     `,
     attachTo: {
       element: '#variable-containers',
+      on: 'auto',
+    },
+    when: {
+      show: function () {
+        const btn = document.querySelector('#variable-containers button');
+        const goNext = () => {
+          this.getTour().next();
+          btn?.removeEventListener('click', goNext);
+        };
+
+        btn?.addEventListener('click', goNext);
+      },
+    },
+    buttons: [exitBtn, backBtn],
+  },
+  {
+    id: 'explore-bag-variable2',
+    title: 'Variable container',
+    text: `
+      <p>Your variable has been added to the appropriate container.</p>
+     `,
+    attachTo: {
+      element: '#variable-containers .container-variable .list-group',
+      on: 'auto',
+    },
+    buttons: basicStepBtns,
+  },
+  {
+    id: 'explore-algorithms',
+    title: 'Available algorithms',
+    text: `
+      <p>After selecting a variable, you'll see in green the algorithms that are available for the current selected variables.</p>
+     `,
+    attachTo: {
+      element: '#algorithm-available',
+      on: 'auto',
+    },
+    buttons: basicStepBtns,
+  },
+  {
+    id: 'explore-next-step',
+    title: 'Next step',
+    text: `
+      <p>Once you've selected your variables of interest you can go to the next step by click on the "Descriptive Analysis" button.</p>
+     `,
+    attachTo: {
+      element: '#btn-goto-analysis',
       on: 'auto',
     },
     buttons: basicStepBtns,
@@ -81,8 +123,11 @@ const exploreTour: ShepherdOptionsWithType[] = [
   {
     id: 'explore-done',
     scrollTo: false,
-    title: 'done',
-    text: ['done.'],
+    title: 'Exploration guide done!',
+    text: `
+      <p>Congrats you have finished the guide for the exploration phase!</p>
+      <p>You can either continue to play with the exploration or go to the next phase "Descriptive stats".</p>
+     `,
     buttons: lastStepBtns,
   },
 ];
