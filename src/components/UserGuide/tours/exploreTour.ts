@@ -58,6 +58,16 @@ const exploreTour: ShepherdOptionsWithType[] = [
     buttons: basicStepBtns,
   },
   {
+    id: 'explore-grouping',
+    title: 'Grouping',
+    text: `<p>The tabs next to the first one allow you to group the variable's result by a nominal variable.</p>`,
+    attachTo: {
+      element: '#uncontrolled-histogram-tabs-tab-1',
+      on: 'auto',
+    },
+    buttons: basicStepBtns,
+  },
+  {
     id: 'explore-bag-variable',
     title: 'Variable containers',
     text: `
@@ -131,5 +141,11 @@ const exploreTour: ShepherdOptionsWithType[] = [
     buttons: lastStepBtns,
   },
 ];
+
+export const getExploreTour = (hasGrouping = false) => {
+  if (hasGrouping) return exploreTour;
+
+  return exploreTour.filter((step) => step.id !== 'explore-grouping');
+};
 
 export default exploreTour;

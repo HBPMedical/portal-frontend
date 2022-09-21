@@ -198,8 +198,6 @@ const Navigation = ({
             e: React.MouseEvent<HTMLAnchorElement, MouseEvent>
           ): void => {
             e.preventDefault();
-            //toggleTutorial && toggleTutorial();
-            console.log('tour', tour);
             tour?.start();
           }}
         >

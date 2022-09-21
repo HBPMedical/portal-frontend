@@ -7,7 +7,7 @@ const defaultOptions =  {}
 export type GetConfigurationQueryVariables = Types.Exact<{ [key: string]: never; }>;
 
 
-export type GetConfigurationQuery = { __typename?: 'Query', configuration: { __typename?: 'Configuration', connectorId: string, hasGalaxy?: Types.Maybe<boolean>, hasFilters?: Types.Maybe<boolean>, enableSSO?: Types.Maybe<boolean>, skipAuth?: Types.Maybe<boolean>, skipTos?: Types.Maybe<boolean>, version: string } };
+export type GetConfigurationQuery = { __typename?: 'Query', configuration: { __typename?: 'Configuration', connectorId: string, hasGalaxy?: Types.Maybe<boolean>, hasFilters?: Types.Maybe<boolean>, hasGrouping?: Types.Maybe<boolean>, enableSSO?: Types.Maybe<boolean>, skipAuth?: Types.Maybe<boolean>, skipTos?: Types.Maybe<boolean>, version: string } };
 
 export type ListAlgorithmsQueryVariables = Types.Exact<{ [key: string]: never; }>;
 
@@ -125,6 +125,7 @@ export const GetConfigurationDocument = gql`
     connectorId
     hasGalaxy
     hasFilters
+    hasGrouping
     enableSSO
     skipAuth
     skipTos

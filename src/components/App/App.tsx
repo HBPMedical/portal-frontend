@@ -36,7 +36,7 @@ import NotFound from '../UI/NotFound';
 import TOS from '../UI/TOS';
 import ShepherdContainer from '../UserGuide/shepherdContainer';
 import analysisTour from '../UserGuide/tours/analysisTour';
-import exploreTour from '../UserGuide/tours/exploreTour';
+import { getExploreTour } from '../UserGuide/tours/exploreTour';
 import Tutorial from '../UserGuide/Tutorial';
 import { AppConfig } from '../utils';
 
@@ -243,7 +243,9 @@ const App = ({ appConfig, showTutorial }: Props) => {
               </Route>
 
               <ProtectedRoute path={['/', '/explore']} exact={true}>
-                <ShepherdContainer steps={exploreTour} />
+                <ShepherdContainer
+                  steps={getExploreTour(config.hasGrouping ?? false)}
+                />
                 <Explore />
               </ProtectedRoute>
 

@@ -1,4 +1,5 @@
 import { makeVar } from '@apollo/client';
+import { useContext, useEffect } from 'react';
 import {
   ShepherdOptionsWithType,
   ShepherdTour,
@@ -26,20 +27,23 @@ const tourOptions: Tour.TourOptions = {
   keyboardNavigation: false,
 };
 
+const ShepherdTest = () => {
+  const tour = useContext(ShepherdTourContext);
+
+  useEffect(() => {
+    tourVar(tour);
+  }, [tour]);
+
+  return <></>;
+};
+
 const ShepherdContainer = ({ steps }: Props): JSX.Element => {
   if (!steps || steps.length === 0) return <></>;
 
   return (
-    <>
-      <ShepherdTour steps={steps} tourOptions={tourOptions}>
-        <ShepherdTourContext.Consumer>
-          {(updateTour) => {
-            tourVar(updateTour);
-            return <></>;
-          }}
-        </ShepherdTourContext.Consumer>
-      </ShepherdTour>
-    </>
+    <ShepherdTour steps={steps} tourOptions={tourOptions}>
+      <ShepherdTest />
+    </ShepherdTour>
   );
 };
 
