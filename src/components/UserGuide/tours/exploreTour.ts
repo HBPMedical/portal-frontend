@@ -35,7 +35,7 @@ const exploreTour: ShepherdOptionsWithType[] = [
       show: function () {
         const elements = document.querySelectorAll('.node.node--leaf');
         const goNext = () => {
-          this.getTour().next();
+          this.getTour().show('explore-histograms');
           elements.forEach((element) => {
             element.removeEventListener('click', goNext);
           });
@@ -75,7 +75,7 @@ const exploreTour: ShepherdOptionsWithType[] = [
       show: function () {
         const btn = document.querySelector('#variable-containers button');
         const goNext = () => {
-          this.getTour().next();
+          this.getTour().show('explore-bag-variable2');
           btn?.removeEventListener('click', goNext);
         };
 
