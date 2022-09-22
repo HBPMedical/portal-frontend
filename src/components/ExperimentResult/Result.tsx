@@ -64,9 +64,14 @@ const Result = ({ experiment }: { experiment?: Experiment }): JSX.Element => {
         ) : null}
         <div className="result-list">
           {experiment &&
-            experiment.results?.map((result, i) => (
-              <ResultDispatcher key={i} result={result} />
-            ))}
+            experiment.results?.map((result, i) => {
+              return (
+                <ResultDispatcher
+                  key={`${experiment?.id}-${i}`}
+                  result={result}
+                />
+              );
+            })}
         </div>
       </Body>
     </Card>
