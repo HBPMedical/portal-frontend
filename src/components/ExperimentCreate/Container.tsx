@@ -1,6 +1,6 @@
 import { useReactiveVar } from '@apollo/client';
-import React, { useEffect, useState } from 'react';
-import { Card, Tab, Tabs } from 'react-bootstrap';
+import { useEffect, useState } from 'react';
+import { Card } from 'react-bootstrap';
 import { useHistory } from 'react-router-dom';
 import styled from 'styled-components';
 import {
@@ -21,10 +21,9 @@ import { Dict } from '../utils';
 import AlgorithmParameters from './AlgorithmParameters';
 import AvailableAlgorithms from './AvailableAlgorithms';
 import ExperimentCreateHeader from './Header';
-import Help from './Help';
 
 const Wrapper = styled.div`
-  padding: 0 1em;
+  padding: 1em 1em;
   min-height: 50vh;
 `;
 
@@ -147,22 +146,12 @@ export const ExperimentCreateContainer = (): JSX.Element => {
                 />
               )}
               <Wrapper>
-                <Tabs
-                  defaultActiveKey={1}
-                  id="uncontrolled-create-experiment-tab"
-                >
-                  <Tab eventKey={'1'} title="Algorithm">
-                    <AlgorithmParameters
-                      experiment={experiment}
-                      algorithm={algorithm}
-                      variables={variables}
-                      handleParameterChange={handleParamChanged}
-                    />
-                  </Tab>
-                  <Tab eventKey={'2'} title="About running experiments">
-                    <Help />
-                  </Tab>
-                </Tabs>
+                <AlgorithmParameters
+                  experiment={experiment}
+                  algorithm={algorithm}
+                  variables={variables}
+                  handleParameterChange={handleParamChanged}
+                />
               </Wrapper>
             </Card.Body>
           </Card>
