@@ -111,7 +111,7 @@ export const ExperimentCreateContainer = (): JSX.Element => {
   };
 
   return (
-    <div className="Experiment">
+    <div className="experiment">
       <div className="header">
         <ExperimentCreateHeader
           experiment={experiment}

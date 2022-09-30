@@ -128,7 +128,11 @@ const Container = (): JSX.Element => {
             <Card>
               <Card.Header>
                 {hasFilters && (
-                  <Button variant="info" onClick={() => setSidebarOpen(true)}>
+                  <Button
+                    variant="info"
+                    id="filters-toggle"
+                    onClick={() => setSidebarOpen(true)}
+                  >
                     Filters &amp; Formula
                   </Button>
                 )}

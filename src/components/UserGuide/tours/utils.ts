@@ -22,6 +22,8 @@ export const doneBtn = {
   type: 'complete',
 };
 
+export const firstStepBtns = [exitBtn, nextBtn];
+
 export const basicStepBtns = [exitBtn, backBtn, nextBtn];
 
 export const lastStepBtns = [backBtn, doneBtn];

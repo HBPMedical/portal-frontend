@@ -16,8 +16,14 @@ const Header = ({ handleCreateExperiment, handleGoBackToExplore }: Props) => {
         </Button>
         <h3>Descriptive Analysis</h3>
         <div className="item">
-          <Button onClick={handleCreateExperiment} variant="info" type="submit">
-            Create Experiment <BsFillCaretRightFill />{' '}
+          <Button
+            onClick={handleCreateExperiment}
+            variant="info"
+            type="submit"
+            id="btn-goto-experiment"
+          >
+            Create Experiment
+            <BsFillCaretRightFill />{' '}
           </Button>
         </div>
       </Card.Body>

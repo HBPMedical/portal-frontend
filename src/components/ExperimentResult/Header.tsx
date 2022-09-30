@@ -82,7 +82,7 @@ const Header = ({ experiment, handleCopyExperiment }: Props): JSX.Element => {
             {experiment?.author?.fullname ?? experiment?.author?.username}
           </p>
         </div>
-        <ContainerActions>
+        <ContainerActions id="experiment-actions">
           {confirmDelete ? (
             <>
               <InlineDialog>
