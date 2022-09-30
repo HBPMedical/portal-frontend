@@ -1,5 +1,5 @@
-import { makeVar } from '@apollo/client';
-import { useContext, useEffect } from 'react';
+import { makeVar, useReactiveVar } from '@apollo/client';
+import { useContext } from 'react';
 import {
   ShepherdOptionsWithType,
   ShepherdTour,
@@ -9,11 +9,11 @@ import {
 import 'shepherd.js/dist/css/shepherd.css';
 import './style.scss';
 
-export const tourVar = makeVar<Tour | null>(null);
-
-type Props = {
-  steps?: ShepherdOptionsWithType[];
+export type TourConf = {
+  id: string;
+  steps: ShepherdOptionsWithType[];
 };
+export const tourConf = makeVar<TourConf | null>(null);
 
 const tourOptions: Tour.TourOptions = {
   defaultStepOptions: {
@@ -27,22 +27,32 @@ const tourOptions: Tour.TourOptions = {
   keyboardNavigation: false,
 };
 
-const ShepherdTest = () => {
+const ShepherdButton = () => {
   const tour = useContext(ShepherdTourContext);
 
-  useEffect(() => {
-    tourVar(tour);
-  }, [tour]);
-
-  return <></>;
-};
-
-const ShepherdContainer = ({ steps }: Props): JSX.Element => {
-  if (!steps || steps.length === 0) return <></>;
+  // tour.on('complete', () => { ...  }); // if you want to do something when the tour is completed
 
   return (
-    <ShepherdTour steps={steps} tourOptions={tourOptions}>
-      <ShepherdTest />
+    <a
+      href="/"
+      onClick={(e: React.MouseEvent<HTMLAnchorElement, MouseEvent>): void => {
+        e.preventDefault();
+        tour?.start();
+      }}
+    >
+      User Guide
+    </a>
+  );
+};
+
+const ShepherdContainer = () => {
+  const tourConfig = useReactiveVar(tourConf);
+
+  if (!tourConfig || tourConfig.steps.length === 0) return <></>;
+
+  return (
+    <ShepherdTour steps={tourConfig.steps} tourOptions={tourOptions}>
+      <ShepherdButton />
     </ShepherdTour>
   );
 };

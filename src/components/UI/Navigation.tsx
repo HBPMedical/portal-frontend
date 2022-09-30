@@ -6,7 +6,7 @@ import { NavLink } from 'react-router-dom';
 import styled from 'styled-components';
 import { configurationVar } from '../API/GraphQL/cache';
 import { makeAssetURL } from '../API/RequestURLS';
-import { tourVar } from '../UserGuide/shepherdContainer';
+import ShepherdContainer from '../UserGuide/shepherdContainer';
 import HelpButton from './HelpButton';
 
 const NavBar = styled.nav`
@@ -152,7 +152,6 @@ const Navigation = ({
   const instanceName = name || 'MIP';
   const [imageURL, setImageURL] = useState<string | undefined>(undefined);
   const config = useReactiveVar(configurationVar);
-  const tour = useReactiveVar(tourVar);
 
   useEffect(() => {
     if (!config.version) return;
@@ -169,7 +168,7 @@ const Navigation = ({
       </Brand>
       {authenticated && (
         <Links>
-          <Group className="experiment-nav">
+          <Group className="experiment-nav experiment-sections">
             <GroupLink to="/explore">Variables</GroupLink>
             <span> &gt; </span>
             <GroupLink to="/analysis">Analysis</GroupLink>
@@ -192,17 +191,7 @@ const Navigation = ({
         </Links>
       )}
       <RightLinks className="experiment-nav right-nav">
-        <a
-          href="/"
-          onClick={(
-            e: React.MouseEvent<HTMLAnchorElement, MouseEvent>
-          ): void => {
-            e.preventDefault();
-            tour?.start();
-          }}
-        >
-          User Guide
-        </a>
+        <ShepherdContainer />
         <HelpButton showTraining={true} />
         {!isAnonymous && !authenticated && (
           <LoginButton
