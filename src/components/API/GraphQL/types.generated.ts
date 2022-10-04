@@ -191,8 +191,7 @@ export enum ExperimentStatus {
   Error = 'ERROR',
   Init = 'INIT',
   Pending = 'PENDING',
-  Success = 'SUCCESS',
-  Warn = 'WARN'
+  Success = 'SUCCESS'
 }
 
 export type ExtraLineInfo = {
