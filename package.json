@@ -95,6 +95,9 @@
     "@graphql-codegen/typescript": "^2.2.2",
     "@graphql-codegen/typescript-operations": "2.1.4",
     "@graphql-codegen/typescript-react-apollo": "3.1.4",
+    "@semantic-release/changelog": "^6.0.1",
+    "@semantic-release/git": "^10.0.1",
+    "@semantic-release/gitlab": "^9.4.2",
     "@storybook/addon-actions": "^6.5.10",
     "@storybook/addon-essentials": "^6.5.10",
     "@storybook/addon-interactions": "^6.5.10",
@@ -122,6 +125,7 @@
     "jest-environment-jsdom": "^29.0.1",
     "prettier": "^2.7.1",
     "rollup-plugin-visualizer": "^5.8.1",
+    "semantic-release": "^19.0.5",
     "ts-jest": "^28.0.8",
     "ts-node": "^10.9.1"
   },

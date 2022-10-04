@@ -1,0 +1,63 @@
+stages:
+  - test
+  - build
+  - release
+
+services:
+  - docker:dind
+
+before_script:
+  - docker login -u $CI_REGISTRY_USER -p $CI_REGISTRY_PASSWORD $CI_REGISTRY
+
+test:
+  image: node:16.14-alpine
+  stage: test
+  only:
+    refs:
+      - main
+      - rc
+      - beta
+      # This matches maintenance branches
+      - /^(([0-9]+)\.)?([0-9]+)\.x/
+      # This matches pre-releases
+      - /^([0-9]+)\.([0-9]+)\.([0-9]+)(?:-([0-9A-Za-z-]+(?:\.[0-9A-Za-z-]+)*))?(?:\+[0-9A-Za-z-]+)?$/
+  before_script: []
+  script:
+    - yarn install --frozen-lockfile
+    - yarn ci-test
+    - yarn lint
+
+build:
+  image: docker:dind
+  stage: build
+  only:
+    refs:
+      - main
+      - rc
+      - beta
+      # This matches maintenance branches
+      - /^(([0-9]+)\.)?([0-9]+)\.x/
+      # This matches pre-releases
+      - /^([0-9]+)\.([0-9]+)\.([0-9]+)(?:-([0-9A-Za-z-]+(?:\.[0-9A-Za-z-]+)*))?(?:\+[0-9A-Za-z-]+)?$/
+  script:
+    - docker build -t $CI_REGISTRY/$CI_PROJECT_PATH:pipeline-$CI_PIPELINE_ID .
+    - docker push $CI_REGISTRY/$CI_PROJECT_PATH:pipeline-$CI_PIPELINE_ID
+
+release:
+  image: docker:dind
+  stage: release
+  only:
+    refs:
+      - main
+      - rc
+      - beta
+      # This matches maintenance branches
+      - /^(([0-9]+)\.)?([0-9]+)\.x/
+      # This matches pre-releases
+      - /^([0-9]+)\.([0-9]+)\.([0-9]+)(?:-([0-9A-Za-z-]+(?:\.[0-9A-Za-z-]+)*))?(?:\+[0-9A-Za-z-]+)?$/
+  script:
+    - apk add --no-cache nodejs npm py3-pip python3 git
+    - docker pull $CI_REGISTRY/$CI_PROJECT_PATH:pipeline-$CI_PIPELINE_ID
+    - docker tag $CI_REGISTRY/$CI_PROJECT_PATH:pipeline-$CI_PIPELINE_ID portal-frontend:latest
+    - yarn add @semantic-release/gitlab @semantic-release/git @semantic-release/changelog @eclass/semantic-release-docker
+    - npx semantic-release
