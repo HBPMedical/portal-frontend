@@ -1,19 +1,23 @@
-description: 'Frontend for the MIP portal'
+description: "Frontend for the MIP portal"
 
 long_description: |
   Frontend for the MIP portal
 
 authors:
+  - author: Steve Mendes Reis
+    author_email:
+      - steve.mendesreis@chuv.ch
+    organisation: CHUV
   - author: Manuel Spuhler
     author_email:
       - manuel.spuhler@chuv.ch
     organisation: HBPMedical
-    organisation_badge: https://img.shields.io/badge/CHUV-LREN-AF4C64.svg
+    organisation_badge: https://img.shields.io/badge/CHUV-AF4C64.svg
   - author: Mirco Nasuti
     author_email:
       - mirco.nasuti@chuv.ch
     organisation: HBPMedical
-    organisation_badge: https://img.shields.io/badge/CHUV-LREN-AF4C64.svg
+    organisation_badge: https://img.shields.io/badge/CHUV-AF4C64.svg
   - author: Ludovic Claude
     author_email:
       - ludovic.claude@chuv.ch
@@ -21,12 +25,12 @@ authors:
       - ludovic.claude54@googlemail.com
       - ludovic.claude@laposte.net
     organisation: HBPMedical
-    organisation_badge: https://img.shields.io/badge/CHUV-LREN-AF4C64.svg
+    organisation_badge: https://img.shields.io/badge/CHUV-AF4C64.svg
   - author: Than Luu-tho
     author_email:
       - Thanh.Luu-Tho@chuv.ch
     organisation: HBPMedical
-    organisation_badge: https://img.shields.io/badge/CHUV-LREN-AF4C64.svg
+    organisation_badge: https://img.shields.io/badge/CHUV-AF4C64.svg
   - author: Paul Habfast
     author_email:
       - paul@ahead-solutions.ch
@@ -40,48 +44,21 @@ component:
   nature: server
 
 license:
-  name: GNU Affero General Public License, Version 3.0
-  badge: https://img.shields.io/badge/license-AGPL--3.0-blue.svg
+  name: Apache License 2.0
+  badge: https://img.shields.io/badge/license-Apache%202-blue
   url: https://github.com/HBPMedical/portal-frontend/blob/master/LICENSE
 
 code_repositories:
-  - name: chuv-gitlab
-    visibility: private
-    url: https://___.chuv.ch/web-analytics/portal-frontend/
-    git_clone: https://___.chuv.ch/web-analytics/portal-frontend.git
   - name: github/HBPMedical
     visibility: public
     url: https://github.io/HBPMedical/portal-frontend/
     git_clone: https://github.io/HBPMedical/portal-frontend.git
-  - name: github/HBPMedical
-    visibility: public
-    url: https://github.io/HBPMedical/portal-frontend/
-    git_clone: https://github.io/HBPMedical/portal-frontend.git
-
-code_quality_checks:
-  codacy:
-    badge: https://api.codacy.com/project/badge/Grade/9143f566eca64ffbb06258c61fb64ea0
-    url: 'https://www.codacy.com/app/hbp-mip/portal-frontend?utm_source=github.com&amp;utm_medium=referral&amp;utm_content=HBPMedical/portal-frontend&amp;utm_campaign=Badge_Grade'
-
-testing:
-  unit_testing:
-    source: app/tests
-  #  command: grunt test
 
 release_management:
   current_version: 4.0.2
   current_code_release: https://github.com/HBPMedical/portal-frontend/archive/4.0.2.zip
   current_binary_release: https://pypi.python.org/pypi/portal-frontend/4.0.2
-  release_script: 'publish.sh'
-
-continuous_integration:
-  - name: CircleCI
-    description: 'Check style and execute unit tests'
-    url: https://circleci.com/gh/HBPMedical/portal-frontend/tree/master
-    badge: https://circleci.com/gh/HBPMedical/portal-frontend/tree/master.svg?style=svg
-    actions:
-      - build
-      - unit_tests
+  release_script: "publish.sh"
 
 distribution:
   docker_hub:
@@ -95,11 +72,7 @@ planning:
   github:
     name: Issues on Github
     url: https://github.com/HBPMedical/portal-frontend/issues
-  trello:
-    name: '[plans] Web front end'
-    url: https://trello.com/b/lr3NS4W6/plans-web-front-end
 
 related_projects:
-  - name: portal-backend
-    mip_building_block: web-analytics
+  - name: gateway
     relationship: depends-on-other
