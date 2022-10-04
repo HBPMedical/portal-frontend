@@ -39,7 +39,6 @@ import analysisTour from '../UserGuide/tours/analysisTour';
 import experimentTour from '../UserGuide/tours/experimentTour';
 import exploreTour from '../UserGuide/tours/exploreTour';
 import resultTour from '../UserGuide/tours/ResultTour';
-import Tutorial from '../UserGuide/Tutorial';
 import { AppConfig } from '../utils';
 
 const Main = styled.main<MainProps>`
@@ -226,8 +225,6 @@ const App = ({ appConfig, showTutorial }: Props) => {
           </header>
           <Main showTutorial={showTutorial}>
             <Switch>
-              {showTutorial && <Tutorial />}
-
               <Route path="/training" exact={true}>
                 <Help />
               </Route>
