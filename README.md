@@ -1,4 +1,4 @@
-[![CHUV](https://img.shields.io/badge/HBP-AF4C64.svg)](https://www.humanbrainproject.eu) [![License](https://img.shields.io/badge/license-AGPL--3.0-blue.svg)](https://www.gnu.org/licenses/agpl-3.0.html) [![DockerHub](https://img.shields.io/badge/docker-hbpmip%2Fportal--frontend-008bb8.svg)](https://hub.docker.com/r/hbpmip/portal-frontend/) 
+[![CHUV](https://img.shields.io/badge/HBP-AF4C64.svg)](https://www.humanbrainproject.eu) [![License](https://img.shields.io/badge/license-Apache--2.0-blue.svg)](http://www.apache.org/licenses/LICENSE-2.0) [![DockerHub](https://img.shields.io/badge/docker-hbpmip%2Fportal--frontend-008bb8.svg)](https://hub.docker.com/r/hbpmip/portal-frontend/) 
 
 # MIP portal frontend
 
@@ -51,18 +51,18 @@ Let's fire a development Frontend. I assume you cloned this repository and check
 - Run: `yarn install`
 - Create a `.env.development` file in the root directory and add 
 ```
-VITE_BACKEND_URL=http://[MY IP]:8081
+VITE_BACKEND_URL=http://localhost:8081
 VITE_GATEWAY_URL=$VITE_BACKEND_URL/graphql
 ``` 
 which points to the backend API.
 
-- Run: `yarn start`
-- Browse to your local IP. http://[MY IP]:3000
+- Run: `yarn start:dev`
+- Browse to your local IP. http://localhost:5173
 
 
 #### Design Components
 
-Starting with the MIP 6.5, component are designed with [Storybook](https://storybook.js.org/),  an open source tool for building UI components and pages in isolation. 
+Starting with the MIP 6.5, components are designed with [Storybook](https://storybook.js.org/),  an open source tool for building UI components and pages in isolation. 
 
 `yarn run storybook` -> http://localhost:6006/
 
@@ -77,13 +77,8 @@ This will run unit tests to ensure that the UI is working properly. Results of t
 
 - Tests run with Jest, see [the jest cli doc](https://jestjs.io/docs/en/cli) for more details
 
-### Build 
-- Produces a docker container
-- Run: `./build.sh`
-
-## Publish
-- Builds and publish a release on Docker Hub
-- Run: `./publish.sh`
+### Build & Releases
+Build and releases are managed by GitLab CI and [Semantic Release](https://github.com/semantic-release/semantic-release).
 
 ## License
 
