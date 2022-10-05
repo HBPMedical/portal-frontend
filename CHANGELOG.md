@@ -42,9 +42,6 @@
 * Vite configuration for Caddy ([6ef2fab](https://gitlab.com/sibmip/portal-frontend/commit/6ef2fab672dfd7de328242709141f2b568a2c8e6))
 
 
-* Merge branch 'main' into 'dev' ([751b140](https://gitlab.com/sibmip/portal-frontend/commit/751b1402f3f3e742031877ae3efa181d4505d722))
-
-
 ### Features
 
 * Add AlertResult display ([bc72a58](https://gitlab.com/sibmip/portal-frontend/commit/bc72a58d8cd3d326def00904678c40a4b7253405))
@@ -74,41 +71,6 @@
 ### BREAKING CHANGES
 
 * New Gateway API needed
-
-# Changelog
-
-## TBD - WIP
-
-Features : 
-- GraphQL Migration complete (no more Portalbackend direct call)
-- Added HBP logo in the footer
-- Migration from CRA to Vite.js
-- Updated to React 18
-- Vite configuration for Caddy
-- Migration from Google Analytics to Matomo
-- Filter & Formula can be hidden (Gateway dependant)
-- Externalization of Caddy config
-- JWT implementation
-- New visualizations integration
-  - Alert
-  - BubbleChart
-  - LineChart
-  - BarChart
-  - Histograms
-  - MeansPlot
-- Experiment export results (PDF)
-- Experiment result (unit) export (jpg)
-- Possiblity to edit chart Axis
-- Minors graphic enchancements
-- Added Toast notification system
-- Added contactLink and ontologyURL env variable
-- Added env var for expriments list refresh
-- Add Modal based on promise
-
-Bug Fixes : 
-- Descriptive stats call has no coVariables property
-- Updated libraries to fix critical dependencies issues
-- Bubble text splitting issue
 
 ## 8.0.1 - 2021/12/22
 
