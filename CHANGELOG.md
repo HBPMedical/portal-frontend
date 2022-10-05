@@ -1,3 +1,80 @@
+# [9.0.0](https://gitlab.com/sibmip/portal-frontend/compare/8.0.2...9.0.0) (2022-10-05)
+
+
+### Bug Fixes
+
+* Algorithm name comparison issue ([f271177](https://gitlab.com/sibmip/portal-frontend/commit/f271177fa92ec873bf9aec734a4b4e605c7cebaf))
+* algorithm parameter value set type to string ([1479f74](https://gitlab.com/sibmip/portal-frontend/commit/1479f74e859d8502a1db9a334ddc4617ef4d43f5))
+* Apollo cache collision ([05080e0](https://gitlab.com/sibmip/portal-frontend/commit/05080e02844ebe6564980c0dba32826c5d438903))
+* Apollo config error (xsrf token) ([60fd8b3](https://gitlab.com/sibmip/portal-frontend/commit/60fd8b3da1d95ac28c3908660e7f5690be6812e1))
+* Apollo error display ([5dcfc37](https://gitlab.com/sibmip/portal-frontend/commit/5dcfc372ce4aef9c4706611dd081da3078361748))
+* Bokeh charts not updating when data changes ([77aef96](https://gitlab.com/sibmip/portal-frontend/commit/77aef96e9c3080b994a8a3d41659cc0e5d2b6b00))
+* Bubble not spliting text correctly ([4fa7d5a](https://gitlab.com/sibmip/portal-frontend/commit/4fa7d5adf808d74b516e19114134a410d250f975))
+* Cache policy on configuration causing issue ([af8af3c](https://gitlab.com/sibmip/portal-frontend/commit/af8af3ced8d4cb9aba2b6d166e86883065e990ed))
+* Descriptive stats has no covariables ([76c1930](https://gitlab.com/sibmip/portal-frontend/commit/76c1930ba25c2e7e766090a6618e106c0a865be3))
+* ECMAScript's version compilation target ([43a24ef](https://gitlab.com/sibmip/portal-frontend/commit/43a24ef7ea7049dd96278f03a9286dac0a00185b))
+* Error message when loading access page ([5909826](https://gitlab.com/sibmip/portal-frontend/commit/59098262ed8b7bbede8f085e7351f33c16e07723))
+* Experiment list was not refreshing auto ([a0e99c4](https://gitlab.com/sibmip/portal-frontend/commit/a0e99c4c00e366ca620c3d80558c5fc6ff295fef))
+* Favicon wrong extension name ([c3235ad](https://gitlab.com/sibmip/portal-frontend/commit/c3235adbed8da536e46d38663eb101c1ac0ba643))
+* Filter variables not present in query ([39545bb](https://gitlab.com/sibmip/portal-frontend/commit/39545bbdf14e406bd952d551b2fc7971ee89dcd2))
+* Heap space limite JS ([98eae2e](https://gitlab.com/sibmip/portal-frontend/commit/98eae2ecbf7fe9de7fbb4b5fcb9aaa76ce549528))
+* Issue graphql was call twice ([260b600](https://gitlab.com/sibmip/portal-frontend/commit/260b600eac65aedb1e468440296b2b6e06220d66))
+* Issue graphql was call twice in descriptive ([637be7f](https://gitlab.com/sibmip/portal-frontend/commit/637be7f11dfe7e615d8c14a39dab0b485155fca4))
+* Issue mixed up result state (index key issue) ([356eac2](https://gitlab.com/sibmip/portal-frontend/commit/356eac2e57903b8d58936e82fc9121f2552de746))
+* Issue when creating component filter ([10034ea](https://gitlab.com/sibmip/portal-frontend/commit/10034eafbd18839e8a039381bb8e5f82fd67e903))
+* Issue when editing chart ([6367960](https://gitlab.com/sibmip/portal-frontend/commit/636796025380f67c92ae57360a954b45ac318722))
+* Issue with number input ([bee5790](https://gitlab.com/sibmip/portal-frontend/commit/bee579033e4297622389960d20996e10052dca99))
+* load domains for all pages ([b281033](https://gitlab.com/sibmip/portal-frontend/commit/b281033df1670ef0b91ce0d668ff5355bf4d70c0))
+* Matomo not loading correctly ([44550fd](https://gitlab.com/sibmip/portal-frontend/commit/44550fd1b99421eb3ae7d662066161074cf1368c))
+* Missing port in host param from caddy ([6aeae66](https://gitlab.com/sibmip/portal-frontend/commit/6aeae66f54384ba662051877d41e0074e83467bc))
+* Missing table name ([be2561a](https://gitlab.com/sibmip/portal-frontend/commit/be2561ac3976a1ae78e835a04dcca9c2777ebc5f))
+* Notification text typo ([1df1fca](https://gitlab.com/sibmip/portal-frontend/commit/1df1fca58004d5b2ed4c2d4209d5290d052b2fa8))
+* Notification text typos ([59cd7f8](https://gitlab.com/sibmip/portal-frontend/commit/59cd7f896d3701095a2e5253f5153bd00d8a8058))
+* prevent setState if no user changes ([ef6d861](https://gitlab.com/sibmip/portal-frontend/commit/ef6d8618eeb159b2d0e35210bcb9d8f0f5895647))
+* Redirect to main page if already logged ([ed3cb00](https://gitlab.com/sibmip/portal-frontend/commit/ed3cb004e883b112e06bf154a4a497c95e418717))
+* Refactor filter and formula (GraphQL usage) ([10d3624](https://gitlab.com/sibmip/portal-frontend/commit/10d36247c1c04ab83d53477b688884f9fe3f9f16))
+* Remove GA env variable (not used anymore) ([2f68a44](https://gitlab.com/sibmip/portal-frontend/commit/2f68a44d2297d5df73888ce9ea448bbf5f57a4fd))
+* Storybook updated for vite ([664de1b](https://gitlab.com/sibmip/portal-frontend/commit/664de1b62405f511cd3047cce48c7fda6b0d57ff))
+* Table style changed property name ([35be099](https://gitlab.com/sibmip/portal-frontend/commit/35be09943fb008ccaebeba297bd905e3c433a805))
+* Type issues in Graphs ([3d1f1b0](https://gitlab.com/sibmip/portal-frontend/commit/3d1f1b02d47f988f7ef76f5c135288531b302a87))
+* User guide cannot be shown ([872d67e](https://gitlab.com/sibmip/portal-frontend/commit/872d67e540b256ad92d9c8e15a3715524972c41f))
+* User not redirected after tos ([5eb4fd9](https://gitlab.com/sibmip/portal-frontend/commit/5eb4fd9a75b135436f3ca1075f3966405a664012))
+* Vite configuration for Caddy ([6ef2fab](https://gitlab.com/sibmip/portal-frontend/commit/6ef2fab672dfd7de328242709141f2b568a2c8e6))
+
+
+* Merge branch 'main' into 'dev' ([751b140](https://gitlab.com/sibmip/portal-frontend/commit/751b1402f3f3e742031877ae3efa181d4505d722))
+
+
+### Features
+
+* Add AlertResult display ([bc72a58](https://gitlab.com/sibmip/portal-frontend/commit/bc72a58d8cd3d326def00904678c40a4b7253405))
+* Add branding and configuration for connectors ([49599b7](https://gitlab.com/sibmip/portal-frontend/commit/49599b74c6418fa734a15b60b8954b39ef8f764d))
+* Add bundle visualizer (dev purpose) ([8968127](https://gitlab.com/sibmip/portal-frontend/commit/8968127512aba83de62358863c72a432b2d84de4))
+* Add export csv on table results ([7156259](https://gitlab.com/sibmip/portal-frontend/commit/7156259d5997afe548eabe04f7bf2dd228c948bb))
+* Add histogram grouping option ([03230c2](https://gitlab.com/sibmip/portal-frontend/commit/03230c281e20b4655c61c9f9e385253e99c178e5))
+* Add login page and user state management ([d51ed25](https://gitlab.com/sibmip/portal-frontend/commit/d51ed254a70aa6afb34c0f8b570feb3c80de3101))
+* Add Spinner element on route loading ([9f45de0](https://gitlab.com/sibmip/portal-frontend/commit/9f45de083e2b310bc74d0cd8a7e688776be560ee))
+* Added HBP logo in the footer ([2de5ea8](https://gitlab.com/sibmip/portal-frontend/commit/2de5ea89b8242987ddce5ad2aaf14deb314f46e7))
+* Algorithms migration Exareme 2 ([7e14cee](https://gitlab.com/sibmip/portal-frontend/commit/7e14cee8fd5cd177e734591fd660206982d81577))
+* Allows html tags in TOS markdown ([d8b05d2](https://gitlab.com/sibmip/portal-frontend/commit/d8b05d2cd15f000686e01166f1ed8be250a25f71))
+* Datasets filter on variables and groups ([dafb227](https://gitlab.com/sibmip/portal-frontend/commit/dafb2276f7a48bb08e48a2264994081491d537d0))
+* Experiment export (PDF & JSON) ([51b2b44](https://gitlab.com/sibmip/portal-frontend/commit/51b2b4460fc65a783c919f05ad168903ff6196d9))
+* Externalization of Caddy's configuration ([5deac2b](https://gitlab.com/sibmip/portal-frontend/commit/5deac2bbbb13dfafc4be13b8050758db6b4ea451))
+* Filter and Formula can be hidden ([c66fde2](https://gitlab.com/sibmip/portal-frontend/commit/c66fde2d6979337e49fbf1cb309ceb5a8b73290c))
+* Integration of bubble chart and bar chart ([5f6abf9](https://gitlab.com/sibmip/portal-frontend/commit/5f6abf906f4108cfc24278bd170bddb7a9f21736))
+* Matomo integration ([72b82dd](https://gitlab.com/sibmip/portal-frontend/commit/72b82dd9e082a50b1c375c502076c80e569122c0))
+* Migration to Vite ([aece755](https://gitlab.com/sibmip/portal-frontend/commit/aece755a70ff14700057aa8d08d89dab325ba75d))
+* Refresh token after expiration (401) ([354548b](https://gitlab.com/sibmip/portal-frontend/commit/354548b1593c8467d0a6d0a5dd22238d80b0380e))
+* Retrieve algorithms through GraphQL ([814b29f](https://gitlab.com/sibmip/portal-frontend/commit/814b29ff8fb5f93d3007843da4d18ec49b055f49))
+* Unit result export and axis editable ([6b7357b](https://gitlab.com/sibmip/portal-frontend/commit/6b7357b4150e1771f343269aee4aadecfe71eeb4))
+* Update license ([3cd3e81](https://gitlab.com/sibmip/portal-frontend/commit/3cd3e8166088948845f34cd3d2170af21a588584))
+* Update storybook ([5b0317e](https://gitlab.com/sibmip/portal-frontend/commit/5b0317e2dfa5a4d6df190375db1f3a9b06928150))
+
+
+### BREAKING CHANGES
+
+* New Gateway API needed
+
 # Changelog
 
 ## TBD - WIP

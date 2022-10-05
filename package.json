@@ -1,12 +1,13 @@
 {
   "name": "mip-portal-frontend",
-  "version": "8.0.2",
+  "version": "9.0.0",
   "private": true,
   "dependencies": {
     "@apollo/client": "^3.4.11",
     "@bokeh/bokehjs": "^2.4.0",
     "@bugsnag/js": "^6.4.0",
     "@bugsnag/plugin-react": "^6.4.0",
+    "@eclass/semantic-release-docker": "^3.0.1",
     "@jonkoops/matomo-tracker-react": "^0.7.0",
     "@react-pdf/renderer": "^2.1.1",
     "@types/d3": "^5.7.2",
