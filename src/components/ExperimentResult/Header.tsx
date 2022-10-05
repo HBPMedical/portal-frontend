@@ -1,10 +1,17 @@
 import dayjs from 'dayjs';
 import relativeTime from 'dayjs/plugin/relativeTime';
-import * as React from 'react';
+import { useState } from 'react';
 import { Button, Card } from 'react-bootstrap';
-import styled from 'styled-components';
-import { IExperiment } from '../API/Experiment';
 import { GoCheck } from 'react-icons/go';
+import { useHistory } from 'react-router-dom';
+import styled from 'styled-components';
+import {
+  useDeleteExperimentMutation,
+  useEditExperimentMutation,
+} from '../API/GraphQL/queries.generated';
+import { Experiment } from '../API/GraphQL/types.generated';
+import ExportExperiment from '../UI/Export/ExportExperiment';
+
 dayjs.extend(relativeTime);
 dayjs().format();
 
@@ -14,22 +21,54 @@ const InlineDialog = styled.div`
   align-items: center;
 `;
 
+const ContainerActions = styled.div`
+  display: flex;
+  flex-direction: row;
+  gap: 5px;
+`;
+
 interface Props {
-  experiment?: IExperiment;
-  handleDeleteExperiment: (uuid: string) => void;
-  handleShareExperiment: any;
-  handleCreateNewExperiment: any;
+  experiment?: Experiment;
+  handleCopyExperiment: () => void;
 }
 
-export default ({
-  experiment,
-  handleDeleteExperiment,
-  handleShareExperiment,
-  handleCreateNewExperiment
-}: Props): JSX.Element => {
-  const [confirmDelete, setConfirmDelete] = React.useState<
-    string | undefined
-  >();
+const Header = ({ experiment, handleCopyExperiment }: Props): JSX.Element => {
+  const [confirmDelete, setConfirmDelete] = useState<string | undefined>();
+
+  const [deleteExperimentMutation, delState] = useDeleteExperimentMutation();
+  const [editExperimentMutation, editState] = useEditExperimentMutation();
+  const id = experiment?.id ?? '';
+
+  const history = useHistory();
+
+  const handleCreateNewExperiment = (): void => {
+    handleCopyExperiment();
+    history.push(`/review`);
+  };
+
+  const handleDeleteExperiment = async (): Promise<void> => {
+    if (confirmDelete === undefined) return;
+    await deleteExperimentMutation({
+      variables: {
+        id: confirmDelete,
+      },
+    });
+    if (delState.error === undefined) return history.push('/explore');
+    console.log(delState.error);
+  };
+
+  const handleShareExperiment = async (): Promise<void> => {
+    if (experiment === undefined) return;
+    await editExperimentMutation({
+      variables: {
+        id: id,
+        data: {
+          shared: !experiment?.shared,
+        },
+      },
+    });
+    if (editState.error !== undefined) console.log(editState.error);
+  };
 
   return (
     <Card>
@@ -39,72 +78,71 @@ export default ({
             Results of experiment <strong>{experiment?.name}</strong>
           </h3>
           <p className="item">
-            Created {experiment && dayjs().to(dayjs(experiment.created))} by{' '}
-            {experiment?.createdBy?.fullname}
+            Created {experiment && dayjs().to(dayjs(experiment?.createdAt))} by{' '}
+            {experiment?.author?.fullname ?? experiment?.author?.username}
           </p>
         </div>
+        <ContainerActions>
+          {confirmDelete ? (
+            <>
+              <InlineDialog>
+                <p className="danger">Really delete this experiment?</p>
+                <div>
+                  <Button
+                    size={'sm'}
+                    variant="primary"
+                    onClick={(): void => {
+                      handleDeleteExperiment();
+                      setConfirmDelete(undefined);
+                    }}
+                  >
+                    <GoCheck />
+                  </Button>{' '}
+                  <Button
+                    size={'sm'}
+                    variant="outline-dark"
+                    onClick={(): void => {
+                      setConfirmDelete(undefined);
+                    }}
+                  >
+                    Cancel
+                  </Button>
+                </div>
+              </InlineDialog>
+            </>
+          ) : (
+            experiment && (
+              <Button
+                onClick={(): void => setConfirmDelete(id)}
+                variant="outline-dark"
+                type="submit"
+              >
+                Delete
+              </Button>
+            )
+          )}
 
-        {confirmDelete ? (
-          <>
-            <InlineDialog>
-              <p style={{ marginRight: '8px' }} className="danger">
-                Really delete this experiment?
-              </p>
-              <div>
-                <Button
-                  size={'sm'}
-                  variant="primary"
-                  onClick={(): void => {
-                    handleDeleteExperiment(experiment?.uuid || '');
-                    setConfirmDelete(undefined);
-                  }}
-                >
-                  <GoCheck />
-                </Button>{' '}
-                <Button
-                  size={'sm'}
-                  variant="outline-dark"
-                  style={{ marginRight: '8px' }}
-                  onClick={(): void => {
-                    setConfirmDelete(undefined);
-                  }}
-                >
-                  Cancel
-                </Button>
-              </div>
-            </InlineDialog>
-          </>
-        ) : (
-          experiment && (
+          {experiment && (
             <Button
-              onClick={(): void => setConfirmDelete(experiment.uuid)}
-              style={{ marginRight: '8px' }}
-              variant="outline-dark"
-              type="submit"
+              variant={experiment?.shared ? 'secondary' : 'info'}
+              onClick={handleShareExperiment}
             >
-              Delete
+              {experiment?.shared ? 'Unshare' : 'Share'}
             </Button>
-          )
-        )}
+          )}
 
-        {experiment && (
           <Button
-            variant={experiment?.shared ? 'secondary' : 'info'}
-            onClick={handleShareExperiment}
-            style={{ marginRight: '8px' }}
+            onClick={handleCreateNewExperiment}
+            variant="info"
+            type="submit"
           >
-            {experiment?.shared ? 'Unshare Experiment' : 'Share Experiment'}
+            New Experiment from Parameters
           </Button>
-        )}
-
-        <Button
-          onClick={handleCreateNewExperiment}
-          variant="info"
-          type="submit"
-        >
-          New Experiment from Parameters
-        </Button>
+          {experiment && <ExportExperiment experiment={experiment} />}
+        </ContainerActions>
       </Card.Body>
     </Card>
   );
 };
+
+export default Header;

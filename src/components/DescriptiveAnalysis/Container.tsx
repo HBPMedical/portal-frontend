@@ -1,246 +1,107 @@
-import React, { useState } from 'react';
+import { useReactiveVar } from '@apollo/client';
+import { useEffect, useState } from 'react';
 import { Button, Card } from 'react-bootstrap';
-import { RouteComponentProps } from 'react-router-dom';
+import { useHistory } from 'react-router-dom';
 import Sidebar from 'react-sidebar';
-import { APICore, APIExperiment, APIModel } from '../API';
-import { VariableEntity } from '../API/Core';
-import { useCreateTransientMutation } from '../API/GraphQL/queries.generated';
+import styled from 'styled-components';
+import {
+  draftExperimentVar,
+  selectedDomainVar,
+  selectedExperimentVar,
+} from '../API/GraphQL/cache';
+import { localMutations } from '../API/GraphQL/operations/mutations';
+import {
+  useCreateExperimentMutation,
+  useGetConfigurationQuery,
+} from '../API/GraphQL/queries.generated';
 import { ResultUnion } from '../API/GraphQL/types.generated';
 import ResultDispatcher from '../ExperimentResult/ResultDispatcher';
 import Error from '../UI/Error';
 import Loader from '../UI/Loader';
 import ExperimentSidebar from './ExperimentSidebar';
+import ExportDescriptive from './Export/ExportDescriptive';
+import FilterFormulaWrapper from './FilterFormulaWrapper';
 import Header from './Header';
-import Wrapper from './FilterFormulaWrapper';
-import { IFormula } from '../API/Model';
 
-interface Props extends RouteComponentProps {
-  apiModel: APIModel;
-  apiCore: APICore;
-  apiExperiment: APIExperiment;
-}
+const ExportButton = styled.div`
+  float: right;
+`;
 
-const Container = ({
-  apiModel,
-  apiCore,
-  apiExperiment,
-  ...props
-}: Props): JSX.Element => {
-  const [shouldReload, setShouldReload] = useState(true);
+const Container = (): JSX.Element => {
   const [sidebarOpen, setSidebarOpen] = useState(false);
-  const [
-    createTransientMutation,
-    { data, loading, error }
-  ] = useCreateTransientMutation();
+  const [createTransientMutation, { data, loading, error }] =
+    useCreateExperimentMutation();
 
-  const { history } = props;
-  const model = apiModel.state.model;
-  const query = model?.query;
-  const trainingDatasets = query?.trainingDatasets;
-  const queryfilters = query?.filters;
-  const pathology = query?.pathology || '';
-  const datasets = apiCore.state.pathologiesDatasets[pathology];
+  const history = useHistory();
   const results = data?.createExperiment.results as ResultUnion[];
+  const draftExperiment = useReactiveVar(draftExperimentVar);
+  const selectedExperiment = useReactiveVar(selectedExperimentVar);
+  const domain = useReactiveVar(selectedDomainVar);
+  const { data: configQuery } = useGetConfigurationQuery();
+  const hasFilters = configQuery?.configuration.hasFilters ?? true;
 
-  React.useEffect(() => {
-    // if (!shouldReload) {
-    //   return;
-    // }
+  useEffect(() => {
+    if (!draftExperiment || draftExperiment.datasets.length === 0) return;
 
-    const query = apiModel?.state?.model?.query;
-    const datasets = query?.trainingDatasets;
+    const datasets = draftExperiment.datasets;
 
-    if (datasets && query) {
-      const formula = query?.formula;
-
-      const variables = [
-        ...(query.variables?.map(variable => variable.code) ?? []),
-        ...(query.coVariables?.map(variable => variable.code) ?? []),
-        ...(query.groupings?.map(variable => variable.code) ?? [])
-      ];
-
-      createTransientMutation({
-        variables: {
-          data: {
-            name: 'Descriptive analysis',
-            datasets: datasets.map(dataset => dataset.code),
-            variables,
-            domain: query.pathology ?? '',
-            filter: query.filters,
-            algorithm: {
-              name: 'DESCRIPTIVE_STATS',
-              type: 'string'
-            },
-            transformations: formula?.transformations,
-            interactions: formula?.interactions
-          }
-        }
-      });
-
-      setShouldReload(false);
-    }
-  }, [
-    apiModel.state.model,
-    trainingDatasets,
-    queryfilters,
-    shouldReload,
-    createTransientMutation,
-    apiModel
-  ]);
+    createTransientMutation({
+      variables: {
+        data: {
+          name: 'Descriptive analysis',
+          datasets: datasets,
+          variables: draftExperiment.variables,
+          coVariables: draftExperiment.coVariables,
+          domain: draftExperiment.domain ?? '',
+          filter: draftExperiment.filter,
+          algorithm: {
+            id: 'DESCRIPTIVE_STATS',
+            type: 'string',
+          },
+          transformations: draftExperiment.formula?.transformations?.map(
+            (t) => ({
+              id: t.id,
+              operation: t.operation,
+            })
+          ),
+          interactions: draftExperiment.formula?.interactions,
+        },
+      },
+    });
+  }, [createTransientMutation, draftExperiment]);
 
   const handleCreateExperiment = async (): Promise<void> => {
-    const model = apiModel.state.model;
-    if (model) {
-      history.push(`/experiment`);
-    }
+    history.push(`/experiment`);
   };
 
   const handleGoBackToExplore = (): void => {
     history.push(`/explore`);
   };
 
-  const handleUpdateFilter = async (filters: string): Promise<void> => {
-    const model = apiModel.state.model;
-    if (model) {
-      model.query.filters = (filters && JSON.stringify(filters)) || '';
-      setShouldReload(true);
-      await apiModel.setModel(model);
-    }
-  };
-
-  const handleUpdateFormula = async (formula?: IFormula): Promise<void> => {
-    const model = apiModel.state.model;
-    if (model) {
-      model.query.formula = formula;
-      setShouldReload(true);
-      await apiModel.setModel(model);
-    }
-  };
-
-  const makeFilters = ({
-    apiCore,
-    apiModel
-  }: {
-    apiCore: APICore;
-    apiModel: APIModel;
-  }): any => {
-    const query = apiModel.state.model && apiModel.state.model.query;
-    const variablesForPathology = apiCore.state.pathologiesVariables;
-    const pathology = query?.pathology;
-    const variables =
-      pathology && variablesForPathology && variablesForPathology[pathology];
-
-    // FIXME: move to Filter, refactor in a pure way
-    let fields: any[] = [];
-    const buildFilter = (code: string) => {
-      if (!variables) {
-        return [];
-      }
-
-      const originalVar = variables.find(
-        (variable: VariableEntity) => variable.code === code
-      );
-
-      if (!originalVar) {
-        return [];
-      }
-
-      const output: any = {
-        id: code,
-        label: originalVar.label || originalVar.code,
-        name: code
-      };
-
-      if (originalVar && originalVar.enumerations) {
-        output.values = originalVar.enumerations.map((c: any) => ({
-          [c.code]: c.label || c.code
-        }));
-        output.input = 'select';
-        output.operators = ['equal', 'not_equal', 'in', 'not_in'];
-      }
-
-      const type = originalVar && originalVar.type;
-      if (type === 'real') {
-        output.type = 'double';
-        output.input = 'number';
-        output.operators = [
-          'equal',
-          'not_equal',
-          'less',
-          'greater',
-          'between',
-          'not_between'
-        ];
-      }
-
-      if (type === 'integer') {
-        output.type = 'integer';
-        output.input = 'number';
-        output.operators = [
-          'equal',
-          'not_equal',
-          'less',
-          'greater',
-          'between',
-          'not_between'
-        ];
-      }
-
-      return output;
-    };
-
-    const allVariables = query?.filterVariables?.map(f => f.code) || [];
-
-    // add filter variables
-    const extractVariablesFromFilter = (filter: any) =>
-      filter.rules.forEach((r: any) => {
-        if (r.rules) {
-          extractVariablesFromFilter(r);
-        }
-        if (r.id) {
-          allVariables.push(r.id);
-        }
-      });
-
-    if (query && query.filters) {
-      extractVariablesFromFilter(JSON.parse(query.filters));
-    }
-
-    const allUniqVariables = Array.from(new Set(allVariables));
-    fields =
-      (variables &&
-        [...allUniqVariables.map(buildFilter)].filter((f: any) => f.id)) ||
-      [];
-    const filters = (query && query.filters && JSON.parse(query.filters)) || '';
-
-    return { query, filters, fields };
-  };
-
-  const { fields, filters } = makeFilters({ apiCore, apiModel });
-
   return (
     <>
-      <div>
-        <Sidebar
-          sidebar={
-            <Wrapper
-              filters={filters}
-              fields={fields}
-              handleUpdateFilter={handleUpdateFilter}
-              handleUpdateFormula={handleUpdateFormula}
-              query={query}
-              lookup={apiCore.lookup}
-              apiCore={apiCore}
-            />
-          }
-          open={sidebarOpen}
-          onSetOpen={setSidebarOpen}
-          styles={{ sidebar: { background: 'white' } }}
-          pullRight
-        >
-          sidebar
-        </Sidebar>
-      </div>
+      {hasFilters && (
+        <div>
+          <Sidebar
+            sidebar={
+              domain ? (
+                <FilterFormulaWrapper
+                  domain={domain}
+                  experiment={draftExperiment}
+                />
+              ) : (
+                <div></div>
+              )
+            }
+            open={sidebarOpen}
+            onSetOpen={setSidebarOpen}
+            styles={{ sidebar: { background: 'white' } }}
+            pullRight
+          >
+            <div />
+          </Sidebar>
+        </div>
+      )}
       <div className="Model Review">
         <div className="header">
           <Header
@@ -251,19 +112,28 @@ const Container = ({
         <div className="content">
           <div className="sidebar">
             <ExperimentSidebar
-              apiExperiment={apiExperiment}
-              apiModel={apiModel}
-              apiCore={apiCore}
-              model={model}
-              datasets={datasets}
+              domain={domain}
+              selectedExperiment={selectedExperiment}
+              draftExperiment={draftExperiment}
+              handleSelectDataset={(id: string): void => {
+                localMutations.toggleDatasetExperiment(id);
+              }}
             />
           </div>
           <div className="results">
             <Card>
               <Card.Header>
-                <Button variant="info" onClick={() => setSidebarOpen(true)}>
-                  Filters &amp; Formula
-                </Button>
+                {hasFilters && (
+                  <Button variant="info" onClick={() => setSidebarOpen(true)}>
+                    Filters &amp; Formula
+                  </Button>
+                )}
+
+                {!loading && (
+                  <ExportButton>
+                    <ExportDescriptive draftExperiment={draftExperiment} />
+                  </ExportButton>
+                )}
               </Card.Header>
               <Card.Body>
                 {loading && <Loader />}

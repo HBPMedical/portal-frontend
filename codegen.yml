@@ -1,14 +1,19 @@
 overwrite: true
-schema: "http://127.0.0.1:8081/graphql"
-documents: "src/components/API/GraphQL/queries.ts"
+schema: ${VITE_BACKEND_URL:"http://localhost:8081"}/graphql
+documents:
+  [
+    "src/components/API/GraphQL/fragments.ts",
+    "src/components/API/GraphQL/queries.ts",
+  ]
 generates:
   src/components/API/GraphQL/types.generated.ts:
     - typescript
-  src/components/API/GraphQL/:
+  src/components/API/GraphQL:
     preset: near-operation-file
     presetConfig:
       extension: .generated.tsx
       baseTypesPath: types.generated.ts
     plugins:
-      - "typescript-operations"
-      - "typescript-react-apollo"
+      - typescript-operations
+      - typescript-react-apollo
+      - named-operations-object

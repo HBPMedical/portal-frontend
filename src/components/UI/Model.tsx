@@ -1,12 +1,8 @@
-import * as React from 'react';
-import { VariableEntity } from '../API/Core';
-import { IFormula, ModelResponse } from '../API/Model';
+/* eslint-disable @typescript-eslint/no-explicit-any */
+import { Component } from 'react';
 import styled from 'styled-components';
-
-interface Props {
-  model?: ModelResponse;
-  lookup: (code: string, pathologyCode: string | undefined) => VariableEntity;
-}
+import { Domain, Experiment, Variable } from '../API/GraphQL/types.generated';
+import { IFormula } from '../utils';
 
 const FormulaStyle = styled.div`
   h6 {
@@ -17,60 +13,66 @@ const FormulaStyle = styled.div`
     margin-bottom: 0.5em;
   }
 `;
-class Model extends React.Component<Props> {
+
+interface Props {
+  experiment: Experiment;
+  domain: Domain;
+}
+
+class Model extends Component<Props> {
   render(): JSX.Element {
-    const { model, lookup } = this.props;
-    const query = model && model.query;
+    const { experiment, domain } = this.props;
 
     return (
       <>
-        {query && (
+        {experiment && (
           <>
-            {query.variables && (
+            {experiment.variables && (
               <section>
                 <h4>Variables</h4>
-                {query.variables.map((v: any) => (
-                  <p key={v.code}>{lookup(v.code, query.pathology).info}</p>
+                {domain.variables
+                  .filter((v) => experiment.variables.includes(v.id))
+                  .map((v) => (
+                    <p key={v.id}>{this.infoVariable(v)} </p>
+                  ))}
+              </section>
+            )}
+
+            {experiment.coVariables && experiment.coVariables.length > 0 && (
+              <section>
+                <h4>Covariates</h4>
+                {this.lookup(experiment.coVariables, domain).map((v) => (
+                  <p key={v.id}>{this.infoVariable(v)}</p>
                 ))}
               </section>
             )}
 
-            {((query.coVariables && query.coVariables.length > 0) ||
-              (query.groupings && query.groupings.length > 0)) && (
-              <section>
-                <h4>Covariates</h4>
-                {query.coVariables &&
-                  query.coVariables.length > 0 &&
-                  query.coVariables.map((v: any) => (
-                    <p key={v.code}>{lookup(v.code, query.pathology).info}</p>
-                  ))}
-                {query.groupings &&
-                  query.groupings.length > 0 &&
-                  query.groupings.map((v: any) => (
-                    <p key={v.code}>{lookup(v.code, query.pathology).info}</p>
-                  ))}
-              </section>
-            )}
-
-            {query.filters && (
+            {experiment.filter && (
               <section>
                 <h4>Filters</h4>
-                {this.formatFilter(query.filters)}
+                {this.formatFilter(experiment.filter)}
               </section>
             )}
 
-            {(query.formula?.interactions ||
-              query.formula?.transformations) && (
-              <section>
-                <h4>Formula</h4>
-                {this.formatFormula(query.formula)}
-              </section>
-            )}
+            {experiment.formula &&
+              ((experiment.formula.interactions ?? []).length > 0 ||
+                (experiment.formula.transformations ?? []).length > 0) && (
+                <section>
+                  <h4>Formula</h4>
+                  {this.formatFormula(experiment.formula)}
+                </section>
+              )}
           </>
         )}
       </>
     );
   }
+
+  private infoVariable = (v: Variable): string =>
+    `${v.label ?? v.id} ${v.type ? `(${v.type})` : ''}`;
+
+  private lookup = (idVars: string[], domain: Domain): Variable[] =>
+    domain.variables.filter((v) => idVars.includes(v.id));
 
   private ruleOperator = (operator: string): string => {
     switch (operator) {
@@ -83,7 +85,7 @@ class Model extends React.Component<Props> {
       case 'equal':
         return '=';
 
-      case 'not equal':
+      case 'not_equal':
         return '!=';
 
       default:
@@ -92,9 +94,9 @@ class Model extends React.Component<Props> {
   };
 
   private formatFilter = (filter: any): JSX.Element => {
-    const { lookup, model } = this.props;
+    const { domain } = this.props;
     const humanRules: any = [];
-    const pathologyCode = model?.query?.pathology;
+
     try {
       const json = JSON.parse(filter);
 
@@ -102,7 +104,7 @@ class Model extends React.Component<Props> {
         data.rules.forEach((rule: any, index: number) => {
           const condition = {
             data: `${data.condition}`,
-            level
+            level,
           };
 
           if (rule.condition) {
@@ -117,9 +119,9 @@ class Model extends React.Component<Props> {
 
           humanRules.push({
             data: `${
-              lookup(rule.field, pathologyCode).label
+              this.lookup([rule.field], domain).pop()?.label
             } ${this.ruleOperator(rule.operator)} ${rule.value}`,
-            level
+            level,
           });
 
           if (index < data.rules.length - 1) {
@@ -145,18 +147,18 @@ class Model extends React.Component<Props> {
     const transformations = formula.transformations;
     const interactions = formula.interactions;
 
-    const Transformation = () => (
+    const Transformation = (): JSX.Element => (
       <>
         {(transformations?.length || 0) > 0 && <h6>Transformations</h6>}
-        {transformations?.map(t => (
+        {transformations?.map((t) => (
           <p key={t.operation}>
             <em>{t.operation}: </em>
-            {t.name}
+            {t.id}
           </p>
         )) || <></>}
       </>
     );
-    const Interaction = () => (
+    const Interaction = (): JSX.Element => (
       <>
         {(interactions?.length || 0) > 0 && <h6>Interactions</h6>}
         {interactions?.map((i, j) => (

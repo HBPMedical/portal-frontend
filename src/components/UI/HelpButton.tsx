@@ -1,9 +1,9 @@
-import * as React from 'react';
+import { useReactiveVar } from '@apollo/client';
 import { DropdownButton } from 'react-bootstrap';
-import { BsBook, BsFilm, BsFillEnvelopeFill } from 'react-icons/bs';
-
-import styled from 'styled-components';
+import { BsBook, BsFillEnvelopeFill, BsFilm } from 'react-icons/bs';
 import { NavLink } from 'react-router-dom';
+import styled from 'styled-components';
+import { appConfigVar } from '../API/GraphQL/cache';
 
 const MainBox = styled.div`
   .dropdown-menu {
@@ -67,7 +67,13 @@ const MainBox = styled.div`
   }
 `;
 
-export default ({ showTraining }: { showTraining?: boolean }): JSX.Element => {
+const HelpButton = ({
+  showTraining,
+}: {
+  showTraining?: boolean;
+}): JSX.Element => {
+  const config = useReactiveVar(appConfigVar);
+
   return (
     <MainBox>
       <DropdownButton variant="link" id={'help-dropdown'} title={'Help'}>
@@ -87,16 +93,16 @@ export default ({ showTraining }: { showTraining?: boolean }): JSX.Element => {
             </NavLink>
           </p>
         )}
-        <p>
-          <a
-            href="https://ebrains.eu/support/"
-            target="_blank"
-            rel="noreferrer noopener"
-          >
-            <BsFillEnvelopeFill /> Support
-          </a>
-        </p>
+        {config.contactLink && (
+          <p>
+            <a href={config.contactLink}>
+              <BsFillEnvelopeFill /> Support
+            </a>
+          </p>
+        )}
       </DropdownButton>
     </MainBox>
   );
 };
+
+export default HelpButton;

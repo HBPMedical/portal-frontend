@@ -1,13 +1,5 @@
-import { configure } from 'enzyme';
-import Adapter from 'enzyme-adapter-react-16';
 import 'jest-canvas-mock';
-
-function noOp() {}
-
-if (typeof window.URL.createObjectURL === 'undefined') {
-  Object.defineProperty(window.URL, 'createObjectURL', { value: noOp });
-}
+import '@testing-library/jest-dom'
+import '@testing-library/jest-dom/extend-expect';
 
 jasmine.DEFAULT_TIMEOUT_INTERVAL = 5 * 60 * 1000;
-
-configure({ adapter: new Adapter() });

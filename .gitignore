@@ -30,3 +30,6 @@ test-server/logs
 test-server/**/datasets.db
 
 **/.fuse*
+
+# Bundle visualizer output
+stats.html 

@@ -1,25 +1,19 @@
-import React, { useMemo } from 'react';
+/* eslint-disable @typescript-eslint/no-explicit-any */
+import React, { useCallback } from 'react';
 import { Card, Container, Navbar } from 'react-bootstrap';
-import { APICore } from '../API';
-import { VariableEntity } from '../API/Core';
-import { IFormula, Query } from '../API/Model';
+import { localMutations } from '../API/GraphQL/operations/mutations';
+import { useGetFilterFormulaDataQuery } from '../API/GraphQL/queries.generated';
+import { Domain, Experiment, Variable } from '../API/GraphQL/types.generated';
+import { IFormula } from '../utils';
 import Filter from './Filter';
-import Formula from './Formula';
-
-interface IFilters {
-  fields: any;
-  filters: any;
-  handleUpdateFilter: any;
-}
+import Formula from './FormulaContainer';
 
 interface IOptions {
-  query?: Query;
-  handleUpdateFormula: (formula?: IFormula) => void;
-  lookup: (code: string, pathologyCode: string | undefined) => VariableEntity;
-  apiCore: APICore;
+  domain: Domain;
+  experiment: Experiment;
 }
 
-const NavBar = () => (
+const NavBar = (): JSX.Element => (
   <Navbar bg="info" variant="dark">
     <Container>
       <Navbar.Brand>Filters and Formula</Navbar.Brand>
@@ -27,27 +21,101 @@ const NavBar = () => (
   </Navbar>
 );
 
-const Options = ({
-  fields,
-  filters,
-  handleUpdateFilter,
-  handleUpdateFormula,
-  query,
-  lookup,
-  apiCore
-}: IFilters & IOptions) => {
+const handleUpdateFilter = (data: string): void => {
+  const filter = (data && JSON.stringify(data)) || '';
+  localMutations.updateDraftExperiment({
+    filter,
+  });
+};
+
+const handleUpdateFormula = (formula?: IFormula): void => {
+  localMutations.updateDraftExperiment({ formula });
+};
+
+const FilterFormulaWrapper = ({
+  experiment,
+  domain,
+}: IOptions): JSX.Element => {
+  const lookup = useCallback(
+    (id: string): Variable | undefined =>
+      domain.variables.find((v) => v.id === id),
+    [domain]
+  );
+
+  const { data } = useGetFilterFormulaDataQuery();
+  const availableAlgorithms =
+    data?.algorithms.filter((a) => a.hasFormula).map((a) => a.label ?? a.id) ??
+    [];
+  const numberTypes = data?.filter?.numberTypes ?? [];
+
   const handleUpdateFormulaCallback = React.useCallback(handleUpdateFormula, [
-    query?.formula // hacky way to force re-render on formula changes
+    experiment.formula, // hacky way to force re-render on formula changes
   ]);
 
-  // Avoid re-rendering of formula and losing focus on select input
-  const memoizedAlgorithms = useMemo(
-    () =>
-      apiCore.state.algorithms?.filter(a =>
-        a.parameters.find((p: any) => p.type === 'formula_description')
-      ),
-    [apiCore.state.algorithms]
-  );
+  const makeFilters = (): any => {
+    // FIXME: move to Filter, refactor in a pure way
+    let varFields = [];
+    const buildFilter = (code: string) => {
+      if (!domain || !domain.variables) {
+        return [];
+      }
+
+      const originalVar = domain.variables.find((v) => v.id === code);
+
+      if (!originalVar) {
+        return [];
+      }
+
+      const output: any = {
+        id: originalVar.id,
+        label: originalVar.label || originalVar.id,
+        name: originalVar.id,
+        //default input type: text
+        type: 'string',
+        input: 'text',
+        operators: ['equal', 'not_equal'],
+      };
+
+      if (
+        originalVar &&
+        originalVar.enumerations &&
+        originalVar.enumerations.length > 0
+      ) {
+        output.values = originalVar.enumerations.map((c) => ({
+          [c.value]: c.label || c.value,
+        }));
+        output.input = 'select';
+        output.operators = ['equal', 'not_equal', 'in', 'not_in'];
+      }
+
+      const type = originalVar && originalVar.type;
+      if (type && numberTypes.includes(type)) {
+        output.type = 'double';
+        output.input = 'number';
+        output.operators = [
+          'equal',
+          'not_equal',
+          'less',
+          'greater',
+          'between',
+          'not_between',
+        ];
+      }
+
+      return output;
+    };
+
+    varFields =
+      (experiment.filterVariables &&
+        [...experiment.filterVariables.map(buildFilter)].filter((f) => f.id)) ||
+      [];
+    const expFilters =
+      (experiment && experiment.filter && JSON.parse(experiment.filter)) || '';
+
+    return { filters: expFilters, fields: varFields };
+  };
+
+  const { filters, fields } = makeFilters();
 
   return (
     <>
@@ -64,10 +132,11 @@ const Options = ({
       <Card>
         <Card.Body>
           <Formula
-            query={query}
+            operations={data?.formula ?? []}
+            experiment={experiment}
             lookup={lookup}
+            availableAlgorithms={availableAlgorithms}
             handleUpdateFormula={handleUpdateFormulaCallback}
-            availableAlgorithms={memoizedAlgorithms}
           />
         </Card.Body>
       </Card>
@@ -75,4 +144,4 @@ const Options = ({
   );
 };
 
-export default Options;
+export default FilterFormulaWrapper;

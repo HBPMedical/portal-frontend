@@ -1,9 +1,10 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import $ from 'jquery';
 import QueryBuilder from 'jQuery-QueryBuilder';
-import * as React from 'react';
 import { Button } from 'react-bootstrap';
 import './jquery-builder.css';
 import styled from 'styled-components';
+import { Component } from 'react';
 
 interface Props {
   rules: any;
@@ -25,7 +26,7 @@ const Wrapper = styled.div`
   }
 `;
 
-class Filter extends React.Component<Props, State> {
+class Filter extends Component<Props, State> {
   state: State = { rulesChanged: false, loading: false };
   protected queryBuilder = QueryBuilder; // prevents ts-lint to complain about ununused inport
   private ref: any;
@@ -56,7 +57,6 @@ class Filter extends React.Component<Props, State> {
         nextFilters.map((n: any) => n.id)
       )
     ) {
-      // console.log('Filters changed');
       this.ref.queryBuilder('destroy');
 
       const changed = this.compareKeys(
@@ -87,9 +87,8 @@ class Filter extends React.Component<Props, State> {
     this.setState({ loading: true, rulesChanged: false });
     const rules = this.ref.queryBuilder('getRules');
     const { handleChangeFilter } = this.props;
-    handleChangeFilter(rules).then(() => {
-      this.setState({ loading: false });
-    });
+    handleChangeFilter(rules);
+    this.setState({ loading: false });
   };
 
   render = (): JSX.Element => {

@@ -1,208 +1,210 @@
-import * as React from 'react';
-import { Button, Card, OverlayTrigger, Popover } from 'react-bootstrap';
+import React from 'react';
+import { Card, OverlayTrigger, Popover } from 'react-bootstrap';
 import styled from 'styled-components';
-
-import { APIModel } from '../API';
-import { Algorithm, AlgorithmParameter, VariableEntity } from '../API/Core';
-
-interface AvailableAlgorithm extends Algorithm {
-  enabled: boolean;
-}
+import { useListAlgorithmsQuery } from '../API/GraphQL/queries.generated';
+import {
+  Algorithm,
+  Experiment,
+  Variable,
+  VariableParameter,
+} from '../API/GraphQL/types.generated';
+import Loader from '../UI/Loader';
 
 const Container = styled.div`
-  var {
-    cursor: default;
-    font-size: 0.8rem;
-    padding: 0,
-    text-transform: none
-  }
-  var::after {
-    content: ', ';
-  }
+  line-height: 15px;
 
-  var::last-child::after {
-    content: '';
-  }
-
-  p {
-    margin: 0;
-    padding: 0;
-    border: 1px solid transparent;
+  .algorithms {
+    .algorithm {
+      cursor: default;
+      color: grey;
+      &.selected {
+        font-weight: bold;
+      }
+    }
+    &.clickable {
+      .algorithm.enabled {
+        cursor: pointer;
+      }
+    }
+    &.vertical {
+      display: flex;
+      flex-direction: column;
+      .algorithm {
+        margin-bottom: 10px;
+        font-size: 0.9rem;
+        &.enabled {
+          color: #007ad9;
+          &:hover {
+            color: #0056b3;
+            text-decoration: underline;
+          }
+        }
+      }
+    }
+    &.horizontal {
+      .algorithm {
+        font-size: 0.8rem;
+        font-style: italic;
+        &.enabled {
+          color: green;
+        }
+        &::after {
+          content: ', ';
+        }
+        &:last-child::after {
+          content: '';
+        }
+      }
+    }
   }
 `;
 
-const AvailableAlgorithms = ({
-  algorithms,
-  lookup,
-  layout = 'default',
-  handleSelectMethod,
-  apiModel
-}: {
-  algorithms: Algorithm[] | undefined;
-  layout?: string;
-  lookup: (code: string, pathologyCode: string | undefined) => VariableEntity;
-  handleSelectMethod?: (method: Algorithm) => void;
-  apiModel: APIModel;
-}): JSX.Element => {
-  const query = apiModel.state.model?.query;
-  const modelVariable =
-    (query &&
-      query.variables &&
-      query.variables.map(v => lookup(v.code, query.pathology))) ||
-    [];
-  const modelCovariables = [
-    ...((query &&
-      query.coVariables &&
-      query.coVariables.map(v => lookup(v.code, query?.pathology))) ||
-      []),
-    ...((query &&
-      query.groupings &&
-      query.groupings.map(v => lookup(v.code, query?.pathology))) ||
-      [])
-  ];
+const PopoverContainer = styled(Popover)`
+  .card {
+    margin-bottom: 0px;
+  }
+`;
 
-  const algorithmEnabled = (
-    parameters: AlgorithmParameter[],
-    { x, y }: { x: VariableEntity[]; y: VariableEntity[] }
-  ): boolean => {
-    const checkSelectedVariables = (
-      axis: string,
-      variables: VariableEntity[]
-    ): boolean => {
-      const definition = parameters.find(p => p.label === axis);
-      if (definition) {
-        const isCategorical =
-          definition.columnValuesIsCategorical === ''
-            ? undefined
-            : definition.columnValuesIsCategorical === 'true'
-            ? true
-            : false;
-        // const type = xDefinition.columnValuesSQLType;
-        const multiple = definition.valueMultiple === 'true';
-        const notBlank = definition.valueNotBlank === 'true';
+const checkValidity = (
+  validator: VariableParameter | null | undefined,
+  vars: Variable[]
+): boolean => {
+  if (!validator) return true;
+  if (vars.length === 0) return !validator.isRequired;
 
-        if (isCategorical && !variables.every(c => c.type === 'nominal')) {
-          return false;
-        }
+  const filtered = vars.filter(
+    (v, i) =>
+      (!validator.allowedTypes ||
+        validator.allowedTypes?.includes(v.type ?? '')) &&
+      (validator.hasMultiple || i === 0)
+  );
 
-        if (
-          isCategorical === false &&
-          variables.some(c => c.type === 'nominal')
-        ) {
-          return false;
-        }
+  return filtered.length === vars.length;
+};
 
-        if (notBlank && variables.length === 0) {
-          return false;
-        }
+type Props = {
+  experiment: Experiment;
+  selectedAlgorithm?: Algorithm;
+  direction?: 'horizontal' | 'vertical';
+  handleSelect?: (algo: Algorithm) => void;
+  listVariables: Variable[];
+};
 
-        // FIXME: not sure if it MUST or SHOULD be multiple
-        // Guessing SHOULD now
-        if (!multiple && variables.length > 1) {
-          return false;
-        }
+export const AvailableAlgorithms = ({
+  direction = 'horizontal',
+  handleSelect,
+  experiment,
+  listVariables,
+  selectedAlgorithm,
+}: Props) => {
+  const isClickable = !!handleSelect;
+  const { data, loading } = useListAlgorithmsQuery();
+  const variables = experiment.variables
+    .map((id) => listVariables.find((v) => v.id === id))
+    .filter((v) => v)
+    .map((v) => v as Variable);
+  const coVariables = (
+    experiment.coVariables?.map((id) =>
+      listVariables.find((v) => v.id === id)
+    ) ?? []
+  )
+    .filter((v) => v)
+    .map((v) => v as Variable);
 
-        return true;
-      }
-
-      return true;
-    };
-    // Independant variable check
-    return checkSelectedVariables('x', x) && checkSelectedVariables('y', y);
-  };
-
-  const availableAlgorithms: AvailableAlgorithm[] =
-    algorithms?.map(algorithm => ({
-      ...algorithm,
-      enabled: algorithmEnabled(algorithm.parameters as AlgorithmParameter[], {
-        x: modelCovariables,
-        y: modelVariable
+  const algorithms =
+    data?.algorithms
+      .map((algo) => {
+        return {
+          ...algo,
+          label: (algo.label ?? algo.id).trim(),
+          isEnabled:
+            checkValidity(algo.variable, variables) &&
+            checkValidity(algo.coVariable, coVariables),
+        };
       })
-    })) || [];
+      .sort((a, b) => a.label.localeCompare(b.label)) ?? [];
 
-  const variablesHelpMessage = (algorithm: Algorithm): JSX.Element => {
-    const message: JSX.Element[] = [];
-
-    const helpFor = (axis: string, term: string): void => {
-      const variable = (algorithm.parameters as AlgorithmParameter[]).find(
-        p => p.label === axis
-      );
-      if (variable) {
-        if (variable.desc) {
-          message.push(
-            <p key={`${algorithm.name}-${axis}-desc`}>
-              <strong>{term}</strong>: {variable.desc}
-            </p>
-          );
-        } else {
-          message.push(
-            <p key={`${algorithm.name}-${axis}-desc`}>
-              <strong>{term}</strong>
-            </p>
-          );
-        }
-      }
-    };
-
-    helpFor('y', 'Variable (dependant)');
-    helpFor('x', 'Covariable (independant)');
-
-    return <>{message}</>;
-  };
+  if (loading) return <Loader />;
 
   return (
-    <Container style={{ lineHeight: layout !== 'inline' ? 'default' : '1.0' }}>
-      {availableAlgorithms.map(algorithm => (
-        <OverlayTrigger
-          key={algorithm.name}
-          placement="left"
-          rootClose={false}
-          overlay={
-            <Popover id={`tooltip-${algorithm.name}`}>
-              <Card>
-                <Card.Body>
-                  <h5>{algorithm.label}</h5>
-                  <p>{algorithm.desc}</p>
-                  {variablesHelpMessage(algorithm)}
-                </Card.Body>
-              </Card>
-            </Popover>
-          }
-        >
-          {layout !== 'inline' ? (
-            <div>
-              <Button
-                key={algorithm.name}
-                variant="link"
-                // ts lint:disable-next-line jsx-no-lambda
-                onClick={(): void =>
-                  handleSelectMethod && handleSelectMethod(algorithm)
+    <Container>
+      <div
+        className={`algorithms ${direction} ${isClickable ? 'clickable' : ''}`}
+      >
+        {algorithms.map((algo) => (
+          <OverlayTrigger
+            key={algo.id}
+            placement="left"
+            rootClose={false}
+            overlay={
+              <PopoverContainer id={`tooltip-${algo.label}`}>
+                <Card>
+                  <Card.Body>
+                    <h5>{algo.label}</h5>
+                    <p>{algo.description}</p>
+                    {algo.variable && (
+                      <p>
+                        <strong>Variable (dependant)</strong>:{' '}
+                        {algo.variable.hint}
+                        {algo.variable.allowedTypes && (
+                          <>
+                            <br />
+                            <small
+                              color="grey"
+                              className="font-italic text-muted"
+                            >
+                              Allowed types :{' '}
+                              {algo.variable.allowedTypes.join(', ')}
+                            </small>
+                          </>
+                        )}
+                      </p>
+                    )}
+                    {algo.coVariable && (
+                      <p>
+                        <strong>Covariate (independant)</strong>:{' '}
+                        {algo.coVariable.hint ?? 'N/A'}
+                        {algo.coVariable.allowedTypes && (
+                          <>
+                            <br />
+                            <small
+                              color="grey"
+                              className="font-italic text-muted"
+                            >
+                              Allowed types :{' '}
+                              {algo.coVariable.allowedTypes.join(', ')}
+                            </small>
+                          </>
+                        )}
+                      </p>
+                    )}
+                  </Card.Body>
+                </Card>
+              </PopoverContainer>
+            }
+          >
+            <span
+              className={`algorithm ${
+                algo.isEnabled ? 'enabled' : 'disabled'
+              } ${
+                selectedAlgorithm && selectedAlgorithm.id === algo.id
+                  ? 'selected'
+                  : ''
+              }`}
+              key={algo.id}
+              onClick={() => {
+                if (handleSelect && algo.isEnabled) {
+                  handleSelect(algo as Algorithm);
                 }
-                disabled={!algorithm.enabled}
-                style={{
-                  color: algorithm.enabled ? '#007ad9' : 'gray',
-                  padding: 0,
-                  textTransform: 'none',
-                  whiteSpace: 'normal',
-                  textAlign: 'left'
-                }}
-              >
-                {algorithm.label || algorithm.name}
-              </Button>
-            </div>
-          ) : (
-            <var
-              key={algorithm.name}
-              style={{
-                color: algorithm.enabled ? '#28a745' : 'gray'
               }}
             >
-              {algorithm.label || algorithm.name}
-            </var>
-          )}
-        </OverlayTrigger>
-      ))}
+              {algo.label ?? algo.id}
+            </span>
+          </OverlayTrigger>
+        ))}
+      </div>
     </Container>
   );
 };
+
 export default AvailableAlgorithms;

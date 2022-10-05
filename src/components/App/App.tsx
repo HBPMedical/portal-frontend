@@ -1,22 +1,32 @@
-import React, { useCallback } from 'react';
-import { Route, Switch } from 'react-router-dom';
+import { NetworkStatus, useReactiveVar } from '@apollo/client';
+import { useMatomo } from '@jonkoops/matomo-tracker-react';
+import { useCallback, useEffect } from 'react';
+import { Spinner } from 'react-bootstrap';
+import { Route, Switch, useHistory } from 'react-router-dom';
+import { toast, ToastContainer } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.min.css';
 import styled from 'styled-components';
+import { SessionState } from '../../utilities/types';
+import { backendURL } from '../API';
+import { apolloClient } from '../API/GraphQL/apollo.config';
+import { configurationVar, sessionStateVar } from '../API/GraphQL/cache';
+import { localMutations } from '../API/GraphQL/operations/mutations';
 import {
-  APICore,
-  APIExperiment,
-  APIMining,
-  APIModel,
-  APIUser,
-  backendURL
-} from '../API';
-import { ExperimentListQueryParameters, IExperiment } from '../API/Experiment';
+  useActiveUserQuery,
+  useGetConfigurationQuery,
+  useListDomainsQuery,
+  useLogoutMutation,
+} from '../API/GraphQL/queries.generated';
+import { makeAssetURL } from '../API/RequestURLS';
 import { DescriptiveAnalysis } from '../DescriptiveAnalysis';
 import ExperimentCreate from '../ExperimentCreate/Container';
 import Explore from '../ExperimentExplore/Container';
 import ExperimentResult from '../ExperimentResult/Container';
 import Help from '../Help/Videos';
+import ProtectedRoute from '../router/ProtectedRoute';
+import AccessPage from '../UI/AccessPage';
 import DataCatalog from '../UI/DataCatalog';
-import ExperimentList from '../UI/DropdownExperimentList';
+import DropdownExperimentList from '../UI/Experiment/DropDownList/DropdownExperimentList';
 import Footer from '../UI/Footer';
 import Galaxy from '../UI/Galaxy';
 import { GlobalStyles } from '../UI/GlobalStyle';
@@ -25,7 +35,7 @@ import Navigation from '../UI/Navigation';
 import NotFound from '../UI/NotFound';
 import TOS from '../UI/TOS';
 import Tutorial from '../UserGuide/Tutorial';
-import { Spinner } from 'react-bootstrap';
+import { AppConfig } from '../utils';
 
 const Main = styled.main<MainProps>`
   margin: 0 auto;
@@ -54,181 +64,219 @@ const SpinnerContainer = styled.div`
   min-height: inherit;
   justify-content: center;
   align-items: center;
+  height: 100vh;
 `;
 
-export interface AppConfig {
-  version?: string;
-  instanceName?: string;
-  ga?: string;
-  datacatalogueUrl?: string | undefined;
-}
 interface Props {
   appConfig: AppConfig;
-  apiExperiment: APIExperiment;
-  apiCore: APICore;
-  apiModel: APIModel;
-  apiMining: APIMining;
-  apiUser: APIUser;
   showTutorial: boolean;
 }
 
 interface MainProps {
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   showTutorial: any;
 }
 
-const App = ({
-  appConfig,
-  apiExperiment,
-  apiCore,
-  apiModel,
-  apiMining,
-  apiUser,
-  showTutorial
-}: Props): JSX.Element => {
-  const loading = apiUser.state.loading;
-  const authenticated = apiUser.state.authenticated || false;
-  const isAnonymous = apiUser.state.user?.username === 'anonymous' || false;
+const App = ({ appConfig, showTutorial }: Props) => {
+  const config = useReactiveVar(configurationVar);
+  const history = useHistory();
+  const userState = useReactiveVar(sessionStateVar);
+  const { enableLinkTracking, trackPageView } = useMatomo();
+
+  enableLinkTracking();
+
+  useEffect(() => {
+    trackPageView({});
+    history.listen(() => {
+      trackPageView({});
+    });
+  }, [history, trackPageView]);
+
+  const {
+    loading: userLoading,
+    data: userData,
+    networkStatus: userNetwork,
+  } = useActiveUserQuery({
+    fetchPolicy: 'network-only',
+    notifyOnNetworkStatusChange: true,
+  });
+
+  const [logoutMutation] = useLogoutMutation();
+
+  const logoutHandle = useCallback(async () => {
+    history.push('/access');
+
+    try {
+      await logoutMutation();
+    } catch (e) {
+      console.log(
+        'Error when logging out, probably user was not authenticated. Negligible error.'
+      );
+    }
+
+    await apolloClient.clearStore();
+
+    localMutations.user.setState(SessionState.LOGGED_OUT);
+  }, [history, logoutMutation]);
+
+  const { data: { configuration } = {}, loading: configLoading } =
+    useGetConfigurationQuery({
+      onCompleted: (data) => {
+        if (data.configuration) {
+          localMutations.setConfiguration(data.configuration);
+          const favicon = document.getElementById('favicon') as HTMLLinkElement;
+          favicon.href = makeAssetURL('favicon.ico');
+        }
+      },
+    });
+
+  const user = userData?.user;
+  const isAnonymous = user?.username === 'anonymous' || false;
+  const authenticated = !!user && userState !== SessionState.LOGGED_OUT;
+
+  //load domains for every page
+  const { loading: domainsLoading, networkStatus: domainNetwork } =
+    useListDomainsQuery({
+      notifyOnNetworkStatusChange: true,
+      onCompleted: (data) => {
+        if (data.domains) {
+          localMutations.setDomains(data.domains);
+          localMutations.selectDomain(data.domains[0].id);
+        }
+      },
+    });
+
+  const loading =
+    configLoading ||
+    userLoading ||
+    domainsLoading ||
+    domainNetwork === NetworkStatus.refetch ||
+    userNetwork === NetworkStatus.refetch;
+
+  useEffect(() => {
+    if (!config.version) return;
+
+    const cssPath = makeAssetURL('custom.css');
+    const head = document.head;
+    const link = document.createElement('link');
+
+    link.crossOrigin = 'anonymous';
+    link.type = 'text/css';
+    link.rel = 'stylesheet';
+    link.href = cssPath;
+
+    if (head) head.appendChild(link);
+
+    return (): void => {
+      if (head) head.removeChild(link);
+    };
+  }, [config.version]);
+
+  useEffect(() => {
+    if (userState === SessionState.INVALID) {
+      if (user) {
+        toast.error('Your session has expired');
+      } else {
+        toast.info('Please login before accessing the MIP');
+      }
+      logoutHandle();
+    }
+  }, [logoutHandle, user, userState]);
 
   return (
     <>
       <GlobalStyles />
-      <header>
-        <Navigation
-          name={appConfig.instanceName}
-          isAnonymous={isAnonymous}
-          authenticated={authenticated}
-          login={(): void => {
-            if (apiUser.state.user?.username !== 'anonymous') {
-              window.location.href = `${backendURL}/sso/login`;
-            }
-          }}
-          datacatalogueUrl={appConfig.datacatalogueUrl || undefined}
-          logout={() => {
-            (apiUser.state.user?.username !== 'anonymous' || undefined) &&
-              apiUser.logout();
-            window.location.href = '/';
-          }}
-          experiment={apiExperiment.isExperiment(
-            apiExperiment.state.experiment
-          )}
-        >
-          <ExperimentList
-            username={apiUser.state.user?.username}
-            experimentList={apiExperiment.state.experimentList}
-            handleDelete={(uuid: string): Promise<void> =>
-              apiExperiment.delete({ uuid })
-            }
-            handleUpdate={(
-              uuid: string,
-              experiment: Partial<IExperiment>
-            ): Promise<void> => apiExperiment.update({ uuid, experiment })}
-            handleQueryParameters={useCallback(
-              ({ ...params }: ExperimentListQueryParameters): Promise<void> =>
-                apiExperiment.list({ ...params }),
-              [apiExperiment]
-            )}
-          />
-        </Navigation>
-      </header>
-      <Main showTutorial={showTutorial}>
-        {loading && (
-          <SpinnerContainer>
-            <Spinner animation="border" variant="info" />
-          </SpinnerContainer>
-        )}
-        {!loading && (
-          <Switch>
-            {showTutorial && <Tutorial />}
+      {loading && (
+        <SpinnerContainer>
+          <Spinner animation="border" variant="info" />
+        </SpinnerContainer>
+      )}
+      {!loading && (
+        <>
+          <header>
+            <Navigation
+              name={appConfig.instanceName}
+              isAnonymous={isAnonymous}
+              authenticated={authenticated}
+              login={(): void => {
+                if (!isAnonymous) {
+                  if (configuration?.enableSSO)
+                    window.location.href = `${backendURL}/sso/login`;
+                  else {
+                    history.push('/login');
+                  }
+                }
+              }}
+              datacatalogueUrl={appConfig.datacatalogueUrl}
+              logout={() => {
+                toast.success('Logged out successfully');
+                logoutHandle();
+              }}
+            >
+              <DropdownExperimentList
+                hasDetailedView={true}
+                label={'My Experiments'}
+              />
+            </Navigation>
+          </header>
+          <Main showTutorial={showTutorial}>
+            <Switch>
+              {showTutorial && <Tutorial />}
 
-            {!authenticated && (
-              <Route path="/" exact={true}>
+              <Route path="/training" exact={true}>
+                <Help />
+              </Route>
+
+              <Route path="/login">
                 <LoginPage />
               </Route>
-            )}
 
-            <Route path="/training" exact={true}>
-              <Help />
-            </Route>
+              <Route path="/access" exact={true}>
+                <AccessPage />
+              </Route>
 
-            {authenticated && (
-              <Switch>
-                <Route
-                  path={['/', '/explore']}
-                  exact={true}
-                  // tslint:disable-next-line jsx-no-lambda
-                  render={(props): JSX.Element => (
-                    <Explore
-                      apiCore={apiCore}
-                      apiMining={apiMining}
-                      apiModel={apiModel}
-                      appConfig={appConfig}
-                      apiUser={apiUser}
-                      apiExperiment={apiExperiment}
-                      {...props}
-                    ></Explore>
-                  )}
-                />
-                <Route
-                  path="/tos"
-                  // tslint:disable-next-line jsx-no-lambda
-                  render={(props): JSX.Element => (
-                    <TOS apiUser={apiUser} {...props} />
-                  )}
-                />
+              <Route path="/tos">
+                <TOS />
+              </Route>
 
-                <Route
-                  path={['/review', '/analysis']}
-                  // tslint:disable-next-line jsx-no-lambda
-                  render={(props): JSX.Element => (
-                    <DescriptiveAnalysis
-                      apiModel={apiModel}
-                      apiCore={apiCore}
-                      apiExperiment={apiExperiment}
-                      {...props}
-                    />
-                  )}
-                />
-                <Route
-                  path="/experiment/:uuid"
-                  // tslint:disable-next-line jsx-no-lambda
-                  render={(): JSX.Element => (
-                    <ExperimentResult
-                      apiExperiment={apiExperiment}
-                      apiModel={apiModel}
-                      apiCore={apiCore}
-                    />
-                  )}
-                />
-                <Route
-                  exact={true}
-                  path="/experiment"
-                  // tslint:disable-next-line jsx-no-lambda
-                  render={(): JSX.Element => (
-                    <ExperimentCreate
-                      apiExperiment={apiExperiment}
-                      apiCore={apiCore}
-                      apiModel={apiModel}
-                    />
-                  )}
-                />
-                <Route
-                  path="/galaxy"
-                  render={(): JSX.Element => <Galaxy apiCore={apiCore} />}
-                />
-                <Route
-                  path="/catalog"
-                  render={(): JSX.Element => <DataCatalog />}
-                />
+              <ProtectedRoute path={['/', '/explore']} exact={true}>
+                <Explore />
+              </ProtectedRoute>
 
-                <Route component={NotFound} />
-              </Switch>
-            )}
-          </Switch>
-        )}
-      </Main>
-      <footer>
-        <Footer appConfig={appConfig} />
-      </footer>
+              <ProtectedRoute path={['/review', '/analysis']}>
+                <DescriptiveAnalysis />
+              </ProtectedRoute>
+
+              <ProtectedRoute path="/experiment/:uuid">
+                <ExperimentResult />
+              </ProtectedRoute>
+
+              <ProtectedRoute exact={true} path="/experiment">
+                <ExperimentCreate />
+              </ProtectedRoute>
+
+              <ProtectedRoute path="/galaxy">
+                <Galaxy />
+              </ProtectedRoute>
+
+              <Route path="/catalog" render={() => <DataCatalog />} />
+
+              <Route component={NotFound} />
+            </Switch>
+          </Main>
+          <footer>
+            <Footer appConfig={appConfig} />
+          </footer>
+        </>
+      )}
+      <ToastContainer
+        style={{ marginTop: '35px' }}
+        position="top-right"
+        closeOnClick
+        pauseOnHover
+        pauseOnFocusLoss
+        autoClose={5000}
+      />
     </>
   );
 };

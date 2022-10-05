@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import * as d3 from 'd3';
 import React, { useRef } from 'react';
 import styled from 'styled-components';
@@ -34,7 +35,7 @@ const SVGContainer = styled.svg`
   }
 `;
 
-export default ({ data }: { data: any }): JSX.Element => {
+const Dendogram = ({ data }: { data: any }): JSX.Element => {
   const svgRef = useRef(null);
 
   renderLifeCycle({
@@ -53,7 +54,7 @@ export default ({ data }: { data: any }): JSX.Element => {
         top: 10,
         right: 100,
         bottom: 10,
-        left: 100
+        left: 100,
       };
       const width = 1000 - margin.left - margin.right;
       const height = 300 - margin.top - margin.bottom;
@@ -85,9 +86,9 @@ export default ({ data }: { data: any }): JSX.Element => {
         .attr(
           'd',
           (d: any) =>
-            `M ${d.y}, ${d.x} C ${(d.y + d.parent.y) / 2}, ${d.x} ${(d.y +
-              d.parent.y) /
-              2}, ${d.parent.x} ${d.parent.y}, ${d.parent.x}`
+            `M ${d.y}, ${d.x} C ${(d.y + d.parent.y) / 2}, ${d.x} ${
+              (d.y + d.parent.y) / 2
+            }, ${d.parent.x} ${d.parent.y}, ${d.parent.x}`
         );
 
       g.selectAll('.edge')
@@ -96,7 +97,7 @@ export default ({ data }: { data: any }): JSX.Element => {
         .append('text')
         .attr('class', 'edge')
         .attr('transform', (d: any) => `translate(${d.y - 120},${d.x})`)
-        .text(function(d: any) {
+        .text(function (d: any) {
           return d.data.edge;
         });
 
@@ -117,8 +118,10 @@ export default ({ data }: { data: any }): JSX.Element => {
         .attr('x', (d: any) => (d.children ? -13 : 13))
         .style('text-anchor', (d: any) => (d.children ? 'end' : 'start'))
         .text((d: any) => d.data.colname || d.data.leafval);
-    }
+    },
   });
 
   return <SVGContainer ref={svgRef} />;
 };
+
+export default Dendogram;

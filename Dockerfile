@@ -5,6 +5,8 @@ WORKDIR /frontend
 
 ADD yarn.lock /frontend
 ADD package.json /frontend
+ADD vite.config.ts /frontend
+ADD index.html /frontend
 
 RUN yarn install
 
@@ -44,8 +46,6 @@ COPY docker/runner/run.sh /
 # Add front end resources
 COPY --from=builder /frontend/build /usr/share/caddy/html/
 
-EXPOSE 80 443
-
 ENTRYPOINT ["/run.sh"]
 
 LABEL org.label-schema.build-date=$BUILD_DATE \
@@ -56,8 +56,8 @@ LABEL org.label-schema.build-date=$BUILD_DATE \
     org.label-schema.vcs-url="https://github.com/HBPMedical/portal-frontend" \
     org.label-schema.vcs-ref=$VCS_REF \
     org.label-schema.version="$VERSION" \
-    org.label-schema.vendor="LREN CHUV" \
-    org.label-schema.license="AGPLv3" \
+    org.label-schema.vendor="CHUV" \
+    org.label-schema.license="Apache-2.0" \
     org.label-schema.docker.dockerfile="Dockerfile" \
     org.label-schema.memory-hint="10" \
     org.label-schema.schema-version="1.0"

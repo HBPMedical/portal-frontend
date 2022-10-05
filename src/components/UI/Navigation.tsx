@@ -1,11 +1,11 @@
-import * as React from 'react';
+import { useReactiveVar } from '@apollo/client';
+import React, { useEffect, useState } from 'react';
 import { Button } from 'react-bootstrap';
+import { FaSignOutAlt } from 'react-icons/fa';
 import { NavLink } from 'react-router-dom';
 import styled from 'styled-components';
-
-import logo from '../../images/logo.png';
-import { IExperiment } from '../API/Experiment';
-
+import { configurationVar } from '../API/GraphQL/cache';
+import { makeAssetURL } from '../API/RequestURLS';
 import MIPContext from '../App/MIPContext';
 import HelpButton from './HelpButton';
 
@@ -26,6 +26,18 @@ const NavBar = styled.nav`
   #experiment-dropdown,
   #help-dropdown {
     font-size: 16px;
+  }
+
+  .experiments.dropdown-list {
+    margin-right: 10px;
+
+    & > .dropdown-btn {
+      color: white;
+      &:hover {
+        color: #ccc !important;
+        text-decoration: none;
+      }
+    }
   }
 
   .experiment-nav a:link,
@@ -56,8 +68,7 @@ const Brand = styled.div`
 
   font-weight: bold;
 
-  div {
-    background: url(${logo}) left center no-repeat;
+  img {
     width: 40px;
     height: 40px;
   }
@@ -106,6 +117,9 @@ const GroupLink = styled(Link)`
 
 const LogoutButton = styled(Button)`
   font-weight: bold;
+  svg {
+    vertical-align: -0.125em;
+  }
 `;
 
 const LoginButton = styled(Button)`
@@ -123,28 +137,31 @@ interface Props {
   name?: string;
   datacatalogueUrl: string | undefined;
   logout?: () => void;
-  experiment: IExperiment | undefined;
   children: JSX.Element;
 }
 
-export default ({
+const Navigation = ({
   isAnonymous,
   authenticated,
   login,
   name,
   datacatalogueUrl,
   logout,
-  experiment,
-  children
+  children,
 }: Props): JSX.Element => {
   const instanceName = name || 'MIP';
+  const [imageURL, setImageURL] = useState<string | undefined>(undefined);
+  const config = useReactiveVar(configurationVar);
+
+  useEffect(() => {
+    if (!config.version) return;
+    setImageURL(makeAssetURL('logo_small.png'));
+  }, [config.version]);
 
   return (
     <NavBar>
       <Brand className="experiment-nav">
-        <Link to="/">
-          <div title="Human Brain Project"></div>
-        </Link>
+        <Link to="/">{imageURL && <img src={imageURL} alt="Logo" />}</Link>
         <Link className="logo-title" to="/">
           {instanceName}
         </Link>
@@ -154,14 +171,9 @@ export default ({
           <Group className="experiment-nav">
             <GroupLink to="/explore">Variables</GroupLink>
             <span> &gt; </span>
-            <GroupLink to="/review">Analysis</GroupLink>
+            <GroupLink to="/analysis">Analysis</GroupLink>
             <span> &gt; </span>
-            {experiment && (
-              <GroupLink to={`/experiment/${experiment.uuid}`}>
-                Experiment
-              </GroupLink>
-            )}
-            {!experiment && <GroupLink to="/experiment">Experiment</GroupLink>}
+            <GroupLink to="/experiment">Experiment</GroupLink>
           </Group>
           <DropdownWrapper className="links">{children}</DropdownWrapper>
           <div className="experiment-nav links">
@@ -208,11 +220,13 @@ export default ({
           </LoginButton>
         )}
         {!isAnonymous && authenticated && (
-          <LogoutButton variant={'outline-info'} size={'sm'} onClick={logout}>
-            Logout
+          <LogoutButton variant={'outline-danger'} size={'sm'} onClick={logout}>
+            <FaSignOutAlt /> Logout
           </LogoutButton>
         )}
       </RightLinks>
     </NavBar>
   );
 };
+
+export default Navigation;

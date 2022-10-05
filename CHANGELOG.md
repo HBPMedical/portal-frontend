@@ -1,5 +1,38 @@
 # Changelog
 
+## TBD - WIP
+
+Features : 
+- GraphQL Migration complete (no more Portalbackend direct call)
+- Added HBP logo in the footer
+- Migration from CRA to Vite.js
+- Updated to React 18
+- Vite configuration for Caddy
+- Migration from Google Analytics to Matomo
+- Filter & Formula can be hidden (Gateway dependant)
+- Externalization of Caddy config
+- JWT implementation
+- New visualizations integration
+  - Alert
+  - BubbleChart
+  - LineChart
+  - BarChart
+  - Histograms
+  - MeansPlot
+- Experiment export results (PDF)
+- Experiment result (unit) export (jpg)
+- Possiblity to edit chart Axis
+- Minors graphic enchancements
+- Added Toast notification system
+- Added contactLink and ontologyURL env variable
+- Added env var for expriments list refresh
+- Add Modal based on promise
+
+Bug Fixes : 
+- Descriptive stats call has no coVariables property
+- Updated libraries to fix critical dependencies issues
+- Bubble text splitting issue
+
 ## 8.0.1 - 2021/12/22
 
 - Updated Login Page links

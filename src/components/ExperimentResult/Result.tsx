@@ -1,10 +1,7 @@
-import * as React from 'react';
 import { Card, ProgressBar } from 'react-bootstrap';
 import styled, { keyframes } from 'styled-components';
-
-import { Result, State, IExperiment } from '../API/Experiment';
-import ResultsErrorBoundary from '../UI/ResultsErrorBoundary';
-import RenderResult from './RenderResult';
+import { Experiment, ExperimentStatus } from '../API/GraphQL/types.generated';
+import ResultDispatcher from './ResultDispatcher';
 
 const Body = styled(Card.Body)`
   min-height: 20vh;
@@ -44,14 +41,9 @@ const ProgressBarStyled = styled.div`
   border-radius: 4px;
 `;
 
-export default ({
-  experimentState
-}: {
-  experimentState: State;
-}): JSX.Element => {
-  const experiment = experimentState.experiment as IExperiment;
-  const result = experiment?.result;
-  const loading = experiment.status === 'pending';
+const Result = ({ experiment }: { experiment?: Experiment }): JSX.Element => {
+  const loading = experiment?.status === ExperimentStatus.Pending;
+
   return (
     <Card>
       <Body>
@@ -70,10 +62,20 @@ export default ({
             </p>
           </div>
         ) : null}
-        <ResultsErrorBoundary>
-          <RenderResult results={result as Result[]} />
-        </ResultsErrorBoundary>
+        <div className="result-list">
+          {experiment &&
+            experiment.results?.map((result, i) => {
+              return (
+                <ResultDispatcher
+                  key={`${experiment?.id}-${i}`}
+                  result={result}
+                />
+              );
+            })}
+        </div>
       </Body>
     </Card>
   );
 };
+
+export default Result;

@@ -1,20 +1,20 @@
-import * as React from 'react';
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import { round } from '../../utils';
 import './JSON.css';
 
-export default ({ row }: { row: any }): JSX.Element => {
+const JSON = ({ row }: { row: any }): JSX.Element => {
   const variables = Object.keys(row);
-  const tables = variables.map(v => row[v]);
+  const tables = variables.map((v) => row[v]);
   const tableKeys = tables.map((k: any) => Object.keys(k)).pop() || [];
   const mapCode = (code: string) => ({ code, label: code, order: -1 });
   const headersKeys: string[] = tableKeys
     .map(mapCode)
     .sort((a, b) => a.order - b.order)
-    .map(s => s.code);
-  const headers: string[] = headersKeys.map(mapCode).map(s => s.label);
+    .map((s) => s.code);
+  const headers: string[] = headersKeys.map(mapCode).map((s) => s.label);
 
   const computedBody = variables.map((v: any, j: number): any[][] => {
-    const val = headersKeys.map(key => {
+    const val = headersKeys.map((key) => {
       const value = tables[j][key];
       let output;
       const starIt = (vvalue: number, formatedValue: string): string =>
@@ -46,7 +46,7 @@ export default ({ row }: { row: any }): JSX.Element => {
       <thead>
         <tr>
           <th>Variables</th>
-          {headers.map(c => (
+          {headers.map((c) => (
             <th key={c}>{c}</th>
           ))}
         </tr>
@@ -63,3 +63,5 @@ export default ({ row }: { row: any }): JSX.Element => {
     </table>
   );
 };
+
+export default JSON;

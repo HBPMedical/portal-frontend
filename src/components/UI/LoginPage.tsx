@@ -1,99 +1,126 @@
-import * as React from 'react';
-import { Container, Jumbotron } from 'react-bootstrap';
+import { useState } from 'react';
+import { Button, Card, Spinner } from 'react-bootstrap';
+import { useHistory } from 'react-router-dom';
+import { toast } from 'react-toastify';
 import styled from 'styled-components';
-import HBPLogo from '../../images/logo_135.png';
+import { SessionState } from '../../utilities/types';
+import { apolloClient } from '../API/GraphQL/apollo.config';
+import { localMutations } from '../API/GraphQL/operations/mutations';
+import {
+  useActiveUserQuery,
+  useLoginMutation,
+} from '../API/GraphQL/queries.generated';
+import { REFRESH_TOKEN_KEY_NAME } from '../constants';
 
-const StyledContainer = styled(Container)`
-  margin: 16px auto 0 auto;
+const Container = styled.div`
   display: flex;
-  flex-direction: row;
-  padding: 0;
+  align-items: center;
+  justify-content: center;
+`;
 
-  @media (min-width: 1400px) {
-    max-width: 930px;
+const CardContainer = styled(Card)`
+  margin-top: 20vh;
+  padding: 30px;
+  border-radius: 10px;
+  width: 500px;
+
+  & h3 {
+    margin-bottom: 20px;
   }
-
-  @media (max-width: 768px) {
-    flex-direction: column;
-  }
 `;
 
-const StyledJumbotron = styled(Jumbotron)`
-  margin-bottom: 0;
-  border-radius: 0;
-  flex: 2;
-  background-color: #ffffffaa;
-  border-right: 1px solid #ddd;
-`;
+const LoginPage = () => {
+  const [username, setUsername] = useState<string>('');
+  const [password, setPassword] = useState<string>('');
+  const history = useHistory();
 
-const Logo = styled.img`
-  width: 120px;
-  height: 120px;
-  display: block;
-  margin: 0px auto 32px auto;
-`;
+  useActiveUserQuery({
+    onCompleted: () => {
+      // Done only if user is logged in
+      history.push('/');
+    },
+  });
 
-export default (): JSX.Element => {
+  const [loginMutation, { loading }] = useLoginMutation({
+    onCompleted: async (data) => {
+      toast.success('Logged in successfully');
+
+      localMutations.resetStore();
+      await apolloClient.resetStore();
+      localMutations.user.setState(SessionState.LOGGED_IN);
+      localStorage.setItem(REFRESH_TOKEN_KEY_NAME, data.login.refreshToken);
+
+      history.push('/');
+    },
+    refetchQueries: 'active',
+    onError: (data) => {
+      if (data.graphQLErrors) {
+        for (const err of data.graphQLErrors) {
+          switch (err.extensions?.code || 'unknown') {
+            case 'UNAUTHENTICATED':
+              toast.error('Invalid login or password.');
+              break;
+            default:
+              toast.error('Error when trying to login, please try later.');
+              console.log(err);
+              break;
+          }
+        }
+      }
+    },
+  });
+
+  const handleLogin = () => {
+    loginMutation({
+      variables: { username, password },
+    });
+  };
+
+  const loginSubmit = (e: React.SyntheticEvent) => {
+    e.preventDefault();
+    handleLogin();
+  };
+
   return (
-    <StyledContainer>
-      <StyledJumbotron>
-        <Logo alt="HBP logo" title={'Human Brain Project'} src={HBPLogo} />
-        <h1 className="display-4">The Medical Informatics Platform</h1>
-        <h3>About</h3>
-        <p className="lead">
-          The Medical Informatics Platform (MIP) is the most advanced, fully
-          operational, open source platform for sharing of decentralized
-          clinical data.
-        </p>
+    <Container>
+      <CardContainer>
+        <form onSubmit={loginSubmit}>
+          <h3>Login In</h3>
+          <div className="form-group"></div>
+          <div className="form-group">
+            <label>Username or email</label>
+            <input
+              type="text"
+              className="form-control"
+              onChange={(event) => setUsername(event.target.value)}
+              required={true}
+            />
+          </div>
+          <div className="form-group">
+            <label>Password</label>
+            <input
+              type="password"
+              className="form-control"
+              onChange={(event) => setPassword(event.target.value)}
+            />
+          </div>
 
-        <p className="lead">
-          Clinical data that cannot be shared, transferred and stored in a
-          centralized way can be federated and collaboratively analysed.{' '}
-        </p>
-        <p className="lead">
-          Data Owners have full control of accessibility and sharing of their
-          data through a tightly controlled accreditation, access control and
-          user management system.
-        </p>
-        <p className="lead">
-          Documentation about the project can be found on{' '}
-          <a
-            href="https://github.com/hbpmedical/mip-docs"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            GitHub
-          </a>
-          .
-        </p>
-        <p className="lead">
-          For more detailed information:{' '}
-          <a
-            href="https://ebrains.eu/service/medical-informatics-platform/"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            EBRAINS website
-          </a>
-          .
-        </p>
-        <hr className="my-4" />
-        <h3>Get access to the MIP</h3>
-        <p>
-          To access the MIP an EBRAINS account is required. If you do not have
-          one yet, you can{' '}
-          <strong>
-            <a
-              href="https://ebrains.eu/register"
-              target="_blank"
-              rel="noopener noreferrer"
-            >
-              register an account on EBRAINS
-            </a>
-          </strong>
-          .
-        </p>
-      </StyledJumbotron>
-    </StyledContainer>
+          <Button type="submit" className="btn-block">
+            {loading && (
+              <Spinner
+                as="span"
+                animation="border"
+                size="sm"
+                role="status"
+                aria-hidden="true"
+              />
+            )}
+            {!loading && 'Submit'}
+          </Button>
+        </form>
+      </CardContainer>
+    </Container>
   );
 };
+
+export default LoginPage;

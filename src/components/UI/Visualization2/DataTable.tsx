@@ -1,22 +1,23 @@
-import * as React from 'react';
+import { CSVLink } from 'react-csv';
+import { FaFileCsv } from 'react-icons/fa';
 import styled from 'styled-components';
-import { TableResult } from '../../API/GraphQL/types.generated';
+import { TableResult, TableStyle } from '../../API/GraphQL/types.generated';
 
-type Layout = 'default' | 'statistics';
+const layouts = ['default', 'statistics'] as const;
+export type Layout = typeof layouts[number];
 
 interface TableProps {
   data: TableResult;
-  layout?: Layout;
 }
 
 interface LayoutProps {
-  layout: Layout;
+  layout: TableStyle;
   colsCount: number;
 }
 
 const Table = styled.table<LayoutProps>`
   font-family: sans-serif;
-  margin-bottom: 32px;
+  margin-bottom: 5px;
   table-layout: fixed;
   white-space: nowrap;
   min-width: 100%;
@@ -48,7 +49,7 @@ const Table = styled.table<LayoutProps>`
   }
 
   ${(prop): string =>
-    prop.layout === 'default'
+    prop.layout === TableStyle.Default
       ? `
         tr:nth-child(even) {
           background: #ebebeb;
@@ -76,29 +77,65 @@ const Table = styled.table<LayoutProps>`
   }
 `;
 
-const DataTable = ({ data, layout = 'default' }: TableProps): JSX.Element => (
-  <Table
-    layout={layout}
-    colsCount={data.headers.length}
-    key={`table-${data.name}`}
-  >
-    <thead>
-      <tr>
-        {data.headers.map((m, i) => (
-          <th key={`${data.name}-header-${i}`}>{m.name}</th>
-        ))}
-      </tr>
-    </thead>
-    <tbody>
-      {data.data.map((row, i) => (
-        <tr key={`${data.name}-row-${i}`}>
-          {row.map((value, j) => (
-            <td key={`${data.name}-col-${i}-${j}`}>{value}</td>
+const Container = styled.div`
+  margin-bottom: 30px;
+
+  .title {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-end;
+  }
+  .actions {
+    font-size: 0.6em;
+    display: flex;
+    align-items: center;
+    margin-bottom: 2px;
+    font-weight: normal;
+  }
+`;
+
+const DataTable = ({ data }: TableProps): JSX.Element => {
+  const csvData = [[...data.headers.map((h) => h.name)], ...data.data];
+
+  return (
+    <Container className="table-result">
+      <h5 className="title">
+        {data.name}
+
+        <CSVLink
+          filename={`table-export-${new Date().toJSON().slice(0, 10)}.csv`}
+          data={csvData}
+          className="float-right actions"
+        >
+          <FaFileCsv />
+          Export as CSV
+        </CSVLink>
+      </h5>
+
+      <Table
+        layout={data.tableStyle ?? TableStyle.Normal}
+        colsCount={data.headers.length}
+        key={`table-${data.name}`}
+      >
+        <thead>
+          <tr>
+            {data.headers.map((m, i) => (
+              <th key={`${data.name}-header-${i}`}>{m.name}</th>
+            ))}
+          </tr>
+        </thead>
+        <tbody>
+          {data.data.map((row, i) => (
+            <tr key={`${data.name}-row-${i}`}>
+              {row.map((value, j) => (
+                <td key={`${data.name}-col-${i}-${j}`}>{value}</td>
+              ))}
+            </tr>
           ))}
-        </tr>
-      ))}
-    </tbody>
-  </Table>
-);
+        </tbody>
+      </Table>
+    </Container>
+  );
+};
 
 export default DataTable;

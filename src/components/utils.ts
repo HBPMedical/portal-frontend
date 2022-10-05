@@ -1,12 +1,54 @@
 import numbro from 'numbro';
 import { createBrowserHistory } from 'history';
 import { useEffect, RefObject, useState } from 'react';
+import { NodeData } from './ExperimentExplore/d3Hierarchy';
+import { ExperimentCreateInput } from './API/GraphQL/types.generated';
+import { MIME_TYPES } from './constants';
+
+export type HierarchyCircularNode = d3.HierarchyCircularNode<NodeData>;
+
+export type Dict<T = string | undefined> = { [key: string]: T };
+
+export interface Result {
+  type: MIME_TYPES;
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  data: any;
+}
+
+export interface AppConfig {
+  version?: string;
+  instanceName?: string;
+  datacatalogueUrl?: string;
+  ontologyUrl?: string;
+  contactLink?: string;
+  experimentsListRefresh?: string;
+  matomo?: {
+    enabled: boolean;
+    urlBase?: string;
+    siteId?: string;
+  };
+}
+
+export interface GalaxyConfig {
+  authorization?: string;
+  context?: string;
+  error?: { error?: string; message: string };
+}
+
+export type IFormula = Pick<
+  ExperimentCreateInput,
+  'interactions' | 'transformations'
+>;
 
 export const round = (num: number, decimals = 3): string =>
   // !(num % 1 === 0) checks if number is an Integer
-  !isNaN(num) && !(num % 1 === 0)
+  !isNaN(num) && num % 1 !== 0
     ? numbro(num).format({ mantissa: decimals })
     : `${num}`;
+
+export const uppercase = (text: string): string => {
+  return text ? `${text?.charAt(0).toUpperCase()}${text?.slice(1)}` : text;
+};
 
 export const history = createBrowserHistory();
 
@@ -16,24 +58,28 @@ export const history = createBrowserHistory();
  * @param {function} action - the action to perform on key press
  */
 
-export function useKeyPressed(
-  keyLookup: (event: KeyboardEvent) => boolean
-): boolean {
+const keyLookup = (event: KeyboardEvent, key: string): boolean => {
+  return event.key === key;
+};
+
+export function useKeyPressed(key: string, action: () => void): boolean {
   const [keyPressed, setKeyPressed] = useState(false);
 
   useEffect(() => {
-    const downHandler = (ev: KeyboardEvent): void =>
-      setKeyPressed(keyLookup(ev));
-    const upHandler = (ev: KeyboardEvent): void => setKeyPressed(keyLookup(ev));
+    const keyHandler = (ev: KeyboardEvent): void => {
+      const state = keyLookup(ev, key);
+      setKeyPressed(state);
+      if (state) action();
+    };
 
-    window.addEventListener('keydown', downHandler);
-    window.addEventListener('keyup', upHandler);
+    window.addEventListener('keydown', keyHandler);
+    window.addEventListener('keyup', keyHandler);
 
     return (): void => {
-      window.removeEventListener('keydown', downHandler);
-      window.removeEventListener('keyup', upHandler);
+      window.removeEventListener('keydown', keyHandler);
+      window.removeEventListener('keyup', keyHandler);
     };
-  }, [keyLookup]);
+  }, [action, key]);
 
   return keyPressed;
 }

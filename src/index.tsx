@@ -3,17 +3,20 @@ import bugsnag from '@bugsnag/js';
 import bugsnagReact from '@bugsnag/plugin-react';
 import 'bootstrap/dist/css/bootstrap.min.css';
 import 'bootstrap/dist/js/bootstrap.bundle.min';
-import * as React from 'react';
-import * as ReactDOM from 'react-dom';
-import { apolloClient } from './components/API/Core';
-import { default as AppContainer } from './components/App/Container';
+import React from 'react';
+import { apolloClient } from './components/API/GraphQL/apollo.config';
+import AppContainer from './components/App/AppContainer';
+import MatomoContainer from './components/App/MatomoContainer';
 import './index.css';
 import { unregister } from './registerServiceWorker';
+import { createRoot } from 'react-dom/client';
 
 const commonApp = (): JSX.Element => {
   return (
     <ApolloProvider client={apolloClient}>
-      <AppContainer />
+      <MatomoContainer>
+        <AppContainer />
+      </MatomoContainer>
     </ApolloProvider>
   );
 };
@@ -33,5 +36,7 @@ const AppBox = (): JSX.Element => {
   return commonApp();
 };
 
-ReactDOM.render(AppBox(), document.getElementById('root') as HTMLElement);
+const container = document.getElementById('root') as HTMLDivElement;
+const root = createRoot(container);
+root.render(<AppBox />);
 unregister();

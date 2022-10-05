@@ -10,7 +10,7 @@ interface State {
 
 class ResultsErrorBoundary extends Component<Props> {
   state = {
-    error: null
+    error: null,
   };
 
   static getDerivedStateFromError(error: Error): State {

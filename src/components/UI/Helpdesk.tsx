@@ -34,12 +34,12 @@ const code = (formId?: string): string => `
   }`;
 
 const HelpDeskForm = ({
-  formId = 'feedback-form'
+  formId = 'feedback-form',
 }: {
   formId?: string;
 }): JSX.Element => {
   React.useEffect(() => {
-    const supportformLoad = function() {
+    const supportformLoad = function () {
       const scriptId = `${formId}-loader`;
       const scriptElement = document.querySelector(`#${scriptId}`);
       if (scriptElement) {
@@ -59,7 +59,7 @@ const HelpDeskForm = ({
         'https://cdnjs.cloudflare.com/ajax/libs/jquery/3.3.1/jquery.min.js';
       document.head.appendChild(script);
 
-      script.addEventListener('load', function() {
+      script.addEventListener('load', function () {
         // Load ZammadScript once
         if (!document.querySelector('#zammad_form_script')) {
           const script = document.createElement('script');
@@ -69,7 +69,7 @@ const HelpDeskForm = ({
             'https://support.humanbrainproject.eu/assets/form/form.js';
           document.head.appendChild(script);
 
-          script.addEventListener('load', function() {
+          script.addEventListener('load', function () {
             // Load the form via jQuery and code as code.text = '...',
             // first time with window.onload to ensure jQuery is loaded
             supportformLoad();
