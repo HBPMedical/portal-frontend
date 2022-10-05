@@ -32,11 +32,29 @@ const exploreTour: ShepherdOptionsWithType[] = [
     id: 'explore-domain',
     title: 'Domain',
     text: [
-      'This section allow to select the domain of interest and specify the dataset/cohort you want to work on.',
+      'This button allows to select the domain of interest you want to work on.',
+    ],
+    showOn: function () {
+      return !!document.querySelector('#pathology-select');
+    },
+    attachTo: {
+      element: '#pathology-select',
+      on: 'bottom',
+    },
+    buttons: basicStepBtns,
+  },
+  {
+    id: 'explore-datasets',
+    title: 'Datasets',
+    text: [
+      'This button allows to specify the dataset/cohort you want to work on.',
     ],
     attachTo: {
-      element: '#domain-select',
+      element: '#dataset-select',
       on: 'bottom',
+    },
+    showOn: function () {
+      return !!document.querySelector('#dataset-select');
     },
     buttons: basicStepBtns,
   },
@@ -94,7 +112,7 @@ const exploreTour: ShepherdOptionsWithType[] = [
       <p>To perform an experiment, these variables are used in two ways either as variables or covariates.</p>
       <p><b>Variable</b> represents a variable of interest or the independant variable.</p>
       <p><b>Covariate</b> represents a dependant variable.</p>
-
+      <p><b>Filters</b> allows to apply filters based in these variables.</p>
       <p><b>Click on the "As variable" button to continue.</b></p>
      `,
     attachTo: {
