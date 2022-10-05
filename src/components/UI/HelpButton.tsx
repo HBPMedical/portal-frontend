@@ -79,11 +79,9 @@ const HelpButton = ({
       <DropdownButton variant="link" id={'help-dropdown'} title={'Help'}>
         <p>
           <a
-            href="https://mip.ebrains.eu/documentation/"
-            // tslint:disable-next-line jsx-no-lambda
-            onSelect={(): void => {
-              window.open('https://mip.ebrains.eu/documentation/');
-            }}
+            href="https://github.com/HBPMedical/mip-docs"
+            target="_blank"
+            rel="noreferrer noopener"
           >
             <BsBook /> MIP Documentation
           </a>
