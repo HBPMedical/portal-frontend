@@ -1,5 +1,5 @@
 import { makeVar, useReactiveVar } from '@apollo/client';
-import { useContext } from 'react';
+import { useContext, useEffect } from 'react';
 import {
   ShepherdOptionsWithType,
   ShepherdTour,
@@ -14,6 +14,9 @@ export type TourConf = {
   steps: ShepherdOptionsWithType[];
 };
 export const tourConf = makeVar<TourConf | null>(null);
+const COMPLETED_TOUR_VALUE = 'done';
+const PREFIX_KEY = 'shepherd-';
+const SKIP_KEY = 'skip-shepherd';
 
 const tourOptions: Tour.TourOptions = {
   defaultStepOptions: {
@@ -27,10 +30,20 @@ const tourOptions: Tour.TourOptions = {
   keyboardNavigation: false,
 };
 
-const ShepherdButton = () => {
+const ShepherdButton = ({ tourId }: { tourId: string }) => {
   const tour = useContext(ShepherdTourContext);
 
-  // tour.on('complete', () => { ...  }); // if you want to do something when the tour is completed
+  ['complete', 'close', 'cancel'].forEach((event) => {
+    tour?.on(event, () => {
+      localStorage.setItem(`${PREFIX_KEY}${tourId}`, COMPLETED_TOUR_VALUE);
+    });
+  });
+
+  useEffect(() => {
+    if (localStorage.getItem(SKIP_KEY) === 'true') return;
+    if (localStorage.getItem(`${PREFIX_KEY}${tourId}`) !== COMPLETED_TOUR_VALUE)
+      tour?.start();
+  }, [tourId, tour]);
 
   return (
     <a
@@ -52,7 +65,7 @@ const ShepherdContainer = () => {
 
   return (
     <ShepherdTour steps={tourConfig.steps} tourOptions={tourOptions}>
-      <ShepherdButton />
+      <ShepherdButton tourId={tourConfig.id} />
     </ShepherdTour>
   );
 };

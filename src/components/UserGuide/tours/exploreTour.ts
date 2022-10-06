@@ -11,7 +11,7 @@ const exploreTour: ShepherdOptionsWithType[] = [
   {
     id: 'explore-intro',
     title: 'Welcome to the Medical Informatics Platform (MIP)',
-    text: ['This guide will help you to understand the MIP and how to use it.'],
+    text: 'This guide will help you to understand the MIP and how to use it.',
     buttons: firstStepBtns,
   },
   {
@@ -31,9 +31,8 @@ const exploreTour: ShepherdOptionsWithType[] = [
   {
     id: 'explore-domain',
     title: 'Domain',
-    text: [
-      'This button allows to select the domain of interest you want to work on.',
-    ],
+    text: 'This button allows to select the domain of interest you want to work on.',
+    canClickTarget: false,
     showOn: function () {
       return !!document.querySelector('#pathology-select');
     },
@@ -46,9 +45,8 @@ const exploreTour: ShepherdOptionsWithType[] = [
   {
     id: 'explore-datasets',
     title: 'Datasets',
-    text: [
-      'This button allows to specify the dataset/cohort you want to work on.',
-    ],
+    canClickTarget: false,
+    text: 'This button allows to specify the dataset/cohort you want to work on.',
     attachTo: {
       element: '#dataset-select',
       on: 'bottom',
