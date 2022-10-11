@@ -1,3 +1,10 @@
+## [9.0.1-beta.1](https://gitlab.com/sibmip/portal-frontend/compare/9.0.0...9.0.1-beta.1) (2022-10-11)
+
+
+### Bug Fixes
+
+* Experiment list fullname instead of username ([d726744](https://gitlab.com/sibmip/portal-frontend/commit/d726744e96ac99c31d00d0320235c668241b8043))
+
 # [9.0.0](https://gitlab.com/sibmip/portal-frontend/compare/8.0.2...9.0.0) (2022-10-05)
 
 
