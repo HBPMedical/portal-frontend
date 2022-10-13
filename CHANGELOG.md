@@ -1,3 +1,11 @@
+## [9.0.1-beta.2](https://gitlab.com/sibmip/portal-frontend/compare/9.0.1-beta.1...9.0.1-beta.2) (2022-10-13)
+
+
+### Bug Fixes
+
+* Issue with config.json (undefined not valid) ([b3cafbd](https://gitlab.com/sibmip/portal-frontend/commit/b3cafbd6ef2c883fab480488d2086b293e8b63b8))
+* Viewed was not set after experiment display ([9dbbd2a](https://gitlab.com/sibmip/portal-frontend/commit/9dbbd2a06f18a53e80e4177305a549c21431883c))
+
 ## [9.0.1-beta.1](https://gitlab.com/sibmip/portal-frontend/compare/9.0.0...9.0.1-beta.1) (2022-10-11)
 
 
