@@ -1,9 +1,9 @@
-import numbro from 'numbro';
 import { createBrowserHistory } from 'history';
-import { useEffect, RefObject, useState } from 'react';
-import { NodeData } from './ExperimentExplore/d3Hierarchy';
+import numbro from 'numbro';
+import { RefObject, useEffect, useState } from 'react';
 import { ExperimentCreateInput } from './API/GraphQL/types.generated';
 import { MIME_TYPES } from './constants';
+import { NodeData } from './ExperimentExplore/d3Hierarchy';
 
 export type HierarchyCircularNode = d3.HierarchyCircularNode<NodeData>;
 
@@ -15,17 +15,19 @@ export interface Result {
   data: any;
 }
 
+type Maybe<T> = T | null;
+
 export interface AppConfig {
   version?: string;
   instanceName?: string;
-  datacatalogueUrl?: string;
-  ontologyUrl?: string;
+  datacatalogueUrl?: Maybe<string>;
+  ontologyUrl?: Maybe<string>;
   contactLink?: string;
   experimentsListRefresh?: string;
   matomo?: {
     enabled: boolean;
-    urlBase?: string;
-    siteId?: string;
+    urlBase?: Maybe<string>;
+    siteId?: Maybe<string>;
   };
 }
 

@@ -1,10 +1,13 @@
 import { useReactiveVar } from '@apollo/client';
-import React, { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { Card, Col, Container, Row } from 'react-bootstrap';
 import { RouteComponentProps, withRouter } from 'react-router-dom';
 import { domainsVar } from '../API/GraphQL/cache';
 import { localMutations } from '../API/GraphQL/operations/mutations';
-import { useGetExperimentQuery } from '../API/GraphQL/queries.generated';
+import {
+  useEditExperimentMutation,
+  useGetExperimentQuery,
+} from '../API/GraphQL/queries.generated';
 import {
   Domain,
   Experiment,
@@ -28,6 +31,7 @@ const ContainerWrap = ({ ...props }: Props): JSX.Element => {
   const [experiment, setExperiment] = useState<Experiment>();
   const [domain, setDomain] = useState<Domain>();
   const domains = useReactiveVar<Domain[]>(domainsVar);
+  const [editExperimentMutation] = useEditExperimentMutation();
 
   const { startPolling, stopPolling, error } = useGetExperimentQuery({
     variables: { id: uuid },
@@ -57,6 +61,21 @@ const ContainerWrap = ({ ...props }: Props): JSX.Element => {
         setExperiment(newExperiment);
     },
   });
+
+  useEffect(() => {
+    if (
+      uuid &&
+      experiment &&
+      experiment.status &&
+      [ExperimentStatus.Error, ExperimentStatus.Success].includes(
+        experiment.status
+      )
+    ) {
+      editExperimentMutation({
+        variables: { id: uuid, data: { viewed: true } },
+      });
+    }
+  }, [experiment, editExperimentMutation, uuid]);
 
   return (
     <>

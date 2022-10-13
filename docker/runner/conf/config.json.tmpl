@@ -2,12 +2,12 @@
     "version": "{{ default .Env.VERSION "DEV" }}",
     "instanceName": "{{ default .Env.INSTANCE_NAME "HBP MIP" }}",
     "contactLink": "{{ default .Env.CONTACT_LINK "https://ebrains.eu/support/"}}",
-    "datacatalogueUrl": {{if .Env.DATACATALOGUE_SERVER}}"{{ .Env.DATACATALOGUE_SERVER }}"{{else}}undefined{{end}},
-    "ontologyUrl": {{if .Env.ONTOLOGY_URL}}"{{ .Env.ONTOLOGY_URL }}"{{else}}undefined{{end}},
+    "datacatalogueUrl": {{if .Env.DATACATALOGUE_SERVER}}"{{ .Env.DATACATALOGUE_SERVER }}"{{else}}null{{end}},
+    "ontologyUrl": {{if .Env.ONTOLOGY_URL}}"{{ .Env.ONTOLOGY_URL }}"{{else}}null{{end}},
     "experimentsListRefresh": "{{ default .Env.EXPERIMENTS_LIST_REFRESH "300000" }}",
     "matomo": {
         "enabled": {{ isTrue (default .Env.MATOMO_ENABLED "false") }},
-        "urlBase": {{if .Env.MATOMO_URL}}"{{ .Env.MATOMO_URL }}"{{else}}undefined{{end}},
-        "siteId": {{if .Env.MATOMO_SITE_ID}}"{{ .Env.MATOMO_SITE_ID }}"{{else}}undefined{{end}}
+        "urlBase": {{if .Env.MATOMO_URL}}"{{ .Env.MATOMO_URL }}"{{else}}null{{end}},
+        "siteId": {{if .Env.MATOMO_SITE_ID}}"{{ .Env.MATOMO_SITE_ID }}"{{else}}null{{end}}
     }
 }
