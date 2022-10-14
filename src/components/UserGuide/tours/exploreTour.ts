@@ -11,7 +11,7 @@ const exploreTour: ShepherdOptionsWithType[] = [
   {
     id: 'explore-intro',
     title: 'Welcome to the Medical Informatics Platform (MIP)',
-    text: 'This guide will help you to understand the MIP and how to use it.',
+    text: 'This guide will help you to understand how to use the MIP.',
     buttons: firstStepBtns,
   },
   {
@@ -19,7 +19,7 @@ const exploreTour: ShepherdOptionsWithType[] = [
     title: 'Navigation',
     canClickTarget: false,
     text: `
-      <p>This is the navigation bar, it allows navigation between the different sections of the platform.</p>
+      <p>The navigation bar allows navigation between the different sections of the platform.</p>
       <p>The platform is divided into 3 main sections : <b>Variables (Explore)</b>, <b>Analysis</b> and <b>Experiment</b>.</p>
     `,
     attachTo: {
@@ -31,7 +31,7 @@ const exploreTour: ShepherdOptionsWithType[] = [
   {
     id: 'explore-domain',
     title: 'Domain',
-    text: 'This button allows to select the domain of interest you want to work on.',
+    text: 'This button allows you to select the domain of interest you want to work on.',
     canClickTarget: false,
     showOn: function () {
       return !!document.querySelector('#pathology-select');
@@ -46,7 +46,7 @@ const exploreTour: ShepherdOptionsWithType[] = [
     id: 'explore-datasets',
     title: 'Datasets',
     canClickTarget: false,
-    text: 'This button allows to specify the dataset/cohort you want to work on.',
+    text: 'This button allows you to specify the dataset/cohort you want to work on. You can select and unselect specific datasets.',
     attachTo: {
       element: '#dataset-select',
       on: 'bottom',
@@ -57,10 +57,22 @@ const exploreTour: ShepherdOptionsWithType[] = [
     buttons: basicStepBtns,
   },
   {
+    id: 'explore-search',
+    title: 'Search variables',
+    text: `<p>This search bar allows you to search for a specific variable or group.</p>
+      <p>It is possible to search for variables by name or by their type.</p>`,
+    canClickTarget: false,
+    attachTo: {
+      element: '.search-input',
+      on: 'auto',
+    },
+    buttons: basicStepBtns,
+  },
+  {
     id: 'explore-variables',
     title: 'Variables selection',
-    text: `<p>This section allows to select the variables of interest.</p>
-      <p>Each white bubble represent a variable. You can select one variable by clicking on it.</p>
+    text: `<p>This section allows you to select the variables of interest.</p>
+      <p>Each white bubble represents a variable. You can select a variable by clicking on a bubble.</p>
       <p><b>Click on a variable (white bubble) to go to the next step.</b></p>
     `,
     attachTo: {
@@ -86,7 +98,7 @@ const exploreTour: ShepherdOptionsWithType[] = [
   {
     id: 'explore-histograms',
     title: 'Variable details',
-    text: `<p>After clicking on a white bubble, this section will show the variable's distribution among the selected datasets.</p>`,
+    text: `<p>After clicking on a white bubble, this section will show the distribution of the variable across the selected datasets.</p>`,
     attachTo: {
       element: '.statistics',
       on: 'auto',
@@ -107,7 +119,7 @@ const exploreTour: ShepherdOptionsWithType[] = [
     id: 'explore-bag-variable',
     title: 'Variable containers',
     text: `
-      <p>To perform an experiment, these variables are used in two ways either as variables or covariates.</p>
+      <p>To perform an experiment, these variables are used in two ways, either as variables or as covariates.</p>
       <p><b>Variable</b> represents a variable of interest or the independant variable.</p>
       <p><b>Covariate</b> represents a dependant variable.</p>
       <p><b>Filters</b> allows to apply filters based in these variables.</p>
@@ -127,8 +139,8 @@ const exploreTour: ShepherdOptionsWithType[] = [
     id: 'explore-bag-variable2',
     title: 'Variable container',
     text: `
-      <p>You can then see that the variable has been added inside the "variable" container.
-      You can remove it by clicking on the "x" next to the variable.</p>
+      <p>You can see that the variable has been added to the "variable" container.
+      You can remove a variable by clicking on the "x" next to the variable.</p>
      `,
     attachTo: {
       element: '#variable-containers .container-variable .list-group',
@@ -141,7 +153,7 @@ const exploreTour: ShepherdOptionsWithType[] = [
     id: 'explore-algorithms',
     title: 'Available algorithms',
     text: `
-      <p>After selecting a variable, you'll see in green the algorithms that are available for the current selected variables.</p>
+      <p>After selecting a variable, you will see in green the algorithms that are available for the current selection of variables.</p>
      `,
     attachTo: {
       element: '#algorithm-available',
@@ -153,7 +165,7 @@ const exploreTour: ShepherdOptionsWithType[] = [
     id: 'explore-next-step',
     title: 'Next step',
     text: `
-      <p>Once you've selected your variables of interest you can go to the next step by click on the "Descriptive Analysis" button.</p>
+      <p>Once you selected your variables of interest you can go to the next step by clicking on the "Descriptive Analysis" button.</p>
      `,
     attachTo: {
       element: '#btn-goto-analysis',
@@ -168,7 +180,7 @@ const exploreTour: ShepherdOptionsWithType[] = [
     title: 'Exploration guide done!',
     text: `
       <p>Congrats you have finished the guide for the exploration phase!</p>
-      <p>You can either continue to play with the exploration or go to the next phase "Descriptive stats".</p>
+      <p>You can either continue to work in the exploration section or go to the next section "Descriptive stats".</p>
      `,
     buttons: lastStepBtns,
   },

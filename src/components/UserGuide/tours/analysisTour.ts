@@ -6,8 +6,8 @@ const analysisTour: ShepherdOptionsWithType[] = [
     id: 'analysis-intro',
     title: 'Analysis section',
     text: `
-      <p>This section is made to show some information about the selected variables before going further.
-      It will display some descriptive statistics data about variables.</p>
+      <p>This section provides information about the selected variables before continuing analysis.
+      Displayed is basic descriptive statistics about the selected variables.</p>
     `,
     buttons: firstStepBtns,
   },
@@ -19,7 +19,7 @@ const analysisTour: ShepherdOptionsWithType[] = [
       on: 'auto',
     },
     text: `
-      <p>This is a summary of choices you made in the previous section. 
+      <p>Displayed is a summary of choices you made in the previous section. 
       It contains the <b>domain</b>, <b>datasets</b> and the <b>variables</b> you selected.</p>
     `,
     buttons: basicStepBtns,
@@ -32,7 +32,7 @@ const analysisTour: ShepherdOptionsWithType[] = [
       on: 'auto',
     },
     text: `
-      <p>Here is the result of the <b>descriptive statistics</b> related to the variables selected.</p>
+      <p>Displayed is the result of the <b>descriptive statistics</b> related to the variables selected.</p>
     `,
     buttons: basicStepBtns,
   },
@@ -44,7 +44,7 @@ const analysisTour: ShepherdOptionsWithType[] = [
       on: 'auto',
     },
     text: `
-      <p>By clicking on this button, you will be able to filter data and add formula on specific algorithms.</p>
+      <p>By clicking on this button, you will be able to filter data and add formulas on specific algorithms.</p>
     `,
     canClickTarget: false,
     buttons: basicStepBtns,
@@ -57,7 +57,7 @@ const analysisTour: ShepherdOptionsWithType[] = [
       on: 'auto',
     },
     text: `
-      <p>The following button allows exporting the result in a PDF or JSON format. It will export all the results that are in the page.</p>
+      <p>The following button allows exporting the results in a PDF or JSON format. All the results available on the page will be exported.</p>
       <p>You can also export result individually.</p>
     `,
     canClickTarget: false,
@@ -80,7 +80,7 @@ const analysisTour: ShepherdOptionsWithType[] = [
     id: 'analysis-done',
     title: 'Analysis tour done!',
     text: `
-      <p>Congrats! You have finished the analysis tour.</p>
+      <p>Congrats You have finished the analysis phase!</p>
     `,
     buttons: lastStepBtns,
   },

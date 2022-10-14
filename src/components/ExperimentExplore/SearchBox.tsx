@@ -151,7 +151,7 @@ const SearchBox = (props: Props): JSX.Element => {
         onBlur={handleBlur}
         onChange={handleChangeInput}
         ref={searchRef}
-        className={'form-control'}
+        className={'form-control search-input'}
       />
       <div className={`search-items ${visibleResults ? 'visible' : 'hidden'} `}>
         <Container>

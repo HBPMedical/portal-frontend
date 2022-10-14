@@ -12,20 +12,20 @@ const experimentTour: ShepherdOptionsWithType[] = [
     id: 'experiment-intro',
     title: 'Experiment section',
     text: `
-      <p>In this section you will be able to choose an algorithm and the parameters associated with it.</p>
+      <p>In this section you are be able to choose an algorithm and the parameters associated with it.</p>
     `,
     buttons: firstStepBtns,
   },
   {
     id: 'experiment-algorithms',
-    title: 'Algorithms selection',
+    title: 'Algorithm selection',
     attachTo: {
       element: '.sidebar2 .card',
       on: 'auto',
     },
     text: `
-      <p>In this section you will find the different algorithms,
-      those in dark blue are the algorithms available for the selected variables.</p>
+      <p>In this section you can find the different algorithms,
+      algorithms displayed in dark blue are the algorithms available for the selected variables.</p>
       <p><b>Click on an available algorithm to continue.</b></p>
     `,
     when: {
@@ -52,7 +52,7 @@ const experimentTour: ShepherdOptionsWithType[] = [
       on: 'auto',
     },
     text: `
-      <p>In this section, you will be able to set the algorithm's parameters (if there is any).</p>
+      <p>In this section, you are able to set specific parameters for an algorithm  (if there are any).</p>
     `,
     buttons: basicStepBtns,
   },
@@ -64,8 +64,8 @@ const experimentTour: ShepherdOptionsWithType[] = [
       on: 'auto',
     },
     text: `
-      <p>You can then choose a name for your experiment, choose a relevant name so it's easier to retrieve.</p>
-      <p>Avoid names like 'experiment k-means' it makes difficult to understand the purpose of the experiment.</p>
+      <p>You have to choose a name for your experiment, choose a meaningful name so it's easier to go back to your saved experiments.</p>
+      <p>Avoid names like 'experiment k-means' it makes it difficult to understand the purpose of the experiment.</p>
     `,
     buttons: basicStepBtns,
   },
