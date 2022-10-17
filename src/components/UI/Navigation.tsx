@@ -192,7 +192,7 @@ const Navigation = ({
       )}
       <RightLinks className="experiment-nav right-nav">
         <ShepherdContainer />
-        <HelpButton showTraining={true} />
+        <HelpButton />
         {!isAnonymous && !authenticated && (
           <LoginButton
             onClick={login}

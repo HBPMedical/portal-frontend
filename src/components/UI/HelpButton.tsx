@@ -67,11 +67,7 @@ const MainBox = styled.div`
   }
 `;
 
-const HelpButton = ({
-  showTraining,
-}: {
-  showTraining?: boolean;
-}): JSX.Element => {
+const HelpButton = (): JSX.Element => {
   const config = useReactiveVar(appConfigVar);
 
   return (
@@ -88,13 +84,6 @@ const HelpButton = ({
             <BsBook /> MIP Documentation
           </a>
         </p>
-        {showTraining && (
-          <p>
-            <NavLink to="/training">
-              <BsFilm /> MIP Training
-            </NavLink>
-          </p>
-        )}
         {config.contactLink && (
           <p>
             <a href={config.contactLink}>
