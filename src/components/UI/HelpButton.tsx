@@ -1,7 +1,6 @@
 import { useReactiveVar } from '@apollo/client';
 import { DropdownButton } from 'react-bootstrap';
-import { BsBook, BsFillEnvelopeFill, BsFilm } from 'react-icons/bs';
-import { NavLink } from 'react-router-dom';
+import { BsBook, BsFillEnvelopeFill } from 'react-icons/bs';
 import styled from 'styled-components';
 import { appConfigVar } from '../API/GraphQL/cache';
 
