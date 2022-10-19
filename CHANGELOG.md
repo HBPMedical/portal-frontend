@@ -1,3 +1,10 @@
+# [9.1.0-beta.3](https://gitlab.com/sibmip/portal-frontend/compare/9.1.0-beta.2...9.1.0-beta.3) (2022-10-19)
+
+
+### Bug Fixes
+
+* Error when opening Galaxy (JSON) ([bf4e8a9](https://gitlab.com/sibmip/portal-frontend/commit/bf4e8a9d9a2d9537b04e5d7ed2208b74ab61cb15))
+
 # [9.1.0-beta.2](https://gitlab.com/sibmip/portal-frontend/compare/9.1.0-beta.1...9.1.0-beta.2) (2022-10-19)
 
 
