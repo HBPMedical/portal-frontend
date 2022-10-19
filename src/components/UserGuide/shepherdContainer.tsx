@@ -48,6 +48,7 @@ const ShepherdButton = ({ tourId }: { tourId: string }) => {
   return (
     <a
       href="/"
+      id="shepherd-start-tour"
       onClick={(e: React.MouseEvent<HTMLAnchorElement, MouseEvent>): void => {
         e.preventDefault();
         tour?.start();

@@ -37,7 +37,7 @@ import TOS from '../UI/TOS';
 import ShepherdSelectTour from '../UserGuide/shepherdSelectTour';
 import analysisTour from '../UserGuide/tours/analysisTour';
 import experimentTour from '../UserGuide/tours/experimentTour';
-import exploreTour from '../UserGuide/tours/exploreTour';
+import { getExploreTour } from '../UserGuide/tours/exploreTour';
 import resultTour from '../UserGuide/tours/ResultTour';
 import { AppConfig } from '../utils';
 
@@ -242,7 +242,13 @@ const App = ({ appConfig, showTutorial }: Props) => {
               </Route>
 
               <ProtectedRoute path={['/', '/explore']} exact={true}>
-                <ShepherdSelectTour id="explore" steps={exploreTour} />
+                <ShepherdSelectTour
+                  id="explore"
+                  steps={getExploreTour(
+                    config.hasGrouping ?? undefined,
+                    config.hasFilters ?? undefined
+                  )}
+                />
                 <Explore />
               </ProtectedRoute>
 
@@ -252,7 +258,10 @@ const App = ({ appConfig, showTutorial }: Props) => {
               </ProtectedRoute>
 
               <ProtectedRoute path="/experiment/:uuid">
-                <ShepherdSelectTour id="result" steps={resultTour} />
+                <ShepherdSelectTour
+                  id="result"
+                  steps={resultTour(config.hasFilters ?? undefined)}
+                />
                 <ExperimentResult />
               </ProtectedRoute>
 
