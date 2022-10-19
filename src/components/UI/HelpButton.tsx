@@ -1,7 +1,6 @@
 import { useReactiveVar } from '@apollo/client';
 import { DropdownButton } from 'react-bootstrap';
-import { BsBook, BsFillEnvelopeFill, BsFilm } from 'react-icons/bs';
-import { NavLink } from 'react-router-dom';
+import { BsBook, BsFillEnvelopeFill } from 'react-icons/bs';
 import styled from 'styled-components';
 import { appConfigVar } from '../API/GraphQL/cache';
 
@@ -67,11 +66,7 @@ const MainBox = styled.div`
   }
 `;
 
-const HelpButton = ({
-  showTraining,
-}: {
-  showTraining?: boolean;
-}): JSX.Element => {
+const HelpButton = (): JSX.Element => {
   const config = useReactiveVar(appConfigVar);
 
   return (
@@ -86,13 +81,6 @@ const HelpButton = ({
             <BsBook /> MIP Documentation
           </a>
         </p>
-        {showTraining && (
-          <p>
-            <NavLink to="/training">
-              <BsFilm /> MIP Training
-            </NavLink>
-          </p>
-        )}
         {config.contactLink && (
           <p>
             <a href={config.contactLink}>

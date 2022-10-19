@@ -1,6 +1,6 @@
 {
   "name": "mip-portal-frontend",
-  "version": "9.0.0",
+  "version": "9.1.0-beta.3",
   "private": true,
   "dependencies": {
     "@apollo/client": "^3.4.11",
@@ -54,6 +54,7 @@
     "react-plotly.js": "^2.5.1",
     "react-router-dom": "^5.1.2",
     "react-select": "^3.0.8",
+    "react-shepherd": "^4.1.0",
     "react-sidebar": "^3.0.2",
     "react-spinners": "^0.6.1",
     "react-toastify": "^8.2.0",
@@ -126,6 +127,7 @@
     "jest-environment-jsdom": "^29.0.1",
     "prettier": "^2.7.1",
     "rollup-plugin-visualizer": "^5.8.1",
+    "sass": "^1.54.9",
     "semantic-release": "^19.0.5",
     "ts-jest": "^28.0.8",
     "ts-node": "^10.9.1"

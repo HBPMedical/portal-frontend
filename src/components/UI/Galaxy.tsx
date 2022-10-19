@@ -38,8 +38,7 @@ export default React.memo(() => {
         });
 
         if (response.ok) {
-          const data = await response.json();
-          config = await JSON.parse(data);
+          config = await response.json();
         }
       } catch (e) {
         config = { error: { message: `Error: ${e}` } };
@@ -56,7 +55,7 @@ export default React.memo(() => {
       }
     };
     fetchConfig();
-  });
+  }, []);
 
   useEffect(() => {
     if (config) {

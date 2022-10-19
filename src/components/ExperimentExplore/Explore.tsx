@@ -96,13 +96,13 @@ const Explore = (props: ExploreProps): JSX.Element => {
 
   const containers = [
     [
-      'As variable',
+      'variable',
       'success',
       [...(draftExperiment.variables || [])],
       VarType.VARIABLES,
     ],
     [
-      'As covariate',
+      'covariate',
       'warning',
       [...(draftExperiment.coVariables || [])],
       VarType.COVARIATES,
@@ -111,7 +111,7 @@ const Explore = (props: ExploreProps): JSX.Element => {
 
   if (config?.configuration.hasFilters) {
     containers.push([
-      'As filter',
+      'filter',
       'secondary',
       [...(draftExperiment.filterVariables || [])],
       VarType.FILTER,
@@ -157,16 +157,20 @@ const Explore = (props: ExploreProps): JSX.Element => {
                     variant="info"
                     type="submit"
                     onClick={handleGoToAnalysis}
+                    id="btn-goto-analysis"
                   >
                     Descriptive Analysis <BsFillCaretRightFill />
                   </Button>
                 </div>
               </MenuParametersContainer>
 
-              <Container>
+              <Container id="variable-containers">
                 <Row>
                   {containers.map((bag) => (
-                    <Col className="px-1" key={bag[0] as string}>
+                    <Col
+                      className={`container-${bag[0]} px-1`}
+                      key={bag[0] as string}
+                    >
                       <div className="d-flex justify-content-between mb-1">
                         <div>
                           <Button
@@ -199,7 +203,7 @@ const Explore = (props: ExploreProps): JSX.Element => {
                               .length === selectedNode.leaves().length
                               ? '-'
                               : '+'}{' '}
-                            {bag[0]}
+                            {`As ${bag[0]}`}
                             <Badge className="ml-2" variant="secondary">
                               {bag[2].length}
                             </Badge>
@@ -241,27 +245,29 @@ const Explore = (props: ExploreProps): JSX.Element => {
                   ))}
                 </Row>
               </Container>
-              <AlgorithmTitleContainer>
-                <p>
-                  <strong>Available algorithms</strong>
-                </p>
-                {localConfig.ontologyUrl && (
+              <div id="algorithm-available">
+                <AlgorithmTitleContainer>
                   <p>
-                    <a
-                      href={`${localConfig.ontologyUrl}`}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                    >
-                      <b>Access to the latest ontology and terminology</b>
-                    </a>
+                    <strong>Available algorithms</strong>
                   </p>
-                )}
-              </AlgorithmTitleContainer>
-              <AvailableAlgorithms
-                direction="horizontal"
-                experiment={draftExperiment}
-                listVariables={variables}
-              />
+                  {localConfig.ontologyUrl && (
+                    <p>
+                      <a
+                        href={`${localConfig.ontologyUrl}`}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                      >
+                        <b>Access to the latest ontology and terminology</b>
+                      </a>
+                    </p>
+                  )}
+                </AlgorithmTitleContainer>
+                <AvailableAlgorithms
+                  direction="horizontal"
+                  experiment={draftExperiment}
+                  listVariables={variables}
+                />
+              </div>
             </Card.Body>
           </Card>
 

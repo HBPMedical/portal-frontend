@@ -34,29 +34,17 @@ import LoginPage from '../UI/LoginPage';
 import Navigation from '../UI/Navigation';
 import NotFound from '../UI/NotFound';
 import TOS from '../UI/TOS';
-import Tutorial from '../UserGuide/Tutorial';
+import ShepherdSelectTour from '../UserGuide/shepherdSelectTour';
+import analysisTour from '../UserGuide/tours/analysisTour';
+import experimentTour from '../UserGuide/tours/experimentTour';
+import { getExploreTour } from '../UserGuide/tours/exploreTour';
+import resultTour from '../UserGuide/tours/ResultTour';
 import { AppConfig } from '../utils';
 
-const Main = styled.main<MainProps>`
+const Main = styled.main`
   margin: 0 auto;
   padding: 52px 8px;
-  min-height: 100vh;
-
-  ${(prop): string =>
-    prop.showTutorial &&
-    `
-   :after {
-    content: '';
-    position: absolute;
-    width: 100%;
-    height: 100%;
-    top: 0;
-    left: 0;
-    background: rgba(0, 0, 0, 0.5);
-    opacity: 1;
-    transition: all 0.5s;
-  }
-   `}
+  min-height: 100vh;}
 `;
 
 const SpinnerContainer = styled.div`
@@ -69,15 +57,9 @@ const SpinnerContainer = styled.div`
 
 interface Props {
   appConfig: AppConfig;
-  showTutorial: boolean;
 }
 
-interface MainProps {
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  showTutorial: any;
-}
-
-const App = ({ appConfig, showTutorial }: Props) => {
+const App = ({ appConfig }: Props) => {
   const config = useReactiveVar(configurationVar);
   const history = useHistory();
   const userState = useReactiveVar(sessionStateVar);
@@ -207,7 +189,7 @@ const App = ({ appConfig, showTutorial }: Props) => {
                   }
                 }
               }}
-              datacatalogueUrl={appConfig.datacatalogueUrl}
+              datacatalogueUrl={appConfig.datacatalogueUrl ?? undefined}
               logout={() => {
                 toast.success('Logged out successfully');
                 logoutHandle();
@@ -219,10 +201,8 @@ const App = ({ appConfig, showTutorial }: Props) => {
               />
             </Navigation>
           </header>
-          <Main showTutorial={showTutorial}>
+          <Main>
             <Switch>
-              {showTutorial && <Tutorial />}
-
               <Route path="/training" exact={true}>
                 <Help />
               </Route>
@@ -240,18 +220,31 @@ const App = ({ appConfig, showTutorial }: Props) => {
               </Route>
 
               <ProtectedRoute path={['/', '/explore']} exact={true}>
+                <ShepherdSelectTour
+                  id="explore"
+                  steps={getExploreTour(
+                    config.hasGrouping ?? undefined,
+                    config.hasFilters ?? undefined
+                  )}
+                />
                 <Explore />
               </ProtectedRoute>
 
               <ProtectedRoute path={['/review', '/analysis']}>
+                <ShepherdSelectTour id="analysis" steps={analysisTour} />
                 <DescriptiveAnalysis />
               </ProtectedRoute>
 
               <ProtectedRoute path="/experiment/:uuid">
+                <ShepherdSelectTour
+                  id="result"
+                  steps={resultTour(config.hasFilters ?? undefined)}
+                />
                 <ExperimentResult />
               </ProtectedRoute>
 
               <ProtectedRoute exact={true} path="/experiment">
+                <ShepherdSelectTour id="experiment" steps={experimentTour} />
                 <ExperimentCreate />
               </ProtectedRoute>
 

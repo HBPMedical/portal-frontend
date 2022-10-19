@@ -301,7 +301,7 @@ const ExperimentRow = ({
                   {dayjs().to(dayjs(experiment.createdAt))}
                 </td>
                 <td className="centered align-middle">
-                  {experiment.author?.username}
+                  {experiment.author?.fullname ?? experiment.author?.username}
                 </td>
                 <td className="centered align-middle">
                   <Button

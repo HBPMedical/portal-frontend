@@ -1,3 +1,39 @@
+# [9.1.0-beta.3](https://gitlab.com/sibmip/portal-frontend/compare/9.1.0-beta.2...9.1.0-beta.3) (2022-10-19)
+
+
+### Bug Fixes
+
+* Error when opening Galaxy (JSON) ([bf4e8a9](https://gitlab.com/sibmip/portal-frontend/commit/bf4e8a9d9a2d9537b04e5d7ed2208b74ab61cb15))
+
+# [9.1.0-beta.2](https://gitlab.com/sibmip/portal-frontend/compare/9.1.0-beta.1...9.1.0-beta.2) (2022-10-19)
+
+
+### Bug Fixes
+
+* Issue with old tutorial still used ([e13f56e](https://gitlab.com/sibmip/portal-frontend/commit/e13f56edfe3aef455d587619c66848488cc80d57))
+
+# [9.1.0-beta.1](https://gitlab.com/sibmip/portal-frontend/compare/9.0.1-beta.2...9.1.0-beta.1) (2022-10-19)
+
+
+### Features
+
+* Interactive user guide ([87c63eb](https://gitlab.com/sibmip/portal-frontend/commit/87c63eba8da95bbc5e72d704d9d1fa6343b8a2aa))
+
+## [9.0.1-beta.2](https://gitlab.com/sibmip/portal-frontend/compare/9.0.1-beta.1...9.0.1-beta.2) (2022-10-13)
+
+
+### Bug Fixes
+
+* Issue with config.json (undefined not valid) ([b3cafbd](https://gitlab.com/sibmip/portal-frontend/commit/b3cafbd6ef2c883fab480488d2086b293e8b63b8))
+* Viewed was not set after experiment display ([9dbbd2a](https://gitlab.com/sibmip/portal-frontend/commit/9dbbd2a06f18a53e80e4177305a549c21431883c))
+
+## [9.0.1-beta.1](https://gitlab.com/sibmip/portal-frontend/compare/9.0.0...9.0.1-beta.1) (2022-10-11)
+
+
+### Bug Fixes
+
+* Experiment list fullname instead of username ([d726744](https://gitlab.com/sibmip/portal-frontend/commit/d726744e96ac99c31d00d0320235c668241b8043))
+
 # [9.0.0](https://gitlab.com/sibmip/portal-frontend/compare/8.0.2...9.0.0) (2022-10-05)
 
 
