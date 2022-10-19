@@ -1,6 +1,6 @@
 {
   "name": "mip-portal-frontend",
-  "version": "9.0.1-beta.2",
+  "version": "9.1.0-beta.1",
   "private": true,
   "dependencies": {
     "@apollo/client": "^3.4.11",
@@ -127,8 +127,8 @@
     "jest-environment-jsdom": "^29.0.1",
     "prettier": "^2.7.1",
     "rollup-plugin-visualizer": "^5.8.1",
-    "semantic-release": "^19.0.5",
     "sass": "^1.54.9",
+    "semantic-release": "^19.0.5",
     "ts-jest": "^28.0.8",
     "ts-node": "^10.9.1"
   },

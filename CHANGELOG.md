@@ -1,3 +1,10 @@
+# [9.1.0-beta.1](https://gitlab.com/sibmip/portal-frontend/compare/9.0.1-beta.2...9.1.0-beta.1) (2022-10-19)
+
+
+### Features
+
+* Interactive user guide ([87c63eb](https://gitlab.com/sibmip/portal-frontend/commit/87c63eba8da95bbc5e72d704d9d1fa6343b8a2aa))
+
 ## [9.0.1-beta.2](https://gitlab.com/sibmip/portal-frontend/compare/9.0.1-beta.1...9.0.1-beta.2) (2022-10-13)
 
 
