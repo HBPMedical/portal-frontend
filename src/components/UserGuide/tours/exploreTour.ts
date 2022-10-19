@@ -8,7 +8,6 @@ import {
 } from './utils';
 
 export const getExploreTour = (hasGrouping = false, hasFilter = false) => {
-  console.log(hasGrouping, hasFilter);
   const exploreTour: ShepherdOptionsWithType[] = [
     {
       id: 'explore-intro',

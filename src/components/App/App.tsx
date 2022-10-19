@@ -41,26 +41,10 @@ import { getExploreTour } from '../UserGuide/tours/exploreTour';
 import resultTour from '../UserGuide/tours/ResultTour';
 import { AppConfig } from '../utils';
 
-const Main = styled.main<MainProps>`
+const Main = styled.main`
   margin: 0 auto;
   padding: 52px 8px;
-  min-height: 100vh;
-
-  ${(prop): string =>
-    prop.showTutorial &&
-    `
-   :after {
-    content: '';
-    position: absolute;
-    width: 100%;
-    height: 100%;
-    top: 0;
-    left: 0;
-    background: rgba(0, 0, 0, 0.5);
-    opacity: 1;
-    transition: all 0.5s;
-  }
-   `}
+  min-height: 100vh;}
 `;
 
 const SpinnerContainer = styled.div`
@@ -73,15 +57,9 @@ const SpinnerContainer = styled.div`
 
 interface Props {
   appConfig: AppConfig;
-  showTutorial: boolean;
 }
 
-interface MainProps {
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  showTutorial: any;
-}
-
-const App = ({ appConfig, showTutorial }: Props) => {
+const App = ({ appConfig }: Props) => {
   const config = useReactiveVar(configurationVar);
   const history = useHistory();
   const userState = useReactiveVar(sessionStateVar);
@@ -223,7 +201,7 @@ const App = ({ appConfig, showTutorial }: Props) => {
               />
             </Navigation>
           </header>
-          <Main showTutorial={showTutorial}>
+          <Main>
             <Switch>
               <Route path="/training" exact={true}>
                 <Help />
