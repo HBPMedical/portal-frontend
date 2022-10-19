@@ -1,3 +1,10 @@
+## [9.0.1-beta.3](https://gitlab.com/sibmip/portal-frontend/compare/9.0.1-beta.2...9.0.1-beta.3) (2022-10-19)
+
+
+### Bug Fixes
+
+* Issue with next step ([01e25ce](https://gitlab.com/sibmip/portal-frontend/commit/01e25ceb09069fe38261692d39abb2be472cadff))
+
 ## [9.0.1-beta.2](https://gitlab.com/sibmip/portal-frontend/compare/9.0.1-beta.1...9.0.1-beta.2) (2022-10-13)
 
 
