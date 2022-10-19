@@ -25,6 +25,11 @@ const DataSelectionBox = styled(Card.Title)`
   background-color: #eee;
 `;
 
+const DomainSelectBox = styled.div`
+  display: flex;
+  flex-direction: row;
+`;
+
 const DomainsBox = styled.div`
   margin-top: 4px;
   font-size: 14px;
@@ -85,37 +90,38 @@ const DataSelection = ({
         {loading && <Loader />}
         {!loading && (
           <>
-            <DomainsBox>
-              {data?.domains && data?.domains.length > 1 && (
-                <DropdownButton
-                  size="sm"
-                  id="dropdown-pathology"
-                  variant="light"
-                  title={uppercase(domain?.label || 'Domains')}
-                >
-                  {data.domains.map((d) => (
-                    <Dropdown.Item
-                      onSelect={(): void => {
-                        showDialogDomainChange(d.id);
-                      }}
-                      key={d.id}
-                      value={d.id}
-                    >
-                      {d.label}
-                    </Dropdown.Item>
-                  ))}
-                </DropdownButton>
-              )}
-            </DomainsBox>
+            <DomainSelectBox id="domain-select">
+              <DomainsBox id="pathology-select">
+                {data?.domains && data?.domains.length > 1 && (
+                  <DropdownButton
+                    size="sm"
+                    variant="light"
+                    title={uppercase(domain?.label || 'Domains')}
+                  >
+                    {data.domains.map((d) => (
+                      <Dropdown.Item
+                        onSelect={(): void => {
+                          showDialogDomainChange(d.id);
+                        }}
+                        key={d.id}
+                        value={d.id}
+                      >
+                        {d.label}
+                      </Dropdown.Item>
+                    ))}
+                  </DropdownButton>
+                )}
+              </DomainsBox>
 
-            <DatasetsBox>
-              <DataSelect
-                datasets={domain?.datasets ?? []}
-                handleSelectDataset={handleSelectDataset}
-                selectedDatasets={experiment?.datasets}
-                isDropdown
-              ></DataSelect>
-            </DatasetsBox>
+              <DatasetsBox id="dataset-select">
+                <DataSelect
+                  datasets={domain?.datasets ?? []}
+                  handleSelectDataset={handleSelectDataset}
+                  selectedDatasets={experiment?.datasets}
+                  isDropdown
+                ></DataSelect>
+              </DatasetsBox>
+            </DomainSelectBox>
             <SearchBox>
               <Search
                 handleSelectNode={(id: string): void =>

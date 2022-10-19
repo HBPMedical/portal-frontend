@@ -8,6 +8,7 @@ export const QUERY_CONFIGURATION = gql`
       hasGalaxy
       hasGrouping
       hasFilters
+      hasGrouping
       enableSSO
       skipAuth
       skipTos

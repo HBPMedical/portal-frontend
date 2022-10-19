@@ -196,7 +196,7 @@ const D3CirclePackLayer = ({ layout, ...props }: Props): JSX.Element => {
       .selectAll('circle')
       .data(layout.descendants())
       .join('circle')
-      .attr('class', 'node')
+      .attr('class', (d) => `node ${d && d.children ? '' : 'node--leaf'}`)
       .attr('fill', (d) =>
         d.children ? colorCallback(d.depth) ?? 'white' : 'white'
       )
@@ -262,7 +262,7 @@ const D3CirclePackLayer = ({ layout, ...props }: Props): JSX.Element => {
     }
   }, [zoomNode, zoomToNode]);
 
-  return <svg ref={svgRef} />;
+  return <svg id="variables-select" ref={svgRef} />;
 };
 
 export default D3CirclePackLayer;

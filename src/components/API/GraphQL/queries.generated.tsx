@@ -126,6 +126,7 @@ export const GetConfigurationDocument = gql`
     hasGalaxy
     hasGrouping
     hasFilters
+    hasGrouping
     enableSSO
     skipAuth
     skipTos
