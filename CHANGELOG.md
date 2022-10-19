@@ -1,3 +1,10 @@
+# [9.1.0-beta.2](https://gitlab.com/sibmip/portal-frontend/compare/9.1.0-beta.1...9.1.0-beta.2) (2022-10-19)
+
+
+### Bug Fixes
+
+* Issue with old tutorial still used ([e13f56e](https://gitlab.com/sibmip/portal-frontend/commit/e13f56edfe3aef455d587619c66848488cc80d57))
+
 # [9.1.0-beta.1](https://gitlab.com/sibmip/portal-frontend/compare/9.0.1-beta.2...9.1.0-beta.1) (2022-10-19)
 
 
