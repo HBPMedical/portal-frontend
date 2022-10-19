@@ -21,7 +21,7 @@ const ExperimentSidebar = ({
   handleSelectExperiment,
 }: Props): JSX.Element => {
   return (
-    <Card className="datasets">
+    <Card className="experiment-sidebar">
       <Card.Body>
         <section>
           <DropdownExperimentList

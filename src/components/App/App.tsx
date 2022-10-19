@@ -34,7 +34,11 @@ import LoginPage from '../UI/LoginPage';
 import Navigation from '../UI/Navigation';
 import NotFound from '../UI/NotFound';
 import TOS from '../UI/TOS';
-import Tutorial from '../UserGuide/Tutorial';
+import ShepherdSelectTour from '../UserGuide/shepherdSelectTour';
+import analysisTour from '../UserGuide/tours/analysisTour';
+import experimentTour from '../UserGuide/tours/experimentTour';
+import { getExploreTour } from '../UserGuide/tours/exploreTour';
+import resultTour from '../UserGuide/tours/ResultTour';
 import { AppConfig } from '../utils';
 
 const Main = styled.main<MainProps>`
@@ -221,8 +225,6 @@ const App = ({ appConfig, showTutorial }: Props) => {
           </header>
           <Main showTutorial={showTutorial}>
             <Switch>
-              {showTutorial && <Tutorial />}
-
               <Route path="/training" exact={true}>
                 <Help />
               </Route>
@@ -240,18 +242,31 @@ const App = ({ appConfig, showTutorial }: Props) => {
               </Route>
 
               <ProtectedRoute path={['/', '/explore']} exact={true}>
+                <ShepherdSelectTour
+                  id="explore"
+                  steps={getExploreTour(
+                    config.hasGrouping ?? undefined,
+                    config.hasFilters ?? undefined
+                  )}
+                />
                 <Explore />
               </ProtectedRoute>
 
               <ProtectedRoute path={['/review', '/analysis']}>
+                <ShepherdSelectTour id="analysis" steps={analysisTour} />
                 <DescriptiveAnalysis />
               </ProtectedRoute>
 
               <ProtectedRoute path="/experiment/:uuid">
+                <ShepherdSelectTour
+                  id="result"
+                  steps={resultTour(config.hasFilters ?? undefined)}
+                />
                 <ExperimentResult />
               </ProtectedRoute>
 
               <ProtectedRoute exact={true} path="/experiment">
+                <ShepherdSelectTour id="experiment" steps={experimentTour} />
                 <ExperimentCreate />
               </ProtectedRoute>
 

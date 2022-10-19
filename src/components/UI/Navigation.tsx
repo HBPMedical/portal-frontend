@@ -6,7 +6,7 @@ import { NavLink } from 'react-router-dom';
 import styled from 'styled-components';
 import { configurationVar } from '../API/GraphQL/cache';
 import { makeAssetURL } from '../API/RequestURLS';
-import MIPContext from '../App/MIPContext';
+import ShepherdContainer from '../UserGuide/shepherdContainer';
 import HelpButton from './HelpButton';
 
 const NavBar = styled.nav`
@@ -168,7 +168,7 @@ const Navigation = ({
       </Brand>
       {authenticated && (
         <Links>
-          <Group className="experiment-nav">
+          <Group className="experiment-nav experiment-sections">
             <GroupLink to="/explore">Variables</GroupLink>
             <span> &gt; </span>
             <GroupLink to="/analysis">Analysis</GroupLink>
@@ -191,24 +191,8 @@ const Navigation = ({
         </Links>
       )}
       <RightLinks className="experiment-nav right-nav">
-        <MIPContext.Consumer>
-          {({ toggleTutorial }): JSX.Element =>
-            (
-              <a
-                href="/"
-                onClick={(
-                  e: React.MouseEvent<HTMLAnchorElement, MouseEvent>
-                ): void => {
-                  e.preventDefault();
-                  toggleTutorial && toggleTutorial();
-                }}
-              >
-                User Guide
-              </a>
-            ) || <></>
-          }
-        </MIPContext.Consumer>
-        <HelpButton showTraining={true} />
+        <ShepherdContainer />
+        <HelpButton />
         {!isAnonymous && !authenticated && (
           <LoginButton
             onClick={login}

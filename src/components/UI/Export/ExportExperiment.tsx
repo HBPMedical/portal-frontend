@@ -25,7 +25,7 @@ const ExportExperiment = ({ experiment }: Props) => {
 
   return (
     <Dropdown>
-      <Dropdown.Toggle variant="info" id="dropdown-basic">
+      <Dropdown.Toggle variant="info" id="btn-experiment-export">
         <BsDownload /> Export
       </Dropdown.Toggle>
 
