@@ -1,3 +1,10 @@
+## [9.1.1](https://gitlab.com/sibmip/portal-frontend/compare/9.1.0...9.1.1) (2022-10-20)
+
+
+### Bug Fixes
+
+* **guide:** Issue with missing element in page ([616d3b7](https://gitlab.com/sibmip/portal-frontend/commit/616d3b7c706f5cb205abf24fac918ec6e82de8f0))
+
 # [9.1.0](https://gitlab.com/sibmip/portal-frontend/compare/9.0.0...9.1.0) (2022-10-19)
 
 
