@@ -14,7 +14,7 @@
 
 	handle_path /services/* {
 		reverse_proxy {$GATEWAY_SERVER} {
-			header_up Host {host}
+			header_up Host {hostport}
 			header_up X-Real-IP {remote_host}
 			header_up X-Forwarded-For {remote_host}
 			header_up X-Forwarded-Proto {$EXTERNAL_MIP_PROTOCOL:https}
