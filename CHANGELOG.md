@@ -1,3 +1,10 @@
+## [9.1.2](https://gitlab.com/sibmip/portal-frontend/compare/9.1.1...9.1.2) (2022-10-20)
+
+
+### Bug Fixes
+
+* **caddy:** Missing port in host ([6567f24](https://gitlab.com/sibmip/portal-frontend/commit/6567f2473010ad21fa7ee9d9b3ab1dfa4d0dd98b))
+
 ## [9.1.1](https://gitlab.com/sibmip/portal-frontend/compare/9.1.0...9.1.1) (2022-10-20)
 
 

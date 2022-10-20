@@ -1,6 +1,6 @@
 {
   "name": "mip-portal-frontend",
-  "version": "9.1.1",
+  "version": "9.1.2",
   "private": true,
   "dependencies": {
     "@apollo/client": "^3.4.11",
