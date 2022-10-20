@@ -35,7 +35,7 @@ import Navigation from '../UI/Navigation';
 import NotFound from '../UI/NotFound';
 import TOS from '../UI/TOS';
 import ShepherdSelectTour from '../UserGuide/shepherdSelectTour';
-import analysisTour from '../UserGuide/tours/analysisTour';
+import { getAnalysisTour } from '../UserGuide/tours/analysisTour';
 import experimentTour from '../UserGuide/tours/experimentTour';
 import { getExploreTour } from '../UserGuide/tours/exploreTour';
 import resultTour from '../UserGuide/tours/ResultTour';
@@ -231,7 +231,10 @@ const App = ({ appConfig }: Props) => {
               </ProtectedRoute>
 
               <ProtectedRoute path={['/review', '/analysis']}>
-                <ShepherdSelectTour id="analysis" steps={analysisTour} />
+                <ShepherdSelectTour
+                  id="analysis"
+                  steps={getAnalysisTour(config.hasFilters ?? undefined)}
+                />
                 <DescriptiveAnalysis />
               </ProtectedRoute>
 

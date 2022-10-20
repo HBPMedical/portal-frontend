@@ -28,7 +28,7 @@ const analysisTour: ShepherdOptionsWithType[] = [
     id: 'analysis-results',
     title: 'Results',
     attachTo: {
-      element: '.result.card',
+      element: '.results .card',
       on: 'auto',
     },
     text: `

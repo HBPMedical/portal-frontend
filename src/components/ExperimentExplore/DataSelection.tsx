@@ -91,8 +91,8 @@ const DataSelection = ({
         {!loading && (
           <>
             <DomainSelectBox id="domain-select">
-              <DomainsBox id="pathology-select">
-                {data?.domains && data?.domains.length > 1 && (
+              {data?.domains && data?.domains.length > 1 && (
+                <DomainsBox id="pathology-select">
                   <DropdownButton
                     size="sm"
                     variant="light"
@@ -110,8 +110,8 @@ const DataSelection = ({
                       </Dropdown.Item>
                     ))}
                   </DropdownButton>
-                )}
-              </DomainsBox>
+                </DomainsBox>
+              )}
 
               <DatasetsBox id="dataset-select">
                 <DataSelect
