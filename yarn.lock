@@ -3275,10 +3275,10 @@
     p-retry "^4.0.0"
     url-join "^4.0.0"
 
-"@semantic-release/gitlab@^9.4.2":
-  version "9.4.2"
-  resolved "https://registry.yarnpkg.com/@semantic-release/gitlab/-/gitlab-9.4.2.tgz#3a0fb76a642623e4a3520f9aa5bb13b4c05d146c"
-  integrity sha512-ZfMe4N613C/tqfRdxDPprOoBA7HHyHFHvk+TA4HqOmNpgUKiifyJPpYJsc3PLNtec9I0TA1OOTuY82VDG+FVXw==
+"@semantic-release/gitlab@^9.5.0":
+  version "9.5.0"
+  resolved "https://registry.yarnpkg.com/@semantic-release/gitlab/-/gitlab-9.5.0.tgz#450acebba58e74b139dfe7023941309a26318028"
+  integrity sha512-VmItAoh7vTfl30ekuTLvMmIgxVJMgE2tTucGeWIUrxu0HuiL5EIjLN72gqmRS1IfN1NwcQlaA+d6J1EgpsgVjA==
   dependencies:
     "@semantic-release/error" "^3.0.0"
     aggregate-error "^3.0.0"

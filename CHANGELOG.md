@@ -1,3 +1,15 @@
+# [9.2.0](https://gitlab.com/sibmip/portal-frontend/compare/9.1.2...9.2.0) (2022-11-19)
+
+
+### Bug Fixes
+
+* round numbers in DataTable ([f2a809f](https://gitlab.com/sibmip/portal-frontend/commit/f2a809f86bb07f97f86664f98525bb9bac5575b5))
+
+
+### Features
+
+* **yarn:** Bumped vitejs to 2.2.0 ([2f0fd3c](https://gitlab.com/sibmip/portal-frontend/commit/2f0fd3c4aa4e5627db7c8df07175bcfd083aed52))
+
 ## [9.1.2](https://gitlab.com/sibmip/portal-frontend/compare/9.1.1...9.1.2) (2022-10-20)
 
 

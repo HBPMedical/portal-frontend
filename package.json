@@ -1,6 +1,6 @@
 {
   "name": "mip-portal-frontend",
-  "version": "9.1.2",
+  "version": "9.2.0",
   "private": true,
   "dependencies": {
     "@apollo/client": "^3.4.11",
@@ -99,7 +99,7 @@
     "@graphql-codegen/typescript-react-apollo": "3.1.4",
     "@semantic-release/changelog": "^6.0.1",
     "@semantic-release/git": "^10.0.1",
-    "@semantic-release/gitlab": "^9.4.2",
+    "@semantic-release/gitlab": "^9.5.0",
     "@storybook/addon-actions": "^6.5.13",
     "@storybook/addon-essentials": "^6.5.13",
     "@storybook/addon-interactions": "^6.5.13",
