@@ -1,5 +1,6 @@
 import { CSVLink } from 'react-csv';
 import { FaFileCsv } from 'react-icons/fa';
+import { round } from 'src/components/utils';
 import styled from 'styled-components';
 import { TableResult, TableStyle } from '../../API/GraphQL/types.generated';
 
@@ -68,7 +69,8 @@ const Table = styled.table<LayoutProps>`
     border: 1px solid #e3e3e3;
     padding: 1px 4px;
     text-overflow: ellipsis;
-    text-align: center;
+    text-align: right;
+    padding-right: 8px;
   }
 
   td:first-child {
@@ -128,7 +130,7 @@ const DataTable = ({ data }: TableProps): JSX.Element => {
           {data.data.map((row, i) => (
             <tr key={`${data.name}-row-${i}`}>
               {row.map((value, j) => (
-                <td key={`${data.name}-col-${i}-${j}`}>{value}</td>
+                <td key={`${data.name}-col-${i}-${j}`}>{round(value)}</td>
               ))}
             </tr>
           ))}
