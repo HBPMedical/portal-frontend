@@ -3,7 +3,7 @@ import * as Types from './types.generated';
 import { gql } from '@apollo/client';
 export type CoreInfoResult_AlertResult_Fragment = { __typename?: 'AlertResult', title?: Types.Maybe<string>, message: string, level?: Types.Maybe<Types.AlertLevel> };
 
-export type CoreInfoResult_BarChartResult_Fragment = { __typename?: 'BarChartResult', name: string, barValues: Array<number>, hasConnectedBars?: Types.Maybe<boolean>, xAxis?: Types.Maybe<{ __typename?: 'ChartAxis', label?: Types.Maybe<string> }>, yAxis?: Types.Maybe<{ __typename?: 'ChartAxis', label?: Types.Maybe<string> }> };
+export type CoreInfoResult_BarChartResult_Fragment = { __typename?: 'BarChartResult', name: string, barValues?: Types.Maybe<Array<number>>, hasConnectedBars?: Types.Maybe<boolean>, xAxis?: Types.Maybe<{ __typename?: 'ChartAxis', label?: Types.Maybe<string>, categories?: Types.Maybe<Array<string>> }>, yAxis?: Types.Maybe<{ __typename?: 'ChartAxis', label?: Types.Maybe<string> }>, barEnumValues?: Types.Maybe<Array<{ __typename?: 'BarEnumValues', label: string, values: Array<number> }>> };
 
 export type CoreInfoResult_GroupsResult_Fragment = { __typename?: 'GroupsResult' };
 
@@ -71,11 +71,16 @@ export const CoreInfoResultFragmentDoc = gql`
     name
     xAxis {
       label
+      categories
     }
     yAxis {
       label
     }
     barValues
+    barEnumValues {
+      label
+      values
+    }
     hasConnectedBars
   }
   ... on LineChartResult {
