@@ -13,7 +13,6 @@ import {
 import { HISTOGRAMS_STORAGE_KEY } from '../constants';
 import ResultDispatcher from '../ExperimentResult/ResultDispatcher';
 import Loading from '../UI/Loader';
-import Highchart from '../UI/Visualization/Highchart';
 import { HierarchyCircularNode } from '../utils';
 
 const breadcrumb = (
@@ -31,38 +30,26 @@ const overviewChart = (node: HierarchyCircularNode): any => {
     .filter((d) => d.parent === node && !d.data.isVariable);
 
   children = children.length ? children : [node];
+
   return {
-    chart: {
-      type: 'column',
-    },
-    legend: {
-      enabled: false,
-    },
-    series: [
-      {
-        data: children.map((c) => c.descendants().length - 1),
-        dataLabels: {
-          enabled: true,
-        },
-      },
-    ],
-    title: {
-      text: `Variables contained in ${node.data.label}`,
-    },
-    tooltip: {
-      enabled: false,
-    },
+    name: `Groups contained in ${node.data.label}`,
     xAxis: {
+      label: '',
       categories: children.map((d) => d.data.label),
+      __typename: 'ChartAxis',
     },
     yAxis: {
-      allowDecimals: false,
+      label: 'Count',
+      __typename: 'ChartAxis',
     },
+    barValues: children.map((c) => c.descendants().length - 1),
+    barEnumValues: null,
+    hasConnectedBars: false,
+    __typename: 'BarChartResult',
   };
 };
 
 const Histogram = styled.div`
-  min-height: 440px;
   margin-top: 8px;
 
   .card-header-tabs a {
@@ -177,7 +164,7 @@ const Histograms = ({
   const draftExperiment = useReactiveVar(draftExperimentVar);
   const nodes = selectedNode ? breadcrumb(selectedNode).reverse() : [];
 
-  const [getHistrograms, { data, loading }] = useCreateExperimentMutation();
+  const [getHistograms, { data, loading }] = useCreateExperimentMutation();
 
   useEffect(() => {
     if (selectedNode && !selectedNode.children && domain) {
@@ -197,14 +184,14 @@ const Histograms = ({
         });
       }
 
-      if (variable && variable.type !== 'nominal') {
+      if (variable) {
         params.push({
           id: 'bins',
-          value: JSON.stringify({ [variable.id]: 20 }),
+          value: '20',
         });
       }
 
-      getHistrograms({
+      getHistograms({
         variables: {
           isTransient: true,
           data: {
@@ -226,7 +213,7 @@ const Histograms = ({
     domain,
     draftExperiment.datasets,
     draftExperiment.domain,
-    getHistrograms,
+    getHistograms,
     selectedNode,
   ]);
 
@@ -267,7 +254,10 @@ const Histograms = ({
 
       <Histogram>
         {selectedNode && selectedNode.children && (
-          <Highchart options={overviewChart(selectedNode)} />
+          <ResultDispatcher
+            result={overviewChart(selectedNode) as ResultUnion}
+            constraint={false}
+          />
         )}
 
         {selectedNode && !selectedNode.children && (

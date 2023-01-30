@@ -2,7 +2,7 @@ import * as React from 'react';
 
 import { MIME_TYPES } from '../constants';
 import Error from '../UI/Error';
-import { Highchart, JSONData } from '../UI/Visualization';
+import { JSONData } from '../UI/Visualization';
 import Dendogram from '../UI/Visualization/Dendogram';
 import BinaryTree from '../UI/Visualization/BinaryTree';
 import Warning from '../UI/Visualization/Warning';
@@ -37,9 +37,6 @@ const RenderResult = ({
               )}
               {result.type === MIME_TYPES.JSONDATA && (
                 <JSONData data={result.data} />
-              )}
-              {result.type === MIME_TYPES.HIGHCHARTS && (
-                <Highchart options={result.data} constraint={constraint} />
               )}
               {result.type === MIME_TYPES.JSONBTREE && (
                 <BinaryTree data={result.data} />
