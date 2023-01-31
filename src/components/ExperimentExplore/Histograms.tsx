@@ -51,6 +51,7 @@ const overviewChart = (node: HierarchyCircularNode): any => {
 
 const Histogram = styled.div`
   margin-top: 8px;
+  min-height: 450px;
 
   .card-header-tabs a {
     font-size: 0.8rem;
@@ -159,6 +160,7 @@ const Histograms = ({
     HistogramVariable | undefined
   >();
   const [selectedTab, setSelectedTab] = useState(0);
+  const [isShowingTab, setIsShowingTab] = useState(false);
   const draftExperiment = useReactiveVar(draftExperimentVar);
   const nodes = selectedNode ? breadcrumb(selectedNode).reverse() : [];
 
@@ -283,7 +285,8 @@ const Histograms = ({
               }
               key="0"
             >
-              {data &&
+              {!isShowingTab &&
+                data &&
                 data.createExperiment &&
                 data.createExperiment.results &&
                 data.createExperiment.results.length > 0 && (
@@ -310,6 +313,7 @@ const Histograms = ({
                             groupByVariables[i].label) ||
                           'Choose'
                         }
+                        onToggle={(): void => setIsShowingTab(!isShowingTab)}
                       >
                         {independantsVariables &&
                           independantsVariables.map((v) => (
@@ -331,7 +335,8 @@ const Histograms = ({
                   }
                   key={i}
                 >
-                  {data &&
+                  {!isShowingTab &&
+                    data &&
                     data.createExperiment &&
                     data.createExperiment.results &&
                     data.createExperiment.results?.length > i && (
