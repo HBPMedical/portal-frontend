@@ -154,12 +154,10 @@ const Histograms = ({
   const keyStorage = domain
     ? `${HISTOGRAMS_STORAGE_KEY}_${domain?.id}`
     : undefined;
-  const [choosenVariables, setChoosenVariables] = useState<
+
+  const [groupByVariables, setGroupByVariables] = useState<
     HistogramVariable | undefined
-  >(() => {
-    const saved = keyStorage ? localStorage.getItem(keyStorage) : undefined;
-    return saved ? JSON.parse(saved) : {};
-  });
+  >();
   const [selectedTab, setSelectedTab] = useState(0);
   const draftExperiment = useReactiveVar(draftExperimentVar);
   const nodes = selectedNode ? breadcrumb(selectedNode).reverse() : [];
@@ -173,7 +171,7 @@ const Histograms = ({
       const variable = domain.variables.find(
         (v) => v.id === selectedNode.data.id
       );
-      const groupBy = Object.values(choosenVariables ?? {})
+      const groupBy = Object.values(groupByVariables ?? {})
         .filter((v) => !variable || v.id !== variable.id)
         .map((v) => v.id);
 
@@ -184,7 +182,7 @@ const Histograms = ({
         });
       }
 
-      if (variable) {
+      if (variable && variable.type !== 'nominal') {
         params.push({
           id: 'bins',
           value: '20',
@@ -209,7 +207,7 @@ const Histograms = ({
       });
     }
   }, [
-    choosenVariables,
+    groupByVariables,
     domain,
     draftExperiment.datasets,
     draftExperiment.domain,
@@ -217,13 +215,20 @@ const Histograms = ({
     selectedNode,
   ]);
 
+  useEffect(() => {
+    const saved = keyStorage ? localStorage.getItem(keyStorage) : undefined;
+    const groupBy = saved ? JSON.parse(saved) : {};
+    setGroupByVariables(groupBy);
+  }, [keyStorage, setGroupByVariables]);
+
   const handleChooseVariable = (index: number, variable: Variable): void => {
     if (!variable) return;
 
-    const nextChoosenVariables = choosenVariables
-      ? { ...choosenVariables, [index]: variable }
+    const nextChoosenVariables = groupByVariables
+      ? { ...groupByVariables, [index]: variable }
       : { [index]: variable };
-    setChoosenVariables(nextChoosenVariables);
+    setGroupByVariables(nextChoosenVariables);
+
     if (keyStorage)
       localStorage.setItem(keyStorage, JSON.stringify(nextChoosenVariables));
   };
@@ -295,14 +300,14 @@ const Histograms = ({
                   eventKey={`${i}`}
                   title={
                     i === selectedTab ||
-                    !(choosenVariables && choosenVariables[i]) ? (
+                    !(groupByVariables && groupByVariables[i]) ? (
                       <DropDown
                         variant="link"
                         id={`independant-dropdown-${i}`}
                         title={
-                          (choosenVariables &&
-                            choosenVariables[i] &&
-                            choosenVariables[i].label) ||
+                          (groupByVariables &&
+                            groupByVariables[i] &&
+                            groupByVariables[i].label) ||
                           'Choose'
                         }
                       >
@@ -318,9 +323,9 @@ const Histograms = ({
                           ))}
                       </DropDown>
                     ) : (
-                      (choosenVariables &&
-                        choosenVariables[i] &&
-                        choosenVariables[i].label) ||
+                      (groupByVariables &&
+                        groupByVariables[i] &&
+                        groupByVariables[i].label) ||
                       'Choose'
                     )
                   }
