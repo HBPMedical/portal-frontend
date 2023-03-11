@@ -1,3 +1,10 @@
+# [9.3.0-beta.2](https://gitlab.com/sibmip/portal-frontend/compare/9.3.0-beta.1...9.3.0-beta.2) (2023-03-11)
+
+
+### Bug Fixes
+
+* **export:** TableResult image export ([acbdf1d](https://gitlab.com/sibmip/portal-frontend/commit/acbdf1d329d6e88975665ce5f4bb1e8077ef5349))
+
 # [9.3.0-beta.1](https://gitlab.com/sibmip/portal-frontend/compare/9.2.0...9.3.0-beta.1) (2023-03-11)
 
 
