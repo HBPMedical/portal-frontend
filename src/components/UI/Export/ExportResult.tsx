@@ -75,12 +75,13 @@ const ExportResult = ({
   const saveImage = async () => {
     if (!childRef.current) return;
 
-    const child = childRef.current.children[0].children[0] as HTMLElement;
+    const child = childRef.current.children[0] as HTMLElement;
     if (!child) return;
 
     const img = await hmtlToImage.toPng(child, {
       style: {
         display: 'inline-block',
+        backgroundColor: 'white',
       },
     });
 
