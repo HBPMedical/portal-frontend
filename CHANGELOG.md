@@ -1,3 +1,18 @@
+# [9.3.0-beta.1](https://gitlab.com/sibmip/portal-frontend/compare/9.2.0...9.3.0-beta.1) (2023-03-11)
+
+
+### Bug Fixes
+
+* groupedVariables localstorage ([13687a4](https://gitlab.com/sibmip/portal-frontend/commit/13687a48da9c7f5d40418090578ba70590654229))
+* reverted semantic release to 9.4.2 ([decc633](https://gitlab.com/sibmip/portal-frontend/commit/decc63305338b47bbf99c9ec156e5f3348fd6fc8))
+* type error ([83b39ea](https://gitlab.com/sibmip/portal-frontend/commit/83b39ea24917e312cbb71aa213f2ec75e4e984b9))
+
+
+### Features
+
+* Multiple BarGraph wip ([b0e161a](https://gitlab.com/sibmip/portal-frontend/commit/b0e161af78df9e08296cf4bd98979ee8379ced75))
+* Switched to Bokeh from Highchart ([a4c6bf8](https://gitlab.com/sibmip/portal-frontend/commit/a4c6bf86467e90e21ab52f6222854368d8407e2c))
+
 # [9.2.0](https://gitlab.com/sibmip/portal-frontend/compare/9.1.2...9.2.0) (2022-11-19)
 
 
