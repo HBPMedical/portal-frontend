@@ -1,3 +1,4 @@
+import { useEffect, useRef } from 'react';
 import { Form } from 'react-bootstrap';
 import styled from 'styled-components';
 import {
@@ -25,6 +26,7 @@ type Props = {
   algorithm?: Algorithm;
   variables?: Variable[];
   handleParameterChange: (key: string, value?: string) => void;
+  handleFormValidationChange: (status: boolean) => void;
 };
 
 const AlgorithmParameters = ({
@@ -32,7 +34,14 @@ const AlgorithmParameters = ({
   algorithm,
   variables = [],
   handleParameterChange,
+  handleFormValidationChange,
 }: Props) => {
+  const formRef = useRef<HTMLFormElement>(null);
+
+  useEffect(() => {
+    handleFormValidationChange(formRef.current?.checkValidity() ?? true);
+  }, [algorithm, formRef, handleFormValidationChange]);
+
   if (!algorithm)
     return (
       <Header>
@@ -56,7 +65,15 @@ const AlgorithmParameters = ({
         {algorithm.parameters?.length === 0 && <div>No parameters needed</div>}
 
         {algorithm.parameters?.length !== 0 && (
-          <Form validated={true}>
+          <Form
+            validated={true}
+            ref={formRef}
+            onChange={() =>
+              handleFormValidationChange(
+                formRef.current?.checkValidity() ?? true
+              )
+            }
+          >
             {algorithm.parameters
               ?.map((param) => {
                 const type = (param as unknown as Dict).__typename;

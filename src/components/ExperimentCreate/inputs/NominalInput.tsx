@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import { useEffect, useState } from 'react';
 import { Form } from 'react-bootstrap';
 import Select from 'react-select';
 import {
@@ -73,10 +73,11 @@ const NominalInput = ({
   if (options.length === 0) return <></>;
 
   return (
-    <Form.Group controlId="exampleForm.SelectCustom">
+    <Form.Group controlId="algo.params.SelectCustom">
       <Form.Label>{title}</Form.Label>
       {!parameter.hasMultiple && (
         <Form.Control
+          required={parameter.isRequired ?? false}
           as="select"
           custom
           onChange={(e) => handleValueChanged?.(parameter.name, e.target.value)}
