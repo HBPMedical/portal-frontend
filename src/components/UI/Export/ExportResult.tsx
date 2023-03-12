@@ -4,6 +4,7 @@ import { Button } from 'react-bootstrap';
 import { BsFileCode, BsFillImageFill } from 'react-icons/bs';
 import styled from 'styled-components';
 import { ResultUnion } from '../../API/GraphQL/types.generated';
+import { MIME_TYPES } from '../../constants';
 import EditChart from './EditChart';
 
 const NeutralContainer = styled.div`
@@ -75,7 +76,13 @@ const ExportResult = ({
   const saveImage = async () => {
     if (!childRef.current) return;
 
-    const child = childRef.current.children[0] as HTMLElement;
+    const child = (
+      result.__typename === 'RawResult' &&
+      result.rawdata.type &&
+      result.rawdata.type === MIME_TYPES.HIGHCHARTS
+        ? childRef.current.children[0].children[0].children[0]
+        : childRef.current.children[0]
+    ) as HTMLElement;
     if (!child) return;
 
     const img = await hmtlToImage.toPng(child, {
