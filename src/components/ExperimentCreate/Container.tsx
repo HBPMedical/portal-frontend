@@ -36,6 +36,7 @@ export const ExperimentCreateContainer = (): JSX.Element => {
   const experiment = useReactiveVar(draftExperimentVar);
   const variables = useReactiveVar(variablesVar);
   const history = useHistory();
+  const [isFormValidated, setFormValidated] = useState<boolean>(true);
 
   const [createExperiment] = useCreateExperimentMutation({
     refetchQueries: [namedOperations.Query.getExperimentList],
@@ -121,6 +122,7 @@ export const ExperimentCreateContainer = (): JSX.Element => {
           handleNameChange={(name: string): void =>
             localMutations.updateDraftExperiment({ name })
           }
+          isEnabled={isFormValidated}
         />
       </div>
       <div className="content">
@@ -151,6 +153,9 @@ export const ExperimentCreateContainer = (): JSX.Element => {
                   algorithm={algorithm}
                   variables={variables}
                   handleParameterChange={handleParamChanged}
+                  handleFormValidationChange={(status) =>
+                    setFormValidated(status)
+                  }
                 />
               </Wrapper>
             </Card.Body>

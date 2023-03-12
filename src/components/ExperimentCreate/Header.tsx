@@ -10,6 +10,7 @@ interface Props {
   handleGoBackToReview: () => void;
   handleRunExperiment: () => void;
   handleNameChange: (name: string) => void;
+  isEnabled: boolean;
 }
 
 const ExperimentCreateHeader = ({
@@ -18,6 +19,7 @@ const ExperimentCreateHeader = ({
   handleGoBackToReview,
   handleRunExperiment,
   handleNameChange,
+  isEnabled = true,
 }: Props): JSX.Element => {
   const [name, setName] = useState<string>('');
 
@@ -77,6 +79,7 @@ const ExperimentCreateHeader = ({
             variant="info"
             type="submit"
             disabled={
+              !isEnabled ||
               method === undefined ||
               method === null ||
               name === '' ||

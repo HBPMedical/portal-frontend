@@ -1,6 +1,5 @@
 /* eslint-disable @typescript-eslint/no-empty-function */
 import { render, screen } from '@testing-library/react';
-import React from 'react';
 import { initialExperiment } from '../API/GraphQL/cache';
 import { Experiment } from '../API/GraphQL/types.generated';
 import AlgorithmParameters from './AlgorithmParameters';
@@ -69,6 +68,10 @@ const algoNoParam = {
   parameters: [],
 };
 
+const handleFormValidationChange = (status: boolean) => {
+  /* empty function */
+};
+
 describe('Algorithm parameters component', () => {
   describe('With selected algorithm', () => {
     describe('when there are parameters', () => {
@@ -77,6 +80,7 @@ describe('Algorithm parameters component', () => {
           experiment={exp}
           handleParameterChange={() => {}}
           algorithm={algo}
+          handleFormValidationChange={handleFormValidationChange}
         />
       );
 
@@ -93,6 +97,7 @@ describe('Algorithm parameters component', () => {
             experiment={exp}
             handleParameterChange={() => {}}
             algorithm={algoNoParam}
+            handleFormValidationChange={handleFormValidationChange}
           />
         );
         expect(screen.getByText('No parameters needed')).toBeDefined();
@@ -106,6 +111,7 @@ describe('Algorithm parameters component', () => {
         <AlgorithmParameters
           experiment={exp}
           handleParameterChange={() => {}}
+          handleFormValidationChange={handleFormValidationChange}
         />
       );
       expect(
