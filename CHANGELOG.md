@@ -1,3 +1,21 @@
+# [9.3.0-rc.1](https://gitlab.com/sibmip/portal-frontend/compare/9.2.0...9.3.0-rc.1) (2023-03-12)
+
+
+### Bug Fixes
+
+* **export:** TableResult image export ([acbdf1d](https://gitlab.com/sibmip/portal-frontend/commit/acbdf1d329d6e88975665ce5f4bb1e8077ef5349))
+* Form invalid prevents submit experiment ([fffb362](https://gitlab.com/sibmip/portal-frontend/commit/fffb362fe37ce35759f28cf283dea405ff7f9015)), closes [#9](https://gitlab.com/sibmip/portal-frontend/issues/9)
+* **graph:** Revert Highcharts ([b944145](https://gitlab.com/sibmip/portal-frontend/commit/b94414515f06d988f2c9a215fc83269c8fc643e7)), closes [#5](https://gitlab.com/sibmip/portal-frontend/issues/5)
+* groupedVariables localstorage ([13687a4](https://gitlab.com/sibmip/portal-frontend/commit/13687a48da9c7f5d40418090578ba70590654229))
+* reverted semantic release to 9.4.2 ([decc633](https://gitlab.com/sibmip/portal-frontend/commit/decc63305338b47bbf99c9ec156e5f3348fd6fc8))
+* type error ([83b39ea](https://gitlab.com/sibmip/portal-frontend/commit/83b39ea24917e312cbb71aa213f2ec75e4e984b9))
+
+
+### Features
+
+* Multiple BarGraph wip ([b0e161a](https://gitlab.com/sibmip/portal-frontend/commit/b0e161af78df9e08296cf4bd98979ee8379ced75))
+* Switched to Bokeh from Highchart ([a4c6bf8](https://gitlab.com/sibmip/portal-frontend/commit/a4c6bf86467e90e21ab52f6222854368d8407e2c))
+
 # [9.3.0-beta.3](https://gitlab.com/sibmip/portal-frontend/compare/9.3.0-beta.2...9.3.0-beta.3) (2023-03-12)
 
 
