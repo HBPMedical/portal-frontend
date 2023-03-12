@@ -1,3 +1,11 @@
+# [9.3.0-beta.3](https://gitlab.com/sibmip/portal-frontend/compare/9.3.0-beta.2...9.3.0-beta.3) (2023-03-12)
+
+
+### Bug Fixes
+
+* Form invalid prevents submit experiment ([fffb362](https://gitlab.com/sibmip/portal-frontend/commit/fffb362fe37ce35759f28cf283dea405ff7f9015)), closes [#9](https://gitlab.com/sibmip/portal-frontend/issues/9)
+* **graph:** Revert Highcharts ([b944145](https://gitlab.com/sibmip/portal-frontend/commit/b94414515f06d988f2c9a215fc83269c8fc643e7)), closes [#5](https://gitlab.com/sibmip/portal-frontend/issues/5)
+
 # [9.3.0-beta.2](https://gitlab.com/sibmip/portal-frontend/compare/9.3.0-beta.1...9.3.0-beta.2) (2023-03-11)
 
 
