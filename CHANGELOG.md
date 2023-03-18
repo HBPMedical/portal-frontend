@@ -1,3 +1,10 @@
+# [9.3.0-beta.5](https://gitlab.com/sibmip/portal-frontend/compare/9.3.0-beta.4...9.3.0-beta.5) (2023-03-18)
+
+
+### Bug Fixes
+
+* Change label Select Parameters ([9b10e81](https://gitlab.com/sibmip/portal-frontend/commit/9b10e81d0243472926659db7a70b66743e80e7e8))
+
 # [9.3.0-beta.4](https://gitlab.com/sibmip/portal-frontend/compare/9.3.0-beta.3...9.3.0-beta.4) (2023-03-18)
 
 
