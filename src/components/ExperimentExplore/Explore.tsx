@@ -148,7 +148,7 @@ const Explore = (props: ExploreProps): JSX.Element => {
                     label={
                       selectedExperiment
                         ? `from ${selectedExperiment.name}`
-                        : 'Select Parameters'
+                        : 'Select from a previous experiment'
                     }
                   />
                 </ParameterContainer>
