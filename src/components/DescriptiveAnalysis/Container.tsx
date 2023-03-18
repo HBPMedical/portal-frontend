@@ -22,6 +22,7 @@ import ExperimentSidebar from './ExperimentSidebar';
 import ExportDescriptive from './Export/ExportDescriptive';
 import FilterFormulaWrapper from './FilterFormulaWrapper';
 import Header from './Header';
+import { Alert } from '../UI/Alert';
 
 const ExportButton = styled.div`
   float: right;
@@ -31,7 +32,7 @@ const Container = (): JSX.Element => {
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const [createTransientMutation, { data, loading, error }] =
     useCreateExperimentMutation();
-
+  const [hasVariables, setHasVariables] = useState(false);
   const history = useHistory();
   const results = data?.createExperiment.results as ResultUnion[];
   const draftExperiment = useReactiveVar(draftExperimentVar);
@@ -42,6 +43,14 @@ const Container = (): JSX.Element => {
 
   useEffect(() => {
     if (!draftExperiment || draftExperiment.datasets.length === 0) return;
+
+    const hasVars = [
+      draftExperiment.coVariables,
+      draftExperiment.variables,
+    ].some((vars) => vars && vars.length > 0);
+    setHasVariables(hasVars);
+
+    if (!hasVars) return;
 
     const datasets = draftExperiment.datasets;
 
@@ -140,6 +149,13 @@ const Container = (): JSX.Element => {
                 )}
               </Card.Header>
               <Card.Body>
+                {!hasVariables && (
+                  <Alert
+                    message="In order to visualize the descriptive analysis, you must first select some variables"
+                    styled="info"
+                    title="No variables selected"
+                  />
+                )}
                 {loading && <Loader />}
                 {error && <Error message={error.message} />}
                 {results?.map((res: ResultUnion, i: number) => {
