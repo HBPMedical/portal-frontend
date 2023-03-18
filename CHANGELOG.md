@@ -1,3 +1,10 @@
+# [9.3.0-beta.4](https://gitlab.com/sibmip/portal-frontend/compare/9.3.0-beta.3...9.3.0-beta.4) (2023-03-18)
+
+
+### Bug Fixes
+
+* **exareme:** Descriptive Analysis message when no variables selected ([e58efa8](https://gitlab.com/sibmip/portal-frontend/commit/e58efa8919b07d2085bea879982c73b7f9e913e9)), closes [#11](https://gitlab.com/sibmip/portal-frontend/issues/11)
+
 # [9.3.0-beta.3](https://gitlab.com/sibmip/portal-frontend/compare/9.3.0-beta.2...9.3.0-beta.3) (2023-03-12)
 
 
