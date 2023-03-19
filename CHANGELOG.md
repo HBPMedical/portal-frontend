@@ -1,3 +1,10 @@
+# [9.3.0-rc.2](https://gitlab.com/sibmip/portal-frontend/compare/9.3.0-rc.1...9.3.0-rc.2) (2023-03-19)
+
+
+### Bug Fixes
+
+* Add dropdown on histogram grouping ([5a5f88a](https://gitlab.com/sibmip/portal-frontend/commit/5a5f88a36d2db611f236ddb3cc06a9afc0f77804))
+
 # [9.3.0-rc.1](https://gitlab.com/sibmip/portal-frontend/compare/9.2.0...9.3.0-rc.1) (2023-03-12)
 
 
