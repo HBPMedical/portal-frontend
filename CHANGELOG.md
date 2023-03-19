@@ -1,3 +1,12 @@
+# [9.3.0-rc.3](https://gitlab.com/sibmip/portal-frontend/compare/9.3.0-rc.2...9.3.0-rc.3) (2023-03-19)
+
+
+### Bug Fixes
+
+* Change label Select Parameters ([9b10e81](https://gitlab.com/sibmip/portal-frontend/commit/9b10e81d0243472926659db7a70b66743e80e7e8))
+* **exareme:** Descriptive Analysis message when no variables selected ([e58efa8](https://gitlab.com/sibmip/portal-frontend/commit/e58efa8919b07d2085bea879982c73b7f9e913e9)), closes [#11](https://gitlab.com/sibmip/portal-frontend/issues/11)
+* Remove JSON export on descriptive statistics ([49c1af1](https://gitlab.com/sibmip/portal-frontend/commit/49c1af1bd6f5b9577948b0131d66dd5656496052))
+
 # [9.3.0-rc.2](https://gitlab.com/sibmip/portal-frontend/compare/9.3.0-rc.1...9.3.0-rc.2) (2023-03-19)
 
 
