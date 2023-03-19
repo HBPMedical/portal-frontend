@@ -12,26 +12,44 @@ const Pagination = ({
   return (
     (totalPages > 1 && (
       <PaginationContainer className="justify-content-center">
-        <PaginationContainer.Prev
-          disabled={currentPage === 0}
-          onClick={(): void => handleSetCurrentPage(currentPage - 1)}
-        />
+        <li
+          onClick={(e): void => {
+            if (currentPage > 0) handleSetCurrentPage(currentPage - 1);
+          }}
+          className={`page-item${currentPage === 0 ? ' disabled' : ''}`}
+        >
+          <span className="page-link">
+            <span aria-hidden="true">‹</span>
+            <span className="sr-only">Previous</span>
+          </span>
+        </li>
 
         {[...Array(totalPages).keys()].map((n) => (
-          <PaginationContainer.Item
+          <li
             key={`page-${n}`}
-            onClick={(): void => handleSetCurrentPage(n)}
-            active={currentPage === n}
+            onClick={(e): void => {
+              handleSetCurrentPage(n);
+            }}
+            className={`page-item${currentPage === n ? ' active' : ''}`}
           >
-            {n + 1}
-          </PaginationContainer.Item>
+            <span className="page-link">{n + 1}</span>
+          </li>
         ))}
 
-        <PaginationContainer.Next
-          onClick={(): void => handleSetCurrentPage(currentPage + 1)}
-          active={totalPages === currentPage}
-          disabled={currentPage >= totalPages - 1}
-        />
+        <li
+          onClick={(e): void => {
+            if (currentPage < totalPages - 1)
+              handleSetCurrentPage(currentPage + 1);
+          }}
+          className={`page-item${
+            currentPage >= totalPages - 1 ? ' disabled' : ''
+          }`}
+        >
+          <span className="page-link">
+            <span aria-hidden="true">›</span>
+            <span className="sr-only">Next</span>
+          </span>
+        </li>
       </PaginationContainer>
     )) || <div></div>
   );
