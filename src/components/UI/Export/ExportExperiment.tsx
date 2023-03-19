@@ -7,9 +7,10 @@ import ExperimentPDF, { ChildrenPDFExport } from './ExperimentPDF';
 
 type Props = {
   experiment: Experiment;
+  allowJSON?: boolean;
 };
 
-const ExportExperiment = ({ experiment }: Props) => {
+const ExportExperiment = ({ experiment, allowJSON = true }: Props) => {
   const filename = `MIP-export-${new Date().toJSON().slice(0, 10)}`;
   const exportJSON = () => {
     const data = `data:text/json;charset=utf-8,${encodeURIComponent(
@@ -37,9 +38,11 @@ const ExportExperiment = ({ experiment }: Props) => {
             </Dropdown.Item>
           )}
         </ExperimentPDF>
-        <Dropdown.Item onClick={exportJSON}>
-          <BsFileCode /> Raw (JSON)
-        </Dropdown.Item>
+        {allowJSON && (
+          <Dropdown.Item onClick={exportJSON}>
+            <BsFileCode /> Raw (JSON)
+          </Dropdown.Item>
+        )}
       </Dropdown.Menu>
     </Dropdown>
   );
