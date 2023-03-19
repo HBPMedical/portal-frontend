@@ -1,3 +1,10 @@
+# [9.3.0-beta.6](https://gitlab.com/sibmip/portal-frontend/compare/9.3.0-beta.5...9.3.0-beta.6) (2023-03-19)
+
+
+### Bug Fixes
+
+* Remove JSON export on descriptive statistics ([49c1af1](https://gitlab.com/sibmip/portal-frontend/commit/49c1af1bd6f5b9577948b0131d66dd5656496052))
+
 # [9.3.0-beta.5](https://gitlab.com/sibmip/portal-frontend/compare/9.3.0-beta.4...9.3.0-beta.5) (2023-03-18)
 
 
