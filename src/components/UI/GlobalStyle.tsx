@@ -49,7 +49,7 @@ export const GlobalStyles = createGlobalStyle`
     text-decoration: none;
   }
 
-  a :hover {
+  a:hover {
     color: #0056b3;
     text-decoration: underline;
   }

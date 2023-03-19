@@ -1,6 +1,6 @@
 import { useReactiveVar } from '@apollo/client';
-import React, { useEffect, useState } from 'react';
-import { Button, Dropdown, DropdownButton, Tab, Tabs } from 'react-bootstrap';
+import { useEffect, useState } from 'react';
+import { DropdownButton, Tab, Tabs } from 'react-bootstrap';
 import styled from 'styled-components';
 import { draftExperimentVar } from '../API/GraphQL/cache';
 import { useCreateExperimentMutation } from '../API/GraphQL/queries.generated';
@@ -12,6 +12,7 @@ import {
 } from '../API/GraphQL/types.generated';
 import { HISTOGRAMS_STORAGE_KEY } from '../constants';
 import ResultDispatcher from '../ExperimentResult/ResultDispatcher';
+import DropdownVariableList from '../UI/DropdownVariableList';
 import Loading from '../UI/Loader';
 import { HierarchyCircularNode } from '../utils';
 
@@ -53,13 +54,13 @@ const Histogram = styled.div`
   margin-top: 8px;
   min-height: 450px;
 
-  .card-header-tabs a {
+  .card-header-tabs > a {
     font-size: 0.8rem;
     margin: 0 0.5em;
     text-decoration: none !important;
   }
 
-  .card-header-tabs a:hover,
+  .card-header-tabs > a:hover,
   .card-header-tabs .dropdown-menu a:active {
     text-decoration: none !important;
   }
@@ -223,13 +224,13 @@ const Histograms = ({
     setGroupByVariables(groupBy);
   }, [keyStorage, setGroupByVariables]);
 
-  const handleChooseVariable = (index: number, variable: Variable): void => {
-    if (!variable) return;
-
+  const handleChooseVariable = (index: number, variable?: Variable): void => {
     const nextChoosenVariables = groupByVariables
       ? { ...groupByVariables, [index]: variable }
       : { [index]: variable };
-    setGroupByVariables(nextChoosenVariables);
+
+    if (!variable) delete nextChoosenVariables[index];
+    setGroupByVariables(nextChoosenVariables as HistogramVariable);
 
     if (keyStorage)
       localStorage.setItem(keyStorage, JSON.stringify(nextChoosenVariables));
@@ -304,32 +305,26 @@ const Histograms = ({
                   title={
                     i === selectedTab ||
                     !(groupByVariables && groupByVariables[i]) ? (
-                      <DropDown
-                        variant="link"
+                      <DropdownVariableList
                         id={`independant-dropdown-${i}`}
                         title={
                           (groupByVariables &&
                             groupByVariables[i] &&
-                            groupByVariables[i].label) ||
+                            groupByVariables[i]?.label) ||
                           'Choose'
                         }
-                        onToggle={(): void => setIsShowingTab(!isShowingTab)}
-                      >
-                        {independantsVariables &&
-                          independantsVariables.map((v) => (
-                            <Dropdown.Item
-                              as={Button}
-                              key={v.id}
-                              onSelect={(): void => handleChooseVariable(i, v)}
-                            >
-                              {v.label}
-                            </Dropdown.Item>
-                          ))}
-                      </DropDown>
+                        isTabOpen={isShowingTab}
+                        variables={independantsVariables}
+                        handleChooseVariable={(v) => handleChooseVariable(i, v)}
+                        onToggle={(isOpen): void => {
+                          setIsShowingTab(isOpen);
+                          console.log(isOpen);
+                        }}
+                      />
                     ) : (
                       (groupByVariables &&
                         groupByVariables[i] &&
-                        groupByVariables[i].label) ||
+                        groupByVariables[i]?.label) ||
                       'Choose'
                     )
                   }
