@@ -1,3 +1,25 @@
+# [9.3.0](https://gitlab.com/sibmip/portal-frontend/compare/9.2.0...9.3.0) (2023-03-23)
+
+
+### Bug Fixes
+
+* Add dropdown on histogram grouping ([5a5f88a](https://gitlab.com/sibmip/portal-frontend/commit/5a5f88a36d2db611f236ddb3cc06a9afc0f77804))
+* Change label Select Parameters ([9b10e81](https://gitlab.com/sibmip/portal-frontend/commit/9b10e81d0243472926659db7a70b66743e80e7e8))
+* **exareme:** Descriptive Analysis message when no variables selected ([e58efa8](https://gitlab.com/sibmip/portal-frontend/commit/e58efa8919b07d2085bea879982c73b7f9e913e9)), closes [#11](https://gitlab.com/sibmip/portal-frontend/issues/11)
+* **export:** TableResult image export ([acbdf1d](https://gitlab.com/sibmip/portal-frontend/commit/acbdf1d329d6e88975665ce5f4bb1e8077ef5349))
+* Form invalid prevents submit experiment ([fffb362](https://gitlab.com/sibmip/portal-frontend/commit/fffb362fe37ce35759f28cf283dea405ff7f9015)), closes [#9](https://gitlab.com/sibmip/portal-frontend/issues/9)
+* **graph:** Revert Highcharts ([b944145](https://gitlab.com/sibmip/portal-frontend/commit/b94414515f06d988f2c9a215fc83269c8fc643e7)), closes [#5](https://gitlab.com/sibmip/portal-frontend/issues/5)
+* groupedVariables localstorage ([13687a4](https://gitlab.com/sibmip/portal-frontend/commit/13687a48da9c7f5d40418090578ba70590654229))
+* Remove JSON export on descriptive statistics ([49c1af1](https://gitlab.com/sibmip/portal-frontend/commit/49c1af1bd6f5b9577948b0131d66dd5656496052))
+* reverted semantic release to 9.4.2 ([decc633](https://gitlab.com/sibmip/portal-frontend/commit/decc63305338b47bbf99c9ec156e5f3348fd6fc8))
+* type error ([83b39ea](https://gitlab.com/sibmip/portal-frontend/commit/83b39ea24917e312cbb71aa213f2ec75e4e984b9))
+
+
+### Features
+
+* Multiple BarGraph wip ([b0e161a](https://gitlab.com/sibmip/portal-frontend/commit/b0e161af78df9e08296cf4bd98979ee8379ced75))
+* Switched to Bokeh from Highchart ([a4c6bf8](https://gitlab.com/sibmip/portal-frontend/commit/a4c6bf86467e90e21ab52f6222854368d8407e2c))
+
 # [9.3.0-rc.3](https://gitlab.com/sibmip/portal-frontend/compare/9.3.0-rc.2...9.3.0-rc.3) (2023-03-19)
 
 
