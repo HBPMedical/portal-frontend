@@ -1,6 +1,6 @@
 import { useReactiveVar } from '@apollo/client';
-import React, { useEffect, useState } from 'react';
-import { Button, Dropdown, DropdownButton, Tab, Tabs } from 'react-bootstrap';
+import { useEffect, useState } from 'react';
+import { DropdownButton, Tab, Tabs } from 'react-bootstrap';
 import styled from 'styled-components';
 import { draftExperimentVar } from '../API/GraphQL/cache';
 import { useCreateExperimentMutation } from '../API/GraphQL/queries.generated';
@@ -12,8 +12,8 @@ import {
 } from '../API/GraphQL/types.generated';
 import { HISTOGRAMS_STORAGE_KEY } from '../constants';
 import ResultDispatcher from '../ExperimentResult/ResultDispatcher';
+import DropdownVariableList from '../UI/DropdownVariableList';
 import Loading from '../UI/Loader';
-import Highchart from '../UI/Visualization/Highchart';
 import { HierarchyCircularNode } from '../utils';
 
 const breadcrumb = (
@@ -31,47 +31,36 @@ const overviewChart = (node: HierarchyCircularNode): any => {
     .filter((d) => d.parent === node && !d.data.isVariable);
 
   children = children.length ? children : [node];
+
   return {
-    chart: {
-      type: 'column',
-    },
-    legend: {
-      enabled: false,
-    },
-    series: [
-      {
-        data: children.map((c) => c.descendants().length - 1),
-        dataLabels: {
-          enabled: true,
-        },
-      },
-    ],
-    title: {
-      text: `Variables contained in ${node.data.label}`,
-    },
-    tooltip: {
-      enabled: false,
-    },
+    name: `Groups contained in ${node.data.label}`,
     xAxis: {
+      label: '',
       categories: children.map((d) => d.data.label),
+      __typename: 'ChartAxis',
     },
     yAxis: {
-      allowDecimals: false,
+      label: 'Count',
+      __typename: 'ChartAxis',
     },
+    barValues: children.map((c) => c.descendants().length - 1),
+    barEnumValues: null,
+    hasConnectedBars: false,
+    __typename: 'BarChartResult',
   };
 };
 
 const Histogram = styled.div`
-  min-height: 440px;
   margin-top: 8px;
+  min-height: 450px;
 
-  .card-header-tabs a {
+  .card-header-tabs > a {
     font-size: 0.8rem;
     margin: 0 0.5em;
     text-decoration: none !important;
   }
 
-  .card-header-tabs a:hover,
+  .card-header-tabs > a:hover,
   .card-header-tabs .dropdown-menu a:active {
     text-decoration: none !important;
   }
@@ -167,17 +156,16 @@ const Histograms = ({
   const keyStorage = domain
     ? `${HISTOGRAMS_STORAGE_KEY}_${domain?.id}`
     : undefined;
-  const [choosenVariables, setChoosenVariables] = useState<
+
+  const [groupByVariables, setGroupByVariables] = useState<
     HistogramVariable | undefined
-  >(() => {
-    const saved = keyStorage ? localStorage.getItem(keyStorage) : undefined;
-    return saved ? JSON.parse(saved) : {};
-  });
+  >();
   const [selectedTab, setSelectedTab] = useState(0);
+  const [isShowingTab, setIsShowingTab] = useState(false);
   const draftExperiment = useReactiveVar(draftExperimentVar);
   const nodes = selectedNode ? breadcrumb(selectedNode).reverse() : [];
 
-  const [getHistrograms, { data, loading }] = useCreateExperimentMutation();
+  const [getHistograms, { data, loading }] = useCreateExperimentMutation();
 
   useEffect(() => {
     if (selectedNode && !selectedNode.children && domain) {
@@ -186,7 +174,7 @@ const Histograms = ({
       const variable = domain.variables.find(
         (v) => v.id === selectedNode.data.id
       );
-      const groupBy = Object.values(choosenVariables ?? {})
+      const groupBy = Object.values(groupByVariables ?? {})
         .filter((v) => !variable || v.id !== variable.id)
         .map((v) => v.id);
 
@@ -200,11 +188,11 @@ const Histograms = ({
       if (variable && variable.type !== 'nominal') {
         params.push({
           id: 'bins',
-          value: JSON.stringify({ [variable.id]: 20 }),
+          value: '20',
         });
       }
 
-      getHistrograms({
+      getHistograms({
         variables: {
           isTransient: true,
           data: {
@@ -222,21 +210,28 @@ const Histograms = ({
       });
     }
   }, [
-    choosenVariables,
+    groupByVariables,
     domain,
     draftExperiment.datasets,
     draftExperiment.domain,
-    getHistrograms,
+    getHistograms,
     selectedNode,
   ]);
 
-  const handleChooseVariable = (index: number, variable: Variable): void => {
-    if (!variable) return;
+  useEffect(() => {
+    const saved = keyStorage ? localStorage.getItem(keyStorage) : undefined;
+    const groupBy = saved ? JSON.parse(saved) : {};
+    setGroupByVariables(groupBy);
+  }, [keyStorage, setGroupByVariables]);
 
-    const nextChoosenVariables = choosenVariables
-      ? { ...choosenVariables, [index]: variable }
+  const handleChooseVariable = (index: number, variable?: Variable): void => {
+    const nextChoosenVariables = groupByVariables
+      ? { ...groupByVariables, [index]: variable }
       : { [index]: variable };
-    setChoosenVariables(nextChoosenVariables);
+
+    if (!variable) delete nextChoosenVariables[index];
+    setGroupByVariables(nextChoosenVariables as HistogramVariable);
+
     if (keyStorage)
       localStorage.setItem(keyStorage, JSON.stringify(nextChoosenVariables));
   };
@@ -267,7 +262,10 @@ const Histograms = ({
 
       <Histogram>
         {selectedNode && selectedNode.children && (
-          <Highchart options={overviewChart(selectedNode)} />
+          <ResultDispatcher
+            result={overviewChart(selectedNode) as ResultUnion}
+            constraint={false}
+          />
         )}
 
         {selectedNode && !selectedNode.children && (
@@ -288,7 +286,8 @@ const Histograms = ({
               }
               key="0"
             >
-              {data &&
+              {!isShowingTab &&
+                data &&
                 data.createExperiment &&
                 data.createExperiment.results &&
                 data.createExperiment.results.length > 0 && (
@@ -305,38 +304,34 @@ const Histograms = ({
                   eventKey={`${i}`}
                   title={
                     i === selectedTab ||
-                    !(choosenVariables && choosenVariables[i]) ? (
-                      <DropDown
-                        variant="link"
+                    !(groupByVariables && groupByVariables[i]) ? (
+                      <DropdownVariableList
                         id={`independant-dropdown-${i}`}
                         title={
-                          (choosenVariables &&
-                            choosenVariables[i] &&
-                            choosenVariables[i].label) ||
+                          (groupByVariables &&
+                            groupByVariables[i] &&
+                            groupByVariables[i]?.label) ||
                           'Choose'
                         }
-                      >
-                        {independantsVariables &&
-                          independantsVariables.map((v) => (
-                            <Dropdown.Item
-                              as={Button}
-                              key={v.id}
-                              onSelect={(): void => handleChooseVariable(i, v)}
-                            >
-                              {v.label}
-                            </Dropdown.Item>
-                          ))}
-                      </DropDown>
+                        isTabOpen={isShowingTab}
+                        variables={independantsVariables}
+                        handleChooseVariable={(v) => handleChooseVariable(i, v)}
+                        onToggle={(isOpen): void => {
+                          setIsShowingTab(isOpen);
+                          console.log(isOpen);
+                        }}
+                      />
                     ) : (
-                      (choosenVariables &&
-                        choosenVariables[i] &&
-                        choosenVariables[i].label) ||
+                      (groupByVariables &&
+                        groupByVariables[i] &&
+                        groupByVariables[i]?.label) ||
                       'Choose'
                     )
                   }
                   key={i}
                 >
-                  {data &&
+                  {!isShowingTab &&
+                    data &&
                     data.createExperiment &&
                     data.createExperiment.results &&
                     data.createExperiment.results?.length > i && (

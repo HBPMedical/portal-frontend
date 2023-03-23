@@ -81,12 +81,20 @@ export type Author = {
 
 export type BarChartResult = {
   __typename?: 'BarChartResult';
+  /** List of group's value */
+  barEnumValues?: Maybe<Array<BarEnumValues>>;
   /** List of bar's value */
-  barValues: Array<Scalars['Float']>;
+  barValues?: Maybe<Array<Scalars['Float']>>;
   hasConnectedBars?: Maybe<Scalars['Boolean']>;
   name: Scalars['String'];
   xAxis?: Maybe<ChartAxis>;
   yAxis?: Maybe<ChartAxis>;
+};
+
+export type BarEnumValues = {
+  __typename?: 'BarEnumValues';
+  label: Scalars['String'];
+  values: Array<Scalars['Float']>;
 };
 
 export type BaseParameter = {

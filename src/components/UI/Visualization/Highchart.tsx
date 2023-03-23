@@ -1,5 +1,4 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-// FIXME: implement Code Splitting https://facebook.github.io/create-react-app/docs/code-splitting
 import * as Highcharts from 'highcharts';
 import HighchartsReact from 'highcharts-react-official';
 import highcharts3d from 'highcharts/highcharts-3d';
@@ -12,7 +11,6 @@ import styled from 'styled-components';
 HCMore(Highcharts);
 Heatmap(Highcharts);
 highcharts3d(Highcharts);
-//Exporting(Highcharts);
 SeriesLabel(Highcharts);
 Annotations(Highcharts);
 

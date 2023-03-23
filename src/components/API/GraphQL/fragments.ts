@@ -52,11 +52,16 @@ export const coreInfoResult = gql`
       name
       xAxis {
         label
+        categories
       }
       yAxis {
         label
       }
       barValues
+      barEnumValues {
+        label
+        values
+      }
       hasConnectedBars
     }
     ... on LineChartResult {

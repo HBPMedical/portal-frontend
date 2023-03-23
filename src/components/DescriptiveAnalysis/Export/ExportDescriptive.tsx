@@ -25,7 +25,7 @@ const ExportDescriptive = ({ draftExperiment }: Props) => {
 
   if (loading || !experiment) return <></>;
 
-  return <ExportExperiment experiment={experiment} />;
+  return <ExportExperiment experiment={experiment} allowJSON={false} />;
 };
 
 export default ExportDescriptive;
