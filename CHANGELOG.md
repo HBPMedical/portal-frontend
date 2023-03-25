@@ -1,3 +1,10 @@
+# [9.3.0-rc.4](https://gitlab.com/sibmip/portal-frontend/compare/9.3.0-rc.3...9.3.0-rc.4) (2023-03-25)
+
+
+### Bug Fixes
+
+* **Histograms:** Add count on orphan variables ([1ab1b69](https://gitlab.com/sibmip/portal-frontend/commit/1ab1b697899e6b7653894a5f3cc61c299eb9f6fd))
+
 # [9.3.0-rc.3](https://gitlab.com/sibmip/portal-frontend/compare/9.3.0-rc.2...9.3.0-rc.3) (2023-03-19)
 
 
