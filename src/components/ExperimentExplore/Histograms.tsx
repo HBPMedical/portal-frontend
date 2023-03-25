@@ -30,20 +30,33 @@ const overviewChart = (node: HierarchyCircularNode): any => {
     .descendants()
     .filter((d) => d.parent === node && !d.data.isVariable);
 
-  children = children.length ? children : [node];
+  const others = node
+    .descendants()
+    .filter((d) => d.parent === node && d.data.isVariable);
+
+  const hasSubGroups = children.length;
+
+  children = hasSubGroups ? children : [node];
+  const barValues = children.map((c) => c.descendants().length - 1);
+  const categories = children.map((d) => d.data.label);
+
+  if (others.length !== 0 && hasSubGroups) {
+    categories.push('Others');
+    barValues.push(others.length);
+  }
 
   return {
     name: `Groups contained in ${node.data.label}`,
     xAxis: {
       label: '',
-      categories: children.map((d) => d.data.label),
+      categories,
       __typename: 'ChartAxis',
     },
     yAxis: {
       label: 'Count',
       __typename: 'ChartAxis',
     },
-    barValues: children.map((c) => c.descendants().length - 1),
+    barValues,
     barEnumValues: null,
     hasConnectedBars: false,
     __typename: 'BarChartResult',
