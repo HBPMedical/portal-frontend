@@ -1,6 +1,6 @@
 import { useReactiveVar } from '@apollo/client';
 import { useEffect, useState } from 'react';
-import { DropdownButton, Tab, Tabs } from 'react-bootstrap';
+import { Tab, Tabs } from 'react-bootstrap';
 import styled from 'styled-components';
 import { draftExperimentVar } from '../API/GraphQL/cache';
 import { useCreateExperimentMutation } from '../API/GraphQL/queries.generated';
@@ -125,11 +125,6 @@ const Breadcrumb = styled.span`
     text-decoration: underline;
     color: #0056b3;
   }
-`;
-
-const DropDown = styled(DropdownButton)`
-  margin: 0;
-  padding: 0;
 `;
 
 const Title = styled.p`

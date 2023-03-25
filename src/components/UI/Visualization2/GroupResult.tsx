@@ -1,4 +1,5 @@
 import { Card, Tab, Tabs } from 'react-bootstrap';
+import styled from 'styled-components';
 import {
   GroupResult,
   GroupsResult,
@@ -14,6 +15,10 @@ interface Props {
   error?: Error;
 }
 
+const ExportOnlyContainer = styled.div`
+  display: none;
+`;
+
 const DescriptiveStatistics = ({
   result,
   loading,
@@ -28,6 +33,14 @@ const DescriptiveStatistics = ({
           {result.groups?.map((group: GroupResult, i: number) => {
             return (
               <Tab key={i} eventKey={`${i}`} title={group.name}>
+                <ExportOnlyContainer>
+                  <div
+                    className="exp-result export-hidden"
+                    data-export="container"
+                  >
+                    <h1>{group.name}</h1>
+                  </div>
+                </ExportOnlyContainer>
                 {group.description && <p>{group.description}</p>}
                 {group.results?.map((res: ResultUnion, j: number) => {
                   return <ResultDispatcher result={res} key={j} />;
