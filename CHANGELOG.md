@@ -1,3 +1,11 @@
+## [9.3.1](https://gitlab.com/sibmip/portal-frontend/compare/9.3.0...9.3.1) (2023-05-11)
+
+
+### Bug Fixes
+
+* fixed useEffect dependency ([7f95f5c](https://gitlab.com/sibmip/portal-frontend/commit/7f95f5cb05d1d38a1d3e8fc96312d0ea8f8b7b7e))
+* force semantic to release ^_^ ([48b90a7](https://gitlab.com/sibmip/portal-frontend/commit/48b90a7e8a74fb4276c9a0f31efd9f196f27b57e))
+
 # [9.3.0](https://gitlab.com/sibmip/portal-frontend/compare/9.2.0...9.3.0) (2023-03-23)
 
 
