@@ -31,7 +31,6 @@ const TOS = (): JSX.Element => {
   const [accepted, setAccepted] = useState(false);
   const [TOS, setTOS] = useState<string | undefined>(undefined);
   const mountedRef = useRef(true);
-  
   const { search } = useLocation();
   const { loading: userLoading, data } = useActiveUserQuery();
   const history = useHistory();
@@ -50,7 +49,7 @@ const TOS = (): JSX.Element => {
     if (agreeNDA) {
       history.push('/');
     }
-  }, [data, history, userLoading]);
+  }, [data, history, userLoading, search]);
 
   useEffect(() => {
     const fetchData = async (): Promise<void> => {
