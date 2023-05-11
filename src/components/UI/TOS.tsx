@@ -1,7 +1,7 @@
 import React, { useEffect, useRef, useState } from 'react';
 import { Button, Form, Spinner } from 'react-bootstrap';
 import ReactMarkdown from 'react-markdown';
-import { useHistory } from 'react-router-dom';
+import { useHistory, useLocation } from 'react-router-dom';
 import rehypeRaw from 'rehype-raw';
 import styled from 'styled-components';
 import {
@@ -31,6 +31,7 @@ const TOS = (): JSX.Element => {
   const [accepted, setAccepted] = useState(false);
   const [TOS, setTOS] = useState<string | undefined>(undefined);
   const mountedRef = useRef(true);
+  const { search } = useLocation();
 
   const { loading: userLoading, data } = useActiveUserQuery();
 
@@ -44,6 +45,8 @@ const TOS = (): JSX.Element => {
   });
 
   useEffect(() => {
+    if (search.match(/view/)) return;
+
     const agreeNDA = data?.user?.agreeNDA;
     if (agreeNDA) {
       history.push('/');
@@ -88,36 +91,38 @@ const TOS = (): JSX.Element => {
   return (
     <Container>
       {TOS && <ReactMarkdown rehypePlugins={[rehypeRaw]}>{TOS}</ReactMarkdown>}
-      <ContainerBtnRight className="tos-form">
-        <div>
-          <Form.Check
-            inline={true}
-            type="checkbox"
-            id={`tos`}
-            label={'I accept the Terms of Use.'}
-            onChange={handleCheckboxChange}
-          ></Form.Check>
-        </div>
+      {!data?.user?.agreeNDA && (
+        <ContainerBtnRight className="tos-form">
+          <div>
+            <Form.Check
+              inline={true}
+              type="checkbox"
+              id={`tos`}
+              label={'I accept the Terms of Use.'}
+              onChange={handleCheckboxChange}
+            ></Form.Check>
+          </div>
 
-        <Button
-          onClick={handleAcceptTOS}
-          disabled={!accepted}
-          className="pull-right"
-          variant="primary"
-          type="submit"
-        >
-          {loading && (
-            <Spinner
-              as="span"
-              animation="border"
-              size="sm"
-              role="status"
-              aria-hidden="true"
-            />
-          )}
-          {!loading && 'Proceed'}
-        </Button>
-      </ContainerBtnRight>
+          <Button
+            onClick={handleAcceptTOS}
+            disabled={!accepted}
+            className="pull-right"
+            variant="primary"
+            type="submit"
+          >
+            {loading && (
+              <Spinner
+                as="span"
+                animation="border"
+                size="sm"
+                role="status"
+                aria-hidden="true"
+              />
+            )}
+            {!loading && 'Proceed'}
+          </Button>
+        </ContainerBtnRight>
+      )}
     </Container>
   );
 };

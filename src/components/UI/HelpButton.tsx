@@ -3,6 +3,7 @@ import { DropdownButton } from 'react-bootstrap';
 import { BsBook, BsFillEnvelopeFill } from 'react-icons/bs';
 import styled from 'styled-components';
 import { appConfigVar } from '../API/GraphQL/cache';
+import { NavLink } from 'react-router-dom';
 
 const MainBox = styled.div`
   .dropdown-menu {
@@ -66,6 +67,17 @@ const MainBox = styled.div`
   }
 `;
 
+const Link = styled(NavLink)`
+  font-family: 'Open Sans', sans-serif;
+  font-weight: normal !important;
+  padding: 0.5em;
+  color: #007bff !important;
+  font-size: 0.9rem;
+  :hover {
+    text-decoration: underline !important;
+  }
+`;
+
 const HelpButton = (): JSX.Element => {
   const config = useReactiveVar(appConfigVar);
 
@@ -88,6 +100,10 @@ const HelpButton = (): JSX.Element => {
             </a>
           </p>
         )}
+        <Link to="/tos?view">
+          {' '}
+          <BsBook /> Terms of service
+        </Link>
       </DropdownButton>
     </MainBox>
   );
