@@ -34,7 +34,7 @@ const Footer = ({ appConfig }: { appConfig: AppConfig }): JSX.Element => (
       <img src={ChuvLogo} alt="CHUV Logo" />
     </div>
     <h6>
-      © 2015-2022{' '}
+      © 2015-2023{' '}
       <a
         href="https://www.humanbrainproject.eu/en/"
         title="The Human Brain Project Website"
