@@ -5,6 +5,7 @@ import styled from 'styled-components';
 import headers from '../API/RequestHeaders';
 import { backendURL } from '../API/RequestURLS';
 import { GalaxyConfig } from '../utils';
+import GalaxyScreenshot from '../../images/galaxy-screenshot.png';
 
 const IFrameContainer = styled.div`
   width: 100%;
@@ -26,6 +27,7 @@ const AlertBox = styled(Alert)`
 export default React.memo(() => {
   const divRef = useRef<HTMLIFrameElement>(null);
   const [error, setError] = useState<string | null>(null);
+  const [warning, setWarning] = useState<string | null>(null);
   const [config, setConfig] = useState<GalaxyConfig>();
 
   useEffect(() => {
@@ -59,15 +61,28 @@ export default React.memo(() => {
 
   useEffect(() => {
     if (config) {
-      const { authorization, context } = config;
-      if (authorization && context) {
-        const req = new XMLHttpRequest();
-        const [user, password] = Base64.decode(authorization).split(':');
-        req.open('POST', context, false, user, password);
-        req.send(null);
-        if (divRef && divRef.current) {
-          divRef.current.src = context;
+      try {
+        const { authorization, context } = config;
+        if (authorization && context) {
+          const req = new XMLHttpRequest();
+          const [user, password] = Base64.decode(authorization).split(':');
+          req.open('POST', context, false, user, password);
+          req.send(null);
+
+          if (req.status === 404) {
+            setWarning(
+              'This fuctionality is available by request at support@ebrains.eu'
+            );
+
+            return;
+          }
+
+          if (divRef && divRef.current) {
+            divRef.current.src = context;
+          }
         }
+      } catch (error: unknown) {
+        setError(`${error}`);
       }
     }
   }, [config]);
@@ -79,7 +94,22 @@ export default React.memo(() => {
           <strong>There was an error</strong> {error}
         </AlertBox>
       )}
-      <iframe title="Galaxy Workflow" ref={divRef} />
+      {warning && (
+        <div>
+          <AlertBox variant="warning">{warning}</AlertBox>
+          <div style={{ textAlign: 'center' }}>
+            <img
+              style={{ border: '1px gray solid', marginTop: '32px' }}
+              src={GalaxyScreenshot}
+              alt="Galaxy"
+            />
+            <p style={{ marginTop: '8px', color: 'GrayText' }}>
+              Galaxy Workflow
+            </p>
+          </div>
+        </div>
+      )}
+      {!warning && !error && <iframe title="Galaxy Workflow" ref={divRef} />}
     </IFrameContainer>
   );
 });
