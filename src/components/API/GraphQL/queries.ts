@@ -32,26 +32,39 @@ export const QUERY_LIST_ALGORITHMS = gql`
       }
       hasFormula
       parameters {
+        ...ParamBody
+      }
+      preprocessing {
         __typename
         name
         label
         hint
-        isRequired
-        hasMultiple
-        defaultValue
-        ... on NumberParameter {
-          min
-          max
-          isReal
-        }
-        ... on NominalParameter {
-          allowedValues {
-            value
-            label
-          }
-          linkedTo
+        parameters {
+          ...ParamBody
         }
       }
+    }
+  }
+
+  fragment ParamBody on BaseParameter {
+    __typename
+    name
+    label
+    hint
+    isRequired
+    hasMultiple
+    defaultValue
+    ... on NumberParameter {
+      min
+      max
+      isReal
+    }
+    ... on NominalParameter {
+      allowedValues {
+        value
+        label
+      }
+      linkedTo
     }
   }
 

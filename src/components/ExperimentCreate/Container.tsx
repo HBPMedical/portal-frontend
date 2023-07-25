@@ -21,16 +21,26 @@ import { Dict } from '../utils';
 import AlgorithmParameters from './AlgorithmParameters';
 import AvailableAlgorithms from './AvailableAlgorithms';
 import ExperimentCreateHeader from './Header';
+import AlgorithmPreprocessing from './AlgorithmPreprocessingParameters';
 
 const Wrapper = styled.div`
   padding: 1em 1em;
   min-height: 50vh;
 `;
 
+const Header = styled.div`
+  margin-bottom: 16px;
+
+  h4 {
+    margin-bottom: 4px;
+  }
+`;
+
 export const ExperimentCreateContainer = (): JSX.Element => {
   const [alert, setAlert] = useState<IAlert | undefined>(undefined);
   const [algorithm, setAlgorithm] = useState<Algorithm | undefined>(undefined);
   const [params, setParams] = useState<Dict>({});
+  const [preprocessing, setPreprocessing] = useState<Dict<Dict>>({});
   const selectedExperiment = useReactiveVar(selectedExperimentVar);
   const domain = useReactiveVar(selectedDomainVar);
   const experiment = useReactiveVar(draftExperimentVar);
@@ -78,6 +88,22 @@ export const ExperimentCreateContainer = (): JSX.Element => {
     }));
   };
 
+  const handlePreprocessingChanged = (
+    name: string,
+    key: string,
+    value?: string
+  ) => {
+    setPreprocessing((prevState) => ({
+      ...prevState,
+      [name]: {
+        ...prevState[name],
+        [key]: value,
+      },
+    }));
+
+    console.log(JSON.stringify(preprocessing));
+  };
+
   const handleRunExperiment = (): void => {
     if (!algorithm) {
       setAlert({ message: 'Select an algorithm' });
@@ -105,6 +131,13 @@ export const ExperimentCreateContainer = (): JSX.Element => {
                 id: k,
                 value: v as string,
               })),
+            preprocessing: Object.entries(preprocessing).map(([k, v]) => ({
+              name: k,
+              parameters: Object.entries(v).map(([w, x]) => ({
+                id: w,
+                value: x as string,
+              })),
+            })),
           },
         },
       },
@@ -148,15 +181,67 @@ export const ExperimentCreateContainer = (): JSX.Element => {
                 />
               )}
               <Wrapper>
-                <AlgorithmParameters
-                  experiment={experiment}
-                  algorithm={algorithm}
-                  variables={variables}
-                  handleParameterChange={handleParamChanged}
-                  handleFormValidationChange={(status) =>
-                    setFormValidated(status)
-                  }
-                />
+                {!algorithm && (
+                  <Header>
+                    <h4>
+                      <strong>Your algorithm</strong>
+                    </h4>
+                    <p>
+                      Please, select the algorithm to be performed in the
+                      &apos;Available Algorithms&apos; panel
+                    </p>
+                  </Header>
+                )}
+
+                {algorithm && (
+                  <Header>
+                    <h4>
+                      <strong>{algorithm.label}</strong>
+                    </h4>
+                    <p>{algorithm.description}</p>
+                  </Header>
+                )}
+
+                {algorithm?.preprocessing &&
+                  algorithm?.preprocessing?.length > 0 && (
+                    <>
+                      <h5>Preprocessing</h5>
+                      <Card>
+                        <Card.Body>
+                          <AlgorithmPreprocessing
+                            experiment={experiment}
+                            algorithm={algorithm}
+                            variables={variables}
+                            handlePreprocessingChanged={
+                              handlePreprocessingChanged
+                            }
+                            handleFormValidationChange={(status) =>
+                              setFormValidated(status)
+                            }
+                          />
+                        </Card.Body>
+                      </Card>
+                    </>
+                  )}
+
+                {algorithm && (
+                  <>
+                    <h5>Parameters</h5>
+                    <Card>
+                      <Card.Body>
+                        <AlgorithmParameters
+                          experiment={experiment}
+                          algorithm={algorithm}
+                          variables={variables}
+                          handleParameterChange={handleParamChanged}
+                          handleFormValidationChange={(status) =>
+                            setFormValidated(status)
+                          }
+                        />
+                      </Card.Body>
+                    </Card>
+                  </>
+                )}
               </Wrapper>
             </Card.Body>
           </Card>

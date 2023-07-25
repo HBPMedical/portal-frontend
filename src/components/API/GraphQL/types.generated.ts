@@ -35,6 +35,7 @@ export type Algorithm = {
   id: Scalars['String'];
   label?: Maybe<Scalars['String']>;
   parameters?: Maybe<Array<BaseParameter>>;
+  preprocessing?: Maybe<Array<AlgorithmPreprocessing>>;
   type?: Maybe<Scalars['String']>;
   variable: VariableParameter;
 };
@@ -42,12 +43,27 @@ export type Algorithm = {
 export type AlgorithmInput = {
   id: Scalars['String'];
   parameters?: InputMaybe<Array<AlgorithmParamInput>>;
+  preprocessing?: InputMaybe<Array<AlgorithmPreprocessingInput>>;
   type?: InputMaybe<Scalars['String']>;
 };
 
 export type AlgorithmParamInput = {
   id: Scalars['String'];
   value: Scalars['String'];
+};
+
+export type AlgorithmPreprocessing = {
+  __typename?: 'AlgorithmPreprocessing';
+  /** Small hint (description) for the end user */
+  hint?: Maybe<Scalars['String']>;
+  label?: Maybe<Scalars['String']>;
+  name?: Maybe<Scalars['String']>;
+  parameters?: Maybe<Array<BaseParameter>>;
+};
+
+export type AlgorithmPreprocessingInput = {
+  name: Scalars['String'];
+  parameters?: InputMaybe<Array<AlgorithmParamInput>>;
 };
 
 export type AlgorithmResult = {

@@ -42,73 +42,60 @@ const AlgorithmParameters = ({
     handleFormValidationChange(formRef.current?.checkValidity() ?? true);
   }, [algorithm, formRef, handleFormValidationChange]);
 
-  if (!algorithm)
-    return (
-      <Header>
-        <h4>
-          <strong>Your algorithm</strong>
-        </h4>
-        <p>
-          Please, select the algorithm to be performed in the &apos;Available
-          Algorithms&apos; panel
-        </p>
-      </Header>
-    );
   return (
     <div>
-      <Header>
-        <h4>
-          <strong>{algorithm.label}</strong>
-        </h4>
-        <p>{algorithm.description}</p>
+      {algorithm && (
+        <Header>
+          {algorithm.parameters?.length === 0 && (
+            <div>No parameters needed</div>
+          )}
 
-        {algorithm.parameters?.length === 0 && <div>No parameters needed</div>}
+          {algorithm.parameters?.length !== 0 && (
+            <Form
+              validated={true}
+              ref={formRef}
+              onChange={() =>
+                handleFormValidationChange(
+                  formRef.current?.checkValidity() ?? true
+                )
+              }
+            >
+              {algorithm.parameters
+                ?.map((param) => {
+                  const type = (param as unknown as Dict).__typename;
+                  const id = `${algorithm.id}-${param.name}`;
 
-        {algorithm.parameters?.length !== 0 && (
-          <Form
-            validated={true}
-            ref={formRef}
-            onChange={() =>
-              handleFormValidationChange(
-                formRef.current?.checkValidity() ?? true
-              )
-            }
-          >
-            {algorithm.parameters
-              ?.map((param) => {
-                const type = (param as unknown as Dict).__typename;
-                const id = `${algorithm.id}-${param.name}`;
+                  if (type === 'StringParameter' || type === 'NumberParameter')
+                    return (
+                      <SimpleInput
+                        key={id}
+                        parameter={
+                          type === 'StringParameter'
+                            ? (param as StringParameter)
+                            : (param as NumberParameter)
+                        }
+                        handleValueChanged={handleParameterChange}
+                      />
+                    );
 
-                if (type === 'StringParameter' || type === 'NumberParameter')
-                  return (
-                    <SimpleInput
-                      key={id}
-                      parameter={
-                        type === 'StringParameter'
-                          ? (param as StringParameter)
-                          : (param as NumberParameter)
-                      }
-                      handleValueChanged={handleParameterChange}
-                    />
-                  );
+                  if (type === 'NominalParameter')
+                    return (
+                      <NominalInput
+                        key={id}
+                        parameter={param as NominalParameter}
+                        experiment={experiment}
+                        variables={variables}
+                        handleValueChanged={handleParameterChange}
+                      />
+                    );
 
-                if (type === 'NominalParameter')
-                  return (
-                    <NominalInput
-                      key={id}
-                      parameter={param as NominalParameter}
-                      experiment={experiment}
-                      variables={variables}
-                      handleValueChanged={handleParameterChange}
-                    />
-                  );
-
-                return undefined;
-              })
-              .filter((input) => input !== undefined)}
-          </Form>
-        )}
-      </Header>
+                  return undefined;
+                })
+                .filter((input) => input !== undefined)}
+            </Form>
+          )}
+        </Header>
+      )}
     </div>
   );
 };

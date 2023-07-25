@@ -12,7 +12,15 @@ export type GetConfigurationQuery = { __typename?: 'Query', configuration: { __t
 export type ListAlgorithmsQueryVariables = Types.Exact<{ [key: string]: never; }>;
 
 
-export type ListAlgorithmsQuery = { __typename?: 'Query', algorithms: Array<{ __typename?: 'Algorithm', id: string, label?: Types.Maybe<string>, type?: Types.Maybe<string>, description?: Types.Maybe<string>, hasFormula?: Types.Maybe<boolean>, variable: { __typename?: 'VariableParameter', hint?: Types.Maybe<string>, isRequired?: Types.Maybe<boolean>, hasMultiple?: Types.Maybe<boolean>, allowedTypes?: Types.Maybe<Array<string>> }, coVariable?: Types.Maybe<{ __typename?: 'VariableParameter', hint?: Types.Maybe<string>, isRequired?: Types.Maybe<boolean>, hasMultiple?: Types.Maybe<boolean>, allowedTypes?: Types.Maybe<Array<string>> }>, parameters?: Types.Maybe<Array<{ __typename: 'NominalParameter', linkedTo?: Types.Maybe<Types.AllowedLink>, name: string, label?: Types.Maybe<string>, hint?: Types.Maybe<string>, isRequired?: Types.Maybe<boolean>, hasMultiple?: Types.Maybe<boolean>, defaultValue?: Types.Maybe<string>, allowedValues?: Types.Maybe<Array<{ __typename?: 'OptionValue', value: string, label: string }>> } | { __typename: 'NumberParameter', min?: Types.Maybe<number>, max?: Types.Maybe<number>, isReal?: Types.Maybe<boolean>, name: string, label?: Types.Maybe<string>, hint?: Types.Maybe<string>, isRequired?: Types.Maybe<boolean>, hasMultiple?: Types.Maybe<boolean>, defaultValue?: Types.Maybe<string> } | { __typename: 'StringParameter', name: string, label?: Types.Maybe<string>, hint?: Types.Maybe<string>, isRequired?: Types.Maybe<boolean>, hasMultiple?: Types.Maybe<boolean>, defaultValue?: Types.Maybe<string> }>> }> };
+export type ListAlgorithmsQuery = { __typename?: 'Query', algorithms: Array<{ __typename?: 'Algorithm', id: string, label?: Types.Maybe<string>, type?: Types.Maybe<string>, description?: Types.Maybe<string>, hasFormula?: Types.Maybe<boolean>, variable: { __typename?: 'VariableParameter', hint?: Types.Maybe<string>, isRequired?: Types.Maybe<boolean>, hasMultiple?: Types.Maybe<boolean>, allowedTypes?: Types.Maybe<Array<string>> }, coVariable?: Types.Maybe<{ __typename?: 'VariableParameter', hint?: Types.Maybe<string>, isRequired?: Types.Maybe<boolean>, hasMultiple?: Types.Maybe<boolean>, allowedTypes?: Types.Maybe<Array<string>> }>, parameters?: Types.Maybe<Array<{ __typename: 'NominalParameter', linkedTo?: Types.Maybe<Types.AllowedLink>, name: string, label?: Types.Maybe<string>, hint?: Types.Maybe<string>, isRequired?: Types.Maybe<boolean>, hasMultiple?: Types.Maybe<boolean>, defaultValue?: Types.Maybe<string>, allowedValues?: Types.Maybe<Array<{ __typename?: 'OptionValue', value: string, label: string }>> } | { __typename: 'NumberParameter', min?: Types.Maybe<number>, max?: Types.Maybe<number>, isReal?: Types.Maybe<boolean>, name: string, label?: Types.Maybe<string>, hint?: Types.Maybe<string>, isRequired?: Types.Maybe<boolean>, hasMultiple?: Types.Maybe<boolean>, defaultValue?: Types.Maybe<string> } | { __typename: 'StringParameter', name: string, label?: Types.Maybe<string>, hint?: Types.Maybe<string>, isRequired?: Types.Maybe<boolean>, hasMultiple?: Types.Maybe<boolean>, defaultValue?: Types.Maybe<string> }>>, preprocessing?: Types.Maybe<Array<{ __typename: 'AlgorithmPreprocessing', name?: Types.Maybe<string>, label?: Types.Maybe<string>, hint?: Types.Maybe<string>, parameters?: Types.Maybe<Array<{ __typename: 'NominalParameter', linkedTo?: Types.Maybe<Types.AllowedLink>, name: string, label?: Types.Maybe<string>, hint?: Types.Maybe<string>, isRequired?: Types.Maybe<boolean>, hasMultiple?: Types.Maybe<boolean>, defaultValue?: Types.Maybe<string>, allowedValues?: Types.Maybe<Array<{ __typename?: 'OptionValue', value: string, label: string }>> } | { __typename: 'NumberParameter', min?: Types.Maybe<number>, max?: Types.Maybe<number>, isReal?: Types.Maybe<boolean>, name: string, label?: Types.Maybe<string>, hint?: Types.Maybe<string>, isRequired?: Types.Maybe<boolean>, hasMultiple?: Types.Maybe<boolean>, defaultValue?: Types.Maybe<string> } | { __typename: 'StringParameter', name: string, label?: Types.Maybe<string>, hint?: Types.Maybe<string>, isRequired?: Types.Maybe<boolean>, hasMultiple?: Types.Maybe<boolean>, defaultValue?: Types.Maybe<string> }>> }>> }> };
+
+export type ParamBody_NominalParameter_Fragment = { __typename: 'NominalParameter', linkedTo?: Types.Maybe<Types.AllowedLink>, name: string, label?: Types.Maybe<string>, hint?: Types.Maybe<string>, isRequired?: Types.Maybe<boolean>, hasMultiple?: Types.Maybe<boolean>, defaultValue?: Types.Maybe<string>, allowedValues?: Types.Maybe<Array<{ __typename?: 'OptionValue', value: string, label: string }>> };
+
+export type ParamBody_NumberParameter_Fragment = { __typename: 'NumberParameter', min?: Types.Maybe<number>, max?: Types.Maybe<number>, isReal?: Types.Maybe<boolean>, name: string, label?: Types.Maybe<string>, hint?: Types.Maybe<string>, isRequired?: Types.Maybe<boolean>, hasMultiple?: Types.Maybe<boolean>, defaultValue?: Types.Maybe<string> };
+
+export type ParamBody_StringParameter_Fragment = { __typename: 'StringParameter', name: string, label?: Types.Maybe<string>, hint?: Types.Maybe<string>, isRequired?: Types.Maybe<boolean>, hasMultiple?: Types.Maybe<boolean>, defaultValue?: Types.Maybe<string> };
+
+export type ParamBodyFragment = ParamBody_NominalParameter_Fragment | ParamBody_NumberParameter_Fragment | ParamBody_StringParameter_Fragment;
 
 export type VarBodyFragment = { __typename?: 'VariableParameter', hint?: Types.Maybe<string>, isRequired?: Types.Maybe<boolean>, hasMultiple?: Types.Maybe<boolean>, allowedTypes?: Types.Maybe<Array<string>> };
 
@@ -101,6 +109,29 @@ export type DeleteExperimentMutationVariables = Types.Exact<{
 
 export type DeleteExperimentMutation = { __typename?: 'Mutation', removeExperiment: { __typename?: 'PartialExperiment', id?: Types.Maybe<string>, status?: Types.Maybe<Types.ExperimentStatus> } };
 
+export const ParamBodyFragmentDoc = gql`
+    fragment ParamBody on BaseParameter {
+  __typename
+  name
+  label
+  hint
+  isRequired
+  hasMultiple
+  defaultValue
+  ... on NumberParameter {
+    min
+    max
+    isReal
+  }
+  ... on NominalParameter {
+    allowedValues {
+      value
+      label
+    }
+    linkedTo
+  }
+}
+    `;
 export const VarBodyFragmentDoc = gql`
     fragment VarBody on VariableParameter {
   hint
@@ -176,29 +207,21 @@ export const ListAlgorithmsDocument = gql`
     }
     hasFormula
     parameters {
+      ...ParamBody
+    }
+    preprocessing {
       __typename
       name
       label
       hint
-      isRequired
-      hasMultiple
-      defaultValue
-      ... on NumberParameter {
-        min
-        max
-        isReal
-      }
-      ... on NominalParameter {
-        allowedValues {
-          value
-          label
-        }
-        linkedTo
+      parameters {
+        ...ParamBody
       }
     }
   }
 }
-    ${VarBodyFragmentDoc}`;
+    ${VarBodyFragmentDoc}
+${ParamBodyFragmentDoc}`;
 
 /**
  * __useListAlgorithmsQuery__
@@ -814,6 +837,7 @@ export const namedOperations = {
     deleteExperiment: 'deleteExperiment'
   },
   Fragment: {
+    ParamBody: 'ParamBody',
     VarBody: 'VarBody',
     coreGroupInfo: 'coreGroupInfo'
   }
