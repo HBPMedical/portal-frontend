@@ -3,6 +3,7 @@ import { Form } from 'react-bootstrap';
 import styled from 'styled-components';
 import {
   Algorithm,
+  BaseParameter,
   Domain,
   Experiment,
   NominalParameter,
@@ -53,6 +54,17 @@ const AlgorithmPreprocessingParameters = ({
     [domain]
   );
 
+  const lookupVariable = (experiment: Experiment): Variable[] =>
+    [...(experiment.coVariables ?? []), ...experiment.variables].map((c) => {
+      const v = lookup(c);
+
+      return {
+        type: v?.type ?? 'string',
+        id: v?.id ?? c,
+        label: v?.label ?? c,
+      };
+    });
+
   return (
     <div>
       {algorithm?.preprocessing?.map((preprocessing) => (
@@ -76,34 +88,34 @@ const AlgorithmPreprocessingParameters = ({
                 }
               >
                 {preprocessing?.parameters
-                  ?.map((param) => {
-                    const type = (param as unknown as Dict).__typename;
-                    const id = `${algorithm.id}-${param.name}`;
+                  ?.map((parameters) => {
+                    const type = (parameters as unknown as Dict).__typename;
+                    const id = `${algorithm.id}-${parameters.name}`;
 
                     if (
                       type === 'NominalParameter' &&
-                      param.name === 'strategies'
-                    )
-                      return [
-                        ...(experiment.coVariables ?? []),
-                        ...experiment.variables,
-                      ]
-                        .map((c) => {
-                          const v = lookup(c);
-
-                          return {
-                            name: v?.id ?? c,
-                            label: v?.label ?? c,
+                      parameters.name === 'strategies'
+                    ) {
+                      const vars = lookupVariable(experiment);
+                      return vars.map((c) => {
+                        let param = parameters as NominalParameter;
+                        if (c.type === 'nominal') {
+                          param = {
+                            ...parameters,
+                            allowedValues: param.allowedValues?.filter(
+                              (o) => o.value !== 'diff'
+                            ),
                           };
-                        })
-                        .map((c) => (
+                        }
+
+                        return (
                           <NominalInput
                             key={`${algorithm.id}-${param.name}-${c}`}
                             parameter={
                               {
                                 ...param,
                                 label: `Strategy for ${c.label}`,
-                                name: c.name,
+                                name: c.id,
                               } as NominalParameter
                             }
                             experiment={experiment}
@@ -120,13 +132,15 @@ const AlgorithmPreprocessingParameters = ({
                                 );
                             }}
                           />
-                        ));
+                        );
+                      });
+                    }
 
                     if (type === 'NominalParameter')
                       return (
                         <LongitudinalVisitInput
                           key={id}
-                          parameter={param as NominalParameter}
+                          parameter={parameters as NominalParameter}
                           experiment={experiment}
                           variables={variables}
                           handleValueChanged={(key: string, value?: string) => {
