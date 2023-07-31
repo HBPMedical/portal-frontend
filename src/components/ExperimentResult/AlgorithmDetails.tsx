@@ -39,6 +39,7 @@ const AlgorithmDetails = ({
         value: p.value,
       };
     }) ?? [];
+
   return (
     <>
       {result && (
@@ -54,6 +55,21 @@ const AlgorithmDetails = ({
                     <Badge variant="info" key={p.id}>
                       {p.label || p.id}: {p.value ?? 'not defined'}
                     </Badge>
+                  ))}
+                </ParamContainer>
+              )}
+              {result?.preprocessing && result?.preprocessing.length > 0 && (
+                <ParamContainer>
+                  <p>Preprocessing</p>
+                  {result?.preprocessing.map((pp) => (
+                    <>
+                      <p>{pp.name}</p>
+                      {pp?.parameters?.map((p) => (
+                        <Badge variant="info" key={p.name}>
+                          {p.name}: {p.value ?? 'not defined'}
+                        </Badge>
+                      ))}
+                    </>
                   ))}
                 </ParamContainer>
               )}

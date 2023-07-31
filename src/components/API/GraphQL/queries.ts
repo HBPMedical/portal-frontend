@@ -188,6 +188,13 @@ export const QUERY_EXPERIMENT = gql`
           name
           value
         }
+        preprocessing {
+          name
+          parameters {
+            name
+            value
+          }
+        }
       }
       results {
         ... on GroupsResult {

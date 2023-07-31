@@ -70,6 +70,7 @@ export type AlgorithmResult = {
   __typename?: 'AlgorithmResult';
   name: Scalars['String'];
   parameters?: Maybe<Array<ParamValue>>;
+  preprocessing?: Maybe<Array<Preprocessing>>;
 };
 
 /** The supported links. */
@@ -444,6 +445,12 @@ export type PointCi = {
   max?: Maybe<Scalars['Float']>;
   mean: Scalars['Float'];
   min?: Maybe<Scalars['Float']>;
+};
+
+export type Preprocessing = {
+  __typename?: 'Preprocessing';
+  name: Scalars['String'];
+  parameters?: Maybe<Array<ParamValue>>;
 };
 
 export type Query = {
