@@ -210,6 +210,7 @@ export const ExperimentCreateContainer = (): JSX.Element => {
                         <Card.Body>
                           <AlgorithmPreprocessing
                             experiment={experiment}
+                            domain={domain}
                             algorithm={algorithm}
                             variables={variables}
                             handlePreprocessingChanged={
@@ -249,22 +250,24 @@ export const ExperimentCreateContainer = (): JSX.Element => {
         <div className="sidebar2">
           <Card>
             <Card.Body>
-              <h4>Available Algorithms</h4>
-              <AvailableAlgorithms
-                experiment={experiment}
-                listVariables={variables}
-                selectedAlgorithm={algorithm}
-                direction="vertical"
-                handleSelect={(algo) => {
-                  setAlgorithm(algo);
-                  localMutations.updateDraftExperiment({
-                    algorithm: {
-                      name: algo.id,
-                      parameters: [],
-                    },
-                  });
-                }}
-              />
+              <Card.Title>Available Algorithms</Card.Title>
+              <Card.Text>
+                <AvailableAlgorithms
+                  experiment={experiment}
+                  listVariables={variables}
+                  selectedAlgorithm={algorithm}
+                  direction="vertical"
+                  handleSelect={(algo) => {
+                    setAlgorithm(algo);
+                    localMutations.updateDraftExperiment({
+                      algorithm: {
+                        name: algo.id,
+                        parameters: [],
+                      },
+                    });
+                  }}
+                />
+              </Card.Text>
             </Card.Body>
           </Card>
         </div>

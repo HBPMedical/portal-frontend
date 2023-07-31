@@ -1,8 +1,9 @@
-import { useEffect, useRef } from 'react';
+import { useCallback, useEffect, useRef } from 'react';
 import { Form } from 'react-bootstrap';
 import styled from 'styled-components';
 import {
   Algorithm,
+  Domain,
   Experiment,
   NominalParameter,
   Variable,
@@ -21,6 +22,7 @@ const Header = styled.div`
 
 type Props = {
   experiment: Experiment;
+  domain?: Domain;
   algorithm?: Algorithm;
   variables?: Variable[];
   handlePreprocessingChanged: (
@@ -33,6 +35,7 @@ type Props = {
 
 const AlgorithmPreprocessingParameters = ({
   experiment,
+  domain,
   algorithm,
   variables = [],
   handlePreprocessingChanged,
@@ -43,6 +46,12 @@ const AlgorithmPreprocessingParameters = ({
   useEffect(() => {
     handleFormValidationChange(formRef.current?.checkValidity() ?? true);
   }, [algorithm, formRef, handleFormValidationChange]);
+
+  const lookup = useCallback(
+    (id: string): Variable | undefined =>
+      domain?.variables.find((v) => v.id === id),
+    [domain]
+  );
 
   return (
     <div>
@@ -75,28 +84,43 @@ const AlgorithmPreprocessingParameters = ({
                       type === 'NominalParameter' &&
                       param.name === 'strategies'
                     )
-                      return experiment?.coVariables?.map((c) => (
-                        <NominalInput
-                          key={`${algorithm.id}-${param.name}-${c}`}
-                          parameter={
-                            {
-                              ...param,
-                              label: `Strategy for ${c}`,
-                              name: c,
-                            } as NominalParameter
-                          }
-                          experiment={experiment}
-                          variables={variables}
-                          handleValueChanged={(key: string, value?: string) => {
-                            if (preprocessing.name)
-                              handlePreprocessingChanged(
-                                preprocessing.name,
-                                key,
-                                value
-                              );
-                          }}
-                        />
-                      ));
+                      return [
+                        ...(experiment.coVariables ?? []),
+                        ...experiment.variables,
+                      ]
+                        .map((c) => {
+                          const v = lookup(c);
+
+                          return {
+                            name: v?.id ?? c,
+                            label: v?.label ?? c,
+                          };
+                        })
+                        .map((c) => (
+                          <NominalInput
+                            key={`${algorithm.id}-${param.name}-${c}`}
+                            parameter={
+                              {
+                                ...param,
+                                label: `Strategy for ${c.label}`,
+                                name: c.name,
+                              } as NominalParameter
+                            }
+                            experiment={experiment}
+                            variables={variables}
+                            handleValueChanged={(
+                              key: string,
+                              value?: string
+                            ) => {
+                              if (preprocessing.name)
+                                handlePreprocessingChanged(
+                                  preprocessing.name,
+                                  key,
+                                  value
+                                );
+                            }}
+                          />
+                        ));
 
                     if (type === 'NominalParameter')
                       return (
