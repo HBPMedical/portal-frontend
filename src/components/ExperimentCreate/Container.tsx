@@ -202,7 +202,10 @@ export const ExperimentCreateContainer = (): JSX.Element => {
                   </Header>
                 )}
 
-                {algorithm?.preprocessing &&
+                {domain?.datasets
+                  .map((d) => d.isLongitudinal)
+                  ?.every((e) => e) &&
+                  algorithm?.preprocessing &&
                   algorithm?.preprocessing?.length > 0 && (
                     <>
                       <h5>Preprocessing</h5>
