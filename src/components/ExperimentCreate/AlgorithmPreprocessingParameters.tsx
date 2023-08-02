@@ -55,7 +55,7 @@ const AlgorithmPreprocessingParameters = ({
   );
 
   const lookupVariable = (experiment: Experiment): Variable[] =>
-    [...(experiment.coVariables ?? []), ...experiment.variables].map((c) => {
+    [...experiment.variables, ...(experiment.coVariables ?? [])].map((c) => {
       const v = lookup(c);
 
       return {
