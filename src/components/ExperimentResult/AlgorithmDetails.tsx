@@ -2,7 +2,11 @@ import React from 'react';
 import { Badge } from 'react-bootstrap';
 import styled from 'styled-components';
 import { useListAlgorithmsQuery } from '../API/GraphQL/queries.generated';
-import { AlgorithmResult } from '../API/GraphQL/types.generated';
+import {
+  AlgorithmResult,
+  ParamValue,
+  PreprocessingParamValue,
+} from '../API/GraphQL/types.generated';
 import Loader from '../UI/Loader';
 
 const ParamContainer = styled.div`
@@ -40,6 +44,23 @@ const AlgorithmDetails = ({
       };
     }) ?? [];
 
+  const preprocessingParams = (parameters: PreprocessingParamValue[]) => {
+    return parameters.map((p) => {
+      if (p.name === 'strategies') {
+        return p.values?.map((s) => (
+          <Badge variant="info" key={p.name}>
+            {s.name}: {s.value ?? 'not defined'}
+          </Badge>
+        ));
+      } else
+        return (
+          <Badge variant="info" key={p.name}>
+            {p.name}: {p.value ?? 'not defined'}
+          </Badge>
+        );
+    });
+  };
+
   return (
     <>
       {result && (
@@ -62,14 +83,10 @@ const AlgorithmDetails = ({
                 <ParamContainer>
                   <p>Preprocessing</p>
                   {result?.preprocessing.map((pp) => (
-                    <>
+                    <div key={pp.name}>
                       <p>{pp.name}</p>
-                      {pp?.parameters?.map((p) => (
-                        <Badge variant="info" key={p.name}>
-                          {p.name}: {p.value ?? 'not defined'}
-                        </Badge>
-                      ))}
-                    </>
+                      {pp.parameters && preprocessingParams(pp.parameters)}
+                    </div>
                   ))}
                 </ParamContainer>
               )}

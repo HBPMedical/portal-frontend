@@ -450,7 +450,14 @@ export type PointCi = {
 export type Preprocessing = {
   __typename?: 'Preprocessing';
   name: Scalars['String'];
-  parameters?: Maybe<Array<ParamValue>>;
+  parameters?: Maybe<Array<PreprocessingParamValue>>;
+};
+
+export type PreprocessingParamValue = {
+  __typename?: 'PreprocessingParamValue';
+  name: Scalars['String'];
+  value: Scalars['String'];
+  values?: Maybe<Array<ParamValue>>;
 };
 
 export type Query = {

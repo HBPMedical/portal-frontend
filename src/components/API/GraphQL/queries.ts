@@ -193,6 +193,10 @@ export const QUERY_EXPERIMENT = gql`
           parameters {
             name
             value
+            values {
+              name
+              value
+            }
           }
         }
       }
