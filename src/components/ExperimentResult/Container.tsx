@@ -128,7 +128,10 @@ const ContainerWrap = ({ ...props }: Props): JSX.Element => {
                         }
                       />
                       <section>
-                        <AlgorithmDetails result={experiment.algorithm} />
+                        <AlgorithmDetails
+                          result={experiment.algorithm}
+                          domain={domain}
+                        />
                       </section>
                       <section>
                         {domain && experiment && (

@@ -1,11 +1,12 @@
-import React from 'react';
+import React, { useCallback } from 'react';
 import { Badge } from 'react-bootstrap';
 import styled from 'styled-components';
 import { useListAlgorithmsQuery } from '../API/GraphQL/queries.generated';
 import {
   AlgorithmResult,
-  ParamValue,
+  Domain,
   PreprocessingParamValue,
+  Variable,
 } from '../API/GraphQL/types.generated';
 import Loader from '../UI/Loader';
 
@@ -13,7 +14,7 @@ const ParamContainer = styled.div`
   display: flex;
   flex-direction: column;
   gap: 3px;
-  margin-left: 5px;
+  margin-left: 8px;
   align-items: flex-start;
 
   .badge {
@@ -25,9 +26,17 @@ const ParamContainer = styled.div`
 
 const AlgorithmDetails = ({
   result,
+  domain,
 }: {
   result?: AlgorithmResult;
+  domain?: Domain;
 }): JSX.Element | null => {
+  const lookup = useCallback(
+    (id: string): Variable | undefined =>
+      domain?.variables.find((v) => v.id === id),
+    [domain]
+  );
+
   const { data, loading } = useListAlgorithmsQuery();
   const nameLowerCase = result?.name.toLowerCase();
   const algo = data?.algorithms.find(
@@ -44,12 +53,17 @@ const AlgorithmDetails = ({
       };
     }) ?? [];
 
+  const preprocessing = (name: string) =>
+    algo?.preprocessing?.find(
+      (a) => a.name?.toLowerCase() === name.toLowerCase()
+    );
+
   const preprocessingParams = (parameters: PreprocessingParamValue[]) => {
     return parameters.map((p) => {
       if (p.name === 'strategies') {
         return p.values?.map((s) => (
           <Badge variant="info" key={p.name}>
-            {s.name}: {s.value ?? 'not defined'}
+            {lookup(s.name)?.label}: {s.value ?? 'not defined'}
           </Badge>
         ));
       } else
@@ -81,11 +95,12 @@ const AlgorithmDetails = ({
               )}
               {result?.preprocessing && result?.preprocessing.length > 0 && (
                 <ParamContainer>
-                  <p>Preprocessing</p>
                   {result?.preprocessing.map((pp) => (
                     <div key={pp.name}>
-                      <p>{pp.name}</p>
-                      {pp.parameters && preprocessingParams(pp.parameters)}
+                      <p>{preprocessing(pp.name)?.label}</p>
+                      <ParamContainer>
+                        {pp.parameters && preprocessingParams(pp.parameters)}
+                      </ParamContainer>
                     </div>
                   ))}
                 </ParamContainer>
