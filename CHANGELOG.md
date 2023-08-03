@@ -1,3 +1,17 @@
+# [9.4.0-beta.1](https://gitlab.com/sibmip/portal-frontend/compare/9.3.1...9.4.0-beta.1) (2023-08-03)
+
+
+### Bug Fixes
+
+* moved preprocessing strategy variable at first place ([94dfa5f](https://gitlab.com/sibmip/portal-frontend/commit/94dfa5f32ab3e91a521fffb601310306de1cffcf))
+
+
+### Features
+
+* Galaxy workflow 404 placeholder ([c22746f](https://gitlab.com/sibmip/portal-frontend/commit/c22746fcb0c6074683fc086abbd2f9d4b0945754))
+* Longitudinal data handling ([9e55b40](https://gitlab.com/sibmip/portal-frontend/commit/9e55b40c763214d034aafc8d2ab944d87b67acbc))
+* longitudinal params if longitudinal datasets ([56673b8](https://gitlab.com/sibmip/portal-frontend/commit/56673b8d5090166479aec8288cb3e08675aef9af))
+
 ## [9.3.1](https://gitlab.com/sibmip/portal-frontend/compare/9.3.0...9.3.1) (2023-05-11)
 
 
