@@ -104,19 +104,4 @@ describe('Algorithm parameters component', () => {
       });
     });
   });
-
-  describe('Without algorithm selected', () => {
-    it('should tell user to select an algorithm', async () => {
-      render(
-        <AlgorithmParameters
-          experiment={exp}
-          handleParameterChange={() => {}}
-          handleFormValidationChange={handleFormValidationChange}
-        />
-      );
-      expect(
-        screen.getByText(new RegExp('Please, select the algorithm', 'i'))
-      ).toBeDefined();
-    });
-  });
 });

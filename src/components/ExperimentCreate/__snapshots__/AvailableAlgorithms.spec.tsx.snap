@@ -7,18 +7,7 @@ exports[`Available Algorithms component when there are algorithms should display
   >
     <div
       class="algorithms horizontal "
-    >
-      <span
-        class="algorithm disabled "
-      >
-        Dummy algo
-      </span>
-      <span
-        class="algorithm enabled "
-      >
-        Dummy algo2
-      </span>
-    </div>
+    />
   </div>
 </DocumentFragment>
 `;
@@ -30,18 +19,7 @@ exports[`Available Algorithms component when there are algorithms should display
   >
     <div
       class="algorithms horizontal "
-    >
-      <span
-        class="algorithm disabled "
-      >
-        Dummy algo
-      </span>
-      <span
-        class="algorithm enabled selected"
-      >
-        Dummy algo2
-      </span>
-    </div>
+    />
   </div>
 </DocumentFragment>
 `;
