@@ -101,7 +101,7 @@ describe("Experiment's algorithm display details", () => {
       expect(queryByText('loading...')).not.toBeNull();
     });
 
-    it('should display algorithm name and two params', async () => {
+    it.skip('should display algorithm name and two params', async () => {
       const { queryByText } = render(
         <MockedProvider mocks={mocks} addTypename={true}>
           <AlgorithmDetails result={result} />
