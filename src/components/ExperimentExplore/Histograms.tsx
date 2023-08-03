@@ -127,11 +127,6 @@ const Breadcrumb = styled.span`
   }
 `;
 
-const DropDown = styled(DropdownButton)`
-  margin: 0;
-  padding: 0;
-`;
-
 const Title = styled.p`
   font-weight: bold;
   display: inline;

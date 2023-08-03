@@ -3,7 +3,6 @@ import { Form } from 'react-bootstrap';
 import styled from 'styled-components';
 import {
   Algorithm,
-  BaseParameter,
   Domain,
   Experiment,
   NominalParameter,
