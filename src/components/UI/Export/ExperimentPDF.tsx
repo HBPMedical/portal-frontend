@@ -11,12 +11,23 @@ import {
   View,
 } from '@react-pdf/renderer';
 import * as hmtlToImage from 'html-to-image';
-import React, { useEffect, useImperativeHandle, useRef, useState } from 'react';
-import { Button } from 'react-bootstrap';
+import React, {
+  useCallback,
+  useEffect,
+  useImperativeHandle,
+  useRef,
+  useState,
+} from 'react';
+import { Badge, Button } from 'react-bootstrap';
 import { domainsVar, variablesVar } from '../../API/GraphQL/cache';
 import { useListAlgorithmsQuery } from '../../API/GraphQL/queries.generated';
-import { Algorithm, Experiment } from '../../API/GraphQL/types.generated';
+import {
+  Algorithm,
+  Experiment,
+  Variable,
+} from '../../API/GraphQL/types.generated';
 import { makeAssetURL } from '../../API/RequestURLS';
+import { pre } from '@bokeh/bokehjs/build/js/types/core/dom';
 
 Font.register({
   family: 'Open Sans',
@@ -259,6 +270,30 @@ const DocumentPDF = React.forwardRef<DocumentPDFHandle, DocumentProps>(
         };
       }) ?? [];
 
+    const preprocessing = experiment?.algorithm?.preprocessing?.map((pp) => {
+      const preprocessingLabel = algo?.preprocessing?.find(
+        (p) => p.name === pp.name
+      )?.label;
+      return {
+        id: pp.name,
+        label: preprocessingLabel ?? pp.name,
+        values: pp.parameters?.flatMap((p) => {
+          if (p.name === 'strategies') {
+            return p.values?.map((s) => ({
+              id: s.name,
+              label: s.name,
+              value: s.value,
+            }));
+          } else
+            return {
+              id: p.name,
+              label: p.name,
+              value: p.value,
+            };
+        }),
+      };
+    });
+
     useImperativeHandle(ref, () => ({
       update: async (): Promise<void> => {
         const imgs = await fetchImages();
@@ -329,6 +364,21 @@ const DocumentPDF = React.forwardRef<DocumentPDFHandle, DocumentProps>(
                         emptyLabel}
                     </View>
                   </View>
+                  {preprocessing && (
+                    <View style={{ ...styles.subtitle, marginLeft: 10 }}>
+                      <Text style={styles.bold}>Preprocessing: </Text>
+                      <View style={styles.flexCol}>
+                        {preprocessing?.length === 0 && (
+                          <Text>{emptyLabel}</Text>
+                        )}
+                        {preprocessing?.map((p) => (
+                          <Text key={p.id}>{`${p.label ?? p.id}: ${p.values
+                            ?.map((v) => `${v?.label ?? v?.id}: ${v?.value}`)
+                            .join(', ')}`}</Text>
+                        ))}
+                      </View>
+                    </View>
+                  )}
                   <View style={styles.subtitle}>
                     <Text style={styles.bold}>Domain: </Text>
                     <Text>{domain?.label ?? domain?.id}</Text>
