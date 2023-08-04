@@ -177,7 +177,6 @@ const Navigation = ({
           </Group>
           <DropdownWrapper className="links">{children}</DropdownWrapper>
           <div className="experiment-nav links">
-            <Link to="/galaxy">Workflow</Link>
             {datacatalogueUrl && (
               <a
                 href={datacatalogueUrl}

@@ -31,12 +31,6 @@ export interface AppConfig {
   };
 }
 
-export interface GalaxyConfig {
-  authorization?: string;
-  context?: string;
-  error?: { error?: string; message: string };
-}
-
 export type IFormula = Pick<
   ExperimentCreateInput,
   'interactions' | 'transformations'

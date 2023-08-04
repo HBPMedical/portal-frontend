@@ -28,7 +28,6 @@ import AccessPage from '../UI/AccessPage';
 import DataCatalog from '../UI/DataCatalog';
 import DropdownExperimentList from '../UI/Experiment/DropDownList/DropdownExperimentList';
 import Footer from '../UI/Footer';
-import Galaxy from '../UI/Galaxy';
 import { GlobalStyles } from '../UI/GlobalStyle';
 import LoginPage from '../UI/LoginPage';
 import Navigation from '../UI/Navigation';
@@ -249,10 +248,6 @@ const App = ({ appConfig }: Props) => {
               <ProtectedRoute exact={true} path="/experiment">
                 <ShepherdSelectTour id="experiment" steps={experimentTour} />
                 <ExperimentCreate />
-              </ProtectedRoute>
-
-              <ProtectedRoute path="/galaxy">
-                <Galaxy />
               </ProtectedRoute>
 
               <Route path="/catalog" render={() => <DataCatalog />} />
