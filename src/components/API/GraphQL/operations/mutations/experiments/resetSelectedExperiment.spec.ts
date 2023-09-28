@@ -28,10 +28,7 @@ describe('ResetSelectedExperiment', () => {
   it('Test reset selected experiment', () => {
     resetSelectedExperiment();
     const domain = mockDomainVar()?.id ?? '';
-    const datasets =
-      mockDomainVar()
-        ?.datasets.filter((d) => !d.isLongitudinal)
-        .map((d) => d.id) ?? [];
+    const datasets = mockDomainVar()?.datasets.map((d) => d.id) ?? [];
     expect(mockSelectedExperimentVar()).toBe(undefined);
     expect(mockDraftExperimentVar()).toStrictEqual({
       ...initialExperiment,
