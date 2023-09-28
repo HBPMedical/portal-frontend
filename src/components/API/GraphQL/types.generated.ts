@@ -156,7 +156,6 @@ export type Configuration = {
 export type Dataset = {
   __typename?: 'Dataset';
   id: Scalars['String'];
-  isLongitudinal?: Maybe<Scalars['Boolean']>;
   label?: Maybe<Scalars['String']>;
 };
 
@@ -167,6 +166,7 @@ export type Domain = {
   groups: Array<Group>;
   id: Scalars['String'];
   label?: Maybe<Scalars['String']>;
+  longitudinal?: Maybe<Scalars['Boolean']>;
   rootGroup: Group;
   variables: Array<Variable>;
   version?: Maybe<Scalars['String']>;

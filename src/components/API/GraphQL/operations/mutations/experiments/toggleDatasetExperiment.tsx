@@ -48,13 +48,9 @@ export default function createToggleDatasetExperiment(
     const datasets =
       domain.datasets.filter((d) => experiment.datasets.includes(d.id)) ?? [];
 
-    let newDatasets = datasets.find((d) => d.id === dataset.id)
+    const newDatasets = datasets.find((d) => d.id === dataset.id)
       ? datasets.filter((d) => d.id !== dataset.id)
       : [...datasets, dataset];
-
-    newDatasets = dataset.isLongitudinal
-      ? newDatasets.filter((d) => d.isLongitudinal)
-      : newDatasets.filter((d) => !d.isLongitudinal);
 
     const newExperiment = {
       ...experimentVar(),

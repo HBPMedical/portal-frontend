@@ -117,13 +117,7 @@ const DataSelect = ({
     if (visible && event.target !== btn.current) setVisible(false);
   });
 
-  const ndatasets = datasets.filter((d) => !d.isLongitudinal) ?? [];
-  const ldatasets = datasets.filter((d) => !!d.isLongitudinal) ?? [];
-
-  const grpDatasets =
-    ldatasets.length > 0 ? [ndatasets, ldatasets] : [ndatasets];
-
-  const container = grpDatasets.map((list, i) => {
+  const container = [datasets].map((list, i) => {
     const elements = list.map((item) => (
       <div
         key={item.id}
@@ -151,7 +145,7 @@ const DataSelect = ({
     return (
       <div key={`list-${i}`}>
         {elements}
-        {i !== grpDatasets.length - 1 && <hr />}
+        {i !== datasets.length - 1 && <hr />}
       </div>
     );
   });

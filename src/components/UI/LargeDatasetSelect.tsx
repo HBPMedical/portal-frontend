@@ -98,10 +98,6 @@ const LargeDatasetSelect = ({
   const style = visible ? undefined : { display: 'none' };
   const node = useRef<HTMLDivElement | null>(null);
 
-  // TODO: tag dataset as longitudinal
-  const ndatasets = datasets?.filter((d) => !d.isLongitudinal);
-  const ldatasets = datasets?.filter((d) => d.isLongitudinal);
-
   const handleClickOutside = (event: MouseEvent): void => {
     // inside click
     if (node.current?.contains(event.target as HTMLInputElement)) {
@@ -138,18 +134,7 @@ const LargeDatasetSelect = ({
       </span>
     ));
 
-  const data = (
-    <>
-      {ndatasets && checkboxFor(ndatasets)}
-      {ldatasets && ldatasets.length > 0 && (
-        <>
-          <hr />
-          <h6>Longitudinal datasets</h6>
-        </>
-      )}
-      {ldatasets && checkboxFor(ldatasets)}
-    </>
-  );
+  const data = <>{datasets && checkboxFor(datasets)}</>;
 
   return (
     <>

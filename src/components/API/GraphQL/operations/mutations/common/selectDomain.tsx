@@ -24,9 +24,7 @@ export default function createSelectDomain(
       ...initialExperiment,
       ...{
         domain: domain.id,
-        datasets:
-          domain.datasets.filter((d) => !d.isLongitudinal).map((d) => d.id) ??
-          [],
+        datasets: domain.datasets.map((d) => d.id) ?? [],
       },
     });
     variablesVar(domain.variables);

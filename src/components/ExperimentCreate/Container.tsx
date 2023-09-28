@@ -202,9 +202,8 @@ export const ExperimentCreateContainer = (): JSX.Element => {
                   </Header>
                 )}
 
-                {domain?.datasets
-                  .map((d) => d.isLongitudinal)
-                  ?.every((e) => e) &&
+                {domain?.longitudinal &&
+                  domain?.datasets?.every((e) => e) &&
                   algorithm?.preprocessing &&
                   algorithm?.preprocessing?.length > 0 && (
                     <>

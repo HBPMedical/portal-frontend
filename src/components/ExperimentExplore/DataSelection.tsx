@@ -83,6 +83,10 @@ const DataSelection = ({
     }
   };
 
+  const domains = data?.domains.filter((d) => !d.longitudinal) ?? [];
+  const longitudinalDomains =
+    data?.domains.filter((d) => !!d.longitudinal) ?? [];
+
   return (
     <>
       <Modal ref={modalRef} />
@@ -91,14 +95,14 @@ const DataSelection = ({
         {!loading && (
           <>
             <DomainSelectBox id="domain-select">
-              {data?.domains && data?.domains.length > 1 && (
+              {(domains || longitudinalDomains) && (
                 <DomainsBox id="pathology-select">
                   <DropdownButton
                     size="sm"
                     variant="light"
                     title={uppercase(domain?.label || 'Domains')}
                   >
-                    {data.domains.map((d) => (
+                    {domains.map((d) => (
                       <Dropdown.Item
                         onSelect={(): void => {
                           showDialogDomainChange(d.id);
@@ -109,6 +113,25 @@ const DataSelection = ({
                         {d.label}
                       </Dropdown.Item>
                     ))}
+                    {longitudinalDomains && (
+                      <>
+                        <Dropdown.Divider />
+                        <h6 style={{ paddingLeft: '1em' }}>
+                          Longitudinal Data
+                        </h6>
+                        {longitudinalDomains.map((d) => (
+                          <Dropdown.Item
+                            onSelect={(): void => {
+                              showDialogDomainChange(d.id);
+                            }}
+                            key={d.id}
+                            value={d.id}
+                          >
+                            {d.label}
+                          </Dropdown.Item>
+                        ))}
+                      </>
+                    )}
                   </DropdownButton>
                 </DomainsBox>
               )}
