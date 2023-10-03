@@ -1,3 +1,10 @@
+# [9.4.0-beta.3](https://gitlab.com/sibmip/portal-frontend/compare/9.4.0-beta.2...9.4.0-beta.3) (2023-10-03)
+
+
+### Features
+
+* hierarchical table reworked ([82e2c23](https://gitlab.com/sibmip/portal-frontend/commit/82e2c2302db8270969fcd477a0105e253cd8e4fc))
+
 # [9.4.0-beta.2](https://gitlab.com/sibmip/portal-frontend/compare/9.4.0-beta.1...9.4.0-beta.2) (2023-09-28)
 
 
