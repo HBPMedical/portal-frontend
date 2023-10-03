@@ -1,3 +1,10 @@
+# [9.4.0-beta.2](https://gitlab.com/sibmip/portal-frontend/compare/9.4.0-beta.1...9.4.0-beta.2) (2023-09-28)
+
+
+### Bug Fixes
+
+* longitudinal domain vs dataset ([0a0c8f3](https://gitlab.com/sibmip/portal-frontend/commit/0a0c8f3865d15bc016e807810292cd0d52c22097))
+
 # [9.4.0-beta.1](https://gitlab.com/sibmip/portal-frontend/compare/9.3.1...9.4.0-beta.1) (2023-08-03)
 
 
