@@ -1,10 +1,10 @@
 import { CSVLink } from 'react-csv';
 import { FaFileCsv } from 'react-icons/fa';
-import { round } from 'src/components/utils';
+import { round } from '../..//utils';
 import styled from 'styled-components';
 import { TableResult, TableStyle } from '../../API/GraphQL/types.generated';
 
-const layouts = ['default', 'statistics'] as const;
+const layouts = ['default', 'statistics', 'hierarchical'] as const;
 export type Layout = typeof layouts[number];
 
 interface TableProps {
@@ -44,32 +44,15 @@ const Table = styled.table<LayoutProps>`
   }
 
   th:first-child {
-    border-left: 1px solid #eee;
     width: 200px !important;
     text-align: left;
   }
-
-  ${(prop): string =>
-    prop.layout === TableStyle.Default
-      ? `
-        tr:nth-child(even) {
-          background: #ebebeb;
-          padding: 8px;
-        }
-      `
-      : `
-      tr:nth-child(1), 
-      tr:nth-child(3), 
-      tr:last-child {
-        border-bottom: 2px solid #1e1e1e;
-      }
-    `}
 
   td {
     border: 1px solid #e3e3e3;
     padding: 1px 4px;
     text-overflow: ellipsis;
-    text-align: right;
+    text-align: center;
     padding-right: 8px;
   }
 
@@ -77,6 +60,34 @@ const Table = styled.table<LayoutProps>`
     font-weight: bold;
     text-align: left;
   }
+
+  ${(prop): string =>
+    (prop.layout === TableStyle.Default &&
+      `
+        tr:nth-child(even) {
+          background: #ebebeb;
+          padding: 8px;
+        }
+      `) ||
+    ''}
+
+  ${(prop): string =>
+    (prop.layout === TableStyle.Statistical &&
+      `
+      tr:nth-child(1), 
+      tr:nth-child(3), 
+      tr:last-child {
+        border-bottom: 2px solid #1e1e1e;
+      }
+    `) ||
+    ''}
+
+  ${(prop): string =>
+    (prop.layout === TableStyle.Hierarchical &&
+      `
+        tr, th, td { border: 1px solid #999; }
+      `) ||
+    ''}
 `;
 
 const Container = styled.div`
@@ -98,6 +109,15 @@ const Container = styled.div`
 
 const DataTable = ({ data }: TableProps): JSX.Element => {
   const csvData = [[...data.headers.map((h) => h.name)], ...data.data];
+  const headers2 = data.childHeaders?.reduce<string[]>((acc, curr) => {
+    if (curr.names) {
+      acc.push(...curr.names);
+    } else {
+      acc.push(curr.name || '');
+    }
+
+    return acc;
+  }, []);
 
   return (
     <Container className="table-result">
@@ -115,16 +135,34 @@ const DataTable = ({ data }: TableProps): JSX.Element => {
       </h5>
 
       <Table
-        layout={data.tableStyle ?? TableStyle.Normal}
-        colsCount={data.headers.length}
+        layout={data.tableStyle ?? TableStyle.Default}
+        colsCount={headers2 ? headers2.length : data.headers.length}
         key={`table-${data.name}`}
       >
         <thead>
-          <tr>
-            {data.headers.map((m, i) => (
-              <th key={`${data.name}-header-${i}`}>{m.name}</th>
-            ))}
-          </tr>
+          {
+            <tr>
+              {data.headers.map((m, i) => (
+                <th
+                  colSpan={
+                    (data.childHeaders?.[i]?.names?.length ??
+                      data.childHeaders?.[i]?.names?.length) ||
+                    1
+                  }
+                  key={`${data.name}-header-${i}`}
+                >
+                  {m.name}
+                </th>
+              ))}
+            </tr>
+          }
+          {headers2 && (
+            <tr>
+              {headers2?.map((m, i) => (
+                <th key={`${m}-sub-header-${i}`}>{m}</th>
+              ))}
+            </tr>
+          )}
         </thead>
         <tbody>
           {data.data.map((row, i) => (

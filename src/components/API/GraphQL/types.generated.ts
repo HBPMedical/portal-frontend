@@ -276,7 +276,8 @@ export type GroupsResult = {
 
 export type Header = {
   __typename?: 'Header';
-  name: Scalars['String'];
+  name?: Maybe<Scalars['String']>;
+  names?: Maybe<Array<Scalars['String']>>;
   type: Scalars['String'];
 };
 
@@ -503,6 +504,7 @@ export type StringParameter = BaseParameter & {
 
 export type TableResult = {
   __typename?: 'TableResult';
+  childHeaders?: Maybe<Array<Header>>;
   data: Array<Array<Scalars['String']>>;
   headers: Array<Header>;
   name: Scalars['String'];
@@ -511,7 +513,8 @@ export type TableResult = {
 
 export enum TableStyle {
   Default = 'DEFAULT',
-  Normal = 'NORMAL'
+  Hierarchical = 'HIERARCHICAL',
+  Statistical = 'STATISTICAL'
 }
 
 export type Transformation = {

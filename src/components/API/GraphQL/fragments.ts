@@ -12,6 +12,11 @@ export const coreInfoResult = gql`
         name
         type
       }
+      childHeaders {
+        name
+        names
+        type
+      }
       tableStyle
     }
     ... on MeanChartResult {

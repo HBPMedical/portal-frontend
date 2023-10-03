@@ -15,7 +15,7 @@ export type CoreInfoResult_MeanChartResult_Fragment = { __typename?: 'MeanChartR
 
 export type CoreInfoResult_RawResult_Fragment = { __typename?: 'RawResult', rawdata?: Types.Maybe<any> };
 
-export type CoreInfoResult_TableResult_Fragment = { __typename?: 'TableResult', name: string, data: Array<Array<string>>, tableStyle?: Types.Maybe<Types.TableStyle>, headers: Array<{ __typename?: 'Header', name: string, type: string }> };
+export type CoreInfoResult_TableResult_Fragment = { __typename?: 'TableResult', name: string, data: Array<Array<string>>, tableStyle?: Types.Maybe<Types.TableStyle>, headers: Array<{ __typename?: 'Header', name?: Types.Maybe<string>, type: string }>, childHeaders?: Types.Maybe<Array<{ __typename?: 'Header', name?: Types.Maybe<string>, names?: Types.Maybe<Array<string>>, type: string }>> };
 
 export type CoreInfoResultFragment = CoreInfoResult_AlertResult_Fragment | CoreInfoResult_BarChartResult_Fragment | CoreInfoResult_GroupsResult_Fragment | CoreInfoResult_HeatMapResult_Fragment | CoreInfoResult_LineChartResult_Fragment | CoreInfoResult_MeanChartResult_Fragment | CoreInfoResult_RawResult_Fragment | CoreInfoResult_TableResult_Fragment;
 
@@ -29,6 +29,11 @@ export const CoreInfoResultFragmentDoc = gql`
     data
     headers {
       name
+      type
+    }
+    childHeaders {
+      name
+      names
       type
     }
     tableStyle
