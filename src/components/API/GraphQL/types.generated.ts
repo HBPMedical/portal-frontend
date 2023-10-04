@@ -138,6 +138,12 @@ export type ChartAxis = {
   label?: Maybe<Scalars['String']>;
 };
 
+export type ClusterResult = {
+  __typename?: 'ClusterResult';
+  name: Scalars['String'];
+  nmatrix?: Maybe<Scalars['JSON']>;
+};
+
 export type Configuration = {
   __typename?: 'Configuration';
   connectorId: Scalars['String'];
@@ -489,7 +495,7 @@ export type RawResult = {
   rawdata?: Maybe<Scalars['JSON']>;
 };
 
-export type ResultUnion = AlertResult | BarChartResult | GroupsResult | HeatMapResult | LineChartResult | MeanChartResult | RawResult | TableResult;
+export type ResultUnion = AlertResult | BarChartResult | ClusterResult | GroupsResult | HeatMapResult | LineChartResult | MeanChartResult | RawResult | TableResult;
 
 export type StringParameter = BaseParameter & {
   __typename?: 'StringParameter';

@@ -52,6 +52,7 @@ export const cacheConfig = {
       'LineChartResult',
       'MeanChartResult',
       'BarChartResult',
+      'ClusterResult',
       'AlertResult',
     ],
     BaseParameter: ['StringParameter', 'NominalParameter', 'NumberParameter'],

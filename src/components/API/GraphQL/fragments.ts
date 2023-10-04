@@ -48,6 +48,10 @@ export const coreInfoResult = gql`
       }
       heatMapStyle
     }
+    ... on ClusterResult {
+      name
+      nmatrix
+    }
     ... on AlertResult {
       title
       message

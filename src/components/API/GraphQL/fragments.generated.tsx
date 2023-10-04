@@ -5,6 +5,8 @@ export type CoreInfoResult_AlertResult_Fragment = { __typename?: 'AlertResult', 
 
 export type CoreInfoResult_BarChartResult_Fragment = { __typename?: 'BarChartResult', name: string, barValues?: Types.Maybe<Array<number>>, hasConnectedBars?: Types.Maybe<boolean>, xAxis?: Types.Maybe<{ __typename?: 'ChartAxis', label?: Types.Maybe<string>, categories?: Types.Maybe<Array<string>> }>, yAxis?: Types.Maybe<{ __typename?: 'ChartAxis', label?: Types.Maybe<string> }>, barEnumValues?: Types.Maybe<Array<{ __typename?: 'BarEnumValues', label: string, values: Array<number> }>> };
 
+export type CoreInfoResult_ClusterResult_Fragment = { __typename?: 'ClusterResult', name: string, nmatrix?: Types.Maybe<any> };
+
 export type CoreInfoResult_GroupsResult_Fragment = { __typename?: 'GroupsResult' };
 
 export type CoreInfoResult_HeatMapResult_Fragment = { __typename?: 'HeatMapResult', name: string, matrix: Array<Array<number>>, heatMapStyle?: Types.Maybe<Types.HeatMapStyle>, xAxis?: Types.Maybe<{ __typename?: 'ChartAxis', label?: Types.Maybe<string>, categories?: Types.Maybe<Array<string>> }>, yAxis?: Types.Maybe<{ __typename?: 'ChartAxis', label?: Types.Maybe<string>, categories?: Types.Maybe<Array<string>> }> };
@@ -17,7 +19,7 @@ export type CoreInfoResult_RawResult_Fragment = { __typename?: 'RawResult', rawd
 
 export type CoreInfoResult_TableResult_Fragment = { __typename?: 'TableResult', name: string, data: Array<Array<string>>, tableStyle?: Types.Maybe<Types.TableStyle>, headers: Array<{ __typename?: 'Header', name?: Types.Maybe<string>, type: string }>, childHeaders?: Types.Maybe<Array<{ __typename?: 'Header', name?: Types.Maybe<string>, names?: Types.Maybe<Array<string>>, type: string }>> };
 
-export type CoreInfoResultFragment = CoreInfoResult_AlertResult_Fragment | CoreInfoResult_BarChartResult_Fragment | CoreInfoResult_GroupsResult_Fragment | CoreInfoResult_HeatMapResult_Fragment | CoreInfoResult_LineChartResult_Fragment | CoreInfoResult_MeanChartResult_Fragment | CoreInfoResult_RawResult_Fragment | CoreInfoResult_TableResult_Fragment;
+export type CoreInfoResultFragment = CoreInfoResult_AlertResult_Fragment | CoreInfoResult_BarChartResult_Fragment | CoreInfoResult_ClusterResult_Fragment | CoreInfoResult_GroupsResult_Fragment | CoreInfoResult_HeatMapResult_Fragment | CoreInfoResult_LineChartResult_Fragment | CoreInfoResult_MeanChartResult_Fragment | CoreInfoResult_RawResult_Fragment | CoreInfoResult_TableResult_Fragment;
 
 export const CoreInfoResultFragmentDoc = gql`
     fragment coreInfoResult on ResultUnion {
@@ -66,6 +68,10 @@ export const CoreInfoResultFragmentDoc = gql`
       categories
     }
     heatMapStyle
+  }
+  ... on ClusterResult {
+    name
+    nmatrix
   }
   ... on AlertResult {
     title
