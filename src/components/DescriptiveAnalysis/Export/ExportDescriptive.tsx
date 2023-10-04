@@ -18,7 +18,7 @@ const ExportDescriptive = ({ draftExperiment }: Props) => {
       username: data?.user.username,
     },
     algorithm: {
-      name: 'DESCRIPTIVE_STATS',
+      name: 'descriptive_stats',
       parameters: [],
     },
   };

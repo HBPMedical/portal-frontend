@@ -2,6 +2,7 @@ import React from 'react';
 import {
   AlertResult,
   BarChartResult,
+  ClusterResult,
   GroupsResult,
   HeatMapResult,
   LineChartResult,
@@ -21,6 +22,7 @@ import LineGraph from '../UI/Visualization2/LineGraph';
 import MeanPlot from '../UI/Visualization2/MeanPlot';
 import { Result } from '../utils';
 import RenderResult from './RenderResult';
+import Cluster from '../UI/Visualization2/Cluster';
 
 type Props = {
   result: ResultUnion;
@@ -49,6 +51,7 @@ const children = {
   groupsresult: (data) => (
     <GroupResult result={data as GroupsResult} loading={false} />
   ),
+  clusterresult: (data) => <Cluster data={data as ClusterResult} />,
   alertresult: (data) => <AlertDisplay data={data as AlertResult} />,
   error: () => <div> An error occured </div>,
 } as Switcher;

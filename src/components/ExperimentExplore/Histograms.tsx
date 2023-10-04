@@ -197,7 +197,7 @@ const Histograms = ({
             datasets: draftExperiment.datasets,
             algorithm: {
               type: 'string',
-              id: 'MULTIPLE_HISTOGRAMS',
+              id: 'multiple_histograms',
               parameters: params,
             },
           },

@@ -64,7 +64,7 @@ const Container = (): JSX.Element => {
           domain: draftExperiment.domain ?? '',
           filter: draftExperiment.filter,
           algorithm: {
-            id: 'DESCRIPTIVE_STATS',
+            id: 'descriptive_stats',
             type: 'string',
           },
           transformations: draftExperiment.formula?.transformations?.map(
