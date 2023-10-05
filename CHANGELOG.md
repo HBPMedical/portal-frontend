@@ -1,3 +1,16 @@
+# [9.4.0-beta.4](https://gitlab.com/sibmip/portal-frontend/compare/9.4.0-beta.3...9.4.0-beta.4) (2023-10-05)
+
+
+### Bug Fixes
+
+* enabled JSON.stringify ([cdeca58](https://gitlab.com/sibmip/portal-frontend/commit/cdeca58d71d01236b1a3879edaae85535f9a322c))
+* islongitudinal no label ([3522b09](https://gitlab.com/sibmip/portal-frontend/commit/3522b094964a8241200fd8a0eeb5d2dc97f19399))
+
+
+### Features
+
+* kmeans 3d ([f483ccb](https://gitlab.com/sibmip/portal-frontend/commit/f483ccbd7194a5510171e39f4fda02e236a77703))
+
 # [9.4.0-beta.3](https://gitlab.com/sibmip/portal-frontend/compare/9.4.0-beta.2...9.4.0-beta.3) (2023-10-03)
 
 
