@@ -1,7 +1,6 @@
 import { MIME_TYPES } from '../constants';
 import Error from '../UI/Error';
 import { JSONData } from '../UI/Visualization';
-import Dendogram from '../UI/Visualization/Dendogram';
 import BinaryTree from '../UI/Visualization/BinaryTree';
 import Warning from '../UI/Visualization/Warning';
 import { Result } from '../utils';
@@ -44,7 +43,7 @@ const RenderResult = ({
                 <BinaryTree data={result.data} />
               )}
               {result.type === MIME_TYPES.JSON && (
-                <Dendogram data={result.data} />
+                <pre>{JSON.stringify(result.data, null, 2)}</pre>
               )}
             </div>
           ))}
