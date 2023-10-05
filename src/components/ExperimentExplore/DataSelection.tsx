@@ -83,9 +83,8 @@ const DataSelection = ({
     }
   };
 
-  const domains = data?.domains.filter((d) => !d.longitudinal) ?? [];
-  const longitudinalDomains =
-    data?.domains.filter((d) => !!d.longitudinal) ?? [];
+  const domains = data?.domains.filter((d) => !d.longitudinal);
+  const longitudinalDomains = data?.domains.filter((d) => !!d.longitudinal);
 
   return (
     <>
@@ -102,7 +101,7 @@ const DataSelection = ({
                     variant="light"
                     title={uppercase(domain?.label || 'Domains')}
                   >
-                    {domains.map((d) => (
+                    {domains?.map((d) => (
                       <Dropdown.Item
                         onSelect={(): void => {
                           showDialogDomainChange(d.id);
