@@ -112,11 +112,11 @@ const DataSelection = ({
                         {d.label}
                       </Dropdown.Item>
                     ))}
-                    {longitudinalDomains && (
+                    {longitudinalDomains && longitudinalDomains?.length >= 0 && (
                       <>
                         <Dropdown.Divider />
                         <h6 style={{ paddingLeft: '1em' }}>
-                          Longitudinal Data
+                          Longitudinal Domains
                         </h6>
                         {longitudinalDomains.map((d) => (
                           <Dropdown.Item
