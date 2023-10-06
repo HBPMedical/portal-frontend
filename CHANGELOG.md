@@ -1,3 +1,15 @@
+# [9.4.0-beta.5](https://gitlab.com/sibmip/portal-frontend/compare/9.4.0-beta.4...9.4.0-beta.5) (2023-10-06)
+
+
+### Bug Fixes
+
+* longitudinal label ([fb5a0b9](https://gitlab.com/sibmip/portal-frontend/commit/fb5a0b927aafd5db35b784cfd0ba6fcb4ebe6367))
+
+
+### Features
+
+* contributing doc ([b06860e](https://gitlab.com/sibmip/portal-frontend/commit/b06860e94c6d4d9055f5ea81398d6789be02710b))
+
 # [9.4.0-beta.4](https://gitlab.com/sibmip/portal-frontend/compare/9.4.0-beta.3...9.4.0-beta.4) (2023-10-05)
 
 
