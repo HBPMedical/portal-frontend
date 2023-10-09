@@ -43,7 +43,7 @@ const FilterFormulaWrapper = ({
   );
 
   const { data } = useGetFilterFormulaDataQuery();
-  const availableAlgorithms =
+  const availableAlgorithmsWithFormula =
     data?.algorithms.filter((a) => a.hasFormula).map((a) => a.label ?? a.id) ??
     [];
   const numberTypes = data?.filter?.numberTypes ?? [];
@@ -135,7 +135,7 @@ const FilterFormulaWrapper = ({
             operations={data?.formula ?? []}
             experiment={experiment}
             lookup={lookup}
-            availableAlgorithms={availableAlgorithms}
+            availableAlgorithmsWithFormula={availableAlgorithmsWithFormula}
             handleUpdateFormula={handleUpdateFormulaCallback}
           />
         </Card.Body>

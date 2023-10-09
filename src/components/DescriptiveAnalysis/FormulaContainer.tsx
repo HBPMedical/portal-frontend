@@ -231,14 +231,14 @@ const TransformRow = ({
 const FormulaContainer = ({
   handleUpdateFormula,
   lookup,
-  availableAlgorithms,
+  availableAlgorithmsWithFormula,
   experiment,
   operations,
 }: {
   handleUpdateFormula: (formula?: IFormula) => void;
   lookup: (id: string) => Variable | undefined;
   operations: FormulaOperation[];
-  availableAlgorithms?: string[];
+  availableAlgorithmsWithFormula?: string[];
   experiment: Experiment;
 }): JSX.Element => {
   const [variables, setVariables] = useState<Variable[]>();
@@ -330,11 +330,18 @@ const FormulaContainer = ({
 
   return (
     <Wrapper>
-      <h4>Formula</h4>
-      <p>
-        The formula is available for the following algorithms:{' '}
-        {availableAlgorithms?.join(', ')}
-      </p>
+      {!availableAlgorithmsWithFormula ||
+        (availableAlgorithmsWithFormula?.length === 0 && <p></p>)}
+      {availableAlgorithmsWithFormula &&
+        availableAlgorithmsWithFormula?.length > 0 && (
+          <>
+            <h4>Formula</h4>
+            <p>
+              Formula is available for the following algorithms:{' '}
+              {availableAlgorithmsWithFormula?.join(', ')}
+            </p>
+          </>
+        )}
       {variables && variables.length > 0 && (
         <Form>
           <h5>Transformations</h5>
