@@ -217,7 +217,9 @@ const D3CirclePackLayer = ({ layout, ...props }: Props): JSX.Element => {
       .append('title')
       .text(
         (d) =>
-          `${d.data.label}\n${d.data.description ? d.data.description : ''}`
+          `${d.data.label}${d.data.type ? ' (' + d.data.type + ')' : ''}${
+            d.data.description ? '\n' + d.data.description : ''
+          }`
       );
 
     svg
