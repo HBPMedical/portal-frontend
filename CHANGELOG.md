@@ -1,3 +1,27 @@
+# [9.4.0](https://gitlab.com/sibmip/portal-frontend/compare/9.3.1...9.4.0) (2023-10-16)
+
+
+### Bug Fixes
+
+* enabled JSON.stringify ([cdeca58](https://gitlab.com/sibmip/portal-frontend/commit/cdeca58d71d01236b1a3879edaae85535f9a322c))
+* islongitudinal no label ([3522b09](https://gitlab.com/sibmip/portal-frontend/commit/3522b094964a8241200fd8a0eeb5d2dc97f19399))
+* labels for kmeans ([1af28f3](https://gitlab.com/sibmip/portal-frontend/commit/1af28f370b5b1006ef36325e993f69363a88f645))
+* longitudinal domain vs dataset ([0a0c8f3](https://gitlab.com/sibmip/portal-frontend/commit/0a0c8f3865d15bc016e807810292cd0d52c22097))
+* longitudinal label ([fb5a0b9](https://gitlab.com/sibmip/portal-frontend/commit/fb5a0b927aafd5db35b784cfd0ba6fcb4ebe6367))
+* mask Formula if no algorithm implements it ([5cb4ed2](https://gitlab.com/sibmip/portal-frontend/commit/5cb4ed2db47f91c0d873e9c80a5d5b91140f5024))
+* moved preprocessing strategy variable at first place ([94dfa5f](https://gitlab.com/sibmip/portal-frontend/commit/94dfa5f32ab3e91a521fffb601310306de1cffcf))
+
+
+### Features
+
+* contributing doc ([b06860e](https://gitlab.com/sibmip/portal-frontend/commit/b06860e94c6d4d9055f5ea81398d6789be02710b))
+* fixed longitudinal label ([7632b39](https://gitlab.com/sibmip/portal-frontend/commit/7632b390be32e882d350d2f452307c2740217ef0))
+* Galaxy workflow 404 placeholder ([c22746f](https://gitlab.com/sibmip/portal-frontend/commit/c22746fcb0c6074683fc086abbd2f9d4b0945754))
+* hierarchical table reworked ([82e2c23](https://gitlab.com/sibmip/portal-frontend/commit/82e2c2302db8270969fcd477a0105e253cd8e4fc))
+* kmeans 3d ([f483ccb](https://gitlab.com/sibmip/portal-frontend/commit/f483ccbd7194a5510171e39f4fda02e236a77703))
+* Longitudinal data handling ([9e55b40](https://gitlab.com/sibmip/portal-frontend/commit/9e55b40c763214d034aafc8d2ab944d87b67acbc))
+* longitudinal params if longitudinal datasets ([56673b8](https://gitlab.com/sibmip/portal-frontend/commit/56673b8d5090166479aec8288cb3e08675aef9af))
+
 # [9.4.0-beta.1](https://gitlab.com/sibmip/portal-frontend/compare/9.3.1...9.4.0-beta.1) (2023-08-03)
 
 
