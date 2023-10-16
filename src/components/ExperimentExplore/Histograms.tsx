@@ -313,7 +313,6 @@ const Histograms = ({
                         handleChooseVariable={(v) => handleChooseVariable(i, v)}
                         onToggle={(isOpen): void => {
                           setIsShowingTab(isOpen);
-                          console.log(isOpen);
                         }}
                       />
                     ) : (

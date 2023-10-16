@@ -26,8 +26,14 @@ const Cluster = ({ ...props }: Props) => {
     if (data.nmatrix.length === 2) {
       const Bokeh = window.Bokeh;
       const plot = Bokeh.Plotting;
-      const tools = 'pan,crosshair,wheel_zoom,box_zoom,reset,save';
-      const p = plot.figure({ title: data.name, tools: tools });
+      const p = plot.figure({
+        title: data.name,
+        height: 450,
+        toolbar_location: null,
+        tools: '',
+        x_axis_label: 'x',
+        y_axis_label: 'y',
+      });
       p.circle(...data.nmatrix, { size: 50 });
       plot.show(p, `#${slug}`);
     }
