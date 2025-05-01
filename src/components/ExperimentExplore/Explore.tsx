@@ -2,7 +2,11 @@
 import { useReactiveVar } from '@apollo/client';
 import { useState } from 'react';
 import { Badge, Button, Card, Col, Container, Row } from 'react-bootstrap';
-import { BsFillCaretRightFill, BsTrash } from 'react-icons/bs';
+import {
+  BsFillCaretRightFill,
+  BsTrash,
+  BsArrowLeftRight,
+} from 'react-icons/bs';
 import styled from 'styled-components';
 import {
   appConfigVar,
@@ -75,6 +79,22 @@ const Col2 = styled.div`
 const Col1 = styled(Col2 as any)`
   margin-right: 8px;
   flex: 1;
+`;
+
+const SwapButtonContainer = styled.div`
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0 4px;
+`;
+
+const SwapButton = styled(Button)`
+  min-width: 40px;
+  height: 40px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-top: 32px;
 `;
 
 export interface ExploreProps {
@@ -159,90 +179,275 @@ const Explore = (props: ExploreProps): JSX.Element => {
                     onClick={handleGoToAnalysis}
                     id="btn-goto-analysis"
                   >
-                    Descriptive Analysis <BsFillCaretRightFill />
+                    Descriptive Analysis
+                    <BsFillCaretRightFill />
                   </Button>
                 </div>
               </MenuParametersContainer>
 
               <Container id="variable-containers">
                 <Row>
-                  {containers.map((bag) => (
-                    <Col
-                      className={`container-${bag[0]} px-1`}
-                      key={bag[0] as string}
+                  <Col className="container-variable px-1">
+                    {/* Variables Container */}
+                    <div className="d-flex justify-content-between mb-1">
+                      <div>
+                        <Button
+                          className="child"
+                          variant={containers[0][1] as string}
+                          size="sm"
+                          disabled={
+                            !selectedNode || selectedNode.data.id === 'root'
+                          }
+                          onClick={(): void => {
+                            if (!selectedNode) return;
+                            const vars =
+                              selectedNode
+                                ?.leaves()
+                                .filter((node) => node.data.id)
+                                .map((node) => node.data.id) ?? [];
+                            localMutations.toggleVarsDraftExperiment(
+                              vars,
+                              containers[0][3] as VarType
+                            );
+                          }}
+                        >
+                          {containers[0][2] &&
+                          selectedNode &&
+                          selectedNode
+                            .leaves()
+                            .filter((n) =>
+                              containers[0][2]?.includes(n.data.id)
+                            ).length === selectedNode.leaves().length
+                            ? '-'
+                            : '+'}{' '}
+                          {`As ${containers[0][0]}`}
+                          <Badge className="ml-2" variant="secondary">
+                            {(containers[0][2] as any[]).length}
+                          </Badge>
+                        </Button>
+                      </div>
+                      {(containers[0][2] as any[]).length > 0 && (
+                        <Button
+                          size="sm"
+                          variant="outline-danger"
+                          onClick={() =>
+                            localMutations.toggleVarsDraftExperiment(
+                              containers[0][2] as string[],
+                              containers[0][3] as VarType
+                            )
+                          }
+                        >
+                          <BsTrash />
+                        </Button>
+                      )}
+                    </div>
+                    <VariablesGroupList
+                      variables={
+                        domain?.variables?.filter((v) =>
+                          (containers[0][2] as string[]).includes(v.id)
+                        ) ?? []
+                      }
+                      handleOnDeleteItem={(id): void => {
+                        localMutations.toggleVarsDraftExperiment(
+                          [id],
+                          containers[0][3] as VarType
+                        );
+                      }}
+                      handleOnItemClick={(id): void => {
+                        localMutations.setZoomToNode(id);
+                      }}
+                    />
+                  </Col>
+
+                  <SwapButtonContainer>
+                    <SwapButton
+                      variant="outline-primary"
+                      onClick={(): void => {
+                        const variables = [
+                          ...(draftExperiment.variables || []),
+                        ];
+                        const covariates = [
+                          ...(draftExperiment.coVariables || []),
+                        ];
+
+                        // Remove all current variables and covariates
+                        if (variables.length) {
+                          localMutations.toggleVarsDraftExperiment(
+                            variables,
+                            VarType.VARIABLES
+                          );
+                        }
+                        if (covariates.length) {
+                          localMutations.toggleVarsDraftExperiment(
+                            covariates,
+                            VarType.COVARIATES
+                          );
+                        }
+
+                        // Add them back in swapped positions
+                        if (covariates.length) {
+                          localMutations.toggleVarsDraftExperiment(
+                            covariates,
+                            VarType.VARIABLES
+                          );
+                        }
+                        if (variables.length) {
+                          localMutations.toggleVarsDraftExperiment(
+                            variables,
+                            VarType.COVARIATES
+                          );
+                        }
+                      }}
                     >
+                      <BsArrowLeftRight />
+                    </SwapButton>
+                  </SwapButtonContainer>
+
+                  <Col className="container-covariate px-1">
+                    {/* Covariates Container */}
+                    <div className="d-flex justify-content-between mb-1">
+                      <div>
+                        <Button
+                          className="child"
+                          variant={containers[1][1] as string}
+                          size="sm"
+                          disabled={
+                            !selectedNode || selectedNode.data.id === 'root'
+                          }
+                          onClick={(): void => {
+                            if (!selectedNode) return;
+                            const vars =
+                              selectedNode
+                                ?.leaves()
+                                .filter((node) => node.data.id)
+                                .map((node) => node.data.id) ?? [];
+                            localMutations.toggleVarsDraftExperiment(
+                              vars,
+                              containers[1][3] as VarType
+                            );
+                          }}
+                        >
+                          {containers[1][2] &&
+                          selectedNode &&
+                          selectedNode
+                            .leaves()
+                            .filter((n) =>
+                              containers[1][2]?.includes(n.data.id)
+                            ).length === selectedNode.leaves().length
+                            ? '-'
+                            : '+'}{' '}
+                          {`As ${containers[1][0]}`}
+                          <Badge className="ml-2" variant="secondary">
+                            {(containers[1][2] as any[]).length}
+                          </Badge>
+                        </Button>
+                      </div>
+                      {(containers[1][2] as any[]).length > 0 && (
+                        <Button
+                          size="sm"
+                          variant="outline-danger"
+                          onClick={() =>
+                            localMutations.toggleVarsDraftExperiment(
+                              containers[1][2] as string[],
+                              containers[1][3] as VarType
+                            )
+                          }
+                        >
+                          <BsTrash />
+                        </Button>
+                      )}
+                    </div>
+                    <VariablesGroupList
+                      variables={
+                        domain?.variables?.filter((v) =>
+                          (containers[1][2] as string[]).includes(v.id)
+                        ) ?? []
+                      }
+                      handleOnDeleteItem={(id): void => {
+                        localMutations.toggleVarsDraftExperiment(
+                          [id],
+                          containers[1][3] as VarType
+                        );
+                      }}
+                      handleOnItemClick={(id): void => {
+                        localMutations.setZoomToNode(id);
+                      }}
+                    />
+                  </Col>
+
+                  {/* Render filter container if hasFilters is true */}
+                  {config?.configuration.hasFilters && (
+                    <Col className="container-filter px-1">
                       <div className="d-flex justify-content-between mb-1">
                         <div>
                           <Button
                             className="child"
-                            variant={bag[1] as string}
+                            variant={containers[2][1] as string}
                             size="sm"
                             disabled={
                               !selectedNode || selectedNode.data.id === 'root'
                             }
                             onClick={(): void => {
                               if (!selectedNode) return;
-
                               const vars =
                                 selectedNode
                                   ?.leaves()
                                   .filter((node) => node.data.id)
                                   .map((node) => node.data.id) ?? [];
-
                               localMutations.toggleVarsDraftExperiment(
                                 vars,
-                                bag[3] as VarType
+                                containers[2][3] as VarType
                               );
                             }}
                           >
-                            {bag[2] &&
+                            {containers[2][2] &&
                             selectedNode &&
                             selectedNode
                               .leaves()
-                              .filter((n) => bag[2]?.includes(n.data.id))
-                              .length === selectedNode.leaves().length
+                              .filter((n) =>
+                                containers[2][2]?.includes(n.data.id)
+                              ).length === selectedNode.leaves().length
                               ? '-'
                               : '+'}{' '}
-                            {`As ${bag[0]}`}
+                            {`As ${containers[2][0]}`}
                             <Badge className="ml-2" variant="secondary">
-                              {bag[2].length}
+                              {(containers[2][2] as any[]).length}
                             </Badge>
                           </Button>
                         </div>
-
-                        {bag[2].length > 0 && (
+                        {(containers[2][2] as any[]).length > 0 && (
                           <Button
                             size="sm"
                             variant="outline-danger"
                             onClick={() =>
                               localMutations.toggleVarsDraftExperiment(
-                                bag[2] as string[],
-                                bag[3] as VarType
+                                containers[2][2] as string[],
+                                containers[2][3] as VarType
                               )
                             }
                           >
-                            <BsTrash />{' '}
+                            <BsTrash />
                           </Button>
                         )}
                       </div>
                       <VariablesGroupList
                         variables={
                           domain?.variables?.filter((v) =>
-                            bag[2].includes(v.id)
+                            (containers[2][2] as string[]).includes(v.id)
                           ) ?? []
                         }
                         handleOnDeleteItem={(id): void => {
                           localMutations.toggleVarsDraftExperiment(
                             [id],
-                            bag[3] as VarType
+                            containers[2][3] as VarType
                           );
                         }}
                         handleOnItemClick={(id): void => {
                           localMutations.setZoomToNode(id);
                         }}
-                      ></VariablesGroupList>
+                      />
                     </Col>
-                  ))}
+                  )}
                 </Row>
               </Container>
               <div id="algorithm-available">
