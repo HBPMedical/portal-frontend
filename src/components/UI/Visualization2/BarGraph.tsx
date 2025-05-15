@@ -2,6 +2,7 @@
 import { useEffect, useRef } from 'react';
 import styled from 'styled-components';
 import { BarChartResult } from '../../API/GraphQL/types.generated';
+import { formatRange } from '../../utils';
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 declare let window: any;
@@ -30,25 +31,66 @@ const BarGraph = (props: Props) => {
       .replace(/\s/g, '-')
       .replace(/[^\w-]+/g, '');
 
-  const categories =
+  // Format categories for display while keeping originals for tooltips
+  const originalCategories =
     data.xAxis?.categories ?? data.barValues?.map((_, i) => i + 1).map(String);
+  const displayCategories = originalCategories?.map(formatRange);
   const barEnumValues = data.barEnumValues;
 
+  //title of chart
+  const title = new Bokeh.Title({
+    text: data.name,
+    text_font_size: '16px',
+    text_font_style: 'bold',
+    align: 'center',
+    standoff: 30,
+  });
   const p = plot.figure({
     height: 450,
-    x_range: categories,
-    title: data.name,
+    x_range: displayCategories,
+    title: title,
     toolbar_location: null,
-    tools: '',
+    tools: 'hover',
     x_axis_label: data.xAxis?.label,
     y_axis_label: data.yAxis?.label,
   });
+  // Let's examine the Title object properties
+  console.log('Title properties object:', title.properties);
+  console.log('Title properties keys:', Object.keys(title.properties));
+
+  //x axis label
   p.xaxis[0].major_label_orientation = Math.PI / 6;
+  p.xaxis[0].axis_label_text_font_size = '12px';
+  p.xaxis[0].axis_label_text_font_style = 'bold';
+  p.xaxis[0].axis_label_text_color = '#495057';
+
+  //y axis label
+  p.yaxis[0].axis_label_text_font_size = '12px';
+  p.yaxis[0].axis_label_text_font_style = 'bold';
+  p.yaxis[0].axis_label_text_color = '#495057';
+
+  // Configure hover tool
+  const hover = p.toolbar.select_one(Bokeh.HoverTool);
+  hover.tooltips = (_source: any, info: any) => {
+    const index = info.index; // Use the index directly from hover info
+    const div = document.createElement('div');
+
+    if (data.xAxis?.label && index !== undefined) {
+      const category = _source.data.originalCategories[index];
+      const count = _source.data.counts[index];
+
+      div.innerHTML = `${data.xAxis.label}: ${category}<br>`;
+      div.innerHTML += `${data.yAxis?.label || 'Count'}: ${count}`;
+    }
+
+    return div;
+  };
 
   if (!barEnumValues) {
     const source = new Bokeh.ColumnDataSource({
       data: {
-        categories,
+        categories: displayCategories,
+        originalCategories,
         counts: data.barValues,
       },
     });
@@ -80,7 +122,7 @@ const BarGraph = (props: Props) => {
       const n = barEnumValues.length;
       const w = barWidth / n;
       p.vbar({
-        x: categories?.map((_, j) => j + w / 2 + i * w),
+        x: displayCategories?.map((_, j) => j + w / 2 + i * w),
         top: bar.values,
         width: w,
         line_alpha: 0.5,
