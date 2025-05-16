@@ -19,9 +19,10 @@ interface LayoutProps {
 const Table = styled.table<LayoutProps>`
   font-family: sans-serif;
   margin-bottom: 5px;
-  table-layout: fixed;
+  table-layout: fixed; /* Ensure fixed column widths */
   white-space: nowrap;
-  min-width: 100%;
+  min-width: 100%; /* Allow the table to adjust within its container */
+  max-width: 100%; /* Prevent table overflow */
   border-collapse: collapse;
   box-shadow: 0 0 0 1px #e3e3e3;
   border-radius: 2px;
@@ -74,8 +75,8 @@ const Table = styled.table<LayoutProps>`
   ${(prop): string =>
     (prop.layout === TableStyle.Statistical &&
       `
-      tr:nth-child(1), 
-      tr:nth-child(3), 
+      tr:nth-child(1),
+      tr:nth-child(3),
       tr:last-child {
         border-bottom: 2px solid #1e1e1e;
       }
@@ -92,6 +93,8 @@ const Table = styled.table<LayoutProps>`
 
 const Container = styled.div`
   margin-bottom: 30px;
+  overflow-x: auto; /* Add horizontal scrolling */
+  max-width: 100%; /* Ensure the container does not exceed available space */
 
   .title {
     display: flex;
