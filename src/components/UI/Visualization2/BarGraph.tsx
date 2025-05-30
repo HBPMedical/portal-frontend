@@ -54,9 +54,6 @@ const BarGraph = (props: Props) => {
     x_axis_label: data.xAxis?.label,
     y_axis_label: data.yAxis?.label,
   });
-  // Let's examine the Title object properties
-  console.log('Title properties object:', title.properties);
-  console.log('Title properties keys:', Object.keys(title.properties));
 
   //x axis label
   p.xaxis[0].major_label_orientation = Math.PI / 6;
@@ -75,11 +72,11 @@ const BarGraph = (props: Props) => {
     const index = info.index; // Use the index directly from hover info
     const div = document.createElement('div');
 
-    if (data.xAxis?.label && index !== undefined) {
+    if (index !== undefined) {
       const category = _source.data.originalCategories[index];
       const count = _source.data.counts[index];
 
-      div.innerHTML = `${data.xAxis.label}: ${category}<br>`;
+      div.innerHTML = `${data.xAxis?.label || 'Category'}: ${category}<br>`;
       div.innerHTML += `${data.yAxis?.label || 'Count'}: ${count}`;
     }
 

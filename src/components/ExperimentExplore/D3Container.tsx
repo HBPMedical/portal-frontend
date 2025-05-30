@@ -6,7 +6,12 @@ import styled from 'styled-components';
 import { draftExperimentVar, selectedDomainVar } from '../API/GraphQL/cache';
 import { HierarchyCircularNode } from '../utils';
 import CirclePack from './D3CirclePackLayer';
-import { d3Hierarchy, groupsToTreeView, NodeData } from './d3Hierarchy';
+import {
+  d3Hierarchy,
+  groupsToTreeView,
+  NodeData,
+  initializeArrays,
+} from './d3Hierarchy';
 
 const diameter = 800;
 const padding = 1.5;
@@ -33,14 +38,15 @@ const D3Container = ({ selectedNode, handleSelectNode }: Props) => {
   useEffect(() => {
     if (!domain) return;
 
-    //Build group tree with variables
+    //initialized the arrays in d3Hierarchy (list of available groups and variables)
+    initializeArrays();
+
     const rootNode = groupsToTreeView(
       domain.rootGroup,
       domain.groups,
       domain.variables,
       datasets
     );
-
     const hierarchyNode = d3Hierarchy(rootNode);
     const bubbleLayout = d3
       .pack<NodeData>()
