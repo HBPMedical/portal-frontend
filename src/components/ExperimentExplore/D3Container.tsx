@@ -3,14 +3,9 @@ import * as d3 from 'd3';
 import { useEffect, useState } from 'react';
 import { Spinner } from 'react-bootstrap';
 import styled from 'styled-components';
-import {
-  draftExperimentVar,
-  selectedDomainVar,
-  visualizationTypeVar,
-} from '../API/GraphQL/cache';
+import { draftExperimentVar, selectedDomainVar } from '../API/GraphQL/cache';
 import { HierarchyCircularNode } from '../utils';
 import CirclePack from './D3CirclePackLayer';
-import D3DendrogramLayer from './D3DendrogramLayer';
 import {
   d3Hierarchy,
   groupsToTreeView,
@@ -33,22 +28,10 @@ const SpinnerContainer = styled.div`
   align-items: center;
 `;
 
-// const EmptyContainer = styled.div`
-//   display: flex;
-//   min-height: inherit;
-//   justify-content: center;
-//   align-items: center;
-//   background-color: #f8f9fa;
-//   border-radius: 4px;
-//   color: #6c757d;
-//   font-size: 1.1em;
-// `;
-
 const D3Container = ({ selectedNode, handleSelectNode }: Props) => {
   const domain = useReactiveVar(selectedDomainVar);
   const draftExp = useReactiveVar(draftExperimentVar);
   const datasets = draftExp?.datasets;
-  const visualizationType = useReactiveVar(visualizationTypeVar);
 
   const [d3Layout, setD3Layout] = useState<HierarchyCircularNode>();
 
@@ -68,19 +51,9 @@ const D3Container = ({ selectedNode, handleSelectNode }: Props) => {
     const bubbleLayout = d3
       .pack<NodeData>()
       .size([diameter, diameter])
-      .padding((d) => {
-        if (d.depth === 0) {
-          return 4;
-        } else {
-          return 3;
-        }
-      });
+      .padding(padding);
 
     const layout = hierarchyNode && bubbleLayout(hierarchyNode);
-    //console log to see the sizes of the leaf nodes
-    if (layout) {
-      const leafNodes = layout.descendants().filter((d) => !d.children);
-    }
     setD3Layout(layout);
   }, [domain, datasets]);
 
@@ -102,17 +75,6 @@ const D3Container = ({ selectedNode, handleSelectNode }: Props) => {
         <Spinner animation="border" variant="info" />
       </SpinnerContainer>
     );
-
-  if (visualizationType === 'dendrogram') {
-    return (
-      <D3DendrogramLayer
-        layout={d3Layout}
-        selectedNode={selectedNode}
-        groupVars={groupVars}
-        handleSelectNode={handleSelectNode}
-      />
-    );
-  }
 
   return (
     <CirclePack
