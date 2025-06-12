@@ -89,7 +89,9 @@ export const d3Hierarchy = (root: NodeData): HierarchyNode | undefined => {
   const hierarchyNode = root
     ? d3
         .hierarchy(root)
-        .sum((d) => (d.label ?? '').length)
+        .sum(() => {
+          return 1;
+        })
         .sort((a, b) => (b.value ?? 0) - (a.value ?? 0))
     : undefined;
 
