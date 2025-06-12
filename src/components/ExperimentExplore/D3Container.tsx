@@ -51,9 +51,27 @@ const D3Container = ({ selectedNode, handleSelectNode }: Props) => {
     const bubbleLayout = d3
       .pack<NodeData>()
       .size([diameter, diameter])
-      .padding(padding);
+      .padding((d) => {
+        if (d.depth === 0) {
+          return 4;
+        } else {
+          return 3;
+        }
+      });
 
     const layout = hierarchyNode && bubbleLayout(hierarchyNode);
+    //console log to see the sizes of the leaf nodes
+    if (layout) {
+      const leafNodes = layout.descendants().filter((d) => !d.children);
+      console.log(
+        'Leaf node sizes:',
+        leafNodes.map((d) => ({
+          id: d.data.id,
+          radius: d.r,
+          value: d.value,
+        }))
+      );
+    }
     setD3Layout(layout);
   }, [domain, datasets]);
 

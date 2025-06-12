@@ -2,18 +2,10 @@
 /* eslint-disable react-hooks/exhaustive-deps */
 import { useReactiveVar } from '@apollo/client';
 import * as d3 from 'd3';
-import React, { useCallback, useEffect, useRef, useState } from 'react';
+import React, { useCallback, useEffect, useRef } from 'react';
 import { zoomNodeVar } from '../API/GraphQL/cache';
 import { HierarchyCircularNode } from '../utils';
 import './CirclePack.css';
-import {
-  cleanupTooltip,
-  createTooltip,
-  hideTooltip,
-  moveTooltip,
-  showTooltip,
-  TooltipData,
-} from './tooltipUtils';
 
 const diameter = 800;
 const padding = 1.5;
@@ -113,12 +105,15 @@ const D3CirclePackLayer = ({ layout, ...props }: Props): JSX.Element => {
   const svgRef = useRef(null);
   const view = useRef<IView>([diameter / 2, diameter / 2, diameter]);
   const focus = useRef(layout);
-  const tooltipRef = useRef<HTMLDivElement | null>(null);
+  const tooltipRef = useRef<d3.Selection<
+    HTMLDivElement,
+    unknown,
+    HTMLElement,
+    any
+  > | null>(null);
   const tooltipTimeoutRef = useRef<NodeJS.Timeout | null>(null);
   const { selectedNode, groupVars } = props;
   const zoomNode = useReactiveVar(zoomNodeVar);
-  const isRenderedRef = useRef(false); // Track if main rendering is complete
-  const [isRendered, setIsRendered] = useState(false); // State to trigger styling effect
 
   const color = d3
     .scaleLinear<string, string>()
@@ -208,28 +203,9 @@ const D3CirclePackLayer = ({ layout, ...props }: Props): JSX.Element => {
 
   const colorCallback = useCallback(color, [layout]);
 
-  // Separate effect for styling that runs after main rendering
   useEffect(() => {
-    // Only run styling if main rendering is complete
-    if (!isRenderedRef.current && !isRendered) {
-      // Fallback: check if circles already exist in DOM
-      const svg = d3.select(svgRef.current);
-      const existingCircles = svg.selectAll<any, HierarchyCircularNode>(
-        'circle'
-      );
-
-      if (existingCircles.size() > 0) {
-        // Set flag to true since circles exist
-        isRenderedRef.current = true;
-        setIsRendered(true);
-      } else {
-        return;
-      }
-    }
-
     const svg = d3.select(svgRef.current);
     const circle = svg.selectAll<any, HierarchyCircularNode>('circle');
-
     circle
       .style('fill-opacity', '1')
       .filter(
@@ -241,19 +217,11 @@ const D3CirclePackLayer = ({ layout, ...props }: Props): JSX.Element => {
       );
 
     if (selectedNode && selectedNode !== layout) {
-      const selectedNodeId =
-        (selectedNode as any).uniqueId ||
-        selectedNode.data.uniqueId ||
-        selectedNode.data.id;
-
-      const matchingCircles = circle.filter((d) => {
-        const nodeId = d.data.uniqueId || d.data.id;
-        return nodeId === selectedNodeId;
-      });
-
-      if (matchingCircles.size() > 0) {
-        matchingCircles.transition().duration(80).style('fill-opacity', '0.8');
-      }
+      circle
+        .filter((d) => d.data.id === selectedNode.data.id)
+        .transition()
+        .duration(80)
+        .style('fill-opacity', '0.8');
     }
 
     groupVars.forEach((g) => {
@@ -263,17 +231,33 @@ const D3CirclePackLayer = ({ layout, ...props }: Props): JSX.Element => {
         .duration(250)
         .style('fill', g.color ?? 'white');
     });
-  }, [selectedNode, layout, groupVars, colorCallback, isRendered]);
+  }, [colorCallback, selectedNode, layout, groupVars]);
 
   const zoomCallback = useCallback(zoom, []);
   const selectNodeCallback = useCallback(props.handleSelectNode, []);
 
   useEffect(() => {
-    isRenderedRef.current = false; // Reset flag before rendering
-    setIsRendered(false); // Reset state before rendering
     d3.select(svgRef.current).selectAll('g').remove();
 
-    tooltipRef.current = createTooltip('circle-pack-tooltip');
+    // Create tooltip
+    tooltipRef.current = d3
+      .select('body')
+      .append('div')
+      .attr('class', 'circle-pack-tooltip')
+      .style('position', 'absolute')
+      .style('padding', '6px 10px')
+      .style('background', 'rgba(255, 255, 255, 0.9)')
+      .style('border', '1px solid #ccc')
+      .style('border-radius', '4px')
+      .style('pointer-events', 'none')
+      .style('font', '12px sans-serif')
+      .style('color', '#222')
+      .style('box-shadow', '0 2px 6px rgba(0,0,0,0.15)')
+      .style('visibility', 'hidden')
+      .style('z-index', '1000')
+      .style('max-width', '300px')
+      .style('word-wrap', 'break-word')
+      .style('white-space', 'normal');
 
     const svg = d3
       .select(svgRef.current)
@@ -306,7 +290,7 @@ const D3CirclePackLayer = ({ layout, ...props }: Props): JSX.Element => {
       .join('g')
       .attr('class', 'node-container')
       .attr('transform', (d) => `translate(${d.x},${d.y})`)
-      .attr('data-node-id', (d) => d.data.uniqueId || d.data.id); // Use uniqueId if available, fallback to id
+      .attr('data-node-id', (d) => d.data.id); // Add node ID for reference
 
     nodeCircles
       .append('circle')
@@ -326,19 +310,13 @@ const D3CirclePackLayer = ({ layout, ...props }: Props): JSX.Element => {
           labelsGroup
             .select(`g.node-container[data-node-id="${nodeId}"] .label-bg`)
             .style('stroke', '#000');
-          this.style.stroke = '#000';
 
-          //showTooltip(event, d);
-          const tooltipData: TooltipData = {
-            label: splitText(d.data.label).join(' '),
-            description: d.data.description,
-          };
-          showTooltip(tooltipRef.current, event, tooltipData);
+          showTooltip(event, d);
         }
       )
       .on('mousemove', function (this: SVGCircleElement) {
         const event = d3.event as MouseEvent;
-        moveTooltip(tooltipRef.current, event);
+        moveTooltip(event);
       })
       .on('mouseleave', function (this: SVGCircleElement) {
         // Remove stroke from the corresponding label background
@@ -348,14 +326,11 @@ const D3CirclePackLayer = ({ layout, ...props }: Props): JSX.Element => {
         labelsGroup
           .select(`g.node-container[data-node-id="${nodeId}"] .label-bg`)
           .style('stroke', 'none');
-        this.style.stroke = 'none';
 
-        hideTooltip(tooltipRef.current);
+        hideTooltip();
       })
       .on('click', function (this: SVGCircleElement, d: HierarchyCircularNode) {
         const event = d3.event as MouseEvent;
-        // Set uniqueId on the node for consistency with dendrogram
-        (d as any).uniqueId = d.data.uniqueId || d.data.id;
         selectNodeCallback(d);
         event.stopPropagation();
         // Don't zoom on single variable selection
@@ -372,7 +347,7 @@ const D3CirclePackLayer = ({ layout, ...props }: Props): JSX.Element => {
       .join('g')
       .attr('class', 'node-container')
       .attr('transform', (d) => `translate(${d.x},${d.y})`)
-      .attr('data-node-id', (d) => d.data.uniqueId || d.data.id); // Use uniqueId if available, fallback to id
+      .attr('data-node-id', (d) => d.data.id); // Add node ID for reference
 
     nodeLabels
       .append('g')
@@ -386,34 +361,15 @@ const D3CirclePackLayer = ({ layout, ...props }: Props): JSX.Element => {
         }
       });
 
-    //selectNodeCallback(layout);
+    selectNodeCallback(layout);
     zoomTo([layout.x, layout.y, layout.r * 2]);
-
-    // Mark rendering as complete
-    isRenderedRef.current = true;
-    setIsRendered(true); // This will trigger the styling effect to run
   }, [layout, colorCallback, selectNodeCallback, zoomCallback]);
-
-  // Separate effect for auto-selection logic
-  useEffect(() => {
-    // Only auto-select root if no node is currently selected
-    // This preserves user selection when switching between visualization types
-    if (!selectedNode) {
-      const rootWithUniqueId = layout as any;
-      rootWithUniqueId.uniqueId = layout.data.uniqueId || layout.data.id;
-      selectNodeCallback(rootWithUniqueId);
-    }
-  }, [layout, selectedNode, selectNodeCallback]);
 
   const zoomToNode = useCallback(
     (id: string) => {
-      const node = layout
-        .descendants()
-        .find((n) => n.data.uniqueId === id || n.data.id === id);
+      const node = layout.descendants().find((n) => n.data.id === id);
 
       if (node) {
-        // Set uniqueId on the node for consistency with dendrogram
-        (node as any).uniqueId = node.data.uniqueId || node.data.id;
         zoom(node);
         selectNodeCallback(node);
       }
@@ -428,10 +384,73 @@ const D3CirclePackLayer = ({ layout, ...props }: Props): JSX.Element => {
     }
   }, [zoomNode, zoomToNode]);
 
+  // Add tooltip helper functions
+  const showTooltip = (event: MouseEvent, d: HierarchyCircularNode) => {
+    if (!tooltipRef.current) return;
+    console.log('!tooltipRef.current', !tooltipRef.current);
+
+    // Only show tooltip if the label is NOT displayed
+    const isLabelDisplayed =
+      d.parent === focus.current || !focus.current.children;
+
+    console.log('isLabelDisplayed', isLabelDisplayed);
+
+    if (!isLabelDisplayed) {
+      // Clear any existing hide timeout
+      if (tooltipTimeoutRef.current) {
+        clearTimeout(tooltipTimeoutRef.current);
+        tooltipTimeoutRef.current = null;
+      }
+
+      tooltipRef.current
+        .style('visibility', 'visible')
+        .html(
+          `
+            <strong>Name:</strong> ${d.data.label}${
+            d.data.description
+              ? `<br><strong>Description:</strong> ${d.data.description}`
+              : ''
+          }
+          `
+        )
+        .style('left', `${event.pageX + 10}px`)
+        .style('top', `${event.pageY + 10}px`);
+    } else {
+      hideTooltip();
+    }
+  };
+
+  const hideTooltip = () => {
+    if (!tooltipRef.current) return;
+
+    // Set a timeout to hide the tooltip after 200ms
+    tooltipTimeoutRef.current = setTimeout(() => {
+      tooltipRef.current?.style('visibility', 'hidden');
+      tooltipTimeoutRef.current = null;
+    }, 200);
+  };
+
+  const moveTooltip = (event: MouseEvent) => {
+    if (!tooltipRef.current) return;
+
+    // Clear any existing hide timeout when moving
+    if (tooltipTimeoutRef.current) {
+      clearTimeout(tooltipTimeoutRef.current);
+      tooltipTimeoutRef.current = null;
+    }
+
+    tooltipRef.current
+      .style('left', `${event.pageX + 10}px`)
+      .style('top', `${event.pageY + 10}px`);
+  };
+
   // Update cleanup effect
   useEffect(() => {
     return () => {
-      cleanupTooltip(tooltipRef.current);
+      if (tooltipTimeoutRef.current) {
+        clearTimeout(tooltipTimeoutRef.current);
+      }
+      tooltipRef.current?.remove();
     };
   }, []);
 
