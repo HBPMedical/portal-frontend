@@ -3,7 +3,11 @@ import * as d3 from 'd3';
 import { useEffect, useState } from 'react';
 import { Spinner } from 'react-bootstrap';
 import styled from 'styled-components';
-import { draftExperimentVar, selectedDomainVar } from '../API/GraphQL/cache';
+import {
+  draftExperimentVar,
+  selectedDomainVar,
+  visualizationTypeVar,
+} from '../API/GraphQL/cache';
 import { HierarchyCircularNode } from '../utils';
 import CirclePack from './D3CirclePackLayer';
 import {
@@ -28,10 +32,22 @@ const SpinnerContainer = styled.div`
   align-items: center;
 `;
 
+const EmptyContainer = styled.div`
+  display: flex;
+  min-height: inherit;
+  justify-content: center;
+  align-items: center;
+  background-color: #f8f9fa;
+  border-radius: 4px;
+  color: #6c757d;
+  font-size: 1.1em;
+`;
+
 const D3Container = ({ selectedNode, handleSelectNode }: Props) => {
   const domain = useReactiveVar(selectedDomainVar);
   const draftExp = useReactiveVar(draftExperimentVar);
   const datasets = draftExp?.datasets;
+  const visualizationType = useReactiveVar(visualizationTypeVar);
 
   const [d3Layout, setD3Layout] = useState<HierarchyCircularNode>();
 
@@ -93,6 +109,12 @@ const D3Container = ({ selectedNode, handleSelectNode }: Props) => {
         <Spinner animation="border" variant="info" />
       </SpinnerContainer>
     );
+
+  if (visualizationType === 'dendrogram') {
+    return (
+      <EmptyContainer>Dendrogram visualization coming soon...</EmptyContainer>
+    );
+  }
 
   return (
     <CirclePack

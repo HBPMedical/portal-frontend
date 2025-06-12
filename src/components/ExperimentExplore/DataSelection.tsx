@@ -7,6 +7,8 @@ import {
   groupsVar,
   selectedDomainVar,
   variablesVar,
+  visualizationTypeVar,
+  VisualizationType,
 } from '../API/GraphQL/cache';
 import { localMutations } from '../API/GraphQL/operations/mutations';
 import { useGetDomainListQuery } from '../API/GraphQL/queries.generated';
@@ -25,29 +27,37 @@ const DataSelectionBox = styled(Card.Title)`
   background-color: #eee;
 `;
 
-const DomainSelectBox = styled.div`
+const ControlsContainer = styled.div`
   display: flex;
-  flex-direction: row;
+  align-items: center;
+  gap: 8px;
+  flex: 1;
 `;
 
-const DomainsBox = styled.div`
-  margin-top: 4px;
-  font-size: 14px;
-  flex: 0 1 1;
+const SearchWrapper = styled.div`
+  flex: 1;
+  margin: 4px 0;
 `;
 
-const DatasetsBox = styled.div`
-  margin-top: 4px;
-  font-size: 14px;
-  margin-left: 8px;
-  flex: 0 1 1;
+const VisualizationSelect = styled.div`
+  display: flex;
+  align-items: center;
+
+  .dropdown-toggle {
+    height: calc(
+      1.5em + 0.75rem + 2px
+    ); /* matches Bootstrap's form-control height */
+    padding-top: 0.375rem;
+    padding-bottom: 0.375rem;
+    display: flex;
+    align-items: center;
+  }
 `;
 
-const SearchBox = styled.div`
-  margin-top: 4px;
-  margin-left: 8px;
-  flex: 2;
-  /* width: 320px; */
+const DatasetSelectWrapper = styled.div`
+  position: relative;
+  display: flex;
+  align-items: center;
 `;
 
 const DataSelection = ({
@@ -63,6 +73,7 @@ const DataSelection = ({
   const experiment = useReactiveVar(draftExperimentVar);
   const groups = useReactiveVar(groupsVar);
   const variables = useReactiveVar(variablesVar);
+  const visualizationType = useReactiveVar(visualizationTypeVar);
 
   const handleSelectDataset = (id: string): void => {
     localMutations.toggleDatasetExperiment(id);
@@ -92,16 +103,29 @@ const DataSelection = ({
       <DataSelectionBox>
         {loading && <Loader />}
         {!loading && (
-          <>
-            <DomainSelectBox id="domain-select">
-              {(domains || longitudinalDomains) && (
-                <DomainsBox id="pathology-select">
-                  <DropdownButton
-                    size="sm"
-                    variant="light"
-                    title={uppercase(domain?.label || 'Domains')}
+          <ControlsContainer>
+            {(domains || longitudinalDomains) && (
+              <DropdownButton
+                size="sm"
+                variant="light"
+                title={uppercase(domain?.label || 'Domains')}
+              >
+                {domains?.map((d) => (
+                  <Dropdown.Item
+                    onSelect={(): void => {
+                      showDialogDomainChange(d.id);
+                    }}
+                    key={d.id}
+                    value={d.id}
                   >
-                    {domains?.map((d) => (
+                    {d.label}
+                  </Dropdown.Item>
+                ))}
+                {longitudinalDomains && longitudinalDomains?.length >= 1 && (
+                  <>
+                    <Dropdown.Divider />
+                    <h6 style={{ paddingLeft: '1em' }}>Longitudinal Domains</h6>
+                    {longitudinalDomains.map((d) => (
                       <Dropdown.Item
                         onSelect={(): void => {
                           showDialogDomainChange(d.id);
@@ -112,39 +136,21 @@ const DataSelection = ({
                         {d.label}
                       </Dropdown.Item>
                     ))}
-                    {longitudinalDomains && longitudinalDomains?.length >= 1 && (
-                      <>
-                        <Dropdown.Divider />
-                        <h6 style={{ paddingLeft: '1em' }}>
-                          Longitudinal Domains
-                        </h6>
-                        {longitudinalDomains.map((d) => (
-                          <Dropdown.Item
-                            onSelect={(): void => {
-                              showDialogDomainChange(d.id);
-                            }}
-                            key={d.id}
-                            value={d.id}
-                          >
-                            {d.label}
-                          </Dropdown.Item>
-                        ))}
-                      </>
-                    )}
-                  </DropdownButton>
-                </DomainsBox>
-              )}
+                  </>
+                )}
+              </DropdownButton>
+            )}
 
-              <DatasetsBox id="dataset-select">
-                <DataSelect
-                  datasets={domain?.datasets ?? []}
-                  handleSelectDataset={handleSelectDataset}
-                  selectedDatasets={experiment?.datasets}
-                  isDropdown
-                ></DataSelect>
-              </DatasetsBox>
-            </DomainSelectBox>
-            <SearchBox>
+            <DatasetSelectWrapper>
+              <DataSelect
+                datasets={domain?.datasets ?? []}
+                handleSelectDataset={handleSelectDataset}
+                selectedDatasets={experiment?.datasets}
+                isDropdown
+              />
+            </DatasetSelectWrapper>
+
+            <SearchWrapper>
               <Search
                 handleSelectNode={(id: string): void =>
                   localMutations.setZoomToNode(id)
@@ -152,8 +158,33 @@ const DataSelection = ({
                 variables={variables}
                 groups={groups}
               />
-            </SearchBox>
-          </>
+            </SearchWrapper>
+
+            <VisualizationSelect>
+              <DropdownButton
+                size="sm"
+                variant="light"
+                title={`Visualization: ${
+                  visualizationType === 'circle'
+                    ? 'Circle Packing'
+                    : 'Dendrogram'
+                }`}
+              >
+                <Dropdown.Item
+                  onSelect={() => visualizationTypeVar('circle')}
+                  active={visualizationType === 'circle'}
+                >
+                  Circle Packing
+                </Dropdown.Item>
+                <Dropdown.Item
+                  onSelect={() => visualizationTypeVar('dendrogram')}
+                  active={visualizationType === 'dendrogram'}
+                >
+                  Dendrogram
+                </Dropdown.Item>
+              </DropdownButton>
+            </VisualizationSelect>
+          </ControlsContainer>
         )}
       </DataSelectionBox>
     </>
