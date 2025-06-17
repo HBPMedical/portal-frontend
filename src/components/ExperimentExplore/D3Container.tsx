@@ -10,6 +10,7 @@ import {
 } from '../API/GraphQL/cache';
 import { HierarchyCircularNode } from '../utils';
 import CirclePack from './D3CirclePackLayer';
+import D3DendrogramLayer from './D3DendrogramLayer';
 import {
   d3Hierarchy,
   groupsToTreeView,
@@ -112,7 +113,12 @@ const D3Container = ({ selectedNode, handleSelectNode }: Props) => {
 
   if (visualizationType === 'dendrogram') {
     return (
-      <EmptyContainer>Dendrogram visualization coming soon...</EmptyContainer>
+      <D3DendrogramLayer
+        layout={d3Layout}
+        selectedNode={selectedNode}
+        groupVars={groupVars}
+        handleSelectNode={handleSelectNode}
+      />
     );
   }
 
