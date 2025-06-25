@@ -14,6 +14,12 @@ svg#dendrogram-svg {
   left: 0;
 }
 
+.label-bg-dendrogram {
+  stroke: #999;
+  stroke-width: 1;
+  rx: 4;
+}
+
 .dendrogram-link {
   fill: none;
   stroke: #ccc;

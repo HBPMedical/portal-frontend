@@ -335,12 +335,12 @@ const D3CirclePackLayer = ({ layout, ...props }: Props): JSX.Element => {
       })
       .on('mouseleave', function (this: SVGCircleElement) {
         // Remove stroke from the corresponding label background
-        // const nodeId = d3
-        //   .select<SVGGElement, any>(this.parentNode as SVGGElement)
-        //   .attr('data-node-id');
-        // labelsGroup
-        //   .select(`g.node-container[data-node-id="${nodeId}"] .label-bg`)
-        //   .style('stroke', 'none');
+        const nodeId = d3
+          .select<SVGGElement, any>(this.parentNode as SVGGElement)
+          .attr('data-node-id');
+        labelsGroup
+          .select(`g.node-container[data-node-id="${nodeId}"] .label-bg`)
+          .style('stroke', 'none');
 
         hideTooltip(tooltipRef.current);
       })

@@ -92,6 +92,8 @@ const D3DendrogramLayer = ({
   const svgRef = useRef<SVGSVGElement>(null);
   const currentTransformRef = useRef<d3.ZoomTransform | null>(null);
   const tooltipRef = useRef<HTMLDivElement | null>(null);
+  const isFirstRender = useRef(true);
+  const previousDomainId = useRef<string | undefined>();
 
   useEffect(() => {
     if (!svgRef.current || !layout) return;
@@ -207,6 +209,28 @@ const D3DendrogramLayer = ({
       currentTransformRef.current = null; // Clear after applying
     }
 
+    // Focus on root node only on first render
+    if (isFirstRender.current) {
+      const rootNode = nodes.find((n) => n.depth === 0); // Find root node
+      if (rootNode) {
+        const viewportWidth = svg.node()?.getBoundingClientRect().width || 800;
+        const viewportHeight = 830;
+
+        const rootX = rootNode.y; // Note: in tree layout, x and y are swapped
+        const rootY = rootNode.x;
+
+        const centerX = viewportWidth / 2;
+        const centerY = viewportHeight / 2;
+
+        const initialTransform = d3.zoomIdentity
+          .translate(centerX - rootX, centerY - rootY)
+          .scale(1);
+
+        svg.call(zoom.transform as any, initialTransform);
+      }
+      isFirstRender.current = false; // Mark that first render is complete
+    }
+
     // Draw links using rootWithXY
     const linkGenerator = d3
       .linkHorizontal<
@@ -299,12 +323,11 @@ const D3DendrogramLayer = ({
           // Add background rectangle
           nodeGroup
             .insert('rect', 'text')
-            .attr('class', 'label-bg')
+            .attr('class', 'label-bg-dendrogram')
             .attr('x', xOffset - padding)
             .attr('y', bbox.y - padding)
             .attr('width', bbox.width + padding * 2)
             .attr('height', bbox.height + padding * 2)
-            .attr('rx', 4)
             .style('fill', bgColor);
         }
       });
@@ -315,8 +338,9 @@ const D3DendrogramLayer = ({
       const selectedNodeGroup = nodeGroups.filter(
         (d) => d.data.id === selectedNode.data.id
       );
+
       selectedNodeGroup
-        .select('rect')
+        .select('label-bg-dendrogram')
         .attr('stroke', '#000')
         .attr('stroke-width', 2);
 
@@ -337,15 +361,25 @@ const D3DendrogramLayer = ({
     }
   }, [layout, handleSelectNode, selectedNode]);
 
-  // Cleanup tooltip on unmount
+  // Create tooltip once on component mount
   useEffect(() => {
-    // Create tooltip
     tooltipRef.current = createTooltip('dendrogram-tooltip');
 
+    // Cleanup on unmount
     return () => {
       cleanupTooltip(tooltipRef.current);
     };
-  }, []);
+  }, []); // Empty dependency array = runs only once
+
+  // Reset first render flag when domain changes
+  useEffect(() => {
+    const currentDomainId = layout.data.id;
+
+    if (previousDomainId.current !== currentDomainId) {
+      isFirstRender.current = true; // Reset for new domain
+      previousDomainId.current = currentDomainId;
+    }
+  }, [layout.data.id]);
 
   return (
     <div className="dendrogram-viewport">
