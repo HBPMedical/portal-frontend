@@ -1,15 +1,15 @@
 /* D3DendrogramLayer.css */
-.dendrogram-viewport {
+div.dendrogram-viewport {
   width: 100%;
   height: 830px;
-  overflow: auto;
-  position: relative;
+  overflow: hidden;
+  /* position: relative; */
   border: 1px solid #ccc;
   border-radius: 10px;
 }
 
-.dendrogram-svg {
-  position: absolute;
+svg#dendrogram-svg {
+  /* position: absolute; */
   top: 0;
   left: 0;
 }
@@ -29,7 +29,7 @@
 .dendrogram-node-circle-selected {
   stroke: #000;
   stroke-width: 2px;
-  r: 6; /* Note: r is an attribute, but this is a reasonable way to style it */
+  r: 6; 
 }
 
 .dendrogram-node-label {
