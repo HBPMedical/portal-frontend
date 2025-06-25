@@ -387,13 +387,10 @@ const D3CirclePackLayer = ({ layout, ...props }: Props): JSX.Element => {
   // Add tooltip helper functions
   const showTooltip = (event: MouseEvent, d: HierarchyCircularNode) => {
     if (!tooltipRef.current) return;
-    console.log('!tooltipRef.current', !tooltipRef.current);
 
     // Only show tooltip if the label is NOT displayed
     const isLabelDisplayed =
       d.parent === focus.current || !focus.current.children;
-
-    console.log('isLabelDisplayed', isLabelDisplayed);
 
     if (!isLabelDisplayed) {
       // Clear any existing hide timeout

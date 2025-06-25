@@ -3,6 +3,7 @@ import * as d3 from 'd3';
 import styled from 'styled-components';
 import { HierarchyCircularNode } from '../utils';
 import { NodeData } from './d3Hierarchy';
+import './D3DendrogramLayer.css';
 
 interface Props {
   layout: HierarchyCircularNode;
@@ -14,22 +15,6 @@ interface Props {
   }>;
   handleSelectNode: (node: HierarchyCircularNode) => void;
 }
-
-// viewport container that lets the user scroll
-const ViewportContainer = styled.div`
-  width: 100%;
-  height: 830px;
-  overflow: hidden;
-  position: relative;
-  border: 1px solid #ccc;
-  border-radius: 10px;
-`;
-
-const SVG = styled.svg`
-  position: absolute;
-  top: 0;
-  left: 0;
-`;
 
 const diameter = 800;
 
@@ -188,7 +173,9 @@ const D3DendrogramLayer = ({
     const height = bounds.maxY - bounds.minY + padding.top + padding.bottom;
 
     // Set SVG size
-    svg.attr('width', width).attr('height', height);
+    const minHeight = Math.max(height, 830);
+    svg.attr('width', width).attr('height', minHeight);
+    svg.style('width', 'calc(100%)');
 
     const color = d3
       .scaleLinear<string, string>()
@@ -256,13 +243,7 @@ const D3DendrogramLayer = ({
       })
       .attr('stroke', '#999')
       .attr('stroke-width', 1)
-      .style('cursor', 'pointer')
-      .each(function (d) {
-        d3.select(this).on('click', () => {
-          const circleNode = convertToCircleNode(d);
-          handleSelectNode(circleNode);
-        });
-      });
+      .style('cursor', 'pointer');
 
     // Add labels
     nodeGroups.each(function (d) {
@@ -271,11 +252,16 @@ const D3DendrogramLayer = ({
       // Use hierarchical colors based on depth level, white for leaf nodes
       const bgColor = d.children ? color(d.depth) ?? '#ffffff' : '#ffffff';
 
+      nodeGroup.on('click', () => {
+        const circleNode = convertToCircleNode(d);
+        handleSelectNode(circleNode);
+      });
+
       // Create text element
       const text = nodeGroup
         .append('text')
         .attr('dy', '.31em')
-        .style('font-size', d.children ? '16px' : '12px')
+        .style('font-size', '12px')
         .style(
           'fill',
           (d.depth === 3 || d.depth === 4) && d.children ? 'white' : '#2c3e50'
@@ -331,9 +317,9 @@ const D3DendrogramLayer = ({
   }, [layout, handleSelectNode, selectedNode]);
 
   return (
-    <ViewportContainer>
-      <SVG ref={svgRef} />
-    </ViewportContainer>
+    <div className="dendrogram-viewport">
+      <svg id="dendrogram-svg" ref={svgRef} />
+    </div>
   );
 };
 

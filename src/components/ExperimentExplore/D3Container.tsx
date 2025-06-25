@@ -33,16 +33,16 @@ const SpinnerContainer = styled.div`
   align-items: center;
 `;
 
-const EmptyContainer = styled.div`
-  display: flex;
-  min-height: inherit;
-  justify-content: center;
-  align-items: center;
-  background-color: #f8f9fa;
-  border-radius: 4px;
-  color: #6c757d;
-  font-size: 1.1em;
-`;
+// const EmptyContainer = styled.div`
+//   display: flex;
+//   min-height: inherit;
+//   justify-content: center;
+//   align-items: center;
+//   background-color: #f8f9fa;
+//   border-radius: 4px;
+//   color: #6c757d;
+//   font-size: 1.1em;
+// `;
 
 const D3Container = ({ selectedNode, handleSelectNode }: Props) => {
   const domain = useReactiveVar(selectedDomainVar);
@@ -80,14 +80,6 @@ const D3Container = ({ selectedNode, handleSelectNode }: Props) => {
     //console log to see the sizes of the leaf nodes
     if (layout) {
       const leafNodes = layout.descendants().filter((d) => !d.children);
-      console.log(
-        'Leaf node sizes:',
-        leafNodes.map((d) => ({
-          id: d.data.id,
-          radius: d.r,
-          value: d.value,
-        }))
-      );
     }
     setD3Layout(layout);
   }, [domain, datasets]);
