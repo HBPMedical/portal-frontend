@@ -6,6 +6,14 @@ import React, { useCallback, useEffect, useRef } from 'react';
 import { zoomNodeVar } from '../API/GraphQL/cache';
 import { HierarchyCircularNode } from '../utils';
 import './CirclePack.css';
+import {
+  cleanupTooltip,
+  createTooltip,
+  hideTooltip,
+  moveTooltip,
+  showTooltip,
+  TooltipData,
+} from './tooltipUtils';
 
 const diameter = 800;
 const padding = 1.5;
@@ -105,12 +113,13 @@ const D3CirclePackLayer = ({ layout, ...props }: Props): JSX.Element => {
   const svgRef = useRef(null);
   const view = useRef<IView>([diameter / 2, diameter / 2, diameter]);
   const focus = useRef(layout);
-  const tooltipRef = useRef<d3.Selection<
-    HTMLDivElement,
-    unknown,
-    HTMLElement,
-    any
-  > | null>(null);
+  const tooltipRef = useRef<HTMLDivElement | null>(null);
+  // const tooltipRef = useRef<d3.Selection<
+  //   HTMLDivElement,
+  //   unknown,
+  //   HTMLElement,
+  //   any
+  // > | null>(null);
   const tooltipTimeoutRef = useRef<NodeJS.Timeout | null>(null);
   const { selectedNode, groupVars } = props;
   const zoomNode = useReactiveVar(zoomNodeVar);
@@ -240,24 +249,25 @@ const D3CirclePackLayer = ({ layout, ...props }: Props): JSX.Element => {
     d3.select(svgRef.current).selectAll('g').remove();
 
     // Create tooltip
-    tooltipRef.current = d3
-      .select('body')
-      .append('div')
-      .attr('class', 'circle-pack-tooltip')
-      .style('position', 'absolute')
-      .style('padding', '6px 10px')
-      .style('background', 'rgba(255, 255, 255, 0.9)')
-      .style('border', '1px solid #ccc')
-      .style('border-radius', '4px')
-      .style('pointer-events', 'none')
-      .style('font', '12px sans-serif')
-      .style('color', '#222')
-      .style('box-shadow', '0 2px 6px rgba(0,0,0,0.15)')
-      .style('visibility', 'hidden')
-      .style('z-index', '1000')
-      .style('max-width', '300px')
-      .style('word-wrap', 'break-word')
-      .style('white-space', 'normal');
+    // tooltipRef.current = d3
+    //   .select('body')
+    //   .append('div')
+    //   .attr('class', 'circle-pack-tooltip')
+    //   .style('position', 'absolute')
+    //   .style('padding', '6px 10px')
+    //   .style('background', 'rgba(255, 255, 255, 0.9)')
+    //   .style('border', '1px solid #ccc')
+    //   .style('border-radius', '4px')
+    //   .style('pointer-events', 'none')
+    //   .style('font', '12px sans-serif')
+    //   .style('color', '#222')
+    //   .style('box-shadow', '0 2px 6px rgba(0,0,0,0.15)')
+    //   .style('visibility', 'hidden')
+    //   .style('z-index', '1000')
+    //   .style('max-width', '300px')
+    //   .style('word-wrap', 'break-word')
+    //   .style('white-space', 'normal');
+    tooltipRef.current = createTooltip('circle-pack-tooltip');
 
     const svg = d3
       .select(svgRef.current)
@@ -311,23 +321,28 @@ const D3CirclePackLayer = ({ layout, ...props }: Props): JSX.Element => {
             .select(`g.node-container[data-node-id="${nodeId}"] .label-bg`)
             .style('stroke', '#000');
 
-          showTooltip(event, d);
+          //showTooltip(event, d);
+          const tooltipData: TooltipData = {
+            label: d.data.label,
+            description: d.data.description,
+          };
+          showTooltip(tooltipRef.current, event, tooltipData);
         }
       )
       .on('mousemove', function (this: SVGCircleElement) {
         const event = d3.event as MouseEvent;
-        moveTooltip(event);
+        moveTooltip(tooltipRef.current, event);
       })
       .on('mouseleave', function (this: SVGCircleElement) {
         // Remove stroke from the corresponding label background
-        const nodeId = d3
-          .select<SVGGElement, any>(this.parentNode as SVGGElement)
-          .attr('data-node-id');
-        labelsGroup
-          .select(`g.node-container[data-node-id="${nodeId}"] .label-bg`)
-          .style('stroke', 'none');
+        // const nodeId = d3
+        //   .select<SVGGElement, any>(this.parentNode as SVGGElement)
+        //   .attr('data-node-id');
+        // labelsGroup
+        //   .select(`g.node-container[data-node-id="${nodeId}"] .label-bg`)
+        //   .style('stroke', 'none');
 
-        hideTooltip();
+        hideTooltip(tooltipRef.current);
       })
       .on('click', function (this: SVGCircleElement, d: HierarchyCircularNode) {
         const event = d3.event as MouseEvent;
@@ -385,69 +400,66 @@ const D3CirclePackLayer = ({ layout, ...props }: Props): JSX.Element => {
   }, [zoomNode, zoomToNode]);
 
   // Add tooltip helper functions
-  const showTooltip = (event: MouseEvent, d: HierarchyCircularNode) => {
-    if (!tooltipRef.current) return;
+  // const showTooltip = (event: MouseEvent, d: HierarchyCircularNode) => {
+  //   if (!tooltipRef.current) return;
 
-    // Only show tooltip if the label is NOT displayed
-    const isLabelDisplayed =
-      d.parent === focus.current || !focus.current.children;
+  //   // Only show tooltip if the label is NOT displayed
+  //   const isLabelDisplayed =
+  //     d.parent === focus.current || !focus.current.children;
 
-    if (!isLabelDisplayed) {
-      // Clear any existing hide timeout
-      if (tooltipTimeoutRef.current) {
-        clearTimeout(tooltipTimeoutRef.current);
-        tooltipTimeoutRef.current = null;
-      }
+  //   if (!isLabelDisplayed) {
+  //     // Clear any existing hide timeout
+  //     if (tooltipTimeoutRef.current) {
+  //       clearTimeout(tooltipTimeoutRef.current);
+  //       tooltipTimeoutRef.current = null;
+  //     }
 
-      tooltipRef.current
-        .style('visibility', 'visible')
-        .html(
-          `
-            <strong>Name:</strong> ${d.data.label}${
-            d.data.description
-              ? `<br><strong>Description:</strong> ${d.data.description}`
-              : ''
-          }
-          `
-        )
-        .style('left', `${event.pageX + 10}px`)
-        .style('top', `${event.pageY + 10}px`);
-    } else {
-      hideTooltip();
-    }
-  };
+  //     tooltipRef.current
+  //       .style('visibility', 'visible')
+  //       .html(
+  //         `
+  //           <strong>Name:</strong> ${d.data.label}${
+  //           d.data.description
+  //             ? `<br><strong>Description:</strong> ${d.data.description}`
+  //             : ''
+  //         }
+  //         `
+  //       )
+  //       .style('left', `${event.pageX + 10}px`)
+  //       .style('top', `${event.pageY + 10}px`);
+  //   } else {
+  //     hideTooltip();
+  //   }
+  // };
 
-  const hideTooltip = () => {
-    if (!tooltipRef.current) return;
+  // const hideTooltip = () => {
+  //   if (!tooltipRef.current) return;
 
-    // Set a timeout to hide the tooltip after 200ms
-    tooltipTimeoutRef.current = setTimeout(() => {
-      tooltipRef.current?.style('visibility', 'hidden');
-      tooltipTimeoutRef.current = null;
-    }, 200);
-  };
+  //   // Set a timeout to hide the tooltip after 200ms
+  //   tooltipTimeoutRef.current = setTimeout(() => {
+  //     tooltipRef.current?.style('visibility', 'hidden');
+  //     tooltipTimeoutRef.current = null;
+  //   }, 200);
+  // };
 
-  const moveTooltip = (event: MouseEvent) => {
-    if (!tooltipRef.current) return;
+  // const moveTooltip = (event: MouseEvent) => {
+  //   if (!tooltipRef.current) return;
 
-    // Clear any existing hide timeout when moving
-    if (tooltipTimeoutRef.current) {
-      clearTimeout(tooltipTimeoutRef.current);
-      tooltipTimeoutRef.current = null;
-    }
+  //   // Clear any existing hide timeout when moving
+  //   if (tooltipTimeoutRef.current) {
+  //     clearTimeout(tooltipTimeoutRef.current);
+  //     tooltipTimeoutRef.current = null;
+  //   }
 
-    tooltipRef.current
-      .style('left', `${event.pageX + 10}px`)
-      .style('top', `${event.pageY + 10}px`);
-  };
+  //   tooltipRef.current
+  //     .style('left', `${event.pageX + 10}px`)
+  //     .style('top', `${event.pageY + 10}px`);
+  // };
 
   // Update cleanup effect
   useEffect(() => {
     return () => {
-      if (tooltipTimeoutRef.current) {
-        clearTimeout(tooltipTimeoutRef.current);
-      }
-      tooltipRef.current?.remove();
+      cleanupTooltip(tooltipRef.current);
     };
   }, []);
 

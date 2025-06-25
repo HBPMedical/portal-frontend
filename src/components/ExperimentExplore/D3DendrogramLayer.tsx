@@ -4,6 +4,14 @@ import styled from 'styled-components';
 import { HierarchyCircularNode } from '../utils';
 import { NodeData } from './d3Hierarchy';
 import './D3DendrogramLayer.css';
+import {
+  createTooltip,
+  showTooltip,
+  hideTooltip,
+  moveTooltip,
+  cleanupTooltip,
+  TooltipData,
+} from './tooltipUtils';
 
 interface Props {
   layout: HierarchyCircularNode;
@@ -26,15 +34,6 @@ const splitText = (text: string): string[] => {
   const bits = text.split(/\s|_/);
 
   return bits;
-};
-
-const isColorDark = (color: string) => {
-  const hex = color.replace('#', '');
-  const r = parseInt(hex.substring(0, 2), 16);
-  const g = parseInt(hex.substring(2, 4), 16);
-  const b = parseInt(hex.substring(4, 6), 16);
-  const yiq = (r * 299 + g * 587 + b * 114) / 1000;
-  return yiq < 128;
 };
 
 // Helper function to convert tree node to circle node format
@@ -92,6 +91,7 @@ const D3DendrogramLayer = ({
 }: Props) => {
   const svgRef = useRef<SVGSVGElement>(null);
   const currentTransformRef = useRef<d3.ZoomTransform | null>(null);
+  const tooltipRef = useRef<HTMLDivElement | null>(null);
 
   useEffect(() => {
     if (!svgRef.current || !layout) return;
@@ -231,7 +231,29 @@ const D3DendrogramLayer = ({
       .data(nodes)
       .join('g')
       .attr('class', 'node')
-      .attr('transform', (d) => `translate(${d.y},${d.x})`);
+      .attr('transform', (d) => `translate(${d.y},${d.x})`)
+      .style('cursor', 'pointer')
+      .on('click', function (d) {
+        d3.event.stopPropagation();
+        hideTooltip(tooltipRef.current);
+        const circleNode = convertToCircleNode(d);
+        handleSelectNode(circleNode);
+      })
+      .on('mouseenter', function (d) {
+        const event = d3.event as MouseEvent;
+        const tooltipData: TooltipData = {
+          label: d.data.label,
+          description: d.data.description,
+        };
+        showTooltip(tooltipRef.current, event, tooltipData);
+      })
+      .on('mousemove', function () {
+        const event = d3.event as MouseEvent;
+        moveTooltip(tooltipRef.current, event);
+      })
+      .on('mouseleave', function () {
+        hideTooltip(tooltipRef.current);
+      });
 
     // Add circles for nodes
     nodeGroups
@@ -242,8 +264,7 @@ const D3DendrogramLayer = ({
         return d.children ? color(d.depth) ?? '#ffffff' : '#ffffff';
       })
       .attr('stroke', '#999')
-      .attr('stroke-width', 1)
-      .style('cursor', 'pointer');
+      .attr('stroke-width', 1);
 
     // Add labels
     nodeGroups.each(function (d) {
@@ -251,11 +272,6 @@ const D3DendrogramLayer = ({
       const isLeaf = !d.children;
       // Use hierarchical colors based on depth level, white for leaf nodes
       const bgColor = d.children ? color(d.depth) ?? '#ffffff' : '#ffffff';
-
-      nodeGroup.on('click', () => {
-        const circleNode = convertToCircleNode(d);
-        handleSelectNode(circleNode);
-      });
 
       // Create text element
       const text = nodeGroup
@@ -289,17 +305,22 @@ const D3DendrogramLayer = ({
             .attr('width', bbox.width + padding * 2)
             .attr('height', bbox.height + padding * 2)
             .attr('rx', 4)
-            .style('fill', bgColor)
-            .style('stroke', '#ccc')
-            .style('stroke-width', 1);
+            .style('fill', bgColor);
         }
       });
     });
 
     // Highlight selected node if any
     if (selectedNode) {
-      nodeGroups
-        .filter((d) => d.data.id === selectedNode.data.id)
+      const selectedNodeGroup = nodeGroups.filter(
+        (d) => d.data.id === selectedNode.data.id
+      );
+      selectedNodeGroup
+        .select('rect')
+        .attr('stroke', '#000')
+        .attr('stroke-width', 2);
+
+      selectedNodeGroup
         .select('circle')
         .attr('stroke', '#000')
         .attr('stroke-width', 2)
@@ -315,6 +336,16 @@ const D3DendrogramLayer = ({
       handleSelectNode(layout);
     }
   }, [layout, handleSelectNode, selectedNode]);
+
+  // Cleanup tooltip on unmount
+  useEffect(() => {
+    // Create tooltip
+    tooltipRef.current = createTooltip('dendrogram-tooltip');
+
+    return () => {
+      cleanupTooltip(tooltipRef.current);
+    };
+  }, []);
 
   return (
     <div className="dendrogram-viewport">
