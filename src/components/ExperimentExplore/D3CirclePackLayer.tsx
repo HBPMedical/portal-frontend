@@ -320,6 +320,7 @@ const D3CirclePackLayer = ({ layout, ...props }: Props): JSX.Element => {
           labelsGroup
             .select(`g.node-container[data-node-id="${nodeId}"] .label-bg`)
             .style('stroke', '#000');
+          this.style.stroke = '#000';
 
           //showTooltip(event, d);
           const tooltipData: TooltipData = {
@@ -341,6 +342,7 @@ const D3CirclePackLayer = ({ layout, ...props }: Props): JSX.Element => {
         labelsGroup
           .select(`g.node-container[data-node-id="${nodeId}"] .label-bg`)
           .style('stroke', 'none');
+        this.style.stroke = 'none';
 
         hideTooltip(tooltipRef.current);
       })

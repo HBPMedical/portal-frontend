@@ -20,11 +20,11 @@ svg#dendrogram-svg {
   rx: 4;
 }
 
-.dendrogram-link {
+/* .dendrogram-link {
   fill: none;
   stroke: #ccc;
   stroke-width: 1.5px;
-}
+} */
 
 .dendrogram-node-circle {
   stroke: #999;
@@ -32,11 +32,11 @@ svg#dendrogram-svg {
   cursor: pointer;
 }
 
-.dendrogram-node-circle-selected {
+/* .dendrogram-node-circle-selected {
   stroke: #000;
   stroke-width: 2px;
   r: 6; 
-}
+} */
 
 .dendrogram-node-label {
   font-size: 12px;
