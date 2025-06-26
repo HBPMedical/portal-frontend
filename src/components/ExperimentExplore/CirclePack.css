@@ -2,9 +2,9 @@
   stroke: none;
 }
 
-.node:hover {
+/* .node:hover {
   stroke: #000;
-}
+} */
 
 .label {
   text-anchor: middle;

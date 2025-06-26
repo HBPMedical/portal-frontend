@@ -265,6 +265,21 @@ const D3DendrogramLayer = ({
       })
       .on('mouseenter', function (d) {
         const event = d3.event as MouseEvent;
+
+        const nodeGroup = d3.select(this);
+
+        nodeGroup.classed('hover', true);
+
+        nodeGroup
+          .select('rect')
+          .style('stroke', '#000')
+          .style('stroke-width', 2);
+
+        nodeGroup
+          .select('circle')
+          .style('stroke', '#000')
+          .style('stroke-width', 2);
+
         const tooltipData: TooltipData = {
           label: d.data.label,
           description: d.data.description,
@@ -275,7 +290,21 @@ const D3DendrogramLayer = ({
         const event = d3.event as MouseEvent;
         moveTooltip(tooltipRef.current, event);
       })
-      .on('mouseleave', function () {
+      .on('mouseleave', function (d) {
+        const nodeGroup = d3.select(this);
+        nodeGroup.classed('hover', false);
+        if (!selectedNode || d.data.id !== selectedNode.data.id) {
+          nodeGroup
+            .select('rect')
+            .style('stroke', '#999')
+            .style('stroke-width', 1);
+
+          nodeGroup
+            .select('circle')
+            .style('stroke', '#999')
+            .style('stroke-width', 1);
+        }
+
         hideTooltip(tooltipRef.current);
       });
 
@@ -321,28 +350,31 @@ const D3DendrogramLayer = ({
           text.attr('transform', `translate(${isLeaf ? 6 : -6}, 0)`);
 
           // Add background rectangle
-          nodeGroup
+          const rect = nodeGroup
             .insert('rect', 'text')
-            .attr('class', 'label-bg-dendrogram')
+            //.attr('class', 'label-bg-dendrogram')
             .attr('x', xOffset - padding)
             .attr('y', bbox.y - padding)
             .attr('width', bbox.width + padding * 2)
             .attr('height', bbox.height + padding * 2)
-            .style('fill', bgColor);
+            .style('fill', bgColor)
+            .attr('stroke', '#999')
+            .attr('stroke-width', 2)
+            .attr('rx', 4);
+
+          // highlight selected node's rectangle bg if any
+          if (selectedNode && d.data.id === selectedNode.data.id) {
+            rect.attr('stroke', '#000').attr('stroke-width', 2);
+          }
         }
       });
     });
 
-    // Highlight selected node if any
+    // Highlight selected node's circle if any
     if (selectedNode) {
       const selectedNodeGroup = nodeGroups.filter(
         (d) => d.data.id === selectedNode.data.id
       );
-
-      selectedNodeGroup
-        .select('label-bg-dendrogram')
-        .attr('stroke', '#000')
-        .attr('stroke-width', 2);
 
       selectedNodeGroup
         .select('circle')
