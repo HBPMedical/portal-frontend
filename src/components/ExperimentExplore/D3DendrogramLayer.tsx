@@ -38,53 +38,6 @@ const splitText = (text: string): string[] => {
   return bits;
 };
 
-// // Helper function to convert tree node to circle node format
-// const convertToCircleNode = (
-//   treeNode: d3.HierarchyPointNode<NodeData>
-// ): HierarchyCircularNode => {
-//   // Create a new hierarchy from the node's data
-//   const newHierarchy = d3.hierarchy(treeNode.data);
-
-//   // Apply circle packing layout
-//   const packLayout = d3
-//     .pack<NodeData>()
-//     .size([diameter, diameter])
-//     .padding((d) => {
-//       if (d.depth === 0) return 4;
-//       return 3;
-//     });
-
-//   const packedLayout = packLayout(newHierarchy);
-
-//   // Copy over the x, y coordinates from the tree layout
-//   const copyCoordinates = (
-//     source: d3.HierarchyPointNode<NodeData>,
-//     target: d3.HierarchyNode<NodeData> & { x: number; y: number; r: number }
-//   ) => {
-//     target.x = source.x || 0;
-//     target.y = source.y || 0;
-
-//     if (source.children && target.children) {
-//       source.children.forEach((child, i) => {
-//         if (target.children && target.children[i]) {
-//           copyCoordinates(
-//             child as d3.HierarchyPointNode<NodeData>,
-//             target.children[i] as d3.HierarchyNode<NodeData> & {
-//               x: number;
-//               y: number;
-//               r: number;
-//             }
-//           );
-//         }
-//       });
-//     }
-//   };
-
-//   copyCoordinates(treeNode, packedLayout);
-
-//   return packedLayout as unknown as HierarchyCircularNode;
-// };
-
 const D3DendrogramLayer = ({
   layout,
   selectedNode,
@@ -338,6 +291,19 @@ const D3DendrogramLayer = ({
       .append('circle')
       .attr('r', 4.5)
       .attr('fill', (d) => {
+        // Check if this node should have a group color
+        const isLeafNode = !d.children;
+        const isGroupVariable =
+          isLeafNode && groupVars.some((g) => g.items.includes(d.data.id));
+
+        if (isGroupVariable) {
+          // Apply group color directly during rendering
+          return (
+            groupVars.find((g) => g.items.includes(d.data.id))?.color ??
+            '#ffffff'
+          );
+        }
+
         // Use hierarchical colors based on depth level, white for leaf nodes
         return d.children ? color(d.depth) ?? '#ffffff' : '#ffffff';
       })
@@ -348,8 +314,18 @@ const D3DendrogramLayer = ({
     nodeGroups.each(function (d) {
       const nodeGroup = d3.select(this);
       const isLeaf = !d.children;
+
+      // Check if this node should have a group color
+      const isGroupVariable =
+        isLeaf && groupVars.some((g) => g.items.includes(d.data.id));
+
       // Use hierarchical colors based on depth level, white for leaf nodes
-      const bgColor = d.children ? color(d.depth) ?? '#ffffff' : '#ffffff';
+      // But apply group colors directly for group variables
+      const bgColor = isGroupVariable
+        ? groupVars.find((g) => g.items.includes(d.data.id))?.color ?? '#ffffff'
+        : d.children
+        ? color(d.depth) ?? '#ffffff'
+        : '#ffffff';
 
       // Create text element
       const text = nodeGroup
@@ -408,7 +384,7 @@ const D3DendrogramLayer = ({
         .attr('stroke-width', 2)
         .attr('r', 6);
     }
-  }, [layout, selectedNode, groupVars, handleSelectNode]);
+  }, [layout, selectedNode, handleSelectNode, groupVars]);
 
   // Automatically select root node when layout changes (e.g., when switching domains)
   useEffect(() => {
