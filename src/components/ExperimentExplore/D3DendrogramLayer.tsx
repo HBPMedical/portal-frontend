@@ -1,8 +1,10 @@
-import { useEffect, useRef } from 'react';
+import { useEffect, useRef, useCallback } from 'react';
 import * as d3 from 'd3';
 import styled from 'styled-components';
+import { useReactiveVar } from '@apollo/client';
 import { HierarchyCircularNode } from '../utils';
 import { NodeData } from './d3Hierarchy';
+import { zoomNodeVar } from '../API/GraphQL/cache';
 import './D3DendrogramLayer.css';
 import {
   createTooltip,
@@ -36,52 +38,52 @@ const splitText = (text: string): string[] => {
   return bits;
 };
 
-// Helper function to convert tree node to circle node format
-const convertToCircleNode = (
-  treeNode: d3.HierarchyPointNode<NodeData>
-): HierarchyCircularNode => {
-  // Create a new hierarchy from the node's data
-  const newHierarchy = d3.hierarchy(treeNode.data);
+// // Helper function to convert tree node to circle node format
+// const convertToCircleNode = (
+//   treeNode: d3.HierarchyPointNode<NodeData>
+// ): HierarchyCircularNode => {
+//   // Create a new hierarchy from the node's data
+//   const newHierarchy = d3.hierarchy(treeNode.data);
 
-  // Apply circle packing layout
-  const packLayout = d3
-    .pack<NodeData>()
-    .size([diameter, diameter])
-    .padding((d) => {
-      if (d.depth === 0) return 4;
-      return 3;
-    });
+//   // Apply circle packing layout
+//   const packLayout = d3
+//     .pack<NodeData>()
+//     .size([diameter, diameter])
+//     .padding((d) => {
+//       if (d.depth === 0) return 4;
+//       return 3;
+//     });
 
-  const packedLayout = packLayout(newHierarchy);
+//   const packedLayout = packLayout(newHierarchy);
 
-  // Copy over the x, y coordinates from the tree layout
-  const copyCoordinates = (
-    source: d3.HierarchyPointNode<NodeData>,
-    target: d3.HierarchyNode<NodeData> & { x: number; y: number; r: number }
-  ) => {
-    target.x = source.x || 0;
-    target.y = source.y || 0;
+//   // Copy over the x, y coordinates from the tree layout
+//   const copyCoordinates = (
+//     source: d3.HierarchyPointNode<NodeData>,
+//     target: d3.HierarchyNode<NodeData> & { x: number; y: number; r: number }
+//   ) => {
+//     target.x = source.x || 0;
+//     target.y = source.y || 0;
 
-    if (source.children && target.children) {
-      source.children.forEach((child, i) => {
-        if (target.children && target.children[i]) {
-          copyCoordinates(
-            child as d3.HierarchyPointNode<NodeData>,
-            target.children[i] as d3.HierarchyNode<NodeData> & {
-              x: number;
-              y: number;
-              r: number;
-            }
-          );
-        }
-      });
-    }
-  };
+//     if (source.children && target.children) {
+//       source.children.forEach((child, i) => {
+//         if (target.children && target.children[i]) {
+//           copyCoordinates(
+//             child as d3.HierarchyPointNode<NodeData>,
+//             target.children[i] as d3.HierarchyNode<NodeData> & {
+//               x: number;
+//               y: number;
+//               r: number;
+//             }
+//           );
+//         }
+//       });
+//     }
+//   };
 
-  copyCoordinates(treeNode, packedLayout);
+//   copyCoordinates(treeNode, packedLayout);
 
-  return packedLayout as unknown as HierarchyCircularNode;
-};
+//   return packedLayout as unknown as HierarchyCircularNode;
+// };
 
 const D3DendrogramLayer = ({
   layout,
@@ -94,6 +96,22 @@ const D3DendrogramLayer = ({
   const tooltipRef = useRef<HTMLDivElement | null>(null);
   const isFirstRender = useRef(true);
   const previousDomainId = useRef<string | undefined>();
+  const zoomNode = useReactiveVar(zoomNodeVar);
+
+  const zoomToNode = useCallback(
+    (id: string) => {
+      const node = layout.descendants().find((n) => n.data.id === id);
+      if (node) {
+        // Use the pre-generated uniqueId from the node data
+        (node as any).uniqueId = node.data.uniqueId;
+        if (typeof (node as any).r !== 'number') {
+          (node as any).r = 0;
+        }
+        handleSelectNode(node as unknown as HierarchyCircularNode);
+      }
+    },
+    [layout, handleSelectNode]
+  );
 
   useEffect(() => {
     if (!svgRef.current || !layout) return;
@@ -260,15 +278,19 @@ const D3DendrogramLayer = ({
       .on('click', function (d) {
         d3.event.stopPropagation();
         hideTooltip(tooltipRef.current);
-        const circleNode = convertToCircleNode(d);
-        handleSelectNode(circleNode);
+        // Use the pre-generated uniqueId from the node data
+        (d as any).uniqueId = d.data.uniqueId;
+        if (typeof (d as any).r !== 'number') {
+          (d as any).r = 0;
+        }
+        handleSelectNode(d as unknown as HierarchyCircularNode);
       })
       .on('mouseenter', function (d) {
         const event = d3.event as MouseEvent;
 
         const nodeGroup = d3.select(this);
 
-        nodeGroup.classed('hover', true);
+        nodeGroup.classed('hover', true); // add hover class to node group
 
         nodeGroup
           .select('rect')
@@ -281,7 +303,7 @@ const D3DendrogramLayer = ({
           .style('stroke-width', 2);
 
         const tooltipData: TooltipData = {
-          label: d.data.label,
+          label: splitText(d.data.label).join(' '),
           description: d.data.description,
         };
         showTooltip(tooltipRef.current, event, tooltipData);
@@ -292,8 +314,11 @@ const D3DendrogramLayer = ({
       })
       .on('mouseleave', function (d) {
         const nodeGroup = d3.select(this);
-        nodeGroup.classed('hover', false);
-        if (!selectedNode || d.data.id !== selectedNode.data.id) {
+        nodeGroup.classed('hover', false); // remove hover class from node group
+        if (
+          !selectedNode ||
+          d.data.uniqueId !== (selectedNode as any).uniqueId
+        ) {
           nodeGroup
             .select('rect')
             .style('stroke', '#999')
@@ -352,18 +377,20 @@ const D3DendrogramLayer = ({
           // Add background rectangle
           const rect = nodeGroup
             .insert('rect', 'text')
-            //.attr('class', 'label-bg-dendrogram')
             .attr('x', xOffset - padding)
             .attr('y', bbox.y - padding)
             .attr('width', bbox.width + padding * 2)
             .attr('height', bbox.height + padding * 2)
             .style('fill', bgColor)
             .attr('stroke', '#999')
-            .attr('stroke-width', 2)
+            .attr('stroke-width', 1)
             .attr('rx', 4);
 
           // highlight selected node's rectangle bg if any
-          if (selectedNode && d.data.id === selectedNode.data.id) {
+          if (
+            selectedNode &&
+            (selectedNode as any).uniqueId === d.data.uniqueId
+          ) {
             rect.attr('stroke', '#000').attr('stroke-width', 2);
           }
         }
@@ -373,9 +400,8 @@ const D3DendrogramLayer = ({
     // Highlight selected node's circle if any
     if (selectedNode) {
       const selectedNodeGroup = nodeGroups.filter(
-        (d) => d.data.id === selectedNode.data.id
+        (d) => (selectedNode as any).uniqueId === d.data.uniqueId
       );
-
       selectedNodeGroup
         .select('circle')
         .attr('stroke', '#000')
@@ -389,7 +415,9 @@ const D3DendrogramLayer = ({
     // Only auto-select root if no node is currently selected
     // This preserves user selection when switching between visualization types
     if (!selectedNode) {
-      handleSelectNode(layout);
+      const rootWithUniqueId = layout as any;
+      rootWithUniqueId.uniqueId = layout.data.uniqueId;
+      handleSelectNode(rootWithUniqueId);
     }
   }, [layout, handleSelectNode, selectedNode]);
 
@@ -406,12 +434,22 @@ const D3DendrogramLayer = ({
   // Reset first render flag when domain changes
   useEffect(() => {
     const currentDomainId = layout.data.id;
-
+    if (previousDomainId.current === undefined) {
+      previousDomainId.current = currentDomainId;
+    }
     if (previousDomainId.current !== currentDomainId) {
       isFirstRender.current = true; // Reset for new domain
       previousDomainId.current = currentDomainId;
     }
   }, [layout.data.id]);
+
+  // Handle search-to-node selection
+  useEffect(() => {
+    if (zoomNode) {
+      zoomToNode(zoomNode);
+      zoomNodeVar(undefined);
+    }
+  }, [zoomNode, zoomToNode]);
 
   return (
     <div className="dendrogram-viewport">
