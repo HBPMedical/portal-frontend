@@ -8,6 +8,7 @@ export interface NodeData {
   isVariable?: boolean;
   children?: NodeData[];
   type?: string;
+  uniqueId?: string;
 }
 
 export type HierarchyNode = d3.HierarchyNode<NodeData>;
@@ -25,7 +26,8 @@ export const groupsToTreeView = (
   group: Group,
   groups: Group[],
   vars: Variable[],
-  datasets: string[] = []
+  datasets: string[] = [],
+  parentPath = ''
 ): NodeData => {
   // Initialize the arrays if they're empty with the given groups and variables arrays
   if (availableGroups.length === 0) {
@@ -34,6 +36,11 @@ export const groupsToTreeView = (
   if (availableVars.length === 0) {
     availableVars = [...vars];
   }
+
+  // Generate unique ID for this group
+  const currentPath = parentPath ? `${parentPath}.${group.id}` : group.id;
+  const groupUniqueId = `group_${group.id}_${currentPath}`;
+
   const childVars =
     group.variables
       ?.map((varId) => availableVars.find((v) => v.id === varId))
@@ -55,6 +62,7 @@ export const groupsToTreeView = (
           isVariable: true,
           label: v.label ?? v.id,
           type: v.type ?? undefined,
+          uniqueId: `var_${v.id}_${currentPath}`,
         };
       }) ?? [];
 
@@ -69,7 +77,7 @@ export const groupsToTreeView = (
       )
       .map((g) => g as Group)
       .map((g) => {
-        const result = groupsToTreeView(g, groups, vars, datasets);
+        const result = groupsToTreeView(g, groups, vars, datasets, currentPath);
         const index = availableGroups.findIndex((group) => group.id === g.id);
         if (index !== -1) {
           availableGroups.splice(index, 1); // Remove only this specific instance
@@ -82,6 +90,7 @@ export const groupsToTreeView = (
     description: group.description ?? '',
     label: group.label ?? group.id,
     children: [...childGroups, ...childVars],
+    uniqueId: groupUniqueId,
   };
 };
 
