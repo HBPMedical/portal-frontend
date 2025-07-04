@@ -180,21 +180,34 @@ const D3DendrogramLayer = ({
       currentTransformRef.current = null; // Clear after applying
     }
 
-    // Focus on root node only on first render
+    // Focus on selected node or root node on first render
     if (isFirstRender.current) {
-      const rootNode = nodes.find((n) => n.depth === 0); // Find root node
-      if (rootNode) {
+      let focusNode = null;
+
+      // If a node is selected, try to find it in the current layout
+      if (selectedNode) {
+        focusNode = nodes.find(
+          (n) => n.data.uniqueId === (selectedNode as any).uniqueId
+        );
+      }
+
+      // If no selected node found, fall back to root node
+      if (!focusNode) {
+        focusNode = nodes.find((n) => n.depth === 0); // Find root node
+      }
+
+      if (focusNode) {
         const viewportWidth = svg.node()?.getBoundingClientRect().width || 800;
         const viewportHeight = 830;
 
-        const rootX = rootNode.y; // Note: in tree layout, x and y are swapped
-        const rootY = rootNode.x;
+        const nodeX = focusNode.y; // Note: in tree layout, x and y are swapped
+        const nodeY = focusNode.x;
 
         const centerX = viewportWidth / 2;
         const centerY = viewportHeight / 2;
 
         const initialTransform = d3.zoomIdentity
-          .translate(centerX - rootX, centerY - rootY)
+          .translate(centerX - nodeX, centerY - nodeY)
           .scale(1);
 
         svg.call(zoom.transform as any, initialTransform);
