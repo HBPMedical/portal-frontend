@@ -95,11 +95,19 @@ const SearchBox = (props: Props): JSX.Element => {
         return;
       }
 
-      const regexp = new RegExp(searchText, 'ig');
+      const query = searchText.toLowerCase();
+      setVisibleGroups(
+        groups.filter((g) =>
+          `${g.id} ${g.label ?? ''}`.toLowerCase().includes(query)
+        )
+      );
 
-      setVisibleGroups(groups.filter((g) => regexp.test(`${g.id} ${g.label}`)));
       setVisibleVars(
-        variables.filter((v) => regexp.test(`${v.id} ${v.type} ${v.label}`))
+        variables.filter((v) =>
+          `${v.id} ${v.type ?? ''} ${v.label ?? ''}`
+            .toLowerCase()
+            .includes(query)
+        )
       );
     }, 500);
 
