@@ -111,3 +111,34 @@ export function useOnClickOutside<T extends HTMLElement = HTMLElement>(
     // Reload only if ref or handler changes
   }, [ref, handler]);
 }
+
+/**
+ * Formats a range string for display in histograms
+ * @param range The range string in format "min-max"
+ * @returns Formatted range string
+ */
+export const formatRange = (range: string): string => {
+  // If it's not a range (e.g., nominal value), return as is
+  if (!range.includes('-')) return range;
+
+  // Split the range into min and max
+  const [min, max] = range.split('-').map(Number);
+
+  // If either value is NaN, return original range
+  if (isNaN(min) || isNaN(max)) return range;
+
+  // Calculate the range size
+  const rangeSize = max - min;
+
+  // Format based on the range size
+  if (rangeSize < 0.1) {
+    // For very small ranges, keep 2 decimals
+    return `${min.toFixed(2)}-${max.toFixed(2)}`;
+  } else if (rangeSize < 1) {
+    // For small ranges, keep 2 decimals
+    return `${min.toFixed(2)}-${max.toFixed(2)}`;
+  } else {
+    // For medium and large ranges, use integers
+    return `${Math.round(min)}-${Math.round(max)}`;
+  }
+};

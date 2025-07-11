@@ -6,53 +6,57 @@ import { useOnClickOutside } from '../utils';
 
 const DropDownPanel = styled.div`
   position: absolute;
+  top: 100%;
+  left: 0;
   background-color: white;
-  padding: 16px 0;
-  border: 1px grey solid;
-  margin: 2px 0;
+  padding: 8px 0;
+  border: 1px solid #dee2e6;
+  margin-top: 4px;
   border-radius: 4px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  z-index: 1000;
+  min-width: 200px;
+  max-width: 300px;
+  max-height: 400px;
+  overflow-y: auto;
 
   .dataset {
     user-select: none;
-    padding: 5px 15px;
+    padding: 4px 12px;
     cursor: pointer;
     &:hover {
-      background-color: #f1f1f1;
+      background-color: #f8f9fa;
     }
     label {
       cursor: pointer;
+      margin-bottom: 0;
+      font-size: 0.875rem;
     }
   }
 
   .form-check {
     display: flex;
     align-items: center;
+    margin: 0;
   }
 
   .form-check-input {
-    margin-top: 0px;
-  }
-
-  label {
+    margin-top: 0;
     margin-right: 8px;
-    font-size: 1em;
-  }
-
-  h6 {
-    font-size: 0.9em;
-    margin-bottom: 4px;
   }
 
   hr {
-    margin: 8px 0 4px 0;
-  }
-
-  p {
-    margin-bottom: 0;
+    margin: 4px 0;
   }
 `;
 
 const CaretButton = styled(Button)`
+  height: calc(1.5em + 0.75rem + 2px);
+  padding: 0.375rem 0.75rem;
+  display: flex;
+  align-items: center;
+  font-size: 0.875rem;
+
   ::after {
     display: inline-block;
     margin-left: 0.255em;
@@ -63,38 +67,16 @@ const CaretButton = styled(Button)`
     border-bottom: 0;
     border-left: 0.3em solid transparent;
   }
+
+  .badge {
+    margin-left: 6px;
+  }
 `;
 
 const Card = styled.div`
   margin-top: 4px;
-
-  label {
-    margin-right: 8px;
-  }
-
-  .checkbox {
-    position: absolute;
-    margin-top: 4px;
-    margin-left: -8px;
-  }
-
-  span {
-    display: block;
-  }
-
-  h6 {
-    font-size: 0.9em;
-    margin-bottom: 4px;
-  }
-
-  hr {
-    margin: 4px;
-  }
-
-  p {
-    margin: 6px 0;
-  }
 `;
+
 interface Props {
   datasets: Dataset[];
   handleSelectDataset: (id: string) => void;
@@ -138,7 +120,7 @@ const DataSelect = ({
           id={`default-${item.id}`}
           label={item.label}
           checked={selectedDatasets.includes(item.id)}
-        ></Form.Check>
+        />
       </div>
     ));
 

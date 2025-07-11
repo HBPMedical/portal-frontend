@@ -196,4 +196,8 @@ export const GlobalStyles = createGlobalStyle`
       text-align: left;
     }
   }
+
+  .dropdown-menu {
+    margin-top: 4px;
+  }
 `;

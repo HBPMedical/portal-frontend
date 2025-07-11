@@ -41,6 +41,9 @@ export const variablesVar = makeVar<Variable[]>([]);
 export const groupsVar = makeVar<Group[]>([]);
 export const appConfigVar = makeVar<AppConfig>({});
 
+export type VisualizationType = 'circle' | 'dendrogram';
+export const visualizationTypeVar = makeVar<VisualizationType>('circle');
+
 export const cacheConfig = {
   possibleTypes: {
     // https://github.com/apollographql/apollo-client/issues/7050

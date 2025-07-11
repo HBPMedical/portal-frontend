@@ -2,14 +2,15 @@
   stroke: none;
 }
 
-.node:hover {
+/* .node:hover {
   stroke: #000;
-}
+} */
 
 .label {
   text-anchor: middle;
   font: 1em sans-serif;
   pointer-events: none;
+  font-weight: 500;
 }
 
 circle.node.selected {
@@ -48,3 +49,17 @@ div.tooltip {
   border-radius: 8px;
   pointer-events: none;
 }
+
+.label-group {
+  pointer-events: none;
+}
+
+.label-bg {
+  stroke: none;
+  pointer-events: none;
+}
+
+/* Remove the old hover style since we're handling it in JavaScript */
+/* .node:hover ~ .label-group .label-bg {
+  stroke: #000;
+} */

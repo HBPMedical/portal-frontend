@@ -1,6 +1,6 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { useReactiveVar } from '@apollo/client';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { Badge, Button, Card, Col, Container, Row } from 'react-bootstrap';
 import { BsFillCaretRightFill, BsTrash } from 'react-icons/bs';
 import styled from 'styled-components';
@@ -93,6 +93,11 @@ const Explore = (props: ExploreProps): JSX.Element => {
   const [selectedNode, setSelectedNode] = useState<
     HierarchyCircularNode | undefined
   >();
+
+  // Reset selectedNode when domain changes
+  useEffect(() => {
+    setSelectedNode(undefined);
+  }, [domain?.id]);
 
   const containers = [
     [

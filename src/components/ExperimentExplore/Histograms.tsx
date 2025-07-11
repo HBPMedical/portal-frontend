@@ -26,9 +26,15 @@ const breadcrumb = (
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 const overviewChart = (node: HierarchyCircularNode): any => {
+  //sort them in alphabetical order
   let children = node
     .descendants()
-    .filter((d) => d.parent === node && !d.data.isVariable);
+    .filter((d) => d.parent === node && !d.data.isVariable)
+    .sort((a, b) => a.data.label.localeCompare(b.data.label));
+
+  // let children = node
+  //   .descendants()
+  //   .filter((d) => d.parent === node && !d.data.isVariable);
 
   children = children.length ? children : [node];
 
