@@ -122,8 +122,8 @@ const D3CirclePackLayer = ({ layout, ...props }: Props): JSX.Element => {
 
   const color = d3
     .scaleLinear<string, string>()
-    .domain([0, depth(layout)])
-    .range(['hsl(190,80%,80%)', 'hsl(228,80%,40%)'])
+    .domain([0, 4]) //.domain([0, depth(layout)])
+    .range(['hsl(223, 65.50%, 88.60%)', 'hsl(237, 81%, 54%)']) //.range(['hsl(190,80%,80%)', 'hsl(228,80%,40%)'])
     .interpolate(d3.interpolateHcl);
 
   const zoomTo = (v: IView) => {

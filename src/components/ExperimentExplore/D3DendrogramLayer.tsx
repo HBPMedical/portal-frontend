@@ -152,8 +152,8 @@ const D3DendrogramLayer = ({
 
     const color = d3
       .scaleLinear<string, string>()
-      .domain([0, depth(layout)])
-      .range(['hsl(190,80%,80%)', 'hsl(228,80%,40%)'])
+      .domain([0, 4]) //.domain([0, depth(layout)])
+      .range(['hsl(223, 65.50%, 88.60%)', 'hsl(237, 81%, 54%)']) //.range(['hsl(190,80%,80%)', 'hsl(228,80%,40%)'])
       .interpolate(d3.interpolateHcl);
 
     // Create a group for the entire visualization with adjusted transform
@@ -349,6 +349,7 @@ const D3DendrogramLayer = ({
           'fill',
           (d.depth === 3 || d.depth === 4) && d.children ? 'white' : '#2c3e50'
         )
+        .style('font-weight', d.children ? 'bold' : 'normal')
         .style('text-anchor', isLeaf ? 'start' : 'end')
         .text(splitText(d.data.label).join(' '));
 
