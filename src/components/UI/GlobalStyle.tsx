@@ -6,7 +6,7 @@ export const GlobalStyles = createGlobalStyle`
   body {
     margin: 0;
     padding: 0;
-    background: url(${backgroundImage}) top center no-repeat fixed #f5f5f5;
+    background: #e5e6fc;
     background-size: 100% auto;
   }
 
@@ -58,8 +58,27 @@ export const GlobalStyles = createGlobalStyle`
     color: #6c757d;
   }
 
+  .btn-secondary {
+    background-color: #DBDBDB;
+    border-color: #2b33e9;
+    color: #2b33e9;
+    font-weight: bold;
+  }
+
+  .badge-secondary {
+    background-color: #2b33e9;
+    color: #fff;
+  }
+
   .success {
     color: #28a745;
+  }
+  
+  .btn-success {
+    background-color:rgb(155, 250, 182);
+    border-color: #2b33e9;
+    color: #2b33e9;
+    font-weight: bold;
   }
 
   .info {
@@ -67,7 +86,30 @@ export const GlobalStyles = createGlobalStyle`
   }
 
   .warning {
-    color: #ffc107;
+    color: #FDEEC6;
+  }
+
+  .btn-warning {
+    background-color:rgb(255, 227, 150);
+    border-color: #2b33e9;
+    color: #2b33e9;
+    font-weight: bold;
+  }
+
+  .btn-warning:hover {
+    background-color:rgb(255, 227, 150);
+    filter: brightness(1.05);
+    border-color: #2b33e9;
+    color: #2b33e9;
+    font-weight: bold;
+  }
+
+  .btn-warning:active {
+    background-color:rgb(255, 227, 150);
+    filter: brightness(0.8);
+    border-color: #2b33e9;
+    color: #2b33e9;
+    font-weight: bold;
   }
 
   .danger {
@@ -87,9 +129,9 @@ export const GlobalStyles = createGlobalStyle`
   .card {
     margin-bottom: 8px;
     background-color: #fff;
-    border: 1px solid transparent;
+    // border: 1px solid #2b33e9;
     border-radius: 4px;
-    box-shadow: 0 1px 1px rgba(0, 0, 0, 0.05);
+    // box-shadow: 0 1px 1px rgba(0, 0, 0, 0.05);
   }
 
   .card-body {
@@ -200,4 +242,59 @@ export const GlobalStyles = createGlobalStyle`
   .dropdown-menu {
     margin-top: 4px;
   }
+
+  .visualization-dropdown > button {
+    background-color: #fff;
+    border: 1px solid #2b33e9;
+    color: #2b33e9;
+  }
+
+  .visualization-dropdown > button:hover {
+    background-color: #2b33e9;
+    color: #fff;
+  }
+  
+  #dropdown-basic {
+    border: 1px solid #2b33e9;
+    color: #2b33e9;
+    background-color: #fff;
+  }
+
+  .dropdown-domain > button {
+    border: 1px solid #2b33e9;
+    color: white;
+    background-color: #2b33e9;
+    padding: 6px 12px;
+  }
+
+  .btn-info {
+    background-color: #2b33e9;
+    border-color: #2b33e9;
+  }
+
+  .btn-info:hover {
+    background-color: #2b33e9;
+    border-color: #2b33e9;
+  }
+
+  .btn-info:disabled {
+    background-color: #2b33e9;
+    border-color: #2b33e9;
+    opacity: 0.5;
+  }
+
+  .badge-info {
+    background-color: #2b33e9;
+    color: white;
+  }
+  
+  .dropdown-btn {
+    color: #2b33e9;
+  }
+  
+  h3 {
+    font-family: 'Open Sans Condensed';
+    font-weight: bold;
+  }
+  
 `;

@@ -24,7 +24,9 @@ const DataSelectionBox = styled(Card.Title)`
   margin-bottom: 4px;
   justify-content: space-between;
   align-items: center;
-  background-color: #eee;
+  border-top-left-radius: 4px;
+  border-top-right-radius: 4px;
+  border-bottom: 1px solid #2b33e9;
 `;
 
 const ControlsContainer = styled.div`
@@ -109,6 +111,7 @@ const DataSelection = ({
                 size="sm"
                 variant="light"
                 title={uppercase(domain?.label || 'Domains')}
+                className="dropdown-domain"
               >
                 {domains?.map((d) => (
                   <Dropdown.Item
@@ -162,8 +165,9 @@ const DataSelection = ({
 
             <VisualizationSelect>
               <DropdownButton
+                id="dropdown-autoclose-true"
+                className="visualization-dropdown"
                 size="sm"
-                variant="light"
                 title={`Visualization: ${
                   visualizationType === 'circle'
                     ? 'Circle Packing'

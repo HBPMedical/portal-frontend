@@ -42,7 +42,7 @@ import { AppConfig } from '../utils';
 
 const Main = styled.main`
   margin: 0 auto;
-  padding: 52px 8px;
+  padding: 60px 8px;
   min-height: 100vh;}
 `;
 
