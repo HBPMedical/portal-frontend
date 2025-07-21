@@ -33,9 +33,9 @@ const Container = styled.div`
         margin-bottom: 10px;
         font-size: 0.9rem;
         &.enabled {
-          color: #007ad9;
+          color: #2b33e9;
+          font-weight: bold;
           &:hover {
-            color: #0056b3;
             text-decoration: underline;
           }
         }
@@ -46,7 +46,8 @@ const Container = styled.div`
         font-size: 0.8rem;
         font-style: italic;
         &.enabled {
-          color: green;
+          color: #2b33e9;
+          font-weight: bold;
         }
         &::after {
           content: ', ';

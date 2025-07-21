@@ -72,7 +72,7 @@ const Header = ({ experiment, handleCopyExperiment }: Props): JSX.Element => {
 
   return (
     <Card>
-      <Card.Body>
+      <Card.Body className="experiment-header-body">
         <div className="item text">
           <h3>
             Results of experiment <strong>{experiment?.name}</strong>

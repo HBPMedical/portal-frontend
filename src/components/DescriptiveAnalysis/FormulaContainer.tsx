@@ -101,7 +101,7 @@ const InteractionRow = ({
         {interaction === undefined &&
           selectedInteraction[0] &&
           selectedInteraction[1] && (
-            <Button variant="info" onClick={() => handleSetInteraction()}>
+            <Button variant="primary" onClick={() => handleSetInteraction()}>
               +
             </Button>
           )}
@@ -211,7 +211,10 @@ const TransformRow = ({
         {selectedTransform?.id &&
           selectedTransform?.operation &&
           !transformation && (
-            <Button variant="info" onClick={(): void => handleSetTransform()}>
+            <Button
+              variant="outline-primary"
+              onClick={(): void => handleSetTransform()}
+            >
               +
             </Button>
           )}
