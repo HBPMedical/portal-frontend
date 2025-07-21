@@ -13,6 +13,7 @@ export const GlobalStyles = createGlobalStyle`
   .header h3 {
     margin: 0;
     font-size: 1.4em;
+    color: #2b33e9;
   }
 
   .header p {
@@ -32,7 +33,7 @@ export const GlobalStyles = createGlobalStyle`
 
    h5 {
     font-weight: bold;
-    color: #666;
+    color: #2b33e9;
   }
 
    h6 {
@@ -45,55 +46,47 @@ export const GlobalStyles = createGlobalStyle`
 
 
   a {
-    color: #007ad9;
+    color: #2b33e9;
     text-decoration: none;
   }
 
   a:hover {
-    color: #0056b3;
+    color: #2b33e9;
     text-decoration: underline;
   }
 
-  .secondary {
-    color: #6c757d;
+  .primary {
+    color: #2b33e9;
+    background-color: #2b33e9;
   }
 
-  .btn-secondary {
-    background-color: #DBDBDB;
-    border-color: #2b33e9;
-    color: #2b33e9;
-    font-weight: bold;
-  }
+  // .btn-secondary {
+  //   background-color: #DBDBDB;
+  //   border-color: #2b33e9;
+  //   color: #2b33e9;
+  // }
 
   .badge-secondary {
     background-color: #2b33e9;
     color: #fff;
   }
 
-  .success {
-    color: #28a745;
+  .btn-primary {
+    background-color: #2b33e9;
+    border-color: #2b33e9;
+    color: #fff;
   }
   
   .btn-success {
     background-color:rgb(155, 250, 182);
     border-color: #2b33e9;
     color: #2b33e9;
-    font-weight: bold;
-  }
-
-  .info {
-    color: #17a2b8;
-  }
-
-  .warning {
-    color: #FDEEC6;
   }
 
   .btn-warning {
     background-color:rgb(255, 227, 150);
     border-color: #2b33e9;
     color: #2b33e9;
-    font-weight: bold;
   }
 
   .btn-warning:hover {
@@ -101,7 +94,6 @@ export const GlobalStyles = createGlobalStyle`
     filter: brightness(1.05);
     border-color: #2b33e9;
     color: #2b33e9;
-    font-weight: bold;
   }
 
   .btn-warning:active {
@@ -109,11 +101,6 @@ export const GlobalStyles = createGlobalStyle`
     filter: brightness(0.8);
     border-color: #2b33e9;
     color: #2b33e9;
-    font-weight: bold;
-  }
-
-  .danger {
-    color: #dc3545;
   }
 
   .btn {
@@ -135,7 +122,7 @@ export const GlobalStyles = createGlobalStyle`
   }
 
   .card-body {
-    padding: 8px 4px 8px 8px;
+    padding: 8px 8px 8px 8px;
   }
 
   .card section:not(:first-child) {
@@ -146,14 +133,14 @@ export const GlobalStyles = createGlobalStyle`
 
   .header .card-body {
     display: flex;
-    justify-content: flex-start;
+    justify-content: space-between;
     align-items: center;
     margin-bottom: 0px;
   }
 
-  .header h3 {
-    flex: 2;
-  }
+  // .header h3 {
+  //   flex: 2;
+  // }
 
   .header button+h3 {
     margin-left: 8px;
@@ -243,54 +230,76 @@ export const GlobalStyles = createGlobalStyle`
     margin-top: 4px;
   }
 
-  .visualization-dropdown > button {
-    background-color: #fff;
-    border: 1px solid #2b33e9;
-    color: #2b33e9;
-  }
+  // .visualization-dropdown > button {
+  //   background-color: #fff;
+  //   border: 1px solid #2b33e9;
+  //   color: #2b33e9;
+  // }
 
-  .visualization-dropdown > button:hover {
-    background-color: #2b33e9;
-    color: #fff;
-  }
+  // .visualization-dropdown > button:hover {
+  //   background-color: #2b33e9;
+  //   color: #fff;
+  // }
   
-  #dropdown-basic {
-    border: 1px solid #2b33e9;
-    color: #2b33e9;
-    background-color: #fff;
-  }
+  // #dropdown-basic {
+  //   border: 1px solid #2b33e9;
+  //   color: #2b33e9;
+  //   background-color: #fff;
+  // }
 
-  .dropdown-domain > button {
-    border: 1px solid #2b33e9;
-    color: white;
-    background-color: #2b33e9;
-    padding: 6px 12px;
-  }
+  // .dropdown-domain > button {
+  //   border: 1px solid #2b33e9;
+  //   color: white;
+  //   background-color: #2b33e9;
+  //   padding: 6px 12px;
+  // }
 
-  .btn-info {
-    background-color: #2b33e9;
-    border-color: #2b33e9;
-  }
+  // .dropdown-domain > button:hover {
+  //   background-color: #2b33e9;
+  //   color: white;
+  // }
 
-  .btn-info:hover {
-    background-color: #2b33e9;
-    border-color: #2b33e9;
-  }
+  // .dropdown-domain > button:active {
+  //   background-color: #2b33e9;
+  //   color: white;
+  // }
 
-  .btn-info:disabled {
-    background-color: #2b33e9;
-    border-color: #2b33e9;
-    opacity: 0.5;
-  }
+  // .dropdown-domain > button:not(:active):hover {
+  //   background-color: #2b33e9;
+  //   color: white;
+  // }
+
+  
+
+  // .btn-info {
+  //   background-color: #2b33e9;
+  //   border-color: #2b33e9;
+  // }
+
+  // .btn-info:hover {
+  //   background-color: #2b33e9;
+  //   border-color: #2b33e9;
+  // }
+
+  // .btn-info:disabled {
+  //   background-color: #2b33e9;
+  //   border-color: #2b33e9;
+  //   opacity: 0.5;
+  // }
 
   .badge-info {
     background-color: #2b33e9;
     color: white;
   }
   
-  .dropdown-btn {
-    color: #2b33e9;
-  }
+  // .dropdown-btn {
+  //   color: #2b33e9;
+  // }
+
+  // .dropdown-item.active {
+  //   background-color: #2b33e9;
+  //   color: white;
+  // }
   
   h3 {
     font-family: 'Open Sans Condensed';

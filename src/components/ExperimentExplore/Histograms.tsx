@@ -123,13 +123,13 @@ const Breadcrumb = styled.span`
     content: '';
   }
   p {
-    color: #007ad9;
+    color: #2b33e9;
     display: inline;
     cursor: pointer;
   }
   p:hover {
     text-decoration: underline;
-    color: #0056b3;
+    color: #2b33e9;
   }
 `;
 

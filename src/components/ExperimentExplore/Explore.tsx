@@ -159,7 +159,7 @@ const Explore = (props: ExploreProps): JSX.Element => {
                 </ParameterContainer>
                 <div className="item">
                   <Button
-                    variant="info"
+                    variant="primary"
                     type="submit"
                     onClick={handleGoToAnalysis}
                     id="btn-goto-analysis"

@@ -14,7 +14,7 @@ interface IOptions {
 }
 
 const NavBar = (): JSX.Element => (
-  <Navbar bg="info" variant="dark">
+  <Navbar bg="primary" variant="dark">
     <Container>
       <Navbar.Brand>Filters and Formula</Navbar.Brand>
     </Container>

@@ -48,47 +48,56 @@ const ExperimentCreateHeader = ({
 
   return (
     <Card>
-      <Card.Body>
-        <Button onClick={handleGoBackToReview} variant="info" type="submit">
+      <Card.Body className="experiment-header-body">
+        <Button
+          onClick={handleGoBackToReview}
+          variant="outline-primary"
+          type="submit"
+        >
           <BsFillCaretLeftFill /> Descriptive Analysis
         </Button>
         <h3>Create Experiment</h3>
-        <div className="item" style={{ marginRight: '8px' }}>
-          <FormControl
-            className="item experiment-name"
-            type="text"
-            placeholder={'Experiment name'}
-            value={name}
-            onChange={handleChangeExperimentName}
-            onKeyDown={handleKeyPress}
-          />
-        </div>
-        <div className="item">
-          <Button
-            onClick={handleSaveAndRun}
-            title={
-              method === undefined || method === null
-                ? 'Please choose a method on the right'
-                : name === ''
-                ? 'Please enter a title for your experiment'
-                : experiment.datasets === undefined ||
-                  experiment.datasets.length <= 0
-                ? 'Please select a dataset'
-                : ''
-            }
-            variant="info"
-            type="submit"
-            disabled={
-              !isEnabled ||
-              method === undefined ||
-              method === null ||
-              name === '' ||
-              experiment.datasets === undefined ||
-              experiment.datasets.length <= 0
-            }
-          >
-            Run Experiment <BsFillCaretRightFill />
-          </Button>
+        <div
+          className="item-group"
+          style={{ display: 'flex', alignItems: 'center', gap: '8px' }}
+        >
+          <div className="item" style={{ marginRight: '8px' }}>
+            <FormControl
+              className="item experiment-name"
+              type="text"
+              placeholder={'Experiment name'}
+              value={name}
+              onChange={handleChangeExperimentName}
+              onKeyDown={handleKeyPress}
+            />
+          </div>
+          <div className="item">
+            <Button
+              onClick={handleSaveAndRun}
+              title={
+                method === undefined || method === null
+                  ? 'Please choose a method on the right'
+                  : name === ''
+                  ? 'Please enter a title for your experiment'
+                  : experiment.datasets === undefined ||
+                    experiment.datasets.length <= 0
+                  ? 'Please select a dataset'
+                  : ''
+              }
+              variant="primary"
+              type="submit"
+              disabled={
+                !isEnabled ||
+                method === undefined ||
+                method === null ||
+                name === '' ||
+                experiment.datasets === undefined ||
+                experiment.datasets.length <= 0
+              }
+            >
+              Run Experiment <BsFillCaretRightFill />
+            </Button>
+          </div>
         </div>
       </Card.Body>
     </Card>
