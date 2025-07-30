@@ -11,14 +11,16 @@ const Header = ({ handleCreateExperiment, handleGoBackToExplore }: Props) => {
   return (
     <Card>
       <Card.Body className="experiment-header-body">
-        <Button
-          onClick={handleGoBackToExplore}
-          variant="outline-primary"
-          type="submit"
-        >
-          <BsFillCaretLeftFill /> Variables
-        </Button>
-        <h3>Descriptive Analysis</h3>
+        <div className="header-title">
+          <Button
+            onClick={handleGoBackToExplore}
+            variant="outline-primary"
+            type="submit"
+          >
+            <BsFillCaretLeftFill />
+          </Button>
+          <h1>Descriptive Analysis</h1>
+        </div>
         <div className="item">
           <Button
             onClick={handleCreateExperiment}

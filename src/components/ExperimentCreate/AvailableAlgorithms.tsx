@@ -43,8 +43,8 @@ const Container = styled.div`
     }
     &.horizontal {
       .algorithm {
+        margin-bottom: 10px;
         font-size: 0.8rem;
-        font-style: italic;
         &.enabled {
           color: #2b33e9;
           font-weight: bold;
@@ -141,7 +141,7 @@ export const AvailableAlgorithms = ({
               <PopoverContainer id={`tooltip-${algo.label}`}>
                 <Card>
                   <Card.Body>
-                    <h5>{algo.label}</h5>
+                    <h2>{algo.label}</h2>
                     <p>{algo.description}</p>
                     {algo.variable && (
                       <p>

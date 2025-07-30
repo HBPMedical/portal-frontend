@@ -49,14 +49,16 @@ const ExperimentCreateHeader = ({
   return (
     <Card>
       <Card.Body className="experiment-header-body">
-        <Button
-          onClick={handleGoBackToReview}
-          variant="outline-primary"
-          type="submit"
-        >
-          <BsFillCaretLeftFill /> Descriptive Analysis
-        </Button>
-        <h3>Create Experiment</h3>
+        <div className="header-title">
+          <Button
+            onClick={handleGoBackToReview}
+            variant="outline-primary"
+            type="submit"
+          >
+            <BsFillCaretLeftFill />
+          </Button>
+          <h1>Create Experiment</h1>
+        </div>
         <div
           className="item-group"
           style={{ display: 'flex', alignItems: 'center', gap: '8px' }}

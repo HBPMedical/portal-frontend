@@ -2,7 +2,12 @@
 import { useReactiveVar } from '@apollo/client';
 import { useState, useEffect } from 'react';
 import { Badge, Button, Card, Col, Container, Row } from 'react-bootstrap';
-import { BsFillCaretRightFill, BsTrash } from 'react-icons/bs';
+import {
+  BsFillCaretRightFill,
+  BsTrash,
+  BsFillCaretDownFill,
+  BsFillCaretUpFill,
+} from 'react-icons/bs';
 import styled from 'styled-components';
 import {
   appConfigVar,
@@ -23,43 +28,36 @@ import DataSelection from './DataSelection';
 import Histograms from './Histograms';
 
 const MenuParametersContainer = styled.div`
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  margin: 0 0 8px 0;
+  margin: 0 0 16px 0;
   padding: 0 0 8px 0;
-  border-bottom: 1px solid lightgray;
+  border-bottom: 1px solid lightgray; //line
 `;
 
 const ParameterContainer = styled.div`
   display: flex;
-  align-items: center;
-  justify-content: flex-start;
+  flex-direction: column;
+  align-items: flex-start;
+  justify-content: space-between;
 
   h5 {
     padding: 0;
-    margin-bottom: 2px;
-    font-size: 1.1em;
+    margin: 0;
   }
 `;
 
-const AlgorithmTitleContainer = styled.div`
+const VariableSelectionContainer = styled.div`
   display: flex;
   align-items: center;
   justify-content: space-between;
-  margin: 8px 0 0 0;
+  margin: 0 0 8px 0;
+  padding: 16px;
+  border-radius: 8px;
 
-  h5 {
-    padding: 0;
-    font-size: 1.1em;
+  h2 {
     margin: 0;
-  }
-
-  p {
-    margin: 0;
-    padding: 0;
-    color: #666;
-    font-size: 0.9em;
+    font-weight: bold;
+    color: white;
+    font-family: 'Open Sans Condensed', sans-serif;
   }
 `;
 
@@ -75,6 +73,29 @@ const Col2 = styled.div`
 const Col1 = styled(Col2 as any)`
   margin-right: 8px;
   flex: 1;
+`;
+
+const CollapsibleHeader = styled.div`
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  cursor: pointer;
+  padding: 8px 0;
+  user-select: none;
+
+  &:hover {
+    color: #2b33e9;
+  }
+
+  h2 {
+    margin: 0;
+    font-weight: bold;
+    font-family: 'Open Sans Condensed', sans-serif;
+  }
+`;
+
+const CollapsibleContent = styled.div<{ isOpen: boolean }>`
+  display: ${(props) => (props.isOpen ? 'block' : 'none')};
 `;
 
 export interface ExploreProps {
@@ -94,6 +115,11 @@ const Explore = (props: ExploreProps): JSX.Element => {
     HierarchyCircularNode | undefined
   >();
 
+  // State for collapsible containers
+  const [isParametersOpen, setIsParametersOpen] = useState(true);
+  const [isAlgorithmsOpen, setIsAlgorithmsOpen] = useState(false);
+  const [isChartOpen, setIsChartOpen] = useState(true);
+
   // Reset selectedNode when domain changes
   useEffect(() => {
     setSelectedNode(undefined);
@@ -102,13 +128,13 @@ const Explore = (props: ExploreProps): JSX.Element => {
   const containers = [
     [
       'variable',
-      'success',
+      'primary',
       [...(draftExperiment.variables || [])],
       VarType.VARIABLES,
     ],
     [
       'covariate',
-      'warning',
+      'primary',
       [...(draftExperiment.coVariables || [])],
       VarType.COVARIATES,
     ],
@@ -117,7 +143,7 @@ const Explore = (props: ExploreProps): JSX.Element => {
   if (config?.configuration.hasFilters) {
     containers.push([
       'filter',
-      'secondary',
+      'primary',
       [...(draftExperiment.filterVariables || [])],
       VarType.FILTER,
     ]);
@@ -130,6 +156,17 @@ const Explore = (props: ExploreProps): JSX.Element => {
 
   return (
     <>
+      <VariableSelectionContainer className="header">
+        <h1>Variable selection</h1>
+        <Button
+          variant="primary"
+          type="submit"
+          onClick={handleGoToAnalysis}
+          id="btn-goto-analysis"
+        >
+          Descriptive Analysis <BsFillCaretRightFill />
+        </Button>
+      </VariableSelectionContainer>
       <Grid>
         <Col1>
           <Card>
@@ -145,147 +182,164 @@ const Explore = (props: ExploreProps): JSX.Element => {
         <Col2>
           <Card>
             <Card.Body>
-              <MenuParametersContainer>
-                <ParameterContainer>
-                  <h5 style={{ marginRight: '8px' }}>Parameters</h5>
-                  <DropdownExperimentList
-                    hasDetailedView={false}
-                    label={
-                      selectedExperiment
-                        ? `from ${selectedExperiment.name}`
-                        : 'Select from a previous experiment'
-                    }
-                  />
-                </ParameterContainer>
-                <div className="item">
-                  <Button
-                    variant="primary"
-                    type="submit"
-                    onClick={handleGoToAnalysis}
-                    id="btn-goto-analysis"
-                  >
-                    Descriptive Analysis <BsFillCaretRightFill />
-                  </Button>
-                </div>
-              </MenuParametersContainer>
+              <CollapsibleHeader
+                onClick={() => setIsParametersOpen(!isParametersOpen)}
+              >
+                <h2>Parameters</h2>
+                {isParametersOpen ? (
+                  <BsFillCaretUpFill />
+                ) : (
+                  <BsFillCaretDownFill />
+                )}
+              </CollapsibleHeader>
+              <CollapsibleContent isOpen={isParametersOpen}>
+                <MenuParametersContainer>
+                  <ParameterContainer>
+                    <DropdownExperimentList
+                      hasDetailedView={false}
+                      label={
+                        selectedExperiment
+                          ? `from ${selectedExperiment.name}`
+                          : 'Select from a previous experiment'
+                      }
+                    />
+                  </ParameterContainer>
+                </MenuParametersContainer>
 
-              <Container id="variable-containers">
-                <Row>
-                  {containers.map((bag) => (
-                    <Col
-                      className={`container-${bag[0]} px-1`}
-                      key={bag[0] as string}
-                    >
-                      <div className="d-flex justify-content-between mb-1">
-                        <div>
-                          <Button
-                            className="child"
-                            variant={bag[1] as string}
-                            size="sm"
-                            disabled={
-                              !selectedNode || selectedNode.data.id === 'root'
-                            }
-                            onClick={(): void => {
-                              if (!selectedNode) return;
-
-                              const vars =
-                                selectedNode
-                                  ?.leaves()
-                                  .filter((node) => node.data.id)
-                                  .map((node) => node.data.id) ?? [];
-
-                              localMutations.toggleVarsDraftExperiment(
-                                vars,
-                                bag[3] as VarType
-                              );
-                            }}
-                          >
-                            {bag[2] &&
-                            selectedNode &&
-                            selectedNode
-                              .leaves()
-                              .filter((n) => bag[2]?.includes(n.data.id))
-                              .length === selectedNode.leaves().length
-                              ? '-'
-                              : '+'}{' '}
-                            {`As ${bag[0]}`}
-                            <Badge className="ml-2" variant="secondary">
-                              {bag[2].length}
-                            </Badge>
-                          </Button>
-                        </div>
-
-                        {bag[2].length > 0 && (
-                          <Button
-                            size="sm"
-                            variant="outline-danger"
-                            onClick={() =>
-                              localMutations.toggleVarsDraftExperiment(
-                                bag[2] as string[],
-                                bag[3] as VarType
-                              )
-                            }
-                          >
-                            <BsTrash />{' '}
-                          </Button>
-                        )}
-                      </div>
-                      <VariablesGroupList
-                        variables={
-                          domain?.variables?.filter((v) =>
-                            bag[2].includes(v.id)
-                          ) ?? []
-                        }
-                        handleOnDeleteItem={(id): void => {
-                          localMutations.toggleVarsDraftExperiment(
-                            [id],
-                            bag[3] as VarType
-                          );
-                        }}
-                        handleOnItemClick={(id): void => {
-                          localMutations.setZoomToNode(id);
-                        }}
-                      ></VariablesGroupList>
-                    </Col>
-                  ))}
-                </Row>
-              </Container>
-              <div id="algorithm-available">
-                <AlgorithmTitleContainer>
-                  <p>
-                    <strong>Available algorithms</strong>
-                  </p>
-                  {localConfig.ontologyUrl && (
-                    <p>
-                      <a
-                        href={`${localConfig.ontologyUrl}`}
-                        target="_blank"
-                        rel="noopener noreferrer"
+                <Container id="variable-containers">
+                  <Row>
+                    {containers.map((bag) => (
+                      <Col
+                        className={`container-${bag[0]} px-1`}
+                        key={bag[0] as string}
                       >
-                        <b>Access to the latest ontology and terminology</b>
-                      </a>
-                    </p>
-                  )}
-                </AlgorithmTitleContainer>
+                        <div className="d-flex justify-content-between mb-1">
+                          <div>
+                            <Button
+                              className={`child ${bag[0]}`}
+                              variant={bag[1] as string}
+                              size="sm"
+                              disabled={
+                                !selectedNode || selectedNode.data.id === 'root'
+                              }
+                              onClick={(): void => {
+                                if (!selectedNode) return;
+
+                                const vars =
+                                  selectedNode
+                                    ?.leaves()
+                                    .filter((node) => node.data.id)
+                                    .map((node) => node.data.id) ?? [];
+
+                                localMutations.toggleVarsDraftExperiment(
+                                  vars,
+                                  bag[3] as VarType
+                                );
+                              }}
+                            >
+                              {bag[2] &&
+                              selectedNode &&
+                              selectedNode
+                                .leaves()
+                                .filter((n) => bag[2]?.includes(n.data.id))
+                                .length === selectedNode.leaves().length
+                                ? '-'
+                                : '+'}{' '}
+                              {`As ${bag[0]}`}
+                              <Badge className="ml-2" variant="secondary">
+                                {bag[2].length}
+                              </Badge>
+                            </Button>
+                          </div>
+
+                          {bag[2].length > 0 && (
+                            <Button
+                              size="sm"
+                              variant="outline-danger"
+                              onClick={() =>
+                                localMutations.toggleVarsDraftExperiment(
+                                  bag[2] as string[],
+                                  bag[3] as VarType
+                                )
+                              }
+                            >
+                              <BsTrash />{' '}
+                            </Button>
+                          )}
+                        </div>
+                        <VariablesGroupList
+                          variables={
+                            domain?.variables?.filter((v) =>
+                              bag[2].includes(v.id)
+                            ) ?? []
+                          }
+                          handleOnDeleteItem={(id): void => {
+                            localMutations.toggleVarsDraftExperiment(
+                              [id],
+                              bag[3] as VarType
+                            );
+                          }}
+                          handleOnItemClick={(id): void => {
+                            localMutations.setZoomToNode(id);
+                          }}
+                        ></VariablesGroupList>
+                      </Col>
+                    ))}
+                  </Row>
+                </Container>
+              </CollapsibleContent>
+            </Card.Body>
+          </Card>
+
+          <Card style={{ marginBottom: '8px' }}>
+            <Card.Body>
+              <CollapsibleHeader
+                onClick={() => setIsAlgorithmsOpen(!isAlgorithmsOpen)}
+              >
+                <h2>Available Algorithms</h2>
+                {isAlgorithmsOpen ? (
+                  <BsFillCaretUpFill />
+                ) : (
+                  <BsFillCaretDownFill />
+                )}
+              </CollapsibleHeader>
+              <CollapsibleContent isOpen={isAlgorithmsOpen}>
+                {localConfig.ontologyUrl && (
+                  <p style={{ marginBottom: '16px' }}>
+                    <a
+                      href={`${localConfig.ontologyUrl}`}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                    >
+                      <b>Access to the latest ontology and terminology</b>
+                    </a>
+                  </p>
+                )}
                 <AvailableAlgorithms
                   direction="horizontal"
                   experiment={draftExperiment}
                   listVariables={variables}
                 />
-              </div>
+              </CollapsibleContent>
             </Card.Body>
           </Card>
 
           <Card className="statistics">
             <Card.Body>
-              <Histograms
-                domain={domain}
-                independantsVariables={independantsVariables}
-                selectedNode={selectedNode}
-                zoom={(node: HierarchyCircularNode): void =>
-                  localMutations.setZoomToNode(node.data.id)
-                }
-              />
+              <CollapsibleHeader onClick={() => setIsChartOpen(!isChartOpen)}>
+                <h2>Chart</h2>
+                {isChartOpen ? <BsFillCaretUpFill /> : <BsFillCaretDownFill />}
+              </CollapsibleHeader>
+              <CollapsibleContent isOpen={isChartOpen}>
+                <Histograms
+                  domain={domain}
+                  independantsVariables={independantsVariables}
+                  selectedNode={selectedNode}
+                  zoom={(node: HierarchyCircularNode): void =>
+                    localMutations.setZoomToNode(node.data.id)
+                  }
+                />
+              </CollapsibleContent>
             </Card.Body>
           </Card>
         </Col2>

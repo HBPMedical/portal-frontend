@@ -43,7 +43,7 @@ import { AppConfig } from '../utils';
 
 const Main = styled.main`
   margin: 0 auto;
-  padding: 60px 8px;
+  padding: 80px 8px;
   min-height: 100vh;}
 `;
 

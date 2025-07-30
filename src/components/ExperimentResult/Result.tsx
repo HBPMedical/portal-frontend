@@ -47,9 +47,9 @@ const Result = ({ experiment }: { experiment?: Experiment }): JSX.Element => {
   return (
     <Card>
       <Body>
-        <h4>
+        {/* <h2>
           <strong>{experiment?.name}</strong>
-        </h4>
+        </h2> */}
         {loading ? (
           <div className="loading">
             <LoadingTitle>Your experiment is currently running</LoadingTitle>
