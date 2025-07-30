@@ -183,9 +183,9 @@ export const ExperimentCreateContainer = (): JSX.Element => {
               <Wrapper>
                 {!algorithm && (
                   <Header>
-                    <h4>
+                    <h2 style={{ marginBottom: '8px' }}>
                       <strong>Your algorithm</strong>
-                    </h4>
+                    </h2>
                     <p>
                       Please, select the algorithm to be performed in the
                       &apos;Available Algorithms&apos; panel
@@ -252,7 +252,7 @@ export const ExperimentCreateContainer = (): JSX.Element => {
         <div className="sidebar2">
           <Card>
             <Card.Body>
-              <Card.Title>Available Algorithms</Card.Title>
+              <h2 style={{ marginBottom: '12px' }}>Available Algorithms</h2>
               <Card.Text>
                 <AvailableAlgorithms
                   experiment={experiment}

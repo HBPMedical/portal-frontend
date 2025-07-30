@@ -29,27 +29,31 @@ class Model extends Component<Props> {
           <>
             {experiment.variables && (
               <section>
-                <h4>Variables</h4>
-                {domain.variables
-                  .filter((v) => experiment.variables.includes(v.id))
-                  .map((v) => (
-                    <p key={v.id}>{this.infoVariable(v)} </p>
-                  ))}
+                <h3>Variables</h3>
+                <ul>
+                  {domain.variables
+                    .filter((v) => experiment.variables.includes(v.id))
+                    .map((v) => (
+                      <li key={v.id}>{this.infoVariable(v)} </li>
+                    ))}
+                </ul>
               </section>
             )}
 
             {experiment.coVariables && experiment.coVariables.length > 0 && (
               <section>
-                <h4>Covariates</h4>
-                {this.lookup(experiment.coVariables, domain).map((v) => (
-                  <p key={v.id}>{this.infoVariable(v)}</p>
-                ))}
+                <h3>Covariates</h3>
+                <ul>
+                  {this.lookup(experiment.coVariables, domain).map((v) => (
+                    <li key={v.id}>{this.infoVariable(v)}</li>
+                  ))}
+                </ul>
               </section>
             )}
 
             {experiment.filter && (
               <section>
-                <h4>Filters</h4>
+                <h3>Filters</h3>
                 {this.formatFilter(experiment.filter)}
               </section>
             )}
@@ -58,7 +62,7 @@ class Model extends Component<Props> {
               ((experiment.formula.interactions ?? []).length > 0 ||
                 (experiment.formula.transformations ?? []).length > 0) && (
                 <section>
-                  <h4>Formula</h4>
+                  <h3>Formula</h3>
                   {this.formatFormula(experiment.formula)}
                 </section>
               )}

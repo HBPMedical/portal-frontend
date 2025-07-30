@@ -16,10 +16,10 @@ const NavBar = styled.nav`
   z-index: 1;
   top: 0;
   width: 100%;
-  height: 60px;
+  height: 70px;
   font-family: 'Open Sans Condensed', sans-serif;
   font-weight: bold;
-  background: #e5e6fc;
+  background: white;
   display: flex;
   align-items: center;
   justify-content: space-between;
