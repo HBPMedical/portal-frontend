@@ -27,10 +27,9 @@ const DropDownContainer = styled.div`
 const DropDownHeader = styled.div`
   cursor: pointer;
 
-  color: #007ad9;
+  color: #2b33e9;
 
   &:hover {
-    color: #0056b3;
     text-decoration: underline;
   }
 

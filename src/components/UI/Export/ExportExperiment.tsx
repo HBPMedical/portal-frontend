@@ -26,7 +26,7 @@ const ExportExperiment = ({ experiment, allowJSON = true }: Props) => {
 
   return (
     <Dropdown>
-      <Dropdown.Toggle variant="info" id="btn-experiment-export">
+      <Dropdown.Toggle variant="outline-primary" id="btn-experiment-export">
         <BsDownload /> Export
       </Dropdown.Toggle>
 

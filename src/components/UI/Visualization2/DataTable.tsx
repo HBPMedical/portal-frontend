@@ -21,8 +21,7 @@ const Table = styled.table<LayoutProps>`
   margin-bottom: 5px;
   table-layout: fixed;
   white-space: nowrap;
-  min-width: 100%; /* Allow the table to adjust within its container */
-  max-width: 100%; /* Prevent table overflow */
+  min-width: 50%;
   border-collapse: collapse;
   box-shadow: 0 0 0 1px #e3e3e3;
   border-radius: 2px;
@@ -33,14 +32,15 @@ const Table = styled.table<LayoutProps>`
   }
 
   th {
-    background: #ebebeb;
+    background: #2b33e9;
     padding: 1px 4px;
     overflow: hidden;
     text-overflow: ellipsis;
     font-weight: bold;
     text-align: center;
-    border: 1px solid #e3e3e3;
+    border: 1px solid #2b33e9;
     border-bottom: 1px solid #bbb;
+    color: white;
     width: ${(prop): string => `${100 / prop.colsCount}%`};
   }
 
@@ -75,8 +75,8 @@ const Table = styled.table<LayoutProps>`
   ${(prop): string =>
     (prop.layout === TableStyle.Statistical &&
       `
-      tr:nth-child(1),
-      tr:nth-child(3),
+      tr:nth-child(1), 
+      tr:nth-child(3), 
       tr:last-child {
         border-bottom: 2px solid #1e1e1e;
       }
@@ -93,13 +93,12 @@ const Table = styled.table<LayoutProps>`
 
 const Container = styled.div`
   margin-bottom: 30px;
-  overflow-x: auto; /* Add horizontal scrolling */
-  max-width: 100%; /* Ensure the container does not exceed available space */
 
   .title {
     display: flex;
     justify-content: space-between;
     align-items: flex-end;
+    margin-bottom: 6px;
   }
   .actions {
     font-size: 0.6em;
@@ -124,7 +123,7 @@ const DataTable = ({ data }: TableProps): JSX.Element => {
 
   return (
     <Container className="table-result">
-      <h5 className="title">
+      <h1 className="title">
         {data.name}
 
         <CSVLink
@@ -135,7 +134,7 @@ const DataTable = ({ data }: TableProps): JSX.Element => {
           <FaFileCsv />
           Export as CSV
         </CSVLink>
-      </h5>
+      </h1>
 
       <Table
         layout={data.tableStyle ?? TableStyle.Default}

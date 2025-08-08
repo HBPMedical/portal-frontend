@@ -32,11 +32,9 @@ const MainBox = styled.div`
       font-family: 'Open Sans', sans-serif;
       font-weight: normal !important;
       padding: 0.5em;
-      color: #007bff !important;
       font-size: 0.9rem;
 
       :hover {
-        color: #0056b3 !important;
         text-decoration: underline;
       }
     }
@@ -57,12 +55,11 @@ const MainBox = styled.div`
 
     :active {
       border: 0;
-      color: #5bc0de !important;
     }
 
     :hover {
       border: 0;
-      color: #ccc !important;
+      text-decoration-line: underline;
     }
   }
 `;
@@ -71,7 +68,7 @@ const Link = styled(NavLink)`
   font-family: 'Open Sans', sans-serif;
   font-weight: normal !important;
   padding: 0.5em;
-  color: #007bff !important;
+  // color: #007bff !important;
   font-size: 0.9rem;
   :hover {
     text-decoration: underline !important;

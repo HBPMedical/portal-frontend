@@ -85,9 +85,9 @@ const D3Container = ({ selectedNode, handleSelectNode }: Props) => {
   }, [domain, datasets]);
 
   const groupVars = [
-    ['Filters', draftExp.filterVariables, 'slategrey'], // => item[0], item[1], item[2]
-    ['Variables', draftExp.variables, '#5cb85c'],
-    ['Covariates', draftExp.coVariables, '#f0ad4e'],
+    ['Filters', draftExp.filterVariables, '#483300'], // => item[0], item[1], item[2]
+    ['Variables', draftExp.variables, '#ffba08'],
+    ['Covariates', draftExp.coVariables, '#bba66f'],
   ]
     .filter((item) => item[1] && item[1].length)
     .map((item) => ({

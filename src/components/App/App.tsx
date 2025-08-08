@@ -29,6 +29,7 @@ import DataCatalog from '../UI/DataCatalog';
 import DropdownExperimentList from '../UI/Experiment/DropDownList/DropdownExperimentList';
 import Footer from '../UI/Footer';
 import { GlobalStyles } from '../UI/GlobalStyle';
+import '../UI/custom-bootstrap.scss';
 import LoginPage from '../UI/LoginPage';
 import Navigation from '../UI/Navigation';
 import NotFound from '../UI/NotFound';
@@ -42,7 +43,7 @@ import { AppConfig } from '../utils';
 
 const Main = styled.main`
   margin: 0 auto;
-  padding: 52px 8px;
+  padding: 80px 8px;
   min-height: 100vh;}
 `;
 
@@ -169,7 +170,7 @@ const App = ({ appConfig }: Props) => {
       <GlobalStyles />
       {loading && (
         <SpinnerContainer>
-          <Spinner animation="border" variant="info" />
+          <Spinner animation="border" variant="primary" />
         </SpinnerContainer>
       )}
       {!loading && (

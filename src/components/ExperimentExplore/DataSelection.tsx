@@ -18,13 +18,14 @@ import Modal, { ModalComponentHandle } from '../UI/Modal';
 import { uppercase } from '../utils';
 import Search from './SearchBox';
 
-const DataSelectionBox = styled(Card.Title)`
+const DataSelectionBox = styled(Card.Header)`
   display: flex;
   padding: 0.4em;
   margin-bottom: 4px;
   justify-content: space-between;
   align-items: center;
-  background-color: #eee;
+  border-top-left-radius: 4px;
+  border-top-right-radius: 4px;
 `;
 
 const ControlsContainer = styled.div`
@@ -107,8 +108,8 @@ const DataSelection = ({
             {(domains || longitudinalDomains) && (
               <DropdownButton
                 size="sm"
-                variant="light"
                 title={uppercase(domain?.label || 'Domains')}
+                className="dropdown-domain"
               >
                 {domains?.map((d) => (
                   <Dropdown.Item
@@ -162,8 +163,10 @@ const DataSelection = ({
 
             <VisualizationSelect>
               <DropdownButton
+                id="dropdown-autoclose-true"
+                className="visualization-dropdown"
                 size="sm"
-                variant="light"
+                variant="outline-primary"
                 title={`Visualization: ${
                   visualizationType === 'circle'
                     ? 'Circle Packing'

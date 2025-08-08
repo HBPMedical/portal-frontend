@@ -23,7 +23,8 @@ const ExperimentSidebar = ({
   return (
     <Card className="experiment-sidebar">
       <Card.Body>
-        <section>
+        <h2>Parameters</h2>
+        <div style={{ fontSize: '0.85rem' }}>
           <DropdownExperimentList
             hasDetailedView={false}
             handleExperimentChanged={(id) => {
@@ -35,10 +36,10 @@ const ExperimentSidebar = ({
                 : 'Select from a previous experiment'
             }
           />
-        </section>
+        </div>
         {domain && (
           <section>
-            <h4>Domain</h4>
+            <h3>Domain</h3>
             <p>{domain.label ?? domain.id}</p>
           </section>
         )}
