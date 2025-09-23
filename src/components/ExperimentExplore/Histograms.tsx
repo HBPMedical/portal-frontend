@@ -191,7 +191,7 @@ const Histograms = ({
       if (variable && variable.type !== 'nominal') {
         params.push({
           id: 'bins',
-          value: '100', // Increased from 20 to 100 for maximum data points
+          value: '20', // Increased from 20 to 100 for maximum data points
         });
       }
 
@@ -274,13 +274,10 @@ const Histograms = ({
       <Histogram>
         {selectedNode && selectedNode.children && (
           <>
-            {console.log(
-              'Overview Chart Data:',
-              overviewChart(selectedNode) as ResultUnion
-            )}
             <HistogramResultDispatcher
               result={overviewChart(selectedNode) as ResultUnion}
               constraint={false}
+              selectedNode={selectedNode}
             />
           </>
         )}
@@ -309,7 +306,6 @@ const Histograms = ({
                 data.createExperiment.results &&
                 data.createExperiment.results.length > 0 && (
                   <>
-                    {console.log('Main Histogram Data:', data as ResultUnion)}
                     <HistogramResultDispatcher
                       result={data.createExperiment.results[0] as ResultUnion}
                       variableType={
@@ -318,6 +314,7 @@ const Histograms = ({
                         )?.type || undefined
                       }
                       constraint={false}
+                      selectedNode={selectedNode}
                     />
                   </>
                 )}
@@ -360,19 +357,18 @@ const Histograms = ({
                     data.createExperiment.results &&
                     data.createExperiment.results?.length > i && (
                       <>
-                        {console.log(
-                          `Grouped Histogram Data (Tab ${i}):`,
-                          data.createExperiment.results[i] as ResultUnion
-                        )}
                         <HistogramResultDispatcher
                           key={i}
                           result={
                             data.createExperiment.results[i] as ResultUnion
                           }
                           variableType={
-                            groupByVariables?.[i]?.type || undefined
+                            domain?.variables.find(
+                              (v) => v.id === selectedNode?.data.id
+                            )?.type || undefined
                           }
                           constraint={false}
+                          selectedNode={selectedNode}
                         />
                       </>
                     )}
@@ -390,15 +386,22 @@ const HistogramResultDispatcher = ({
   result,
   variableType,
   constraint = false,
+  selectedNode,
 }: {
   result: ResultUnion;
   variableType?: string;
   constraint?: boolean;
+  selectedNode?: HierarchyCircularNode;
 }) => {
   if (result.__typename === 'BarChartResult') {
-    return <BarGraph data={result} variableType={variableType} />;
+    return (
+      <BarGraph
+        data={result}
+        variableType={variableType}
+        isLeafNode={!selectedNode?.children}
+      />
+    );
   }
-  // For other result types, use the regular ResultDispatcher
   return <ResultDispatcher result={result} constraint={constraint} />;
 };
 
