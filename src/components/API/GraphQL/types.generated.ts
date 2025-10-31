@@ -168,6 +168,7 @@ export type Dataset = {
 export type Domain = {
   __typename?: 'Domain';
   datasets: Array<Dataset>;
+  datasetsVariables: Scalars['JSON'];
   description?: Maybe<Scalars['String']>;
   groups: Array<Group>;
   id: Scalars['String'];

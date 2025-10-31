@@ -42,7 +42,7 @@ export type ActiveUserQuery = { __typename?: 'Query', user: { __typename?: 'User
 export type GetDomainListQueryVariables = Types.Exact<{ [key: string]: never; }>;
 
 
-export type GetDomainListQuery = { __typename?: 'Query', domains: Array<{ __typename?: 'Domain', id: string, label?: Types.Maybe<string>, longitudinal?: Types.Maybe<boolean>, datasets: Array<{ __typename?: 'Dataset', id: string, label?: Types.Maybe<string> }> }> };
+export type GetDomainListQuery = { __typename?: 'Query', domains: Array<{ __typename?: 'Domain', id: string, label?: Types.Maybe<string>, longitudinal?: Types.Maybe<boolean>, datasetsVariables: Types.Scalars['JSON'], datasets: Array<{ __typename?: 'Dataset', id: string, label?: Types.Maybe<string> }> }> };
 
 export type GetExperimentListQueryVariables = Types.Exact<{
   name?: Types.Maybe<Types.Scalars['String']>;
@@ -64,7 +64,7 @@ export type CoreGroupInfoFragment = { __typename?: 'Group', id: string, label?: 
 export type ListDomainsQueryVariables = Types.Exact<{ [key: string]: never; }>;
 
 
-export type ListDomainsQuery = { __typename?: 'Query', domains: Array<{ __typename?: 'Domain', id: string, label?: Types.Maybe<string>, description?: Types.Maybe<string>, longitudinal?: Types.Maybe<boolean>, datasets: Array<{ __typename?: 'Dataset', id: string, label?: Types.Maybe<string> }>, variables: Array<{ __typename?: 'Variable', id: string, label?: Types.Maybe<string>, type?: Types.Maybe<string>, description?: Types.Maybe<string>, datasets?: Types.Maybe<Array<string>>, enumerations?: Types.Maybe<Array<{ __typename?: 'Category', value: string, label?: Types.Maybe<string> }>> }>, rootGroup: { __typename?: 'Group', id: string, label?: Types.Maybe<string>, description?: Types.Maybe<string>, groups?: Types.Maybe<Array<string>>, variables?: Types.Maybe<Array<string>>, datasets?: Types.Maybe<Array<string>> }, groups: Array<{ __typename?: 'Group', id: string, label?: Types.Maybe<string>, description?: Types.Maybe<string>, groups?: Types.Maybe<Array<string>>, variables?: Types.Maybe<Array<string>>, datasets?: Types.Maybe<Array<string>> }> }> };
+export type ListDomainsQuery = { __typename?: 'Query', domains: Array<{ __typename?: 'Domain', id: string, label?: Types.Maybe<string>, description?: Types.Maybe<string>, longitudinal?: Types.Maybe<boolean>, datasetsVariables: Types.Scalars['JSON'], datasets: Array<{ __typename?: 'Dataset', id: string, label?: Types.Maybe<string> }>, variables: Array<{ __typename?: 'Variable', id: string, label?: Types.Maybe<string>, type?: Types.Maybe<string>, description?: Types.Maybe<string>, datasets?: Types.Maybe<Array<string>>, enumerations?: Types.Maybe<Array<{ __typename?: 'Category', value: string, label?: Types.Maybe<string> }>> }>, rootGroup: { __typename?: 'Group', id: string, label?: Types.Maybe<string>, description?: Types.Maybe<string>, groups?: Types.Maybe<Array<string>>, variables?: Types.Maybe<Array<string>>, datasets?: Types.Maybe<Array<string>> }, groups: Array<{ __typename?: 'Group', id: string, label?: Types.Maybe<string>, description?: Types.Maybe<string>, groups?: Types.Maybe<Array<string>>, variables?: Types.Maybe<Array<string>>, datasets?: Types.Maybe<Array<string>> }> }> };
 
 export type CreateExperimentMutationVariables = Types.Exact<{
   data: Types.ExperimentCreateInput;
@@ -374,6 +374,7 @@ export const GetDomainListDocument = gql`
     id
     label
     longitudinal
+    datasetsVariables
     datasets {
       id
       label
@@ -553,6 +554,7 @@ export const ListDomainsDocument = gql`
     label
     description
     longitudinal
+    datasetsVariables
     datasets {
       id
       label

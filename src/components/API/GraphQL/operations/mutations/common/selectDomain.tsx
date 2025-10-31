@@ -1,6 +1,7 @@
 import { ReactiveVar } from '@apollo/client';
 import { initialExperiment } from '../../../cache';
 import { Domain, Experiment, Group, Variable } from '../../../types.generated';
+import { buildDomainView } from '../experiments/domainUtils';
 
 export default function createSelectDomain(
   selectedDomainVar: ReactiveVar<Domain | undefined>,
@@ -19,15 +20,23 @@ export default function createSelectDomain(
     const domain = domainsVar().find((d) => d.id === id);
     if (!domain) throw new Error('The selected domain cannot be found !');
 
-    selectedDomainVar(domain);
+    const defaultDatasets = domain.datasets.map((dataset) => dataset.id);
+
+    const {
+      domain: filteredDomain,
+      groups,
+      variables,
+    } = buildDomainView(domain, defaultDatasets);
+
+    selectedDomainVar(filteredDomain);
     experimentVar({
       ...initialExperiment,
       ...{
         domain: domain.id,
-        datasets: domain.datasets.map((d) => d.id) ?? [],
+        datasets: defaultDatasets,
       },
     });
-    variablesVar(domain.variables);
-    groupsVar(domain.groups);
+    variablesVar(variables);
+    groupsVar(groups);
   };
 }

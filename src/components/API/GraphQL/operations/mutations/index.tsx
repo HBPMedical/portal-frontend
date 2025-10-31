@@ -36,6 +36,7 @@ export const localMutations = {
   toggleDatasetExperiment: createToggleDatasetExperiment(
     draftExperimentVar,
     selectedDomainVar,
+    domainsVar,
     variablesVar,
     groupsVar
   ),
