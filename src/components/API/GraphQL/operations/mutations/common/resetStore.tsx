@@ -9,7 +9,9 @@ export default function createResetStore(
   selectedExperimentVar: ReactiveVar<Experiment | undefined>,
   draftExperimentVar: ReactiveVar<Experiment>,
   variablesVar: ReactiveVar<Variable[]>,
-  groupsVar: ReactiveVar<Group[]>
+  groupsVar: ReactiveVar<Group[]>,
+  allowedVariableIdsVar: ReactiveVar<string[]>,
+  showUnavailableVariablesVar: ReactiveVar<boolean>
 ) {
   /**
    * This function reset reactive variables
@@ -25,5 +27,7 @@ export default function createResetStore(
     draftExperimentVar(undefined);
     variablesVar([]);
     groupsVar([]);
+    allowedVariableIdsVar([]);
+    showUnavailableVariablesVar(true);
   };
 }

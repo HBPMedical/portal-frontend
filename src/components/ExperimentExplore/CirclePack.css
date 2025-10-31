@@ -37,6 +37,20 @@ circle.node.grouping {
   fill: rgb(90, 231, 55) !important;
 }
 
+circle.node--unavailable {
+  fill: #b6b6b6 !important;
+  stroke: #6b6b6b;
+}
+
+.label-group--unavailable .label {
+  fill: #3a3a3a !important;
+}
+
+.label-group--unavailable .label-bg {
+  fill: #d9d9d9 !important;
+  stroke: #969696;
+}
+
 div.tooltip {
   position: absolute;
   text-align: center;

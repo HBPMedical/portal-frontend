@@ -8,7 +8,8 @@ export default function createSelectDomain(
   domainsVar: ReactiveVar<Domain[]>,
   experimentVar: ReactiveVar<Experiment>,
   variablesVar: ReactiveVar<Variable[]>,
-  groupsVar: ReactiveVar<Group[]>
+  groupsVar: ReactiveVar<Group[]>,
+  allowedVariableIdsVar: ReactiveVar<string[]>
 ) {
   /**
    * Select the domain and set default dataset for the experiment
@@ -26,6 +27,7 @@ export default function createSelectDomain(
       domain: filteredDomain,
       groups,
       variables,
+      allowedVariableIds,
     } = buildDomainView(domain, defaultDatasets);
 
     selectedDomainVar(filteredDomain);
@@ -38,5 +40,6 @@ export default function createSelectDomain(
     });
     variablesVar(variables);
     groupsVar(groups);
+    allowedVariableIdsVar(Array.from(allowedVariableIds));
   };
 }

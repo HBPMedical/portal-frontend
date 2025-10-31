@@ -6,6 +6,7 @@ export interface NodeData {
   description?: string;
   label: string;
   isVariable?: boolean;
+  isAvailable?: boolean;
   children?: NodeData[];
   type?: string;
   uniqueId?: string;
@@ -22,11 +23,17 @@ export const initializeArrays = () => {
   availableGroups = [];
 };
 
+interface GroupsToTreeViewOptions {
+  allowedVariableIds?: Set<string>;
+  includeAllVariables?: boolean;
+}
+
 export const groupsToTreeView = (
   group: Group,
   groups: Group[],
   vars: Variable[],
   datasets: string[] = [],
+  options: GroupsToTreeViewOptions = {},
   parentPath = ''
 ): NodeData => {
   // Initialize the arrays if they're empty with the given groups and variables arrays
@@ -41,43 +48,65 @@ export const groupsToTreeView = (
   const currentPath = parentPath ? `${parentPath}.${group.id}` : group.id;
   const groupUniqueId = `group_${group.id}_${currentPath}`;
 
+  const allowedVariableIds = options.allowedVariableIds;
+  const includeAllVariables = options.includeAllVariables ?? false;
+
   const childVars =
     group.variables
       ?.map((varId) => availableVars.find((v) => v.id === varId))
-      .filter(
-        (v) =>
-          v &&
-          (!v.datasets ||
-            v.datasets.filter((d) => datasets.includes(d)).length > 0)
-      )
-      .map((v) => v as Variable)
-      //remove the variable from childVarsArray
-      .map((v) => {
-        availableVars = availableVars.filter(
-          (variable) => variable.id !== v.id
-        );
-        return {
-          id: v.id,
-          description: v.description ?? '',
+      .filter((v): v is Variable => !!v)
+      .reduce<NodeData[]>((accumulator, variable) => {
+        const matchesSelectedDatasets =
+          !variable.datasets ||
+          variable.datasets.some((datasetId) => datasets.includes(datasetId));
+
+        const isAllowed = allowedVariableIds
+          ? allowedVariableIds.has(variable.id)
+          : matchesSelectedDatasets;
+
+        if (!includeAllVariables && !isAllowed) {
+          return accumulator;
+        }
+
+        // Ensure variables appear only once in the tree
+        availableVars = availableVars.filter((item) => item.id !== variable.id);
+
+        accumulator.push({
+          id: variable.id,
+          description: variable.description ?? '',
           isVariable: true,
-          label: v.label ?? v.id,
-          type: v.type ?? undefined,
-          uniqueId: `var_${v.id}_${currentPath}`,
-        };
-      }) ?? [];
+          isAvailable: isAllowed,
+          label: variable.label ?? variable.id,
+          type: variable.type ?? undefined,
+          uniqueId: `var_${variable.id}_${currentPath}`,
+        });
+
+        return accumulator;
+      }, []) ?? [];
 
   const childGroups =
     group.groups
       ?.map((grpId) => availableGroups.find((grp) => grp.id === grpId))
-      .filter(
-        (g) =>
-          g &&
-          (!g?.datasets ||
-            g.datasets.filter((d) => datasets.includes(d)).length > 0)
-      )
-      .map((g) => g as Group)
+      .filter((candidate): candidate is Group => {
+        if (!candidate) return false;
+        if (includeAllVariables) return true;
+
+        if (!candidate.datasets) return true;
+
+        return (
+          candidate.datasets.filter((datasetId) => datasets.includes(datasetId))
+            .length > 0
+        );
+      })
       .map((g) => {
-        const result = groupsToTreeView(g, groups, vars, datasets, currentPath);
+        const result = groupsToTreeView(
+          g,
+          groups,
+          vars,
+          datasets,
+          options,
+          currentPath
+        );
         const index = availableGroups.findIndex((group) => group.id === g.id);
         if (index !== -1) {
           availableGroups.splice(index, 1); // Remove only this specific instance

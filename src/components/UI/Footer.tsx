@@ -1,6 +1,5 @@
 import styled from 'styled-components';
 import ChuvLogo from '../../images/logo_chuv.png';
-import HbpLogo from '../../images/hbp-logo.png';
 import EbrainsLogo from '../../images/logo.png';
 import { AppConfig } from '../utils';
 

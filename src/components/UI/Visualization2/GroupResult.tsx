@@ -4,7 +4,6 @@ import {
   GroupResult,
   GroupsResult,
   ResultUnion,
-  TableResult,
 } from '../../API/GraphQL/types.generated';
 import { selectedDomainVar } from '../../API/GraphQL/cache';
 import ResultDispatcher from '../../ExperimentResult/ResultDispatcher';
@@ -12,7 +11,6 @@ import Error from '../Error';
 import Loader from '../Loader';
 import BoxPlotContainer from './BoxPlotContainer';
 import {
-  isDescriptiveStatisticsTable,
   hasNonNominalVariables,
   extractTableResultsFromGroup,
 } from '../../../utils/boxPlotUtils';

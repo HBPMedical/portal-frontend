@@ -7,7 +7,8 @@ export default function createToggleDatasetExperiment(
   domainVar: ReactiveVar<Domain | undefined>,
   domainsVar: ReactiveVar<Domain[]>,
   variablesVar: ReactiveVar<Variable[]>,
-  groupsVar: ReactiveVar<Group[]>
+  groupsVar: ReactiveVar<Group[]>,
+  allowedVariableIdsVar: ReactiveVar<string[]>
 ) {
   /**
    * This function allow to toggle a dataset in an experiment
@@ -65,6 +66,7 @@ export default function createToggleDatasetExperiment(
     domainVar(domain);
     groupsVar(groups);
     variablesVar(variables);
+    allowedVariableIdsVar(Array.from(allowedVariableIds));
 
     experimentVar(newExperiment);
   };

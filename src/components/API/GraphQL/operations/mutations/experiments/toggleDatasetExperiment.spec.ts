@@ -13,12 +13,14 @@ const mockDomainVar = initMockDomainVar();
 const mockDomainsVar = makeVar<Domain[]>([mockDomain]);
 const mockGroups = makeVar<Group[]>(mockDomain.groups);
 const mockVars = makeVar<Variable[]>(mockDomain.variables);
+const mockAllowedVariableIdsVar = makeVar<string[]>([]);
 const toggleDatasetExperiment = createToggleDatasetExperiment(
   mockDraftExpVar,
   mockDomainVar,
   mockDomainsVar,
   mockVars,
-  mockGroups
+  mockGroups,
+  mockAllowedVariableIdsVar
 );
 
 describe('Toggle datasets', () => {
@@ -29,12 +31,14 @@ describe('Toggle datasets', () => {
     mockGroups(mockDomain.groups);
     mockVars(mockDomain.variables);
     mockDomain = getMockDomain();
+    mockAllowedVariableIdsVar([]);
   });
 
   it('Test add and remove dataset to an experiment', () => {
     toggleDatasetExperiment(mockDomain.datasets[0].id);
 
     expect(mockDraftExpVar().datasets.length).toBe(1);
+    expect(mockAllowedVariableIdsVar().length).toBeGreaterThan(0);
 
     toggleDatasetExperiment(mockDomain.datasets[0].id);
 
