@@ -155,7 +155,7 @@ const LargeDatasetSelect = ({
       )}
       {!isDropdown && (
         <>
-          {datasets && <h4>Datasets</h4>}
+          {datasets && <h3>Datasets</h3>}
           <Card>{data}</Card>
         </>
       )}

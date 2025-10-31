@@ -13,7 +13,7 @@ const RingLoaderWrapper = styled.div`
 `;
 
 const TextWrapper = styled.p`
-  color: #17a2b8;
+  color: #2b33e9;
   margin: auto 0;
 `;
 
@@ -26,7 +26,7 @@ const Loader = ({ visible }: Props) => (
       <RingLoader
         sizeUnit={'px'}
         size={16}
-        color={'#17a2b8'}
+        color={'#2b33e9'}
         loading={visible ?? true}
       />
     </RingLoaderWrapper>

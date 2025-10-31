@@ -4,34 +4,41 @@ import {
   initMockDomainVar,
 } from '../../../../../../tests/mocks/mockDomainVar';
 import { mockExperiment } from '../../../../../../tests/mocks/mockExperiment';
-import { Experiment, Group, Variable } from '../../../types.generated';
+import { Domain, Experiment, Group, Variable } from '../../../types.generated';
 import createToggleDatasetExperiment from './toggleDatasetExperiment';
 
 let mockDomain = getMockDomain();
 const mockDraftExpVar = makeVar<Experiment>(mockExperiment);
 const mockDomainVar = initMockDomainVar();
+const mockDomainsVar = makeVar<Domain[]>([mockDomain]);
 const mockGroups = makeVar<Group[]>(mockDomain.groups);
 const mockVars = makeVar<Variable[]>(mockDomain.variables);
+const mockAllowedVariableIdsVar = makeVar<string[]>([]);
 const toggleDatasetExperiment = createToggleDatasetExperiment(
   mockDraftExpVar,
   mockDomainVar,
+  mockDomainsVar,
   mockVars,
-  mockGroups
+  mockGroups,
+  mockAllowedVariableIdsVar
 );
 
 describe('Toggle datasets', () => {
   beforeEach(() => {
     mockDraftExpVar(mockExperiment);
     mockDomainVar(mockDomain);
+    mockDomainsVar([mockDomain]);
     mockGroups(mockDomain.groups);
     mockVars(mockDomain.variables);
     mockDomain = getMockDomain();
+    mockAllowedVariableIdsVar([]);
   });
 
   it('Test add and remove dataset to an experiment', () => {
     toggleDatasetExperiment(mockDomain.datasets[0].id);
 
     expect(mockDraftExpVar().datasets.length).toBe(1);
+    expect(mockAllowedVariableIdsVar().length).toBeGreaterThan(0);
 
     toggleDatasetExperiment(mockDomain.datasets[0].id);
 
@@ -54,7 +61,13 @@ describe('Toggle datasets', () => {
 
   it('Test add dataset filtered group', () => {
     mockDomain.groups[0].datasets = [mockDomain.datasets[0].id];
+    mockDomain.datasetsVariables = {
+      ...mockDomain.datasetsVariables,
+      [mockDomain.datasets[0].id]: ['var2', 'var3', 'var6'],
+      [mockDomain.datasets[1].id]: ['var2', 'var3', 'var5', 'var6'],
+    };
     mockDomainVar(mockDomain);
+    mockDomainsVar([mockDomain]);
     mockDraftExpVar({
       ...mockExperiment,
       datasets: mockDomain.datasets.filter((_, i) => i !== 0).map((d) => d.id),
@@ -72,7 +85,13 @@ describe('Toggle datasets', () => {
 
   it('Test remove dataset filtered group', () => {
     mockDomain.groups[0].datasets = [mockDomain.datasets[0].id];
+    mockDomain.datasetsVariables = {
+      ...mockDomain.datasetsVariables,
+      [mockDomain.datasets[0].id]: ['var2', 'var3'],
+      [mockDomain.datasets[1].id]: ['var2', 'var3', 'var5'],
+    };
     mockDomainVar(mockDomain);
+    mockDomainsVar([mockDomain]);
 
     const totalVars = mockDomain.groups
       .map((g) => g.variables?.length ?? 0)
@@ -92,8 +111,14 @@ describe('Toggle datasets', () => {
   });
 
   it('Test add dataset filtered variables', () => {
-    mockDomain.variables[0].datasets = [mockDomain.datasets[0].id];
+    mockDomain.datasetsVariables = {
+      ...mockDomain.datasetsVariables,
+      [mockDomain.datasets[0].id]: mockDomain.datasetsVariables[
+        mockDomain.datasets[0].id
+      ].filter((id: string) => id !== mockDomain.variables[0].id),
+    };
     mockDomainVar(mockDomain);
+    mockDomainsVar([mockDomain]);
     const totalVars = mockDomain.variables.length;
 
     toggleDatasetExperiment(mockDomain.datasets[0].id);

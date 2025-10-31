@@ -72,12 +72,12 @@ const Header = ({ experiment, handleCopyExperiment }: Props): JSX.Element => {
 
   return (
     <Card>
-      <Card.Body>
+      <Card.Body className="experiment-header-body">
         <div className="item text">
-          <h3>
+          <h1>
             Results of experiment <strong>{experiment?.name}</strong>
-          </h3>
-          <p className="item">
+          </h1>
+          <p className="item" style={{ fontSize: '1rem', color: '#e1e1e1' }}>
             Created {experiment && dayjs().to(dayjs(experiment?.createdAt))} by{' '}
             {experiment?.author?.fullname ?? experiment?.author?.username}
           </p>
@@ -86,11 +86,13 @@ const Header = ({ experiment, handleCopyExperiment }: Props): JSX.Element => {
           {confirmDelete ? (
             <>
               <InlineDialog>
-                <p className="danger">Really delete this experiment?</p>
+                <p className="danger" style={{ color: '#e1e1e1' }}>
+                  Really delete this experiment?
+                </p>
                 <div>
                   <Button
                     size={'sm'}
-                    variant="primary"
+                    variant="danger"
                     onClick={(): void => {
                       handleDeleteExperiment();
                       setConfirmDelete(undefined);
@@ -100,7 +102,7 @@ const Header = ({ experiment, handleCopyExperiment }: Props): JSX.Element => {
                   </Button>{' '}
                   <Button
                     size={'sm'}
-                    variant="outline-dark"
+                    variant="outline-primary"
                     onClick={(): void => {
                       setConfirmDelete(undefined);
                     }}
@@ -114,7 +116,7 @@ const Header = ({ experiment, handleCopyExperiment }: Props): JSX.Element => {
             experiment && (
               <Button
                 onClick={(): void => setConfirmDelete(id)}
-                variant="outline-dark"
+                variant="danger"
                 type="submit"
               >
                 Delete
@@ -124,8 +126,9 @@ const Header = ({ experiment, handleCopyExperiment }: Props): JSX.Element => {
 
           {experiment && (
             <Button
-              variant={experiment?.shared ? 'secondary' : 'info'}
+              variant={experiment?.shared ? 'secondary' : 'primary'}
               onClick={handleShareExperiment}
+              style={{ fontSize: '1rem', fontWeight: 'normal' }}
             >
               {experiment?.shared ? 'Unshare' : 'Share'}
             </Button>
@@ -133,7 +136,7 @@ const Header = ({ experiment, handleCopyExperiment }: Props): JSX.Element => {
 
           <Button
             onClick={handleCreateNewExperiment}
-            variant="info"
+            variant="outline-primary"
             type="submit"
           >
             New Experiment from Parameters

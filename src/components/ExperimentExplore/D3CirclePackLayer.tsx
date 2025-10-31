@@ -26,9 +26,6 @@ export type GroupVars = {
   color: string;
 };
 
-const depth = (n: HierarchyCircularNode): number =>
-  n.children ? 1 + (d3.max<number>(n.children.map(depth)) || 0) : 1;
-
 export interface Props {
   selectedNode: HierarchyCircularNode | undefined;
   layout: HierarchyCircularNode;
@@ -65,14 +62,22 @@ const createLabelGroup = (
   // Remove any existing elements
   group.selectAll('*').remove();
 
+  const isUnavailable =
+    !d.children && d.data.isVariable && d.data.isAvailable === false;
+
   // Create text element
   const text = group
     .append('text')
     .attr('class', 'label')
     .style('font-weight', 'bold')
     .style('font-size', '14px')
-    .style('fill', (d) =>
-      (d.depth === 3 || d.depth === 4) && d.children ? 'white' : '#2c3e50'
+    .style(
+      'fill',
+      (d.depth === 3 || d.depth === 4) && d.children
+        ? 'white'
+        : isUnavailable
+        ? '#3a3a3a'
+        : '#2c3e50'
     );
 
   // Add tspans for text wrapping
@@ -103,8 +108,17 @@ const createLabelGroup = (
         .attr('rx', 4)
         .style(
           'fill',
-          d.children ? colorCallback(d.depth) ?? 'white' : 'white'
-        );
+          d.children
+            ? colorCallback(d.depth) ?? 'white'
+            : isUnavailable
+            ? '#d9d9d9'
+            : 'white'
+        )
+        .style(
+          'stroke',
+          d.children ? 'none' : isUnavailable ? '#969696' : 'none'
+        )
+        .style('stroke-width', d.children ? '0' : isUnavailable ? '1' : '0');
     }
   });
 };
@@ -114,7 +128,6 @@ const D3CirclePackLayer = ({ layout, ...props }: Props): JSX.Element => {
   const view = useRef<IView>([diameter / 2, diameter / 2, diameter]);
   const focus = useRef(layout);
   const tooltipRef = useRef<HTMLDivElement | null>(null);
-  const tooltipTimeoutRef = useRef<NodeJS.Timeout | null>(null);
   const { selectedNode, groupVars } = props;
   const zoomNode = useReactiveVar(zoomNodeVar);
   const isRenderedRef = useRef(false); // Track if main rendering is complete
@@ -122,8 +135,8 @@ const D3CirclePackLayer = ({ layout, ...props }: Props): JSX.Element => {
 
   const color = d3
     .scaleLinear<string, string>()
-    .domain([0, depth(layout)])
-    .range(['hsl(190,80%,80%)', 'hsl(228,80%,40%)'])
+    .domain([0, 4]) //.domain([0, depth(layout)])
+    .range(['hsl(223, 65.50%, 88.60%)', 'hsl(237, 81%, 54%)']) //.range(['hsl(190,80%,80%)', 'hsl(228,80%,40%)'])
     .interpolate(d3.interpolateHcl);
 
   const zoomTo = (v: IView) => {
@@ -310,10 +323,23 @@ const D3CirclePackLayer = ({ layout, ...props }: Props): JSX.Element => {
 
     nodeCircles
       .append('circle')
-      .attr('class', (d) => `node ${d && d.children ? '' : 'node--leaf'}`)
+      .attr('class', (d) => {
+        const classes = ['node'];
+        if (!d.children) {
+          classes.push('node--leaf');
+          if (d.data.isVariable && d.data.isAvailable === false) {
+            classes.push('node--unavailable');
+          }
+        }
+        return classes.join(' ');
+      })
       .attr('r', (d) => d.r)
       .attr('fill', (d) =>
-        d.children ? colorCallback(d.depth) ?? 'white' : 'white'
+        !d.children && d.data.isVariable && d.data.isAvailable === false
+          ? '#b6b6b6'
+          : d.children
+          ? colorCallback(d.depth) ?? 'white'
+          : 'white'
       )
       .on(
         'mouseenter',
@@ -376,7 +402,13 @@ const D3CirclePackLayer = ({ layout, ...props }: Props): JSX.Element => {
 
     nodeLabels
       .append('g')
-      .attr('class', 'label-group')
+      .attr('class', (d) => {
+        const classes = ['label-group'];
+        if (!d.children && d.data.isVariable && d.data.isAvailable === false) {
+          classes.push('label-group--unavailable');
+        }
+        return classes.join(' ');
+      })
       .style('fill-opacity', (d) => (d.parent === layout ? 1 : 0))
       .style('display', (d) => (d.parent === layout ? 'inline' : 'none'))
       .each(function (d: any) {

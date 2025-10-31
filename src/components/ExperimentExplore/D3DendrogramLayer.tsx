@@ -152,8 +152,8 @@ const D3DendrogramLayer = ({
 
     const color = d3
       .scaleLinear<string, string>()
-      .domain([0, depth(layout)])
-      .range(['hsl(190,80%,80%)', 'hsl(228,80%,40%)'])
+      .domain([0, 4]) //.domain([0, depth(layout)])
+      .range(['hsl(223, 65.50%, 88.60%)', 'hsl(237, 81%, 54%)']) //.range(['hsl(190,80%,80%)', 'hsl(228,80%,40%)'])
       .interpolate(d3.interpolateHcl);
 
     // Create a group for the entire visualization with adjusted transform
@@ -306,8 +306,14 @@ const D3DendrogramLayer = ({
       .attr('fill', (d) => {
         // Check if this node should have a group color
         const isLeafNode = !d.children;
+        const isUnavailable =
+          isLeafNode && d.data.isVariable && d.data.isAvailable === false;
         const isGroupVariable =
           isLeafNode && groupVars.some((g) => g.items.includes(d.data.id));
+
+        if (isUnavailable) {
+          return '#b6b6b6';
+        }
 
         if (isGroupVariable) {
           // Apply group color directly during rendering
@@ -320,7 +326,11 @@ const D3DendrogramLayer = ({
         // Use hierarchical colors based on depth level, white for leaf nodes
         return d.children ? color(d.depth) ?? '#ffffff' : '#ffffff';
       })
-      .attr('stroke', '#999')
+      .attr('stroke', (d) =>
+        !d.children && d.data.isVariable && d.data.isAvailable === false
+          ? '#6b6b6b'
+          : '#999'
+      )
       .attr('stroke-width', 1);
 
     // Add labels
@@ -331,6 +341,8 @@ const D3DendrogramLayer = ({
       // Check if this node should have a group color
       const isGroupVariable =
         isLeaf && groupVars.some((g) => g.items.includes(d.data.id));
+      const isUnavailable =
+        isLeaf && d.data.isVariable && d.data.isAvailable === false;
 
       // Use hierarchical colors based on depth level, white for leaf nodes
       // But apply group colors directly for group variables
@@ -338,17 +350,24 @@ const D3DendrogramLayer = ({
         ? groupVars.find((g) => g.items.includes(d.data.id))?.color ?? '#ffffff'
         : d.children
         ? color(d.depth) ?? '#ffffff'
+        : isUnavailable
+        ? '#d9d9d9'
         : '#ffffff';
+
+      const textColor =
+        (d.depth === 3 || d.depth === 4) && d.children
+          ? 'white'
+          : isUnavailable
+          ? '#3a3a3a'
+          : '#2c3e50';
 
       // Create text element
       const text = nodeGroup
         .append('text')
         .attr('dy', '.31em')
         .style('font-size', '12px')
-        .style(
-          'fill',
-          (d.depth === 3 || d.depth === 4) && d.children ? 'white' : '#2c3e50'
-        )
+        .style('fill', textColor)
+        .style('font-weight', d.children ? 'bold' : 'normal')
         .style('text-anchor', isLeaf ? 'start' : 'end')
         .text(splitText(d.data.label).join(' '));
 
@@ -371,8 +390,8 @@ const D3DendrogramLayer = ({
             .attr('width', bbox.width + padding * 2)
             .attr('height', bbox.height + padding * 2)
             .style('fill', bgColor)
-            .attr('stroke', '#999')
-            .attr('stroke-width', 1)
+            .attr('stroke', isUnavailable ? '#969696' : '#999')
+            .attr('stroke-width', isUnavailable ? 1 : 1)
             .attr('rx', 4);
 
           // highlight selected node's rectangle bg if any

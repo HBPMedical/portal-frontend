@@ -10,15 +10,21 @@ interface Props {
 const Header = ({ handleCreateExperiment, handleGoBackToExplore }: Props) => {
   return (
     <Card>
-      <Card.Body>
-        <Button onClick={handleGoBackToExplore} variant="info" type="submit">
-          <BsFillCaretLeftFill /> Variables
-        </Button>
-        <h3>Descriptive Analysis</h3>
+      <Card.Body className="experiment-header-body">
+        <div className="header-title">
+          <Button
+            onClick={handleGoBackToExplore}
+            variant="outline-primary"
+            type="submit"
+          >
+            <BsFillCaretLeftFill />
+          </Button>
+          <h1>Descriptive Analysis</h1>
+        </div>
         <div className="item">
           <Button
             onClick={handleCreateExperiment}
-            variant="info"
+            variant="primary"
             type="submit"
             id="btn-goto-experiment"
           >

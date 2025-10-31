@@ -33,9 +33,9 @@ const Container = styled.div`
         margin-bottom: 10px;
         font-size: 0.9rem;
         &.enabled {
-          color: #007ad9;
+          color: #2b33e9;
+          font-weight: bold;
           &:hover {
-            color: #0056b3;
             text-decoration: underline;
           }
         }
@@ -43,10 +43,11 @@ const Container = styled.div`
     }
     &.horizontal {
       .algorithm {
+        margin-bottom: 10px;
         font-size: 0.8rem;
-        font-style: italic;
         &.enabled {
-          color: green;
+          color: #2b33e9;
+          font-weight: bold;
         }
         &::after {
           content: ', ';
@@ -140,7 +141,7 @@ export const AvailableAlgorithms = ({
               <PopoverContainer id={`tooltip-${algo.label}`}>
                 <Card>
                   <Card.Body>
-                    <h5>{algo.label}</h5>
+                    <h2>{algo.label}</h2>
                     <p>{algo.description}</p>
                     {algo.variable && (
                       <p>

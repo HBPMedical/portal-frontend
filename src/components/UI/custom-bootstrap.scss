@@ -1,0 +1,16 @@
+$primary: #2b33e9;
+$secondary: white;
+
+@import 'node_modules/bootstrap/scss/bootstrap';
+
+.btn-secondary {
+  color: #2b33e9;
+  border-color: #2b33e9;
+}
+
+.btn-outline-primary {
+  background-color: white;
+}
+
+
+

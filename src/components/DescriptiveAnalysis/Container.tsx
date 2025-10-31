@@ -134,7 +134,7 @@ const Container = (): JSX.Element => {
               <Card.Header>
                 {hasFilters && (
                   <Button
-                    variant="info"
+                    variant="outline-primary"
                     id="filters-toggle"
                     onClick={() => setSidebarOpen(true)}
                   >
@@ -152,7 +152,7 @@ const Container = (): JSX.Element => {
                 {!hasVariables && (
                   <Alert
                     message="In order to visualize the descriptive analysis, you must first select some variables"
-                    styled="info"
+                    styled="primary"
                     title="No variables selected"
                   />
                 )}

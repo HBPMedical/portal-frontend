@@ -13,7 +13,7 @@ const ListItem = styled.li`
   padding: 4px 24px;
 
   &:hover {
-    background-color: #007ad9;
+    background-color: #2b33e9;
     color: white;
   }
 `;

@@ -1,6 +1,6 @@
 import styled from 'styled-components';
 import ChuvLogo from '../../images/logo_chuv.png';
-import HbpLogo from '../../images/hbp-logo.png';
+import EbrainsLogo from '../../images/logo.png';
 import { AppConfig } from '../utils';
 
 const FooterBox = styled.div`
@@ -8,9 +8,9 @@ const FooterBox = styled.div`
   justify-content: space-between;
   align-items: center;
   padding: 0 16px;
-  background: #000000cc;
   color: white;
-  height: 31px;
+  height: 70px;
+  border-top: 1px solid lightgray; //line
   h6 {
     font-size: 14px;
     color: white;
@@ -23,23 +23,27 @@ const FooterBox = styled.div`
   .footer-logos {
     display: flex;
     flex-direction: row;
-    gap: 5px;
+    gap: 30px;
   }
 `;
 
 const Footer = ({ appConfig }: { appConfig: AppConfig }): JSX.Element => (
   <FooterBox>
     <div className="footer-logos">
-      <img src={HbpLogo} alt="HBP Logo" height="30" />
+      <img src={EbrainsLogo} alt="Ebrains Logo" height="30" />
       <img src={ChuvLogo} alt="CHUV Logo" />
     </div>
     <h6>
-      © 2015-2023{' '}
+      © 2015-2025{' '}
       <a
         href="https://www.humanbrainproject.eu/en/"
         title="The Human Brain Project Website"
       >
-        Human Brain Project{' '}
+        Human Brain Project
+      </a>
+      /
+      <a href="https://www.ebrains.eu/" title="EBRAINS Website">
+        EBRAINS
       </a>
       . All right reserved
     </h6>

@@ -138,7 +138,7 @@ const DataSelect = ({
         <>
           <CaretButton
             ref={btn}
-            variant="light"
+            variant="outline-primary"
             id="dropdown-basic"
             size="sm"
             onClick={(): void => {

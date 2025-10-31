@@ -15,6 +15,7 @@ import ResultDispatcher from '../ExperimentResult/ResultDispatcher';
 import DropdownVariableList from '../UI/DropdownVariableList';
 import Loading from '../UI/Loader';
 import { HierarchyCircularNode } from '../utils';
+import BarGraph from '../UI/Visualization2/BarGraph';
 
 const breadcrumb = (
   variable: HierarchyCircularNode,
@@ -118,18 +119,19 @@ const Breadcrumb = styled.span`
   }
   p:last-child {
     font-weight: bold;
+    text-decoration: underline;
   }
   p:last-child:after {
     content: '';
   }
   p {
-    color: #007ad9;
+    color: #2b33e9;
     display: inline;
     cursor: pointer;
   }
   p:hover {
     text-decoration: underline;
-    color: #0056b3;
+    color: #2b33e9;
   }
 `;
 
@@ -189,7 +191,7 @@ const Histograms = ({
       if (variable && variable.type !== 'nominal') {
         params.push({
           id: 'bins',
-          value: '20',
+          value: '20', // Increased from 20 to 100 for maximum data points
         });
       }
 
@@ -254,19 +256,30 @@ const Histograms = ({
                 ))}{' '}
             </Breadcrumb>
           </div>
-          <div>
-            <Title>Description</Title>:{' '}
-            <p>{selectedNode.data.description || '-'}</p>
-          </div>
+          {!selectedNode.children && (
+            <div>
+              <Title>Description</Title>:{' '}
+              <p>{selectedNode.data.description || '-'}</p>
+            </div>
+          )}
+          {selectedNode.children && (
+            <div>
+              <Title>Number of groups in {selectedNode.data.label}</Title>:{' '}
+              <p>{selectedNode.children.length}</p>
+            </div>
+          )}
         </Overview>
       )}
 
       <Histogram>
         {selectedNode && selectedNode.children && (
-          <ResultDispatcher
-            result={overviewChart(selectedNode) as ResultUnion}
-            constraint={false}
-          />
+          <>
+            <HistogramResultDispatcher
+              result={overviewChart(selectedNode) as ResultUnion}
+              constraint={false}
+              selectedNode={selectedNode}
+            />
+          </>
         )}
 
         {selectedNode && !selectedNode.children && (
@@ -292,10 +305,18 @@ const Histograms = ({
                 data.createExperiment &&
                 data.createExperiment.results &&
                 data.createExperiment.results.length > 0 && (
-                  <ResultDispatcher
-                    result={data.createExperiment.results[0] as ResultUnion}
-                    constraint={false}
-                  />
+                  <>
+                    <HistogramResultDispatcher
+                      result={data.createExperiment.results[0] as ResultUnion}
+                      variableType={
+                        domain?.variables.find(
+                          (v) => v.id === selectedNode?.data.id
+                        )?.type || undefined
+                      }
+                      constraint={false}
+                      selectedNode={selectedNode}
+                    />
+                  </>
                 )}
             </Tab>
             {independantsVariables &&
@@ -335,11 +356,21 @@ const Histograms = ({
                     data.createExperiment &&
                     data.createExperiment.results &&
                     data.createExperiment.results?.length > i && (
-                      <ResultDispatcher
-                        key={i}
-                        result={data.createExperiment.results[i] as ResultUnion}
-                        constraint={false}
-                      />
+                      <>
+                        <HistogramResultDispatcher
+                          key={i}
+                          result={
+                            data.createExperiment.results[i] as ResultUnion
+                          }
+                          variableType={
+                            domain?.variables.find(
+                              (v) => v.id === selectedNode?.data.id
+                            )?.type || undefined
+                          }
+                          constraint={false}
+                          selectedNode={selectedNode}
+                        />
+                      </>
                     )}
                 </Tab>
               ))}
@@ -348,6 +379,30 @@ const Histograms = ({
       </Histogram>
     </>
   );
+};
+
+// Custom ResultDispatcher that passes variable type to BarGraph
+const HistogramResultDispatcher = ({
+  result,
+  variableType,
+  constraint = false,
+  selectedNode,
+}: {
+  result: ResultUnion;
+  variableType?: string;
+  constraint?: boolean;
+  selectedNode?: HierarchyCircularNode;
+}) => {
+  if (result.__typename === 'BarChartResult') {
+    return (
+      <BarGraph
+        data={result}
+        variableType={variableType}
+        isLeafNode={!selectedNode?.children}
+      />
+    );
+  }
+  return <ResultDispatcher result={result} constraint={constraint} />;
 };
 
 export default Histograms;

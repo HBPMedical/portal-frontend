@@ -1,11 +1,14 @@
 import { useReactiveVar } from '@apollo/client';
 import * as d3 from 'd3';
-import { useEffect, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import { Spinner } from 'react-bootstrap';
 import styled from 'styled-components';
 import {
+  allowedVariableIdsVar,
+  domainsVar,
   draftExperimentVar,
   selectedDomainVar,
+  showUnavailableVariablesVar,
   visualizationTypeVar,
 } from '../API/GraphQL/cache';
 import { HierarchyCircularNode } from '../utils';
@@ -19,7 +22,6 @@ import {
 } from './d3Hierarchy';
 
 const diameter = 800;
-const padding = 1.5;
 
 export interface Props {
   selectedNode: HierarchyCircularNode | undefined;
@@ -49,20 +51,40 @@ const D3Container = ({ selectedNode, handleSelectNode }: Props) => {
   const draftExp = useReactiveVar(draftExperimentVar);
   const datasets = draftExp?.datasets;
   const visualizationType = useReactiveVar(visualizationTypeVar);
+  const availableDomains = useReactiveVar(domainsVar);
+  const allowedVariableIds = useReactiveVar(allowedVariableIdsVar);
+  const showUnavailableVariables = useReactiveVar(showUnavailableVariablesVar);
+
+  const allowedVariableIdsSet = useMemo(
+    () => new Set(allowedVariableIds),
+    [allowedVariableIds]
+  );
+
+  const domainForVisualization = useMemo(() => {
+    if (!domain) return undefined;
+    if (!showUnavailableVariables) return domain;
+
+    const baseDomain = availableDomains.find((item) => item.id === domain.id);
+    return baseDomain ?? domain;
+  }, [availableDomains, domain, showUnavailableVariables]);
 
   const [d3Layout, setD3Layout] = useState<HierarchyCircularNode>();
 
   useEffect(() => {
-    if (!domain) return;
+    if (!domainForVisualization) return;
 
     //initialized the arrays in d3Hierarchy (list of available groups and variables)
     initializeArrays();
 
     const rootNode = groupsToTreeView(
-      domain.rootGroup,
-      domain.groups,
-      domain.variables,
-      datasets
+      domainForVisualization.rootGroup,
+      domainForVisualization.groups,
+      domainForVisualization.variables,
+      datasets,
+      {
+        includeAllVariables: showUnavailableVariables,
+        allowedVariableIds: allowedVariableIdsSet,
+      }
     );
     const hierarchyNode = d3Hierarchy(rootNode);
     const bubbleLayout = d3
@@ -77,17 +99,18 @@ const D3Container = ({ selectedNode, handleSelectNode }: Props) => {
       });
 
     const layout = hierarchyNode && bubbleLayout(hierarchyNode);
-    //console log to see the sizes of the leaf nodes
-    if (layout) {
-      const leafNodes = layout.descendants().filter((d) => !d.children);
-    }
     setD3Layout(layout);
-  }, [domain, datasets]);
+  }, [
+    domainForVisualization,
+    datasets,
+    showUnavailableVariables,
+    allowedVariableIdsSet,
+  ]);
 
   const groupVars = [
-    ['Filters', draftExp.filterVariables, 'slategrey'], // => item[0], item[1], item[2]
-    ['Variables', draftExp.variables, '#5cb85c'],
-    ['Covariates', draftExp.coVariables, '#f0ad4e'],
+    ['Filters', draftExp.filterVariables, '#483300'], // => item[0], item[1], item[2]
+    ['Variables', draftExp.variables, '#ffba08'],
+    ['Covariates', draftExp.coVariables, '#bba66f'],
   ]
     .filter((item) => item[1] && item[1].length)
     .map((item) => ({
