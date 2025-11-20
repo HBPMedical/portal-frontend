@@ -8,7 +8,6 @@ import {
   domainsVar,
   draftExperimentVar,
   selectedDomainVar,
-  showUnavailableVariablesVar,
   visualizationTypeVar,
 } from '../API/GraphQL/cache';
 import { HierarchyCircularNode } from '../utils';
@@ -53,7 +52,6 @@ const D3Container = ({ selectedNode, handleSelectNode }: Props) => {
   const visualizationType = useReactiveVar(visualizationTypeVar);
   const availableDomains = useReactiveVar(domainsVar);
   const allowedVariableIds = useReactiveVar(allowedVariableIdsVar);
-  const showUnavailableVariables = useReactiveVar(showUnavailableVariablesVar);
 
   const allowedVariableIdsSet = useMemo(
     () => new Set(allowedVariableIds),
@@ -62,11 +60,9 @@ const D3Container = ({ selectedNode, handleSelectNode }: Props) => {
 
   const domainForVisualization = useMemo(() => {
     if (!domain) return undefined;
-    if (!showUnavailableVariables) return domain;
-
     const baseDomain = availableDomains.find((item) => item.id === domain.id);
     return baseDomain ?? domain;
-  }, [availableDomains, domain, showUnavailableVariables]);
+  }, [availableDomains, domain]);
 
   const [d3Layout, setD3Layout] = useState<HierarchyCircularNode>();
 
@@ -82,7 +78,7 @@ const D3Container = ({ selectedNode, handleSelectNode }: Props) => {
       domainForVisualization.variables,
       datasets,
       {
-        includeAllVariables: showUnavailableVariables,
+        includeAllVariables: true,
         allowedVariableIds: allowedVariableIdsSet,
       }
     );
@@ -100,12 +96,7 @@ const D3Container = ({ selectedNode, handleSelectNode }: Props) => {
 
     const layout = hierarchyNode && bubbleLayout(hierarchyNode);
     setD3Layout(layout);
-  }, [
-    domainForVisualization,
-    datasets,
-    showUnavailableVariables,
-    allowedVariableIdsSet,
-  ]);
+  }, [domainForVisualization, datasets, allowedVariableIdsSet]);
 
   const groupVars = [
     ['Filters', draftExp.filterVariables, '#483300'], // => item[0], item[1], item[2]

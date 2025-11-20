@@ -384,11 +384,16 @@ const D3CirclePackLayer = ({ layout, ...props }: Props): JSX.Element => {
         (d as any).uniqueId = d.data.uniqueId || d.data.id;
         selectNodeCallback(d);
         event.stopPropagation();
-        // Don't zoom on single variable selection
         if (!d.children) {
+          const parent = d.parent as HierarchyCircularNode | null;
+          if (parent && focus.current !== parent) {
+            zoomCallback(parent);
+          }
           return;
         }
-        return focus.current !== d && zoomCallback(d);
+        if (focus.current !== d) {
+          zoomCallback(d);
+        }
       });
 
     // Add labels to the labels group
@@ -446,11 +451,22 @@ const D3CirclePackLayer = ({ layout, ...props }: Props): JSX.Element => {
       if (node) {
         // Set uniqueId on the node for consistency with dendrogram
         (node as any).uniqueId = node.data.uniqueId || node.data.id;
-        zoom(node);
         selectNodeCallback(node);
+
+        if (!node.children) {
+          const parent = node.parent as HierarchyCircularNode | null;
+          if (parent && focus.current !== parent) {
+            zoomCallback(parent);
+          }
+          return;
+        }
+
+        if (focus.current !== node) {
+          zoomCallback(node);
+        }
       }
     },
-    [layout, selectNodeCallback, zoom]
+    [layout, selectNodeCallback, zoomCallback]
   );
 
   useEffect(() => {

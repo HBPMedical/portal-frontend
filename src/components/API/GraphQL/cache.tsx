@@ -40,7 +40,6 @@ export const draftExperimentVar = makeVar<Experiment>(initialExperiment);
 export const variablesVar = makeVar<Variable[]>([]);
 export const groupsVar = makeVar<Group[]>([]);
 export const allowedVariableIdsVar = makeVar<string[]>([]);
-export const showUnavailableVariablesVar = makeVar<boolean>(true);
 export const appConfigVar = makeVar<AppConfig>({});
 
 export type VisualizationType = 'circle' | 'dendrogram';
