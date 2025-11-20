@@ -154,6 +154,18 @@ const Explore = (props: ExploreProps): JSX.Element => {
       ? domain?.variables.filter((v) => v.type === 'nominal')
       : [];
 
+  const availableSelectedLeafIds =
+    selectedNode?.leaves().reduce<string[]>((acc, node) => {
+      if (node.data.isVariable && node.data.isAvailable !== false) {
+        acc.push(node.data.id);
+      }
+      return acc;
+    }, []) ?? [];
+
+  const isRootNode = selectedNode?.data?.id === 'root';
+  const canSelectVariables =
+    !!selectedNode && !isRootNode && availableSelectedLeafIds.length > 0;
+
   return (
     <>
       <VariableSelectionContainer className="header">
@@ -219,30 +231,21 @@ const Explore = (props: ExploreProps): JSX.Element => {
                               className={`child ${bag[0]}`}
                               variant={bag[1] as string}
                               size="sm"
-                              disabled={
-                                !selectedNode || selectedNode.data.id === 'root'
-                              }
+                              disabled={!canSelectVariables}
                               onClick={(): void => {
-                                if (!selectedNode) return;
-
-                                const vars =
-                                  selectedNode
-                                    ?.leaves()
-                                    .filter((node) => node.data.id)
-                                    .map((node) => node.data.id) ?? [];
+                                if (!canSelectVariables) return;
 
                                 localMutations.toggleVarsDraftExperiment(
-                                  vars,
+                                  availableSelectedLeafIds,
                                   bag[3] as VarType
                                 );
                               }}
                             >
                               {bag[2] &&
-                              selectedNode &&
-                              selectedNode
-                                .leaves()
-                                .filter((n) => bag[2]?.includes(n.data.id))
-                                .length === selectedNode.leaves().length
+                              availableSelectedLeafIds.length > 0 &&
+                              availableSelectedLeafIds.every((id) =>
+                                bag[2]?.includes(id)
+                              )
                                 ? '-'
                                 : '+'}{' '}
                               {`As ${bag[0]}`}

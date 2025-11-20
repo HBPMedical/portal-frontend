@@ -9,7 +9,6 @@ import {
   selectedVariableVar,
   sessionStateVar,
   variablesVar,
-  showUnavailableVariablesVar,
   zoomNodeVar,
 } from '../../cache';
 import createResetStore from './common/resetStore';
@@ -68,8 +67,7 @@ export const localMutations = {
     draftExperimentVar,
     variablesVar,
     groupsVar,
-    allowedVariableIdsVar,
-    showUnavailableVariablesVar
+    allowedVariableIdsVar
   ),
   user: {
     setState: createSetSessionState(sessionStateVar),

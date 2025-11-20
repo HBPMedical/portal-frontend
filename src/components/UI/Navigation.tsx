@@ -8,6 +8,7 @@ import { configurationVar } from '../API/GraphQL/cache';
 import { makeAssetURL } from '../API/RequestURLS';
 import ShepherdContainer from '../UserGuide/shepherdContainer';
 import HelpButton from './HelpButton';
+import MipLogo from '../../images/mip-logo-whole.png';
 import MipLogoShort from '../../images/mip-logo-short.png';
 
 const NavBar = styled.nav`
@@ -289,7 +290,7 @@ const Navigation = ({
             {imageURL && <img src={MipLogoShort} alt="Logo" />}
           </Link>
           <Link className="logo-title" to="/">
-            {instanceName}
+            {/* {instanceName} */}
           </Link>
         </Brand>
         {authenticated && (

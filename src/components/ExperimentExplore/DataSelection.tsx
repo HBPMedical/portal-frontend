@@ -1,12 +1,11 @@
 import { useReactiveVar } from '@apollo/client';
 import React, { useRef } from 'react';
-import { Card, Dropdown, DropdownButton, Form } from 'react-bootstrap';
+import { Card, Dropdown, DropdownButton } from 'react-bootstrap';
 import styled from 'styled-components';
 import {
   draftExperimentVar,
   groupsVar,
   selectedDomainVar,
-  showUnavailableVariablesVar,
   variablesVar,
   visualizationTypeVar,
 } from '../API/GraphQL/cache';
@@ -61,12 +60,6 @@ const DatasetSelectWrapper = styled.div`
   align-items: center;
 `;
 
-const ToggleWrapper = styled.div`
-  display: flex;
-  align-items: center;
-  white-space: nowrap;
-`;
-
 const DataSelection = ({
   handleChangeDomain,
   handleSelectedDataset,
@@ -81,7 +74,6 @@ const DataSelection = ({
   const groups = useReactiveVar(groupsVar);
   const variables = useReactiveVar(variablesVar);
   const visualizationType = useReactiveVar(visualizationTypeVar);
-  const showUnavailableVariables = useReactiveVar(showUnavailableVariablesVar);
 
   const handleSelectDataset = (id: string): void => {
     localMutations.toggleDatasetExperiment(id);
@@ -167,18 +159,6 @@ const DataSelection = ({
                 groups={groups}
               />
             </SearchWrapper>
-
-            <ToggleWrapper>
-              <Form.Check
-                type="switch"
-                id="toggle-unavailable-variables"
-                label="Show unavailable variables"
-                checked={showUnavailableVariables}
-                onChange={(event) =>
-                  showUnavailableVariablesVar(event.currentTarget.checked)
-                }
-              />
-            </ToggleWrapper>
 
             <VisualizationSelect>
               <DropdownButton
